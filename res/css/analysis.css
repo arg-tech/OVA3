@@ -1,0 +1,472 @@
+@import url('https://fonts.googleapis.com/css?family=Open+Sans');
+
+html, body {
+  width: 100%;
+  padding: 0px;
+  margin: 0px;
+  font-family: 'Open Sans', sans-serif;
+}
+
+g {
+      cursor: move;
+  }
+
+  svg text {
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+  }
+  svg text::selection {
+      background: none;
+  }
+
+a.pointer {
+  cursor: pointer;
+}
+
+
+#mainwrap {
+  width: 100%;
+}
+#toolbar {
+  position: relative;
+  width: 100%;
+  background-color: #333;
+  border-bottom: 1px solid #000;
+  height: 70px;
+}
+#spacer{
+  width:7px;
+  border-left: 1px solid #e5e5e5;
+  border-right: 1px solid #e5e5e5;
+  height:200px;
+  background-color:#f0f0f0;
+  background-image: url("../img/spacer.png");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 3px;
+  position: absolute;
+  left: 280px;
+  cursor:col-resize;
+}
+#left1{
+  width:240px;
+  height:200px;
+  float:left;
+  background-color: #f4f4f4;
+  font-size: 13px;
+  color: #333;
+  padding: 20px;
+  overflow: auto;
+  outline: 0;
+  line-height: 1.4em;
+}
+
+#right1{
+  width:280px;
+  height:200px;
+  float:left;
+  background-color: #f4f4f4;
+  overflow: hidden;
+}
+
+#toolbar a.home {
+}
+
+#toolbar a.home img {
+  margin: 18px 0px 10px 20px;
+  height: 32px;
+}
+
+#toolbar div.divider {
+  background-color: #4f4f4f;
+  position: relative;
+  display: block;
+  width: 1px;
+  height: 56px;
+  margin: 8px 0px 0px 0px;
+  float: right;
+}
+
+#toolbar a.icon {
+  position: relative;
+  display: block;
+  width: 42px;
+  height: 100%;
+  margin: 0px;
+  border-left: 14px solid #333;
+  border-right: 14px solid #333;
+  float: right;
+  background-image: url("../img/icons-grey.svg");
+  background-repeat: no-repeat;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+#toolbar a.icon:hover {
+  background-color: rgba(224,46,66,1);
+  border-color: rgba(224,46,66,1);
+  /*background-image: url("../img/icons-grey.svg");*/
+}
+
+#toolbar a#nadd.active {
+  background-color: rgba(224,46,66,1);
+  border-color: rgba(224,46,66,1);
+  color: #fff;
+}
+
+#toolbar a#eadd.attack {
+  background-color: rgba(224,46,66,1);
+  border-color: rgba(224,46,66,1);
+  color: #fff;
+}
+
+#toolbar a#eadd.support {
+  background-color: #27ae60;
+  border-color: #27ae60;
+  color: #fff;
+}
+
+#toolbar a.icon .tooltiptext {
+    visibility: hidden;
+    width: 74px;
+    background-color: rgba(0,0,0,0.8);
+    font-size: 9px;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+    position: absolute;
+    z-index: 1000;
+    top: 77px;
+    left: 50%;
+    margin-left: -37px;
+}
+
+/* Show the tooltip text when you mouse over the tooltip container */
+#toolbar a.icon:hover .tooltiptext {
+    visibility: visible;
+}
+
+#toolbar a.icon .tooltiptext::after {
+    content: "";
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent transparent rgba(0,0,0,0.8) transparent;
+}
+
+div#xmenu {
+  position: absolute;
+  right: 0px;
+  top: 71px;
+  width: 220px;
+  height: 300px;
+  background-color: #333;
+  z-index: 999;
+  display: none;
+  border-left: 1px solid #111;
+}
+
+div#xmenu a.xicon {
+  display: block;
+  height: 48px;
+  color: #fff;
+  width: 100%;
+  border-bottom: 1px solid #4f4f4f;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+div#xmenu a.xicon:hover {
+  background-color: rgba(224,46,66,1);
+}
+
+div#xmenu a.xicon div.icn {
+  float: left;
+  display: inline-block;
+  width: 42px;
+  height: 48px;
+  margin: 0px 5px;
+  background-image: url("../img/icons-grey.svg");
+  background-repeat: no-repeat;
+}
+
+div#xmenu a.xicon div.txt {
+  float: left;
+  display: inline-block;
+  line-height: 48px;
+  font-size: 11px;
+}
+
+div#xmenu a#devby {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  border: 0px;
+}
+
+div#xmenu a#devby img {
+  width: 100px;
+}
+
+/* ---- Modals ---- */
+div#modal-shade {
+  position: absolute;
+  top: 71px;
+  z-index: 99998;
+  width: 100%;
+  background-color: rgba(0,0,0,0.4);
+  display: none;
+}
+
+div.modal-box {
+    z-index: 99999;
+    position: absolute;
+    top: 110px;
+    right: 25%;
+    width: 500px;
+    color: #333;
+    background-color: #fff;
+    display: none;
+    border: 1px solid #bbb;
+    border-top: 0px;
+    padding: 0px;
+}
+
+div.modal-dialog {
+  position: absolute;
+  top: 71px;
+  width: 600px;
+  background-color: #fff;
+  z-index: 99999;
+  left: 0;
+  right: 0;
+  margin-left: auto;
+  margin-right: auto;
+  display: none;
+}
+
+div.modal-content {
+    overflow: auto;
+    box-sizing: content-box;
+    -moz-box-sizing: content-box;
+}
+
+div.modal-header {
+  background-color: #333;
+  padding: 0px 20px;
+  height: 48px;
+}
+
+div.modal-header h4 {
+  padding: 0px;
+  margin: 0px;
+  line-height: 48px;
+  color: #fff;
+  font-weight: normal;
+}
+
+div.modal-body {
+
+}
+
+a.xmodal {
+  position: absolute;
+  right: 0px;
+  top: 0px;
+  color: #fff;
+}
+a.xmodal img {
+  margin: 14px 14px 0px 0px;
+  width: 20px;
+  opacity: 0.5;
+}
+a.xmodal:hover img {
+  opacity: 1.0;
+}
+
+div.modal-btns a {
+    font-size: 11px;
+    font-weight: bold;
+    display: block;
+    height: 40px;
+    line-height: 40px;
+    color: #333;
+    float: right;
+    padding: 0px 20px;
+    text-decoration: none;
+    border-left: 1px solid #bbb;
+}
+
+div.modal-btns a:hover {
+    color: #fff !important;
+}
+
+div.modal-btns a.save {
+    color: #27ae60;
+}
+
+div.modal-btns a.save:hover {
+    background-color: #2ecc71;
+}
+
+div.modal-btns a.cancel {
+    color: #c0392b;
+}
+
+div.modal-btns a.cancel:hover {
+    background-color: #e74c3c;
+}
+
+/* ---- ul.btnlist ---- */
+/* copied from main.css 267 to 317 */
+/* used for save analysis modal*/
+ul.btnlist {
+  list-style-type: none;
+  margin: 8px 0px;
+  padding: 0px;
+}
+
+ul.btnlist li a {
+  /*font: 11px "Lucida Grande", Verdana, Arial, "Bitstream Vera Sans", sans-serif;*/
+  display: block;
+  padding: 10px 10px;
+  margin: 0px 50px;
+  width: 380px;
+  border-top: 1px solid #eee;
+  text-decoration: none;
+  color: #848e92;
+  line-height: 18px;
+}
+
+ul.btnlist > li:last-child a {
+  border-bottom: 1px solid #eee;
+}
+
+ul.btnlist li a div.btnicn {
+  display: inline-block;
+  height: 18px;
+  width: 18px;
+  background-position: 0px 0px;
+  background-repeat: no-repeat;
+}
+
+ul.btnlist li a:hover div.btnicn {
+  background-position: 0px -18px;
+  background-repeat: no-repeat;
+}
+
+ul.btnlist li a:hover {
+  background-color: #848e92;
+  color: #fff;
+}
+
+ul.btnlist li a.bgred:hover {
+  background-color: #e74c3c;
+}
+
+ul.btnlist li a.bggrn:hover {
+  background-color: #2ecc71;
+}
+
+ul.btnlist li a.bgblu:hover {
+  background-color: #3498db;
+}
+
+/* copied from ovatmp formstyle.css */
+/* used for load analysis modal layout */
+/* todo: fix centering */
+form.fstyle {
+  /*font: 11px "Lucida Grande", Verdana, Arial, "Bitstream Vera Sans", sans-serif;*/
+  color: #333;
+  width: 80%;
+  margin-left: 10%;
+  margin-top: 16px;
+  margin-bottom: 16px;
+}
+
+form.fstyle label {
+  display: block;
+  width: 100%;
+  margin: 0px;
+}
+
+/* input,textarea,select */
+form.fstyle input, form.fstyle textarea, form.fstyle select {
+  padding: 4px;
+  margin: 1px 0px 6px 0px;
+  border: 1px solid #bbb;
+  background: #fbfbfb;
+  font-size: 13px;
+}
+
+/* input type=text */
+form.fstyle input.itext {
+  width: 100%;
+}
+
+form.fstyle input.itext:focus {
+  border-color: #888;
+}
+
+/* input type=submit,button */
+form.fstyle input.isubmit, form.fstyle input.ibutton {
+  padding: 4px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  text-decoration: none;
+  margin-top: 2px;
+  font-size: 12px;
+}
+
+form.fstyle input.isubmit:hover, form.fstyle input.ibutton:hover {
+  background-color: #eee;
+  border-color: #888;
+  color: #222;
+}
+
+/* textarea */
+form.fstyle textarea {
+  width: 100%;
+  font-family: "Lucida Grande", Verdana, Arial, "Bitstream Vera Sans", sans-serif;
+}
+
+/* select */
+form.fstyle select {
+  width: 100%;
+  font-family: "Lucida Grande", Verdana, Arial, "Bitstream Vera Sans", sans-serif;
+}
+
+/* ========{ Context Menu Box }======== */
+
+#contextmenu {
+    z-index: 99999;
+    position: absolute;
+    color: #333;
+    background-color: #fff;
+    display: none;
+    border: 1px solid #999;
+    padding: 0px;
+    box-shadow: 5px 5px 5px #bbb;
+}
+
+#contextmenu a {
+    cursor: pointer;
+    background-color: #fff;
+    display: block;
+    padding: 4px 12px;
+    margin: 1px;
+    width: 100px;
+    font-size: 0.9em;
+    border: 1px solid #fff;
+}
+
+#contextmenu a:hover {
+    background-color: #ddd;
+    border: 1px solid #bbb;
+}
