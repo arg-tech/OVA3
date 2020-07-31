@@ -6,6 +6,7 @@ var DragTarget = null;
 
 var CurrentFocus = null;
 var CurrentlyEditing = 0;
+var editMode = false;
 
 window.shiftPress = false;
 window.nodeCounter = 1;
@@ -41,10 +42,10 @@ function getSelText()
       }else if(userSelection != ""){
           range = getRangeObject(userSelection);
           txt = userSelection.toString();
-          var span = document.createElement("span");
-          span.className="highlighted";
-          span.id = "node"+window.nodeIDcounter;
-          //range.surroundContents(span);
+          // var span = document.createElement("span");
+          // span.className="highlighted";
+          // span.id = "node"+window.nodeIDcounter;
+          // range.surroundContents(span);
           //postEdit("text", "edit", $('#ova_arg_area_div').html());
       }
   }else{

@@ -214,6 +214,19 @@ div#xmenu a#devby img {
   width: 100px;
 }
 
+/* ========{ Left Hand Panel }======== */
+.highlighted {
+    color: #fff;
+    background-color: #2ecc71;
+    box-shadow: 0px -2px 0 1px #2ecc71, 0px 2px 0 1px #2ecc71;
+}
+
+.hlcurrent {
+    color: #fff;
+    background-color: #f39c12 !important;
+    box-shadow: 0px -2px 0 1px #f39c12, 0px 2px 0 1px #f39c12 !important;
+}
+
 /* ---- Modals ---- */
 div#modal-shade {
   position: absolute;

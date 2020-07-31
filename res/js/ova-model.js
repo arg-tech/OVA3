@@ -34,7 +34,8 @@ function newNode(nodeID, type, text, x, y){
 }
 
 function updateNode(nodeID, type, text, x, y){
-    n = nodes[nodeID];
+    var index = findNodeIndex(nodeID);
+    n = nodes[index];
     n.type = type;
     n.text = text;
     n.x = x;
