@@ -487,6 +487,7 @@ function editNode(node) {
       for (var i=0; i<edgesToDelete.length; i++) {
         deleteEdges(edgesToDelete[i]);
       }
+      $("#contextmenu").hide();
     }
   }
 
