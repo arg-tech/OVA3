@@ -87,7 +87,6 @@ function DrawNode(nid, type, txt, nx, ny)
 }
 
 function cmenu(node) {
-  console.log("in cmenu");
     window.contextnode = node;
     $('#contextmenu').empty();
     $('#contextmenu').css({top: node.y+85, left: node.x+210});

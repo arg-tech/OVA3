@@ -6,6 +6,9 @@ function myKeyDown(e) {
   if (keycode == 65) {
     edgeMode('atk');
   }
+  if (keycode == 17) {
+    editMode = true;
+  }
 }
 function myKeyUp(e) {
   var keycode = e.keyCode;
@@ -14,6 +17,9 @@ function myKeyUp(e) {
   }
   if (keycode == 65) {
     edgeMode('off');
+  }
+  if (keycode == 17) {
+    editMode = false;
   }
 }
 
@@ -67,12 +73,13 @@ function nodeMode(status) {
   }
 }
 
+
 function Grab(evt) {
-  console.log("Grab called");
   if(evt.button != 0){
         myRClick(evt);
         return;
     }
+
   GetTrueCoords(evt);
   if (evt.target.nodeName == 'rect') {
     var targetElement = evt.target.parentNode;
@@ -114,6 +121,14 @@ function Grab(evt) {
         edgeMode('off');
         window.eBtn = false;
       }
+    }
+    else if (editMode == true) {
+      var index = findNodeIndex(targetElement.id)
+      mySel = nodes[index];
+      CurrentlyEditing = targetElement.id;
+      editNode(nodes[index]);
+      editMode = false;
+      return;
     }
     else {
       DragTarget = targetElement;
@@ -347,7 +362,6 @@ function Drop(evt) {
       AddNode('Default Inference', 'RA', newNodeID, nx, ny);
 
       //from -> S
-      console.log("from -> S");
       var nedge = document.createElementNS("http://www.w3.org/2000/svg", "path");
       nedge.setAttribute('id', 'n' + FromID + '-n' + newNodeID);
       nedge.setAttribute('stroke-width', '1');
@@ -360,11 +374,9 @@ function Drop(evt) {
       edge.fromID = FromID;
       edge.toID = newNodeID;
       edges.push(edge);
-      console.log(edge);
       UpdateEdge(edge);
 
       //S -> to
-      console.log("S -> to");
       var nedge = document.createElementNS("http://www.w3.org/2000/svg", "path");
       nedge.setAttribute('id', 'n' + newNodeID + '-n' + targetElement.getAttributeNS(null, 'id'));
       nedge.setAttribute('stroke-width', '1');
@@ -377,7 +389,6 @@ function Drop(evt) {
       edge.fromID = newNodeID;
       edge.toID = targetElement.getAttributeNS(null, 'id');
       edges.push(edge);
-      console.log(edge);
       UpdateEdge(edge);
 
       tempedge = document.getElementById('n' + FromID + '-nedge_to');
@@ -458,14 +469,13 @@ function editNode(node) {
 
   function deleteNode(node) {
     if(mySel.type == 'I' || mySel.type == 'L'){
+      //remhl(node.nodeID);
       document.getElementById(CurrentlyEditing).remove();
       const index = nodes.indexOf(node);
       if (index > -1) { nodes.splice(index, 1); }
-      console.log(edges.length);
       var edgesToDelete = [];
 
       for (var j = 0; j < edges.length; j++) {
-        console.log(j);
         if(edges[j].toID == CurrentlyEditing) {
           edgesToDelete.push(edges[j]);
         }
@@ -480,6 +490,19 @@ function editNode(node) {
     }
   }
 
+//   function remhl(nodeID) {
+//     var span;
+//     console.log("removing");
+//     console.log(nodeID);
+//     console.log(span);
+//     if(span = document.getElementById("node"+nodeID)){
+//         console.log("in if");
+//         var text = span.textContent || span.innerText;
+//         var node = document.createTextNode(text);
+//         span.parentNode.replaceChild(node, span);
+//     }
+// }
+
 
   function deleteEdges(edge) {
 
@@ -492,6 +515,7 @@ function editNode(node) {
     if (index > -1) { edges.splice(index, 1); }
 
     for(var i=1; i<nodes.length; i++) {
+      console.log(nodes[i]);
       if(nodes[i]) {
         if(nodes[i].nodeID == edgeFrom && nodes[i].type != "I" && nodes[i].type != "L") {
           CurrentlyEditing = nodes[i].nodeID;
