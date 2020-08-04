@@ -50,7 +50,7 @@ function DrawNode(nid, type, txt, nx, ny)
   var textheight = textbox.height;
   var nbox=document.createElementNS("http://www.w3.org/2000/svg", "rect")
 
-  if(type == 'I' || type == 'L'){
+  if(type == 'I' || type == 'L' || type == 'EN'){
       nbox.setAttribute('x', nx-(textwidth/2)-16);
       nbox.setAttribute('y', ny-2);
       nbox.setAttribute('width', textwidth+32);
@@ -78,10 +78,11 @@ function DrawNode(nid, type, txt, nx, ny)
       nbox.setAttribute('style', 'fill:#eee3f3;stroke:#9b59b6;stroke-width:1;');
   }else if(type == 'MA'){
       nbox.setAttribute('style', 'fill:#fbeadb;stroke:#e67e22;stroke-width:1;');
+  }else if(type == 'EN'){
+      nbox.setAttribute('style', 'fill:#c4c3c2;stroke:#969696;stroke-width:1;');
   }else{
       nbox.setAttribute('style', 'fill:#ddeef9;stroke:#3498db;stroke-width:1;');
   }
-
   g.appendChild(nbox)
   g.appendChild(ntext)
 }

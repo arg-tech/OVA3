@@ -30,7 +30,7 @@ function newNode(nodeID, type, text, x, y){
     n.text = text;
     n.x = x;
     n.y = y;
-    nodes[nodeID] = n;
+    nodes.push(n);
 }
 
 function updateNode(nodeID, type, text, x, y){

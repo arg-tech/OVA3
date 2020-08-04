@@ -75,6 +75,8 @@ function nodeMode(status) {
 
 
 function Grab(evt) {
+  $("#contextmenu").hide();
+
   if(evt.button != 0){
         myRClick(evt);
         return;
@@ -145,18 +147,31 @@ function Grab(evt) {
       Focus(evt, targetElement);
     }
   } else {
-    t = getSelText();
-    if (t != '') {
+    if (window.nodeAddBtn == true) {
       window.nodeCounter = window.nodeCounter + 1;
       newNodeID = window.nodeCounter;
-      AddNode(t, 'I', newNodeID, TrueCoords.x, TrueCoords.y - 10);
+      AddNode("", 'EN', newNodeID, TrueCoords.x, TrueCoords.y - 10 );
+      var index = findNodeIndex(newNodeID)
+      mySel = nodes[index];
+      CurrentlyEditing = newNodeID;
+      editNode(nodes[index]);
+      nodeMode('off');
+      return;
     }
     else {
-      {
-        t = "dummy text";
+      t = getSelText();
+      if (t != '') {
         window.nodeCounter = window.nodeCounter + 1;
         newNodeID = window.nodeCounter;
         AddNode(t, 'I', newNodeID, TrueCoords.x, TrueCoords.y - 10);
+      }
+      else {
+        {
+          t = "dummy text";
+          window.nodeCounter = window.nodeCounter + 1;
+          newNodeID = window.nodeCounter;
+          AddNode(t, 'I', newNodeID, TrueCoords.x, TrueCoords.y - 10);
+        }
       }
     }
 
@@ -433,7 +448,7 @@ function myRClick(evt) {
         nID = n.getAttributeNS(null, 'id');
         CurrentlyEditing = nID;
         //nHeight = n.getAttributeNS(null, 'height');
-        const index = findNodeIndex(nID);
+        var index = findNodeIndex(nID);
         mySel = nodes[index];
         cmenu(mySel);
         return false;
@@ -451,7 +466,7 @@ function findNodeIndex(nodeID) {
 }
 
 function editNode(node) {
-  if(mySel.type == 'I' || mySel.type == 'L'){
+  if(mySel.type == 'I' || mySel.type == 'L' || mySel.type == 'EN'){
     $('#node_edit').show();
     $('#modal-shade').show();
     $('#n_text').val(node.text);
@@ -459,16 +474,19 @@ function editNode(node) {
 }
 
   function saveNodeEdit() {
-    if(mySel.type == 'I' || mySel.type == 'L'){
+    if(mySel.type == 'I' || mySel.type == 'L' || mySel.type == 'EN'){
       var ntext = document.getElementById("n_text").value;
+      var type = mySel.type;
+      var xCoord = mySel.x;
+      var yCoord = mySel.y;
       document.getElementById(CurrentlyEditing).remove();
-      DrawNode(CurrentlyEditing, 'I', ntext, TrueCoords.x, TrueCoords.y-10);
-      updateNode(CurrentlyEditing, 'I', ntext, TrueCoords.x, TrueCoords.y-10);
+      DrawNode(CurrentlyEditing, type, ntext, xCoord, yCoord);
+      updateNode(CurrentlyEditing, type, ntext, xCoord, yCoord);
     }
   }
 
   function deleteNode(node) {
-    if(mySel.type == 'I' || mySel.type == 'L'){
+    if(mySel.type == 'I' || mySel.type == 'L' || mySel.type == 'EN'){
       //remhl(node.nodeID);
       document.getElementById(CurrentlyEditing).remove();
       const index = nodes.indexOf(node);
@@ -516,13 +534,12 @@ function editNode(node) {
     if (index > -1) { edges.splice(index, 1); }
 
     for(var i=1; i<nodes.length; i++) {
-      console.log(nodes[i]);
       if(nodes[i]) {
-        if(nodes[i].nodeID == edgeFrom && nodes[i].type != "I" && nodes[i].type != "L") {
+        if(nodes[i].nodeID == edgeFrom && nodes[i].type != "I" && nodes[i].type != "L" && nodes[i].type != 'EN') {
           CurrentlyEditing = nodes[i].nodeID;
           deleteNode(nodes[i]);
         }
-        if(nodes[i].nodeID == edgeTo && nodes[i].type != "I" && nodes[i].type != "L") {
+        if(nodes[i].nodeID == edgeTo && nodes[i].type != "I" && nodes[i].type != "L" &&  nodes[i].type != 'EN') {
           CurrentlyEditing = nodes[i].nodeID;
           deleteNode(nodes[i]);
         }
