@@ -4,7 +4,7 @@ var TrueCoords = null;
 var GrabPoint = null;
 var DragTarget = null;
 
-
+var IATMode = true;
 var CurrentFocus = null;
 var CurrentlyEditing = 0;
 var editMode = false;

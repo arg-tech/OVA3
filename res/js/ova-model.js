@@ -41,3 +41,12 @@ function updateNode(nodeID, type, text, x, y){
     n.x = x;
     n.y = y;
 }
+
+function newEdge(fromID, toID) {
+  var e = new Edge;
+  e.fromID = fromID;
+  e.toID = toID;
+  edges.push(e);
+  console.log(e);
+  return e;
+}

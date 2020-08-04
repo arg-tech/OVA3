@@ -164,15 +164,34 @@ function Grab(evt) {
         window.nodeCounter = window.nodeCounter + 1;
         newNodeID = window.nodeCounter;
         AddNode(t, 'I', newNodeID, TrueCoords.x, TrueCoords.y - 10);
-      }
-      else {
-        {
-          t = "dummy text";
+
+        if (IATMode == true) {
           window.nodeCounter = window.nodeCounter + 1;
-          newNodeID = window.nodeCounter;
-          AddNode(t, 'I', newNodeID, TrueCoords.x, TrueCoords.y - 10);
+          var newLNodeID = window.nodeCounter;
+          var ltext = 'Speaker X says '.concat(t);
+          AddNode(ltext, 'L', newLNodeID, (TrueCoords.x + 450), TrueCoords.y - 10);
+
+          window.nodeCounter = window.nodeCounter + 1;
+          var newYANodeID = window.nodeCounter;
+          AddNode('Asserting', 'YA', newYANodeID, (TrueCoords.x + 225), TrueCoords.y - 10);
+
+          var edge = newEdge(newLNodeID, newYANodeID);
+          DrawEdge(newLNodeID, newYANodeID)
+          UpdateEdge(edge);
+          edge = newEdge(newYANodeID, newNodeID);
+          DrawEdge(newYANodeID, newNodeID);
+          UpdateEdge(edge);
         }
       }
+
+      // else {
+      //   {
+      //     t = "Lorem ipsum dolor sit amet";
+      //     window.nodeCounter = window.nodeCounter + 1;
+      //     newNodeID = window.nodeCounter;
+      //     AddNode(t, 'I', newNodeID, TrueCoords.x, TrueCoords.y - 10);
+      //   }
+      // }
     }
 
   }
@@ -377,33 +396,13 @@ function Drop(evt) {
       AddNode('Default Inference', 'RA', newNodeID, nx, ny);
 
       //from -> S
-      var nedge = document.createElementNS("http://www.w3.org/2000/svg", "path");
-      nedge.setAttribute('id', 'n' + FromID + '-n' + newNodeID);
-      nedge.setAttribute('stroke-width', '1');
-      nedge.setAttribute('fill', 'none');
-      nedge.setAttribute('stroke', 'black');
-      nedge.setAttribute('d', 'M80,30 C200,30 30,380 200,380');
-      nedge.setAttribute('marker-end', 'url(#head)');
-      SVGRoot.insertBefore(nedge, SVGRoot.childNodes[0]);
-      var edge = new Edge;
-      edge.fromID = FromID;
-      edge.toID = newNodeID;
-      edges.push(edge);
+      DrawEdge(FromID, newNodeID);
+      var edge = newEdge(FromID, newNodeID);
       UpdateEdge(edge);
 
       //S -> to
-      var nedge = document.createElementNS("http://www.w3.org/2000/svg", "path");
-      nedge.setAttribute('id', 'n' + newNodeID + '-n' + targetElement.getAttributeNS(null, 'id'));
-      nedge.setAttribute('stroke-width', '1');
-      nedge.setAttribute('fill', 'none');
-      nedge.setAttribute('stroke', 'black');
-      nedge.setAttribute('d', 'M80,30 C200,30 30,380 200,380');
-      nedge.setAttribute('marker-end', 'url(#head)');
-      SVGRoot.insertBefore(nedge, SVGRoot.childNodes[0]);
-      var edge = new Edge;
-      edge.fromID = newNodeID;
-      edge.toID = targetElement.getAttributeNS(null, 'id');
-      edges.push(edge);
+      DrawEdge(newNodeID, targetElement.getAttributeNS(null, 'id'));
+      var edge = newEdge(newNodeID, targetElement.getAttributeNS(null, 'id'));
       UpdateEdge(edge);
 
       tempedge = document.getElementById('n' + FromID + '-nedge_to');
