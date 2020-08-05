@@ -161,14 +161,26 @@ function Grab(evt) {
     else {
       t = getSelText();
       if (t != '') {
-        window.nodeCounter = window.nodeCounter + 1;
-        newNodeID = window.nodeCounter;
-        AddNode(t, 'I', newNodeID, TrueCoords.x, TrueCoords.y - 10);
-        var nIndex = findNodeIndex(newNodeID)
-        mySel = nodes[nIndex];
-
         if (IATMode == true) {
+          window.nodeCounter = window.nodeCounter + 1;
+          newNodeID = window.nodeCounter;
+          AddNode(t, 'I', newNodeID, TrueCoords.x, TrueCoords.y - 10);
+          var nIndex = findNodeIndex(newNodeID)
+          mySel = nodes[nIndex];
+          CurrentlyEditing = mySel.nodeID;
+          console.log(CurrentlyEditing);
           $('#locution_add').show();
+        } else {
+          window.nodeCounter = window.nodeCounter + 1;
+          newNodeID = window.nodeCounter;
+          AddNode(t, 'I', newNodeID, TrueCoords.x, TrueCoords.y - 10);
+          var nIndex = findNodeIndex(newNodeID)
+          mySel = nodes[nIndex];
+        }
+      }
+
+        // if (IATMode == true) {
+        //   $('#locution_add').show();
 
           // window.nodeCounter = window.nodeCounter + 1;
           // var newLNodeID = window.nodeCounter;
@@ -186,8 +198,8 @@ function Grab(evt) {
           // DrawEdge(newYANodeID, newNodeID);
           // UpdateEdge(edge);
 
-        }
-      }
+        //}
+
 
       // else {
       //   {
