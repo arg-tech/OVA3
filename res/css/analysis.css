@@ -336,9 +336,28 @@ div.modal-btns a.cancel:hover {
     background-color: #e74c3c;
 }
 
+#modal-save2db {
+  text-align: center;
+}
+
+#m_load {
+  font-size: 0.8em;
+  text-transform: uppercase;
+  display: none;
+  height: 100px;
+  margin-top: 70px;
+}
+
+#m_content {
+  display: none;
+  margin-top: 30px;
+}
+
+#m_content a {
+  color: #333;
+}
+
 /* ---- ul.btnlist ---- */
-/* copied from main.css 267 to 317 */
-/* used for save analysis modal*/
 ul.btnlist {
   list-style-type: none;
   margin: 8px 0px;
@@ -391,8 +410,7 @@ ul.btnlist li a.bgblu:hover {
   background-color: #3498db;
 }
 
-/* copied from ovatmp formstyle.css */
-/* used for load analysis modal layout */
+/* ---- formstyle ---- */
 /* todo: fix centering */
 form.fstyle {
   /*font: 11px "Lucida Grande", Verdana, Arial, "Bitstream Vera Sans", sans-serif;*/
