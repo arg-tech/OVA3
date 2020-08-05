@@ -4,17 +4,16 @@ var TrueCoords = null;
 var GrabPoint = null;
 var DragTarget = null;
 
-
 var CurrentFocus = null;
 var CurrentlyEditing = 0;
 var editMode = false;
 
 window.shiftPress = false;
 window.nodeCounter = 1;
+window.unsaved = true;
 
 window.addEventListener('keydown',myKeyDown,true);
 window.addEventListener('keyup',myKeyUp,true);
-
 
 window.bwmode = false;
 if("bw" in getUrlVars()){
@@ -26,6 +25,14 @@ function Init(evt){
     TrueCoords = SVGRoot.createSVGPoint();
     GrabPoint = SVGRoot.createSVGPoint();
     Canvas = document.getElementById('Canvas');
+    
+    document.getElementById('n_file').addEventListener('change', loadbutton, false);
+
+    $(window).bind('beforeunload', function(){
+        if(window.unsaved){
+            return 'There are unsaved changes to your analysis.';
+        }
+    });
 }
 
 function getSelText()
@@ -64,5 +71,23 @@ function getRangeObject(selectionObject) {
         range.setStart(selectionObject.anchorNode,selectionObject.anchorOffset);
         range.setEnd(selectionObject.focusNode,selectionObject.focusOffset);
         return range;
+    }
+}
+
+function getAllText() {
+    var iframe = document.getElementById('left1');
+    if(iframe.nodeName.toLowerCase() == 'div'){
+        txt = $('#analysis_text').html();
+    }else{
+        var innerDoc = iframe.contentDocument || iframe.contentWindow.document;
+        txt = "";
+    }
+    return txt;
+}
+
+function setAllText(txt) {
+    var iframe = document.getElementById('left1');
+    if(iframe.nodeName.toLowerCase() == 'div'){
+        $('#analysis_text').html(txt);
     }
 }

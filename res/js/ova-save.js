@@ -1,3 +1,4 @@
+/* autolayout
 function genldot() {
     var doto = "digraph odg {";
     var ranks = "";
@@ -64,7 +65,7 @@ function genldot() {
             invalidate();
         }
     );
-}
+}*/
 
 function genjson() {
     var json = {}
@@ -104,6 +105,7 @@ function genjson() {
     return jstr;
 }
 
+/* for collaberation
 function genlink() {
     if($('#sharelink').is(':hidden')) {
         alink = window.location;
@@ -111,7 +113,7 @@ function genlink() {
     }
 
     return false;
-}
+}*/
 
 
 function save2file() {
@@ -136,7 +138,7 @@ function loadbutton(evt) {
         var reader = new FileReader();
         reader.onload = (function(theFile) {
             return function(e) {
-                loadfile(e.target.result);
+                //loadfile(e.target.result);
             };
         })(f);
 
@@ -150,7 +152,7 @@ function loadbutton(evt) {
     return false;
 }
 
-function loadfile(jstr) {
+/*function loadfile(jstr) {
     if(typeof jstr !== 'object'){
         var json = JSON.parse(jstr);
     }else{
@@ -164,12 +166,12 @@ function loadfile(jstr) {
     }else{
         nodes = jnodes;
         for (var i = 0, l = nodes.length; i < l; i++) {
-            if(nodes[i].id > window.nodeIDcounter){
-                window.nodeIDcounter = nodes[i].id;
+            if(nodes[i].id > window.nodeCounter){
+                window.nodeCounter = nodes[i].id;
             }
             postEdit("node", "add", nodes[i]);
         }
-        window.nodeIDcounter++;
+        window.nodeCounter++;
 
         edges = [];
         var e = json['edges'];
@@ -332,7 +334,7 @@ function loadfromdb(nodeSetID) {
 }
 
 function save2db() {
-    $('#save_modal').show();
+    $('#modal-save2db').show();
     $('#m_load').show();
     $('#m_content').hide();
 
@@ -465,7 +467,7 @@ function save2db() {
 function add2corpus(addnsID) {
     var cID = $("#s_corpus").val();
     $.get( "helpers/corporapost.php?nsID="+addnsID+"&cID="+cID, function(data) {
-        $('#save_modal').hide();
+        $('#modal-save2db').hide();
         $('#modal-bg').hide();
     }).fail(function() {
         alert( "Unable to add to corpus" );
@@ -484,7 +486,7 @@ function rpl2corpus(addnsID, rplnsID) {
         });
     });
 
-    $('#save_modal').hide();
+    $('#modal-save2db').hide();
     $('#modal-bg').hide();
 }
 
@@ -533,7 +535,7 @@ function closePopupIfOpen(popupName){
     window[popupName].close();
   }
 }
-
+*/
 (function($){
 
 	// Creating a jQuery plugin:

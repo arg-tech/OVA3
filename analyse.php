@@ -66,7 +66,8 @@ if (isset($_COOKIE['ovauser'])) {
   <title>OVA from ARG-tech</title>
   <meta name="description" content="">
   <script src="http://code.jquery.com/jquery-2.1.3.min.js"></script>
-  <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.10.0/css/smoothness/jquery-ui-1.10.0.custom.min.css" />
+  <link rel="stylesheet"
+    href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.10.0/css/smoothness/jquery-ui-1.10.0.custom.min.css" />
   <link rel="stylesheet" href="res/css/analysis.css" />
 
   <script src="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.10.0/jquery-ui.js"></script>
@@ -96,8 +97,7 @@ if (isset($_COOKIE['ovauser'])) {
       <div class="modal-body">
         <!--todo fix and test all save functions-->
         <ul class="btnlist">
-          <li><a href="#" onClick="console.log('save to file clicked');">
-              <!-- todo: onClick="save2file(); return false;">-->
+          <li><a href="#" onClick="console.log('save to file clicked'); save2file(); return false;">
               <div class="btnicn" style="background-image: url('res/img/icon-savefile.svg');">&nbsp;</div> Save to local
               file
             </a></li>
@@ -112,7 +112,7 @@ if (isset($_COOKIE['ovauser'])) {
         </ul>
       </div>
       <div class="modal-btns">
-        <a class="cancel" href="#" onClick="this.parentNode.parentNode.style.display='none';$('#modal-shade').hide(); return false;">&#10008; Cancel</a>
+        <a class="cancel" href="#" onClick="$('#modal-save').hide();$('#modal-shade').hide(); return false;">&#10008; Cancel</a>
       </div>
     </div>
   </div>
@@ -132,7 +132,7 @@ if (isset($_COOKIE['ovauser'])) {
         <output id="list"></output>
       </div>
       <div class="modal-btns">
-        <a class="cancel" href="#" onClick="this.parentNode.parentNode.style.display='none';$('#modal-shade').hide(); return false;">&#10008; Close</a>
+        <a class="cancel" href="#" onClick="$('#modal-load').hide();$('#modal-shade').hide(); return false;">&#10008; Close</a>
       </div>
     </div>
   </div>
@@ -164,28 +164,44 @@ if (isset($_COOKIE['ovauser'])) {
     </a>
   </div>
 
-    <div id="contextmenu"></div>
+  <div id="contextmenu"></div>
 
-    <div id="node_edit" class="modal-box">
-      <div class="modal-header">
-        <h4>Edit Node</h4>
-        <!-- This is the instruction button: -->
-        <!-- <a href="javascript:void(0);" class="helpbtn" onclick="nodeTut(); return false;">?</a> -->
-      </div>
-      <form id="node_edit_form" class="fstyle" style="width: 78%;">
-        <!-- TODO: id and class names to be changed -->
-        <label for="n_text" id="n_text_label">Text</label>
-        <textarea id="n_text" name="n_text"></textarea>
-      </form>
-      <div class="modal-btns">
-        <a class="save" href="#" onClick="saveNodeEdit();this.parentNode.parentNode.style.display='none';$('#modal-shade').hide(); return false;">&#x2714; Save</a>
-        <a class="cancel" href="#" onClick="this.parentNode.parentNode.style.display='none';$('#modal-shade').hide(); return false;">&#10008; Cancel</a>
-      </div>
+  <div id="node_edit" class="modal-box">
+    <div class="modal-header">
+      <h4>Edit Node</h4>
+      <!-- This is the instruction button: -->
+      <!-- <a href="javascript:void(0);" class="helpbtn" onclick="nodeTut(); return false;">?</a> -->
     </div>
+    <form id="node_edit_form" class="fstyle" style="width: 78%;">
+      <!-- TODO: id and class names to be changed -->
+      <label for="n_text" id="n_text_label">Text</label>
+      <textarea id="n_text" name="n_text"></textarea>
+    </form>
+    <div class="modal-btns">
+      <a class="save" href="#" onClick="saveNodeEdit();this.parentNode.parentNode.style.display='none';$('#modal-shade').hide(); return false;">&#x2714; Save</a>
+      <a class="cancel" href="#" onClick="this.parentNode.parentNode.style.display='none';$('#modal-shade').hide(); return false;">&#10008; Cancel</a>
+    </div>
+  </div>
+
+  <div id="modal-save2db" class="modal-box">
+    <div id="m_load">Processing<br /><img src="res/img/loading_modal.gif" /></div>
+    <div id="m_content" style="text-align: left; font-size: 0.8em; padding: 0px 20px;"></div>
+    <div class="modal-btns">
+      <a class="cancel" href="#" onClick="$('#modal-save2db').hide();$('#modal-shade').hide(); return false;">&#10008; Close</a>
+    </div>
+  </div>
 
   <!--  <a href="http://www.arg.tech" target="_blank" id="devby"><img src="res/img/arg-tech.svg" /></a> -->
   <div id="mainwrap">
-    <div id="left1" contenteditable="true" spellcheck="false">Enter your text here...</div>
+    <?php if ($source == "local") { ?>
+      <div id="left1">
+        <div id="analysis_text" contenteditable="true" spellcheck="false">Enter your text here...</div>
+        <!-- data-step="1" data-intro="<p>Enter the text that you want to analyse here.</p><p>Select sections of text to create a node.</p> -->
+      </div>
+    <?php } else { ?>
+      <iframe src="<?php echo $analysis; ?>" id="left1" name="left1" style="width:35%;border-right:1px solid #666;"></iframe> <!-- data-step="1" data-intro="<p>Highlight sections of text from the webpage to create a node.</p>" data-position="right" -->
+    <?php } ?>
+
     <div id="spacer"></div>
     <div id="right1">
 
