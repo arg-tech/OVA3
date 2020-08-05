@@ -23,6 +23,19 @@ function Participant() {
     this.surname = '';
 }
 
+function newParticipant(id, fname, sname) {
+  var p = new Participant;
+  p.id = id;
+  p.firstname = fname;
+  p.surname = sname;
+  $('#p_select').append($("<option/>", {
+    value: p.id,
+    text: firstname+" "+surname
+}));
+  participants.push(p);
+  return p;
+}
+
 function newNode(nodeID, type, text, x, y){
     var n = new Node;
     n.nodeID = nodeID;
@@ -31,6 +44,7 @@ function newNode(nodeID, type, text, x, y){
     n.x = x;
     n.y = y;
     nodes.push(n);
+    return n;
 }
 
 function updateNode(nodeID, type, text, x, y){

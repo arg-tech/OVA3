@@ -164,23 +164,28 @@ function Grab(evt) {
         window.nodeCounter = window.nodeCounter + 1;
         newNodeID = window.nodeCounter;
         AddNode(t, 'I', newNodeID, TrueCoords.x, TrueCoords.y - 10);
+        var nIndex = findNodeIndex(newNodeID)
+        mySel = nodes[nIndex];
 
         if (IATMode == true) {
-          window.nodeCounter = window.nodeCounter + 1;
-          var newLNodeID = window.nodeCounter;
-          var ltext = 'Speaker X says '.concat(t);
-          AddNode(ltext, 'L', newLNodeID, (TrueCoords.x + 450), TrueCoords.y - 10);
+          $('#locution_add').show();
 
-          window.nodeCounter = window.nodeCounter + 1;
-          var newYANodeID = window.nodeCounter;
-          AddNode('Asserting', 'YA', newYANodeID, (TrueCoords.x + 225), TrueCoords.y - 10);
+          // window.nodeCounter = window.nodeCounter + 1;
+          // var newLNodeID = window.nodeCounter;
+          // var ltext = 'Speaker X says '.concat(t);
+          // AddNode(ltext, 'L', newLNodeID, (TrueCoords.x + 450), TrueCoords.y - 10);
+          //
+          // window.nodeCounter = window.nodeCounter + 1;
+          // var newYANodeID = window.nodeCounter;
+          // AddNode('Asserting', 'YA', newYANodeID, (TrueCoords.x + 225), TrueCoords.y - 10);
+          //
+          // var edge = newEdge(newLNodeID, newYANodeID);
+          // DrawEdge(newLNodeID, newYANodeID)
+          // UpdateEdge(edge);
+          // edge = newEdge(newYANodeID, newNodeID);
+          // DrawEdge(newYANodeID, newNodeID);
+          // UpdateEdge(edge);
 
-          var edge = newEdge(newLNodeID, newYANodeID);
-          DrawEdge(newLNodeID, newYANodeID)
-          UpdateEdge(edge);
-          edge = newEdge(newYANodeID, newNodeID);
-          DrawEdge(newYANodeID, newNodeID);
-          UpdateEdge(edge);
         }
       }
 
@@ -196,6 +201,7 @@ function Grab(evt) {
 
   }
 }
+
 
 function GetEdges(dragID) {
   for (var j = 0; j < edges.length; j++) {
