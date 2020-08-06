@@ -168,7 +168,6 @@ function Grab(evt) {
           var nIndex = findNodeIndex(newNodeID)
           mySel = nodes[nIndex];
           CurrentlyEditing = mySel.nodeID;
-          console.log(CurrentlyEditing);
           $('#locution_add').show();
         } else {
           window.nodeCounter = window.nodeCounter + 1;
@@ -411,7 +410,25 @@ function Drop(evt) {
       newNodeID = window.nodeCounter;
       nx = ((tx - fx) / 2) + fx;
       ny = ((ty - fy) / 2) + fy;
-      AddNode('Default Inference', 'RA', newNodeID, nx, ny);
+      //AddNode('Default Inference', 'RA', newNodeID, nx, ny);
+      var index = findNodeIndex(FromID);
+      var nodeFrom = nodes[index].type;
+
+      index = findNodeIndex(targetElement.getAttributeNS(null, 'id'));
+      console.log("index : " + index);
+      var nodeTo = nodes[index].type;
+
+      if (nodeFrom == "I" && nodeTo == "I") {
+        AddNode('Default Inference', 'RA', newNodeID, nx, ny);
+      } else if (nodeFrom == "L" && nodeTo == "I") {
+        AddNode('Asserting', 'YA', newNodeID, nx, ny);
+      } else if (nodeFrom == "L" && nodeTo == "L") {
+        AddNode('Default Transition', 'TA', newNodeID, nx, ny);
+      } else if (nodeFrom == "TA" && nodeTo == "RA") {
+        AddNode('Arguing', 'YA', newNodeID, nx, ny);
+      } else {
+        AddNode('Default Inference', 'RA', newNodeID, nx, ny);
+      }
 
       //from -> S
       DrawEdge(FromID, newNodeID);
@@ -502,46 +519,71 @@ function editNode(node) {
     }
   }
 
-  function deleteNode(node) {
-    if(mySel.type == 'I' || mySel.type == 'L' || mySel.type == 'EN'){
-      //remhl(node.nodeID);
-      document.getElementById(CurrentlyEditing).remove();
-      const index = nodes.indexOf(node);
-      if (index > -1) { nodes.splice(index, 1); }
-      var edgesToDelete = [];
+  // function deleteNode(node) {
+  //   if (mySel.type == 'I' || mySel.type == 'L' || mySel.type == 'EN') {
+  //     document.getElementById(CurrentlyEditing).remove();
+  //     const index = nodes.indexOf(node);
+  //     if (index > -1) { nodes.splice(index, 1); }
+  //     var edgesToDelete = [];
+  //
+  //     for (var j = 0; j < edges.length; j++) {
+  //       if(edges[j].toID == CurrentlyEditing) {
+  //         edgesToDelete.push(edges[j]);
+  //         var edgefrom = edges[j].fromID;
+  //         var nextnodeindex = findNodeIndex(edgefrom);
+  //         var nextnode = nodes[nextnodeindex];
+  //         if (node.type == "I") {
+  //           if (nextnode.type != "I" && nextnode.type != "L" && nextnode.type != "EN" &&nextnode.type != "TA") {
+  //             deleteNode(nextnode);
+  //           }
+  //         }
+  //
+  //       }
+  //       else if(edges[j].fromID == CurrentlyEditing) {
+  //         edgesToDelete.push(edges[j]);
+  //       }
+  //     }
+  //     for (var i=0; i<edgesToDelete.length; i++) {
+  //       deleteEdges(edgesToDelete[i], toDelType);
+  //     }
+  //     $("#contextmenu").hide();
+  //   }
+  // }
 
+  function deleteNode(node) {
+    var toDelType = node.type;
+    document.getElementById(CurrentlyEditing).remove();
+    const index = nodes.indexOf(node);
+    if (index > -1) { nodes.splice(index, 1); }
+    var edgesToDelete = [];
+
+    //if(mySel.type == 'I' || mySel.type == 'L' || mySel.type == 'EN'){
+      //remhl(node.nodeID);
+      // document.getElementById(CurrentlyEditing).remove();
+      // const index = nodes.indexOf(node);
+      // if (index > -1) { nodes.splice(index, 1); }
+      // var edgesToDelete = [];
+      console.log("Cur Edit " + CurrentlyEditing);
       for (var j = 0; j < edges.length; j++) {
+        console.log(edges[j].toID);
         if(edges[j].toID == CurrentlyEditing) {
           edgesToDelete.push(edges[j]);
+          console.log("deleting edge");
         }
-        else if(edges[j].fromID == CurrentlyEditing) {
+        if(edges[j].fromID == CurrentlyEditing) {
           edgesToDelete.push(edges[j]);
+          console.log("deleting edge");
         }
       }
-
-      for (var i=0; i<edgesToDelete.length; i++) {
-        deleteEdges(edgesToDelete[i]);
-      }
-      $("#contextmenu").hide();
+      console.log(edgesToDelete);
+    for (var i=0; i<edgesToDelete.length; i++) {
+      deleteEdges(edgesToDelete[i]);
     }
-  }
-
-//   function remhl(nodeID) {
-//     var span;
-//     console.log("removing");
-//     console.log(nodeID);
-//     console.log(span);
-//     if(span = document.getElementById("node"+nodeID)){
-//         console.log("in if");
-//         var text = span.textContent || span.innerText;
-//         var node = document.createTextNode(text);
-//         span.parentNode.replaceChild(node, span);
-//     }
-// }
-
+    $("#contextmenu").hide();
+  //}
+}
 
   function deleteEdges(edge) {
-
     edgeID = 'n' + edge.fromID + '-n' + edge.toID;
     edgeFrom = edge.fromID;
     edgeTo = edge.toID;
@@ -550,16 +592,73 @@ function editNode(node) {
     const index = edges.indexOf(edge);
     if (index > -1) { edges.splice(index, 1); }
 
-    for(var i=1; i<nodes.length; i++) {
+
+    // for(var i=1; i<nodes.length; i++) {
+    //   if(nodes[i]) {
+    //     if(nodes[i].nodeID == edgeFrom && nodes[i].type != "I" && nodes[i].type != "L" && nodes[i].type != 'EN') {
+    //       CurrentlyEditing = nodes[i].nodeID;
+    //       deleteNode(nodes[i]);
+    //     }
+    //     if(nodes[i].nodeID == edgeTo && nodes[i].type != "I" && nodes[i].type != "L" &&  nodes[i].type != 'EN') {
+    //       CurrentlyEditing = nodes[i].nodeID;
+    //       deleteNode(nodes[i]);
+    //     }
+    //   }
+    // }
+    if (mySel.type == "I" || mySel.type == "EN") {
+      for(var i=1; i<nodes.length; i++) {
+        if(nodes[i]) {
+          if(nodes[i].nodeID == edgeFrom && nodes[i].type != "I" && nodes[i].type != "L" && nodes[i].type != 'EN' && nodes[i].type != 'TA') {
+            CurrentlyEditing = nodes[i].nodeID;
+            deleteNode(nodes[i]);
+          }
+          if(nodes[i].nodeID == edgeTo && nodes[i].type != "I" && nodes[i].type != "L" &&  nodes[i].type != 'EN' && nodes[i].type != 'TA') {
+            CurrentlyEditing = nodes[i].nodeID;
+            deleteNode(nodes[i]);
+          }
+        }
+      }
+    } else if (mySel.type == "L") {
+      for(var i=1; i<nodes.length; i++) {
       if(nodes[i]) {
-        if(nodes[i].nodeID == edgeFrom && nodes[i].type != "I" && nodes[i].type != "L" && nodes[i].type != 'EN') {
+        // if(nodes[i].nodeID == edgeFrom && nodes[i].type != "I" && nodes[i].type != "L" && nodes[i].type != 'EN') {
+        if((nodes[i].nodeID == edgeFrom && nodes[i].type == "TA" ) || (nodes[i].nodeID == edgeFrom && nodes[i].type == "YA" )){
           CurrentlyEditing = nodes[i].nodeID;
           deleteNode(nodes[i]);
         }
-        if(nodes[i].nodeID == edgeTo && nodes[i].type != "I" && nodes[i].type != "L" &&  nodes[i].type != 'EN') {
+        else if((nodes[i].nodeID == edgeTo && nodes[i].type == "TA" ) || (nodes[i].nodeID == edgeTo && nodes[i].type == "YA" )) {
+          CurrentlyEditing = nodes[i].nodeID;
+          deleteNode(nodes[i]);
+        }
+      }
+    }
+  } else if (mySel.type == "YA"){
+  }else if (mySel.type == "TA"){
+    for(var i=1; i<nodes.length; i++) {
+      if(nodes[i]) {
+         if(nodes[i].nodeID == edgeFrom && nodes[i].type != "I" && nodes[i].type != "L" && nodes[i].type != 'EN') {
+          CurrentlyEditing = nodes[i].nodeID;
+          deleteNode(nodes[i]);
+        }
+        else if((nodes[i].nodeID == edgeTo && nodes[i].type == "TA" ) || (nodes[i].nodeID == edgeTo && nodes[i].type == "YA" )) {
+          CurrentlyEditing = nodes[i].nodeID;
+          deleteNode(nodes[i]);
+        }
+      }
+    }
+  } else {
+    for(var i=1; i<nodes.length; i++) {
+      if(nodes[i]) {
+        // if(nodes[i].nodeID == edgeFrom && nodes[i].type != "I" && nodes[i].type != "L" && nodes[i].type != 'EN') {
+        if(nodes[i].nodeID == edgeFrom && nodes[i].type != "I" && nodes[i].type != "L" && nodes[i].type != 'EN' && nodes[i].type != 'TA'){
+          CurrentlyEditing = nodes[i].nodeID;
+          deleteNode(nodes[i]);
+        }
+        else if(nodes[i].nodeID == edgeTo && nodes[i].type != "I" && nodes[i].type != "L" &&  nodes[i].type != 'EN' && nodes[i].type != 'TA') {
           CurrentlyEditing = nodes[i].nodeID;
           deleteNode(nodes[i]);
         }
       }
     }
   }
+}
