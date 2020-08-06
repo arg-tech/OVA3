@@ -61,6 +61,5 @@ function newEdge(fromID, toID) {
   e.fromID = fromID;
   e.toID = toID;
   edges.push(e);
-  console.log(e);
   return e;
 }

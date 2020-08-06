@@ -27,7 +27,7 @@ function Init(evt){
     TrueCoords = SVGRoot.createSVGPoint();
     GrabPoint = SVGRoot.createSVGPoint();
     Canvas = document.getElementById('Canvas');
-    
+
     document.getElementById('n_file').addEventListener('change', loadbutton, false);
 
     $(window).bind('beforeunload', function(){
@@ -97,9 +97,7 @@ function addLocution(node) {
   var newLNodeID = window.nodeCounter;
   //var ltext = 'Speaker X says '.concat(t);
   var ltext = (firstname + ' ' + surname + ' ' + 'says ').concat(t);
-  console.log(TrueCoords.x + ' ' + TrueCoords.y);
   var n = nodes[nodes.length-1];
-  console.log(n.x);
   AddNode(ltext, 'L', newLNodeID, (n.x + 450), n.y);
 
   window.nodeCounter = window.nodeCounter + 1;
@@ -145,7 +143,6 @@ function addlclick(skipcheck){
             $('#p_surname').css('border-color', '#bbb');
         }
     }
-    console.log(mySel);
     addLocution(mySel);
     $('#new_participant').hide();
     $('#p_sel_wrap').show();
@@ -237,4 +234,3 @@ function setAllText(txt) {
         $('#analysis_text').html(txt);
     }
 }
-
