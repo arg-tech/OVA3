@@ -65,7 +65,7 @@
       </div>
       </div>
     </div>
-  </div>
+  <!--</div>-->
 
   <div id="toolbar">
     <a href="" class="home"><img src="res/img/logo.svg" /></a>
@@ -96,6 +96,46 @@
   </div>
 
     <div id="contextmenu"></div>
+
+
+    <div id="locution_add" class="modal-box">
+    <div class="modal-header">
+        <h4>Locution Details</h4>
+        <!-- <a href="javascript:void(0);" class="helpbtn" onclick="locTut(); return false;">?</a> -->
+    </div>
+    <form id="f_node_edit" class="fstyle">
+        <div id="p_sel_wrap">
+            <p style="font-weight: bold; color: #999;">Existing Participants</p>
+            <label for="p_select" id="p_select_label">Participant</label>
+            <select id="p_select">
+                <option value="-">-</option>
+            </select>
+            <br />
+            <br />
+        </div>
+
+        <div id="prt_name">
+            <p style="font-weight: bold; color: #999;">New Participant</p>
+            <label for="p_name" id="p_name_label">Name</label>
+            <input id="p_name" name="p_name" class="itext" onkeyup="pfilter(this)" />
+        </div>
+
+        <div id="new_participant" style="display:none;">
+            <label for="p_firstname" id="p_firstname_label">Firstname</label>
+            <input id="p_firstname" name="p_firstname" />
+            <label for="p_surname" id="p_surname_label">Surname</label>
+            <input id="p_surname" name="p_surname" />
+        </div>
+        <!-- <button type="button" onClick="addLocution(mySel);this.parentNode.parentNode.style.display='none';">Add Locution</button> -->
+    </form>
+    <div id="socialusers" style="display:none;"></div>
+
+    <div class="modal-btns">
+        <a class="save" href="#" onClick="addlclick(false); return false;">Add</a>
+        <a class="cancel" href="#" onClick="addlcancel(); return false;">&#10008; Cancel</a>
+    </div>
+    </div>
+
 
     <div id="node_edit" class="modal-box">
       <div class="modal-header">

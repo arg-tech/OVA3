@@ -87,6 +87,17 @@ function DrawNode(nid, type, txt, nx, ny)
   g.appendChild(ntext)
 }
 
+function DrawEdge(fromid, toid) {
+  var nedge = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  nedge.setAttribute('id', 'n' + fromid + '-n' + toid);
+  nedge.setAttribute('stroke-width', '1');
+  nedge.setAttribute('fill', 'none');
+  nedge.setAttribute('stroke', 'black');
+  nedge.setAttribute('d', 'M80,30 C200,30 30,380 200,380');
+  nedge.setAttribute('marker-end', 'url(#head)');
+  SVGRoot.insertBefore(nedge, SVGRoot.childNodes[0]);
+}
+
 function cmenu(node) {
     window.contextnode = node;
     $('#contextmenu').empty();
