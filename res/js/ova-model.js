@@ -2,25 +2,25 @@ var nodes = [];
 var edges = [];
 var participants = [];
 var images = [];
-
+var dragEdges = [];
 
 function Node() {
-    this.nodeID = 0;
-    this.type = '';
-    this.text = '';
-    this.x = 0;
-    this.y = 0;
+  this.nodeID = 0;
+  this.type = '';
+  this.text = '';
+  this.x = 0;
+  this.y = 0;
 }
 
 function Edge() {
-    this.fromID = '';
-    this.toID = '';
+  this.fromID = '';
+  this.toID = '';
 }
 
 function Participant() {
-    this.id;
-    this.firstname = '';
-    this.surname = '';
+  this.id;
+  this.firstname = '';
+  this.surname = '';
 }
 
 function newParticipant(id, fname, sname) {
@@ -30,30 +30,30 @@ function newParticipant(id, fname, sname) {
   p.surname = sname;
   $('#p_select').append($("<option/>", {
     value: p.id,
-    text: firstname+" "+surname
-}));
+    text: firstname + " " + surname
+  }));
   participants.push(p);
   return p;
 }
 
-function newNode(nodeID, type, text, x, y){
-    var n = new Node;
-    n.nodeID = nodeID;
-    n.type = type;
-    n.text = text;
-    n.x = x;
-    n.y = y;
-    nodes.push(n);
-    return n;
+function newNode(nodeID, type, text, x, y) {
+  var n = new Node;
+  n.nodeID = nodeID;
+  n.type = type;
+  n.text = text;
+  n.x = x;
+  n.y = y;
+  nodes.push(n);
+  return n;
 }
 
-function updateNode(nodeID, type, text, x, y){
-    var index = findNodeIndex(nodeID);
-    n = nodes[index];
-    n.type = type;
-    n.text = text;
-    n.x = x;
-    n.y = y;
+function updateNode(nodeID, type, text, x, y) {
+  var index = findNodeIndex(nodeID);
+  n = nodes[index];
+  n.type = type;
+  n.text = text;
+  n.x = x;
+  n.y = y;
 }
 
 function newEdge(fromID, toID) {

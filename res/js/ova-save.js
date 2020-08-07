@@ -61,8 +61,6 @@ function genldot() {
             if(mwidth > WIDTH || mheight > HEIGHT){
                 resize_canvas(mwidth, mheight);
             }
-
-            invalidate();
         }
     );
 }*/
@@ -77,25 +75,25 @@ function genjson() {
     var url = getUrlVars()["url"];
     var txt = '';
 
-    if(url == 'local'){
+    if (url == 'local') {
         txt = getAllText();
     }
 
     a_firstname = '';
-    if($('#a_firstname').val() != ''){
+    if ($('#a_firstname').val() != '') {
         a_firstname = $('#a_firstname').val();
     }
 
     a_surname = '';
-    if($('#a_surname').val() != ''){
+    if ($('#a_surname').val() != '') {
         a_surname = $('#a_surname').val();
     }
 
 
     var analysis = {
-        "txt" : txt,
-        "a_firstname" : a_firstname,
-        "a_surname" : a_surname
+        "txt": txt,
+        "a_firstname": a_firstname,
+        "a_surname": a_surname
     };
 
     json['analysis'] = analysis;
@@ -118,11 +116,11 @@ function genlink() {
 
 function save2file() {
     var jstr = genjson();
- 
+
     $.generateFile({
-        filename	: 'analysis.json',
-        content		: jstr,
-        script		: 'download.php'
+        filename: 'analysis.json',
+        content: jstr,
+        script: 'download.php'
     });
 
     window.unsaved = false;
@@ -136,69 +134,68 @@ function loadbutton(evt) {
     var output = [];
     for (var i = 0, f; f = files[i]; i++) {
         var reader = new FileReader();
-        reader.onload = (function(theFile) {
-            return function(e) {
-                //loadfile(e.target.result);
+        reader.onload = (function (theFile) {
+            return function (e) {
+                loadfile(e.target.result);
             };
         })(f);
 
-	reader.readAsText(f);
+        reader.readAsText(f);
 
-    	output.push('<span style="font-size:0.8em;">Load file: <strong>', f.name, '</strong> - ',
-                  f.size, ' bytes, last modified: ',
-                  f.lastModifiedDate ? f.lastModifiedDate.toLocaleDateString() : 'n/a', '</span>');
+        output.push('<span style="font-size:0.8em;">Load file: <strong>', f.name, '</strong> - ',
+            f.size, ' bytes, last modified: ',
+            f.lastModifiedDate ? f.lastModifiedDate.toLocaleDateString() : 'n/a', '</span>');
     }
     document.getElementById('list').innerHTML = '<ul>' + output.join('') + '</ul>';
     return false;
 }
 
-/*function loadfile(jstr) {
-    if(typeof jstr !== 'object'){
+//todo:
+function loadfile(jstr) {
+    if (typeof jstr !== 'object') {
         var json = JSON.parse(jstr);
-    }else{
+    } else {
         var json = jstr;
-    }    
+    }
 
     jnodes = json['nodes'];
-
-    if(jnodes.length > 0 && jnodes[0].hasOwnProperty('nodeID')){
-        loaddbjson(json);
-    }else{
-        nodes = jnodes;
-        for (var i = 0, l = nodes.length; i < l; i++) {
-            if(nodes[i].id > window.nodeCounter){
-                window.nodeCounter = nodes[i].id;
-            }
-            postEdit("node", "add", nodes[i]);
+    //
+    nodes = jnodes;
+    for (var i = 0, l = nodes.length; i < l; i++) {
+        if (nodes[i].nodeID > window.nodeCounter) {
+            window.nodeCounter = nodes[i].nodeID;
         }
-        window.nodeCounter++;
-
-        edges = [];
-        var e = json['edges'];
-        for (var i = 0, l = e.length; i < l; i++) {
-            from = getNodeById(e[i].from.id);
-            to = getNodeById(e[i].to.id);
-            visible = e[i].visible;
-            addEdge(from,to,visible);
-        }
-    
-        $('#p_select').empty();
-        particpants = [];
-        var p = json['participants'];
-        for (var i = 0, l = p.length; i < l; i++) {
-            firstname = p[i].firstname;
-            surname = p[i].surname;
-            addParticipant(firstname, surname)
-        }
-
-        setAllText(json['analysis']['txt']);
-        postEdit("text", "edit", json['analysis']['txt']);
-
-        invalidate();
+        //postEdit("node", "add", nodes[i]);
+        DrawNode(nodes[i].nodeID, nodes[i].type, nodes[i].text, nodes[i].x, nodes[i].y);
     }
+    window.nodeCounter++;
+
+    edges = [];
+    var e = json['edges'];
+    for (var i = 0, l = e.length; i < l; i++) {
+        from = e[i].fromID;
+        to = e[i].toID;
+
+        DrawEdge(from, to);
+        var edge = newEdge(from, to);
+        UpdateEdge(edge);
+    }
+
+    $('#p_select').empty();
+    particpants = [];
+    var p = json['participants'];
+    for (var i = 0, l = p.length; i < l; i++) {
+        firstname = p[i].firstname;
+        surname = p[i].surname;
+        addParticipant(firstname, surname)
+    }
+
+    setAllText(json['analysis']['txt']);
+    //postEdit("text", "edit", json['analysis']['txt']);
+
 }
 
-function loaddbjson(json){
+/*function loaddbjson(json){
     var oplus = false;
     if("plus" in getUrlVars()){
         oplus = true;
@@ -536,61 +533,61 @@ function closePopupIfOpen(popupName){
   }
 }
 */
-(function($){
+(function ($) {
 
-	// Creating a jQuery plugin:
+    // Creating a jQuery plugin:
 
-	$.generateFile = function(options){
+    $.generateFile = function (options) {
 
-		options = options || {};
+        options = options || {};
 
-		if(!options.script || !options.filename || !options.content){
-			throw new Error("Please enter all the required config options!");
-		}
+        if (!options.script || !options.filename || !options.content) {
+            throw new Error("Please enter all the required config options!");
+        }
 
-		// Creating a 1 by 1 px invisible iframe:
+        // Creating a 1 by 1 px invisible iframe:
 
-		var iframe = $('<iframe>',{
-			width:1,
-			height:1,
-			frameborder:0,
-			css:{
-				display:'none'
-			}
-		}).appendTo('body');
+        var iframe = $('<iframe>', {
+            width: 1,
+            height: 1,
+            frameborder: 0,
+            css: {
+                display: 'none'
+            }
+        }).appendTo('body');
 
-		var formHTML = '<form action="" method="post">'+
-			'<input type="hidden" name="filename" />'+
-			'<input type="hidden" name="content" />'+
-			'</form>';
+        var formHTML = '<form action="" method="post">' +
+            '<input type="hidden" name="filename" />' +
+            '<input type="hidden" name="content" />' +
+            '</form>';
 
-		// Giving IE a chance to build the DOM in
-		// the iframe with a short timeout:
+        // Giving IE a chance to build the DOM in
+        // the iframe with a short timeout:
 
-		setTimeout(function(){
+        setTimeout(function () {
 
-			// The body element of the iframe document:
+            // The body element of the iframe document:
 
-			var body = (iframe.prop('contentDocument') !== undefined) ?
-							iframe.prop('contentDocument').body :
-							iframe.prop('document').body;	// IE
+            var body = (iframe.prop('contentDocument') !== undefined) ?
+                iframe.prop('contentDocument').body :
+                iframe.prop('document').body;	// IE
 
-			body = $(body);
+            body = $(body);
 
-			// Adding the form to the body:
-			body.html(formHTML);
+            // Adding the form to the body:
+            body.html(formHTML);
 
-			var form = body.find('form');
+            var form = body.find('form');
 
-			form.attr('action',options.script);
-			form.find('input[name=filename]').val(options.filename);
-			form.find('input[name=content]').val(options.content);
+            form.attr('action', options.script);
+            form.find('input[name=filename]').val(options.filename);
+            form.find('input[name=content]').val(options.content);
 
-			// Submitting the form to download.php. This will
-			// cause the file download dialog box to appear.
+            // Submitting the form to download.php. This will
+            // cause the file download dialog box to appear.
 
-			form.submit();
-		},50);
-	};
+            form.submit();
+        }, 50);
+    };
 
 })(jQuery);

@@ -66,8 +66,7 @@ if (isset($_COOKIE['ovauser'])) {
   <title>OVA from ARG-tech</title>
   <meta name="description" content="">
   <script src="http://code.jquery.com/jquery-2.1.3.min.js"></script>
-  <link rel="stylesheet"
-    href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.10.0/css/smoothness/jquery-ui-1.10.0.custom.min.css" />
+  <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.10.0/css/smoothness/jquery-ui-1.10.0.custom.min.css" />
   <link rel="stylesheet" href="res/css/analysis.css" />
 
   <script src="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.10.0/jquery-ui.js"></script>
@@ -97,7 +96,7 @@ if (isset($_COOKIE['ovauser'])) {
       <div class="modal-body">
         <!--todo fix and test all save functions-->
         <ul class="btnlist">
-          <li><a href="#" onClick="console.log('save to file clicked'); save2file(); return false;">
+          <li><a href="#" onClick="save2file(); return false;">
               <div class="btnicn" style="background-image: url('res/img/icon-savefile.svg');">&nbsp;</div> Save to local
               file
             </a></li>
@@ -114,6 +113,15 @@ if (isset($_COOKIE['ovauser'])) {
       <div class="modal-btns">
         <a class="cancel" href="#" onClick="$('#modal-save').hide();$('#modal-shade').hide(); return false;">&#10008; Cancel</a>
       </div>
+    </div>
+  </div>
+
+  <!-- todo -->
+  <div id="modal-save2db" class="modal-box">
+    <div id="m_load">Processing<br /><img src="res/img/loading_modal.gif" /></div>
+    <div id="m_content" style="text-align: left; font-size: 0.8em; padding: 0px 20px;"></div>
+    <div class="modal-btns">
+      <a class="cancel" href="#" onClick="$('#modal-save2db').hide();$('#modal-shade').hide(); return false;">&#10008; Close</a>
     </div>
   </div>
 
@@ -142,15 +150,16 @@ if (isset($_COOKIE['ovauser'])) {
     <?php
     $newurl = "analyse.php?url=" . $_GET['url'] . $plusval;
     ?>
-    <a href="http://arg.tech/~nicole/index.php" class="home"><img src="res/img/logo.svg" /></a> <!--todo: change link to homepage after testing-->
+    <a href="http://arg.tech/~nicole/index.php" class="home"><img src="res/img/logo.svg" /></a>
+    <!--todo: change link to homepage after testing-->
     <a onClick='$("#xmenu").toggle("slide", {direction: "right"}, "slow");' class="icon" style="background-position: -126px 50%;"></a>
     <div class="divider"></div>
     <a onClick="$('#modal-load').show(); $('#modal-shade').show();" class="icon" style="background-position: -210px 50%;"><span class="tooltiptext">Load&nbsp;Analysis</span></a>
     <a onClick="$('#modal-save').show(); $('#modal-shade').show();" class="icon" style="background-position: -84px 50%;"><span class="tooltiptext">Save&nbsp;Analysis</span></a>
     <a href="<?php echo $newurl; ?>" class="icon" style="background-position: -168px 50%;"><span class="tooltiptext">New&nbsp;Analysis</span></a>
     <div class="divider"></div>
-    <a onClick="console.log('add edge btn clicked'); edgeMode('switch'); return false;" class="icon" id="eadd" style="background-position: -42px 50%;"><span class="tooltiptext">Add&nbsp;Edge</span></a> <!-- todo: add a CA when atk selected instead of RA -->
-    <a onClick="console.log('add node btn clicked'); nodeMode('switch'); return false;" class="icon" id="nadd" style="background-position: -0px 50%;"><span class="tooltiptext">Add&nbsp;Node</span></a> <!-- todo: add node where selected, deselect btn once node added-->
+    <a onClick="edgeMode('switch'); return false;" class="icon" id="eadd" style="background-position: -42px 50%;"><span class="tooltiptext">Add&nbsp;Edge</span></a> <!-- todo: add a CA when atk selected instead of RA -->
+    <a onClick="nodeMode('switch'); return false;" class="icon" id="nadd" style="background-position: -0px 50%;"><span class="tooltiptext">Add&nbsp;Node</span></a> <!-- todo: add node where selected, deselect btn once node added-->
   </div>
 
   <div id="xmenu">
@@ -165,6 +174,45 @@ if (isset($_COOKIE['ovauser'])) {
   </div>
 
   <div id="contextmenu"></div>
+
+  <div id="locution_add" class="modal-box">
+    <div class="modal-header">
+      <h4>Locution Details</h4>
+      <!-- <a href="javascript:void(0);" class="helpbtn" onclick="locTut(); return false;">?</a> -->
+    </div>
+    <form id="f_node_edit" class="fstyle">
+      <div id="p_sel_wrap">
+        <p style="font-weight: bold; color: #999;">Existing Participants</p>
+        <label for="p_select" id="p_select_label">Participant</label>
+        <select id="p_select">
+          <option value="-">-</option>
+        </select>
+        <br />
+        <br />
+      </div>
+
+      <div id="prt_name">
+        <p style="font-weight: bold; color: #999;">New Participant</p>
+        <label for="p_name" id="p_name_label">Name</label>
+        <input id="p_name" name="p_name" class="itext" onkeyup="pfilter(this)" />
+      </div>
+
+      <div id="new_participant" style="display:none;">
+        <label for="p_firstname" id="p_firstname_label">Firstname</label>
+        <input id="p_firstname" name="p_firstname" />
+        <label for="p_surname" id="p_surname_label">Surname</label>
+        <input id="p_surname" name="p_surname" />
+      </div>
+      <!-- <button type="button" onClick="addLocution(mySel);this.parentNode.parentNode.style.display='none';">Add Locution</button> -->
+    </form>
+    <div id="socialusers" style="display:none;"></div>
+
+    <div class="modal-btns">
+      <a class="save" href="#" onClick="addlclick(false); return false;">Add</a>
+      <a class="cancel" href="#" onClick="addlcancel(); return false;">&#10008; Cancel</a>
+    </div>
+  </div>
+
 
   <div id="node_edit" class="modal-box">
     <div class="modal-header">
@@ -183,14 +231,6 @@ if (isset($_COOKIE['ovauser'])) {
     </div>
   </div>
 
-  <div id="modal-save2db" class="modal-box">
-    <div id="m_load">Processing<br /><img src="res/img/loading_modal.gif" /></div>
-    <div id="m_content" style="text-align: left; font-size: 0.8em; padding: 0px 20px;"></div>
-    <div class="modal-btns">
-      <a class="cancel" href="#" onClick="$('#modal-save2db').hide();$('#modal-shade').hide(); return false;">&#10008; Close</a>
-    </div>
-  </div>
-
   <!--  <a href="http://www.arg.tech" target="_blank" id="devby"><img src="res/img/arg-tech.svg" /></a> -->
   <div id="mainwrap">
     <?php if ($source == "local") { ?>
@@ -205,9 +245,7 @@ if (isset($_COOKIE['ovauser'])) {
     <div id="spacer"></div>
     <div id="right1">
 
-      <svg xmlns="http://www.w3.org/2000/svg" version="1.1"
-        style="width:80%; height:100%; position:absolute;  right:0; z-index:999; background-color:#fff;"
-        onmousedown='Grab(evt);' onmousemove='Drag(evt)' onmouseup='Drop(evt)' onload='Init(evt)' id='inline'>
+      <svg xmlns="http://www.w3.org/2000/svg" version="1.1" style="width:80%; height:100%; position:absolute;  right:0; z-index:999; background-color:#fff;" onmousedown='Grab(evt);' onmousemove='Drag(evt)' onmouseup='Drop(evt)' onload='Init(evt)' id='inline'>
         <defs>
           <marker id='head' orient="auto" markerWidth='12' markerHeight='10' refX='12' refY='5'>
             <!-- triangle pointing right (+x) -->
