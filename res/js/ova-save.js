@@ -150,7 +150,6 @@ function loadbutton(evt) {
     return false;
 }
 
-//todo:
 function loadfile(jstr) {
     if (typeof jstr !== 'object') {
         var json = JSON.parse(jstr);
@@ -159,26 +158,51 @@ function loadfile(jstr) {
     }
 
     jnodes = json['nodes'];
-    //
-    nodes = jnodes;
-    for (var i = 0, l = nodes.length; i < l; i++) {
-        if (nodes[i].nodeID > window.nodeCounter) {
-            window.nodeCounter = nodes[i].nodeID;
-        }
-        //postEdit("node", "add", nodes[i]);
-        DrawNode(nodes[i].nodeID, nodes[i].type, nodes[i].text, nodes[i].x, nodes[i].y);
+
+    if (jnodes.length > 0 && !(jnodes[0].hasOwnProperty('x'))) {
+        loaddbjson(json);
+        return;
     }
-    window.nodeCounter++;
+    if (jnodes.length > 0 && jnodes[0].hasOwnProperty('id')) {
+        for (var i = 0, l = jnodes.length; i < l; i++) {
+            if (jnodes[i].id > window.nodeCounter) {
+                window.nodeCounter = jnodes[i].id;
+            }
+            AddNode(jnodes[i].text, jnodes[i].type, jnodes[i].id, jnodes[i].x, jnodes[i].y);
+            //postEdit("node", "add", jnodes[i]);
+        }
+        window.nodeCounter++;
 
-    edges = [];
-    var e = json['edges'];
-    for (var i = 0, l = e.length; i < l; i++) {
-        from = e[i].fromID;
-        to = e[i].toID;
+        edges = [];
+        var e = json['edges'];
+        for (var i = 0, l = e.length; i < l; i++) {
+            from = e[i].from.id;
+            to = e[i].to.id;
+            DrawEdge(from, to);
+            var edge = newEdge(from, to);
+            UpdateEdge(edge);
+        }
+    } else {
+        nodes = jnodes;
+        for (var i = 0, l = nodes.length; i < l; i++) {
+            if (nodes[i].nodeID > window.nodeCounter) {
+                window.nodeCounter = nodes[i].nodeID;
+            }
+            DrawNode(nodes[i].nodeID, nodes[i].type, nodes[i].text, nodes[i].x, nodes[i].y);
+            //postEdit("node", "add", nodes[i]);
+        }
+        window.nodeCounter++;
 
-        DrawEdge(from, to);
-        var edge = newEdge(from, to);
-        UpdateEdge(edge);
+        edges = [];
+        var e = json['edges'];
+        for (var i = 0, l = e.length; i < l; i++) {
+            from = e[i].fromID;
+            to = e[i].toID;
+
+            DrawEdge(from, to);
+            var edge = newEdge(from, to);
+            UpdateEdge(edge);
+        }
     }
 
     $('#p_select').empty();
@@ -195,9 +219,10 @@ function loadfile(jstr) {
 
 }
 
-/*function loaddbjson(json){
+function loaddbjson(json) {
+    console.log("loaddbjson");
     var oplus = false;
-    if("plus" in getUrlVars()){
+    if ("plus" in getUrlVars()) {
         oplus = true;
     }
 
@@ -205,32 +230,32 @@ function loadfile(jstr) {
 
     jnodes = json['nodes'];
     for (var i = 0, l = jnodes.length; i < l; i++) {
-        xpos = 10 + (i*10);
-        ypos = 10;
+        xpos = 20 + (i * 100);
+        ypos = 20;
         node = jnodes[i];
-        if(node.type == "CA"){
-            nodelist[node.nodeID] = addNode(xpos, ypos, 'r', 'CA', 'CA', true, 0);
-        }else if(node.type == "RA"){
-            nodelist[node.nodeID] = addNode(xpos, ypos, 'g', 'RA', 'RA', true, 0);
-        }else if(node.type == "TA"){
-            if(oplus){
-                nodelist[node.nodeID] = addNode(xpos, ypos, 'p', 'TA', 'TA', true, 0);
+        if (node.type == "CA") {
+            nodelist[node.nodeID] = AddNode(node.text, node.type, node.nodeID, xpos, ypos);
+        } else if (node.type == "RA") {
+            nodelist[node.nodeID] = AddNode(node.text, node.type, node.nodeID, xpos, ypos);
+        } else if (node.type == "TA") {
+            if (oplus) {
+                nodelist[node.nodeID] = AddNode(node.text, node.type, node.nodeID, xpos, ypos);
             }
-        }else if(node.type == "YA"){
-            if(oplus){
-                nodelist[node.nodeID] = addNode(xpos, ypos, 'y', 'YA', 'YA', true, 0);
+        } else if (node.type == "YA") {
+            if (oplus) {
+                nodelist[node.nodeID] = AddNode(node.text, node.type, node.nodeID, xpos, ypos);
             }
-	}else if(node.type == "MA"){
-            if(oplus){
-                nodelist[node.nodeID] = addNode(xpos, ypos, 'o', 'MA', 'MA', true, 0);
+        } else if (node.type == "MA") {
+            if (oplus) {
+                nodelist[node.nodeID] = AddNode(node.text, node.type, node.nodeID, xpos, ypos);
             }
-	}else if(node.type == "PA"){
-            if(oplus){
-                nodelist[node.nodeID] = addNode(xpos, ypos, 't', 'PA', 'PA', true, 0);
+        } else if (node.type == "PA") {
+            if (oplus) {
+                nodelist[node.nodeID] = AddNode(node.text, node.type, node.nodeID, xpos, ypos);
             }
-        }else{
-            if(node.type == "I" || oplus){
-                nodelist[node.nodeID] = addNode(xpos, ypos, 'b', node.text, node.type, true, 0);
+        } else {
+            if (node.type == "I" || oplus) {
+                nodelist[node.nodeID] = AddNode(node.text, node.type, node.nodeID, xpos, ypos);
             }
         }
     }
@@ -238,90 +263,90 @@ function loadfile(jstr) {
     edges = json['edges'];
     for (var i = 0, l = edges.length; i < l; i++) {
         edge = edges[i];
-        if(edge.fromID in nodelist && edge.toID in nodelist){
-            addEdge(nodelist[edge.fromID], nodelist[edge.toID]);
+        if (edge.fromID in nodelist && edge.toID in nodelist) {
+            DrawEdge(edge.fromID, edge.toID);
+            UpdateEdge(edge);
         }
     }
 }
 
+//todo: test
 function loadfromdb(nodeSetID) {
-    mwidth = WIDTH;
-    mheight = HEIGHT;
+    console.log("loadfromdb");
     var oplus = false;
     var uplus = "&plus=false";
-    if("plus" in getUrlVars()){
+    if ("plus" in getUrlVars()) {
         oplus = true;
         uplus = "&plus=true";
     }
-    $.getJSON( "helpers/layout.php?id="+nodeSetID+uplus, function(ldata) {
-        $.getJSON( "helpers/getdbnodeset.php?id="+nodeSetID, function(data) {
+    $.getJSON("helpers/layout.php?id=" + nodeSetID + uplus, function (ldata) {
+        $.getJSON("helpers/getdbnodeset.php?id=" + nodeSetID, function (data) {
             var nodelist = {};
 
-            $.each(data.nodes, function(idx, node) {
-                visi = true;
-                if(node.type == "YA" && node.text.indexOf('AnalysesAs') >= 0){
+            $.each(data.nodes, function (idx, node) {
+                /*visi = true;
+                if (node.type == "YA" && node.text.indexOf('AnalysesAs') >= 0) {
                     visi = false;
                     xpos = -10;
                     ypos = -10;
-                }else if(node.type == "L" && node.text.indexOf('Annot: ') >= 0){
+                } else if (node.type == "L" && node.text.indexOf('Annot: ') >= 0) {
                     visi = false;
                     xpos = -10;
                     ypos = -10;
-                }else if(node.nodeID in ldata){
+                } else if (node.nodeID in ldata) {
                     xpos = parseInt(ldata[node.nodeID]["x"]);
-                    xpos = xpos*0.8;
-                    if(xpos > mwidth-100){ mwidth = xpos+100; }
+                    xpos = xpos * 0.8;
+                    if (xpos > mwidth - 100) { mwidth = xpos + 100; }
                     ypos = parseInt(ldata[node.nodeID]["y"]);
-                    if(ypos > mheight-100){ mheight = ypos+100; }
-                }else{
+                    if (ypos > mheight - 100) { mheight = ypos + 100; }
+                } else {
                     xpos = 10;
                     ypos = 10;
-                }
+                }*/
 
-                if(node.type == "CA"){
-                    nodelist[node.nodeID] = addNode(xpos, ypos, 'r', 'CA', 'CA', true, 0);
-                }else if(node.type == "RA"){
-                    nodelist[node.nodeID] = addNode(xpos, ypos, 'g', 'RA', 'RA', true, 0);
-                }else if(node.type == "TA"){
-                    if(oplus){
-                        nodelist[node.nodeID] = addNode(xpos, ypos, 'p', 'TA', 'TA', true, 0);
+                if (node.type == "CA") {
+                    nodelist[node.nodeID] = AddNode(node.text, node.type, node.nodeID, xpos, ypos);
+                } else if (node.type == "RA") {
+                    nodelist[node.nodeID] = AddNode(node.text, node.type, node.nodeID, xpos, ypos);
+                } else if (node.type == "TA") {
+                    if (oplus) {
+                        nodelist[node.nodeID] = AddNode(node.text, node.type, node.nodeID, xpos, ypos);
                     }
-		}else if(node.type == "MA"){
-		    if(oplus){
-			nodelist[node.nodeID] = addNode(xpos, ypos, 'o', 'MA', 'MA', true, 0);
-		    }
-		}else if(node.type == "PA"){
-		    if(oplus){
-			nodelist[node.nodeID] = addNode(xpos, ypos, 't', 'PA', 'PA', true, 0);
-		    }
-                }else if(node.type == "YA"){
-                    if(oplus){
-                        tt = 'YA';
-                        if(node.text != ''){
-                            tt = node.text;
-                        }
-                        nodelist[node.nodeID] = addNode(xpos, ypos, 'y', tt, 'YA', visi, 0);
+                } else if (node.type == "YA") {
+                    if (oplus) {
+                        nodelist[node.nodeID] = AddNode(node.text, node.type, node.nodeID, xpos, ypos);
                     }
-                }else{
-                    if(node.type == "I" || oplus){
-                        nodelist[node.nodeID] = addNode(xpos, ypos, 'b', node.text, node.type, visi, 0);
+                } else if (node.type == "MA") {
+                    if (oplus) {
+                        nodelist[node.nodeID] = AddNode(node.text, node.type, node.nodeID, xpos, ypos);
+                    }
+                } else if (node.type == "PA") {
+                    if (oplus) {
+                        nodelist[node.nodeID] = AddNode(node.text, node.type, node.nodeID, xpos, ypos);
+                    }
+                } else {
+                    if (node.type == "I" || oplus) {
+                        nodelist[node.nodeID] = AddNode(node.text, node.type, node.nodeID, xpos, ypos);
                     }
                 }
             });
-
-            $.each(data.edges, function(idx, edge) {
-                if(edge.fromID in nodelist && edge.toID in nodelist){
-                    addEdge(nodelist[edge.fromID], nodelist[edge.toID]);
+ 
+            $.each(data.edges, function (idx, edge) {
+                if (edge.fromID in nodelist && edge.toID in nodelist) {
+                    var e = newEdge(edge.fromID, edge.toID);
+                    DrawEdge(edge.fromID, edge.toID);
+                    UpdateEdge(edge);
                 }
             });
+            console.log(edges);
 
-            $.get( "helpers/gettext.php?id="+nodeSetID, function(tdata) {
+            $.get("helpers/gettext.php?id=" + nodeSetID, function (tdata) {
                 setAllText(tdata);
             });
 
-            if(mwidth > WIDTH || mheight > HEIGHT){
+            /*if (mwidth > WIDTH || mheight > HEIGHT) {
                 resize_canvas(mwidth, mheight);
-            }
+            }*/
 
             //var currenturl = window.location;
             //var newurl = currenturl.replace(/aifdb=[0-9]+/i, ""); 
@@ -337,38 +362,30 @@ function save2db() {
 
     var json = {}
     var jnodes = [];
-    var jedges = [];
     var jschemefulfillments = [];
     var jlocutions = [];
     var jparticipants = [];
 
     for (var i = 0, l = nodes.length; i < l; i++) {
         var jnode = {};
-        jnode['nodeID'] = nodes[i].id;
+        jnode['nodeID'] = nodes[i].nodeID;
         jnode['text'] = nodes[i].text;
         jnode['type'] = nodes[i].type;
         jnodes.push(jnode);
-    
-        if(nodes[i].scheme != 0){
+
+        if (nodes[i].scheme != 0) {
             var jschemefulfillment = {};
-            jschemefulfillment['nodeID'] = nodes[i].id;
+            jschemefulfillment['nodeID'] = nodes[i].nodeID;
             jschemefulfillment['schemeID'] = nodes[i].scheme;
             jschemefulfillments.push(jschemefulfillment);
         }
 
-        if(nodes[i].participantID != 0){
+        if (nodes[i].participantID != 0) {
             var jlocution = {};
-            jlocution['nodeID'] = nodes[i].id;
+            jlocution['nodeID'] = nodes[i].nodeID;
             jlocution['personID'] = nodes[i].participantID;
             jlocutions.push(jlocution);
         }
-    }
-
-    for (var i = 0, l = edges.length; i < l; i++) {
-        var jedge = {};
-        jedge['fromID'] = edges[i].from.id;
-        jedge['toID'] = edges[i].to.id;
-        jedges.push(jedge);
     }
 
     for (var i = 0, l = participants.length; i < l; i++) {
@@ -380,82 +397,82 @@ function save2db() {
     }
 
     json['nodes'] = jnodes;
-    json['edges'] = jedges;
+    json['edges'] = edges;
     json['schemefulfillments'] = jschemefulfillments;
     json['participants'] = jparticipants;
     json['locutions'] = jlocutions;
 
     jstring = JSON.stringify(json);
     console.log(jstring);
-
-    $.post("ul/index.php", { data: JSON.stringify(json) },
-        function(reply) {
-            console.log(reply);
-            var rs = reply.split(" ");
-            var nsID = rs[rs.length-1]
-            var dbURL = window.DBurl+"/argview/"+nsID;
-            var dbLink = "<a href='"+dbURL+"' target='_blank'>"+dbURL+"</a>";
-            $.getJSON( "helpers/corporalist.php", function(data) {
-                $('#m_load').hide();
-                $('#m_content').html("<p style='font-weight:700'>Uploaded to database:</p>"+dbLink+"<br /><p style='font-weight:700'>Add to corpus:</p>");
-
-                var s = $("<select id=\"s_corpus\" name=\"s_corpus\" />");
-                $.each(data.corpora, function(idx, c) {
-                    if(c.locked == 0){
-                        title = c.title.replace(/&amp;#/g, "&#");
-			$("<option />", {value: c.corpusID, html: title}).appendTo(s);
-                    }
-                });
-                s.appendTo('#m_content');
-
-                $('<p style="text-align:right"><input type="button" value="Add to corpus" onClick="add2corpus('+nsID+');" /></p>').appendTo('#m_content');
-
-                if("aifdb" in getUrlVars()){
-                    olddbid = getUrlVars()["aifdb"];
-                    $.getJSON( "helpers/incorpora.php?nodesetID="+olddbid, function(crpdata) {
-                        var ncrp = 0;
-                        $.each(crpdata.corpora, function(idx, c) {
-                            if(ncrp == 0){
-                                $('<p style="font-weight:700">Replace in existing corpora:</p>').appendTo('#m_content');
-                            }
-                            ncrp = ncrp+1;
+    /* todo: uncomment
+        $.post("ul/index.php", { data: JSON.stringify(json) },
+            function(reply) {
+                console.log(reply);
+                var rs = reply.split(" ");
+                var nsID = rs[rs.length-1]
+                var dbURL = window.DBurl+"/argview/"+nsID;
+                var dbLink = "<a href='"+dbURL+"' target='_blank'>"+dbURL+"</a>";
+                $.getJSON( "helpers/corporalist.php", function(data) {
+                    $('#m_load').hide();
+                    $('#m_content').html("<p style='font-weight:700'>Uploaded to database:</p>"+dbLink+"<br /><p style='font-weight:700'>Add to corpus:</p>");
+    
+                    var s = $("<select id=\"s_corpus\" name=\"s_corpus\" />");
+                    $.each(data.corpora, function(idx, c) {
+                        if(c.locked == 0){
                             title = c.title.replace(/&amp;#/g, "&#");
-                            $('<p><input type="checkbox" class="rccb" name="add'+c.id+'" value="'+c.id+'" checked="checked"> '+title+'</p>').appendTo('#m_content');
-                        });
-                        if(ncrp > 0){
-                            $('<p style="text-align:right"><input type="button" value="Replace in corpora" onClick="rpl2corpus('+nsID+','+olddbid+');" /></p>').appendTo('#m_content');
+                $("<option />", {value: c.corpusID, html: title}).appendTo(s);
                         }
-                        $('#m_content').show();
                     });
-                }else{
+                    s.appendTo('#m_content');
+    
+                    $('<p style="text-align:right"><input type="button" value="Add to corpus" onClick="add2corpus('+nsID+');" /></p>').appendTo('#m_content');
+    
+                    if("aifdb" in getUrlVars()){
+                        olddbid = getUrlVars()["aifdb"];
+                        $.getJSON( "helpers/incorpora.php?nodesetID="+olddbid, function(crpdata) {
+                            var ncrp = 0;
+                            $.each(crpdata.corpora, function(idx, c) {
+                                if(ncrp == 0){
+                                    $('<p style="font-weight:700">Replace in existing corpora:</p>').appendTo('#m_content');
+                                }
+                                ncrp = ncrp+1;
+                                title = c.title.replace(/&amp;#/g, "&#");
+                                $('<p><input type="checkbox" class="rccb" name="add'+c.id+'" value="'+c.id+'" checked="checked"> '+title+'</p>').appendTo('#m_content');
+                            });
+                            if(ncrp > 0){
+                                $('<p style="text-align:right"><input type="button" value="Replace in corpora" onClick="rpl2corpus('+nsID+','+olddbid+');" /></p>').appendTo('#m_content');
+                            }
+                            $('#m_content').show();
+                        });
+                    }else{
+                        $('#m_content').show();
+                    }
+    
                     $('#m_content').show();
+                });
+    
+                var url = getUrlVars()["url"];
+                if(url == 'local'){
+                    txt = getAllText();
+                }else{
+                    txt = url;
                 }
-
-                $('#m_content').show();
-            });
-
-            var url = getUrlVars()["url"];
-            if(url == 'local'){
-                txt = getAllText();
-            }else{
-                txt = url;
+                var txtdata = {
+                    "txt" : txt,
+                };
+                $.post("helpers/textpost.php?nsID="+nsID, txtdata,
+                    function(reply) {
+                        return 0;
+                    }
+                );
+                $.post("db/ul.php?ns="+nsID, { data: genjson() },
+                    function(reply) {
+                        return 0;
+                    }
+                );
             }
-            var txtdata = {
-                "txt" : txt,
-            };
-            $.post("helpers/textpost.php?nsID="+nsID, txtdata,
-                function(reply) {
-                    return 0;
-                }
-            );
-            $.post("db/ul.php?ns="+nsID, { data: genjson() },
-                function(reply) {
-                    return 0;
-                }
-            );
-        }
-    );
-
+        );
+    */
     window.unsaved = false;
 
     return false;
@@ -463,23 +480,23 @@ function save2db() {
 
 function add2corpus(addnsID) {
     var cID = $("#s_corpus").val();
-    $.get( "helpers/corporapost.php?nsID="+addnsID+"&cID="+cID, function(data) {
+    $.get("helpers/corporapost.php?nsID=" + addnsID + "&cID=" + cID, function (data) {
         $('#modal-save2db').hide();
         $('#modal-bg').hide();
-    }).fail(function() {
-        alert( "Unable to add to corpus" );
+    }).fail(function () {
+        alert("Unable to add to corpus");
     });
 }
 
 function rpl2corpus(addnsID, rplnsID) {
     $('.rccb:checkbox:checked').each(function () {
         crpID = $(this).val();
-        $.get( "helpers/corporapost.php?nsID="+addnsID+"&cID="+crpID, function() {}).fail(function() {
-            alert( "Unable to add to corpus" );
+        $.get("helpers/corporapost.php?nsID=" + addnsID + "&cID=" + crpID, function () { }).fail(function () {
+            alert("Unable to add to corpus");
         });
 
-        $.get( "helpers/corporadel.php?nsID="+rplnsID+"&cID="+crpID, function() {}).fail(function() {
-            alert( "Unable to delete from corpus" );
+        $.get("helpers/corporadel.php?nsID=" + rplnsID + "&cID=" + crpID, function () { }).fail(function () {
+            alert("Unable to delete from corpus");
         });
     });
 
@@ -487,7 +504,7 @@ function rpl2corpus(addnsID, rplnsID) {
     $('#modal-bg').hide();
 }
 
-function canvas2image() {
+/*function canvas2image() {
     var maxx = 0;
     var maxy = 0;
     var minx = 99999;
@@ -526,13 +543,13 @@ function canvas2image() {
     amw.document.write("<img src='"+dataUrl+"' width="+tw+" />");
     amw.focus();
 }
-
-function closePopupIfOpen(popupName){
-  if(typeof(window[popupName]) != 'undefined' && !window[popupName].closed){
-    window[popupName].close();
-  }
-}
 */
+function closePopupIfOpen(popupName) {
+    if (typeof (window[popupName]) != 'undefined' && !window[popupName].closed) {
+        window[popupName].close();
+    }
+}
+
 (function ($) {
 
     // Creating a jQuery plugin:

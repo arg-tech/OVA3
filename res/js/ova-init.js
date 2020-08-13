@@ -22,11 +22,31 @@ if("bw" in getUrlVars()){
     window.bwmode = true;
 }
 
+function postEdit(type, action, content){
+    if(type == 'text'){
+        $.post( "helpers/edit.php", { type: type, action: action, cnt: content, akey: window.akey, sessionid: window.sessionid } ).done(function( data ) {
+            dt = JSON.parse(data);
+            //lastedit = dt.last;
+        });  
+    }else{
+        if(content == null){
+            alert("Error with "+type+" "+action);
+        }else{
+            $.post( "helpers/edit.php", { type: type, action: action, cnt: JSON.stringify(content), akey: window.akey, sessionid: window.sessionid } ).done(function( data ) {
+                dt = JSON.parse(data);
+                //lastedit = dt.last;
+            });  
+        }
+    }
+    window.unsaved = true;
+}
+
 function Init(evt){
     SVGRoot = document.getElementById('inline');
     TrueCoords = SVGRoot.createSVGPoint();
     GrabPoint = SVGRoot.createSVGPoint();
     Canvas = document.getElementById('Canvas');
+    window.sessionid = $.now().toString()+Math.random().toString().substring(3,8);
 
     document.getElementById('n_file').addEventListener('change', loadbutton, false);
 
@@ -35,6 +55,17 @@ function Init(evt){
             return 'There are unsaved changes to your analysis.';
         }
     });
+
+    if("aifdb" in getUrlVars()){
+        aifdbid = getUrlVars()["aifdb"];
+        $.get('./db/'+aifdbid, function(data) {
+            if(lastedit == 0){
+                loadfile(data);
+            }
+        }).fail(function() {
+            loadfromdb(aifdbid);
+        });
+    }
 }
 
 function getSelText()

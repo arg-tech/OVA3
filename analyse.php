@@ -30,7 +30,7 @@ if (isset($_GET['plus']) && $_GET['plus'] == 'true') {
 if (isset($_GET['akey'])) {
   $akey = $_GET['akey'];
 } else {
-  //require_once('helpers/mysql_connect.php');
+  require_once('helpers/mysql_connect.php');
 
   $akey = md5(time());
 
@@ -40,13 +40,13 @@ if (isset($_GET['akey'])) {
 
   $adb = "";
   $aurl = $_GET['url'];
-  /*if(isset($_GET['aifdb'])){
+  if(isset($_GET['aifdb'])){
       $adb = "&aifdb=" . $_GET['aifdb'];
       $txt = file_get_contents($TXurl . '/nodeset/' . $_GET['aifdb']);
       if (preg_match("/^http[^ ]*$/i", $txt)) {
           $aurl = $txt;
       }
-  }*/
+  }
   header('Location:analyse.php?url=' . $aurl . $plusval . $adb . '&akey=' . $akey);
 }
 
@@ -104,8 +104,7 @@ if (isset($_COOKIE['ovauser'])) {
               <!-- todo: onClick="canvas2image(); return false;"> -->
               <div class="btnicn" style="background-image: url('res/img/icon-saveimg.svg');">&nbsp;</div> Save as image
             </a></li>
-          <li><a href="#" onClick="console.log('save to db clicked');">
-              <!-- todo: onClick="save2db(); $('#save_analysis').hide(); return false;"-->
+          <li><a href="#" onClick="save2db(); $('#modal-save').hide(); return false;">
               <div class="btnicn" style="background-image: url('res/img/icon-savedb.svg');">&nbsp;</div> Save to AIFdb
             </a></li>
         </ul>
@@ -116,7 +115,6 @@ if (isset($_COOKIE['ovauser'])) {
     </div>
   </div>
 
-  <!-- todo -->
   <div id="modal-save2db" class="modal-box">
     <div id="m_load">Processing<br /><img src="res/img/loading_modal.gif" /></div>
     <div id="m_content" style="text-align: left; font-size: 0.8em; padding: 0px 20px;"></div>
@@ -132,7 +130,6 @@ if (isset($_COOKIE['ovauser'])) {
         <h4 class="modal-title">Load Analysis</h4>
       </div>
       <div class="modal-body">
-        <!-- todo: load file into ova once selected, change styling-->
         <form id="f_loadfile" class="fstyle">
           <label for="n_file" id="n_file_label">Select a file to load</label>
           <input type="file" id="n_file" name="files[]" multiple />

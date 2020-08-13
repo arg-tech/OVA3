@@ -6,10 +6,12 @@ var dragEdges = [];
 
 function Node() {
   this.nodeID = 0;
-  this.type = '';
   this.text = '';
+  this.type = '';
   this.x = 0;
   this.y = 0;
+  this.scheme = 0;
+  this.participantID = 0;
 }
 
 function Edge() {
