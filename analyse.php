@@ -164,8 +164,49 @@ if (isset($_COOKIE['ovauser'])) {
     </a>
   </div>
 
-  <div id="contextmenu"></div>
 
+  <div id="contextmenu"></div>
+<!-- Add Locution Form Starts here -->
+  <div id="locution_add" class="modal-box">
+  <div class="modal-header">
+      <h4>Locution Details</h4>
+      <!-- <a href="javascript:void(0);" class="helpbtn" onclick="locTut(); return false;">?</a> -->
+  </div>
+  <form id="f_node_edit" class="fstyle">
+      <div id="p_sel_wrap">
+          <p style="font-weight: bold; color: #999;">Existing Participants</p>
+          <label for="p_select" id="p_select_label">Participant</label>
+          <select id="p_select">
+              <option value="-">-</option>
+          </select>
+          <br />
+          <br />
+      </div>
+
+      <div id="prt_name">
+          <p style="font-weight: bold; color: #999;">New Participant</p>
+          <label for="p_name" id="p_name_label">Name</label>
+          <input id="p_name" name="p_name" class="itext" onkeyup="pfilter(this)" />
+      </div>
+
+      <div id="new_participant" style="display:none;">
+          <label for="p_firstname" id="p_firstname_label">Firstname</label>
+          <input id="p_firstname" name="p_firstname" />
+          <label for="p_surname" id="p_surname_label">Surname</label>
+          <input id="p_surname" name="p_surname" />
+      </div>
+      <!-- <button type="button" onClick="addLocution(mySel);this.parentNode.parentNode.style.display='none';">Add Locution</button> -->
+  </form>
+  <div id="socialusers" style="display:none;"></div>
+
+  <div class="modal-btns">
+      <a class="save" href="#" onClick="addlclick(false); return false;">Add</a>
+      <a class="cancel" href="#" onClick="addlcancel(); return false;">&#10008; Cancel</a>
+  </div>
+  </div>
+  <!-- Add Locution Form Ends here -->
+
+<!-- Edit Node Form Starts here -->
   <div id="node_edit" class="modal-box">
     <div class="modal-header">
       <h4>Edit Node</h4>
@@ -176,6 +217,52 @@ if (isset($_COOKIE['ovauser'])) {
       <!-- TODO: id and class names to be changed -->
       <label for="n_text" id="n_text_label">Text</label>
       <textarea id="n_text" name="n_text"></textarea>
+
+      <label for="s_type" id="s_type_label">Type</label>
+              <select id="s_type" onChange="showschemes(this.value);">
+                  <option value="RA">RA</option>
+                  <option value="CA">CA</option>
+              </select>
+
+              <label for="s_sset" id="s_sset_label">Scheme Set</label>
+              <select id="s_sset" onChange="filterschemes(this.value);">
+                  <option value="0">All Schemes</option>
+              </select>
+
+              <label for="s_cscheme" id="s_cscheme_label">Scheme</label>
+              <select id="s_cscheme" onChange="setdescriptors(this.value);">
+                  <option value="0">-</option>
+              </select>
+
+              <label for="s_ischeme" id="s_ischeme_label">Scheme</label>
+              <select id="s_ischeme" onChange="setdescriptors(this.value, mySel);">
+                  <option value="0">-</option>
+              </select>
+
+              <label for="s_lscheme" id="s_lscheme_label">Scheme</label>
+              <select id="s_lscheme" onChange="setdescriptors(this.value, mySel);">
+                  <option value="0">-</option>
+              </select>
+
+              <label for="s_mscheme" id="s_mscheme_label">Scheme</label>
+              <select id="s_mscheme" onChange="setdescriptors(this.value, mySel);">
+                  <option value="0">-</option>
+              </select>
+
+              <label for="s_pscheme" id="s_pscheme_label">Scheme</label>
+              <select id="s_pscheme" onChange="setdescriptors(this.value, mySel);">
+                  <option value="0">-</option>
+              </select>
+
+  <label for="s_tscheme" id="s_tscheme_label">Scheme</label>
+              <select id="s_tscheme" onChange="setdescriptors(this.value, mySel);">
+                  <option value="0">-</option>
+              </select>
+
+      <div id="descriptor_selects" style="display:none;"></div>
+
+
+      <div id="cq_selects" style="display:none;"></div>
     </form>
     <div class="modal-btns">
       <a class="save" href="#" onClick="saveNodeEdit();this.parentNode.parentNode.style.display='none';$('#modal-shade').hide(); return false;">&#x2714; Save</a>
@@ -190,6 +277,7 @@ if (isset($_COOKIE['ovauser'])) {
       <a class="cancel" href="#" onClick="$('#modal-save2db').hide();$('#modal-shade').hide(); return false;">&#10008; Close</a>
     </div>
   </div>
+  <!-- Edit Node Form Ends here -->
 
   <!--  <a href="http://www.arg.tech" target="_blank" id="devby"><img src="res/img/arg-tech.svg" /></a> -->
   <div id="mainwrap">
@@ -207,7 +295,7 @@ if (isset($_COOKIE['ovauser'])) {
 
       <svg xmlns="http://www.w3.org/2000/svg" version="1.1"
         style="width:80%; height:100%; position:absolute;  right:0; z-index:999; background-color:#fff;"
-        onmousedown='Grab(evt);' onmousemove='Drag(evt)' onmouseup='Drop(evt)' onload='Init(evt)' id='inline'>
+        onmousedown='Grab(evt)' onmousemove='Drag(evt)' onmouseup='Drop(evt)' onload='Init(evt)' id='inline'>
         <defs>
           <marker id='head' orient="auto" markerWidth='12' markerHeight='10' refX='12' refY='5'>
             <!-- triangle pointing right (+x) -->

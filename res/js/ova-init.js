@@ -27,7 +27,7 @@ function Init(evt){
     TrueCoords = SVGRoot.createSVGPoint();
     GrabPoint = SVGRoot.createSVGPoint();
     Canvas = document.getElementById('Canvas');
-    
+
     document.getElementById('n_file').addEventListener('change', loadbutton, false);
 
     $(window).bind('beforeunload', function(){
@@ -35,6 +35,41 @@ function Init(evt){
             return 'There are unsaved changes to your analysis.';
         }
     });
+
+    $.getJSON("browserint.php?x=ipxx&url="+window.DBurl+"/schemes/all/", function(json_data){
+    schemes = json_data.schemes;
+    schemes.sort(sort_by('name', true, function(a){return a.toUpperCase()}));
+    for(index in schemes){
+        scheme = schemes[index];
+        scheme_name = scheme.name.replace(/([a-z])([A-Z])/g, "$1 $2");
+        scheme_type = scheme.schemeTypeID
+
+        if(scheme_type == 1 || scheme_type == 2 || scheme_type == 3 || scheme_type == 9){
+            $('#s_ischeme').append('<option value="' + scheme.schemeID + '">' + scheme_name + '</option>');
+        }else if(scheme_type == 4 || scheme_type == 5){
+            $('#s_cscheme').append('<option value="' + scheme.schemeID + '">' + scheme_name + '</option>');
+        }else if(scheme_type == 7 || scheme_type == 12){
+            $('#s_lscheme').append('<option value="' + scheme.schemeID + '">' + scheme_name + '</option>');
+        }else if(scheme_type == 11){
+            $('#s_mscheme').append('<option value="' + scheme.schemeID + '">' + scheme_name + '</option>');
+        }else if(scheme_type == 6){
+            $('#s_pscheme').append('<option value="' + scheme.schemeID + '">' + scheme_name + '</option>');
+        }else if(scheme_type == 8){
+            $('#s_tscheme').append('<option value="' + scheme.schemeID + '">' + scheme_name + '</option>');
+        }
+    }
+});
+
+ $.getJSON("browserint.php?x=ipxx&url="+window.SSurl, function(json_data){
+    window.ssets = {};
+    schemesets = json_data.schemesets;
+    schemesets.sort(sort_by('name', true, function(a){return a.toUpperCase()}));
+    for(index in schemesets){
+        schemeset = schemesets[index];
+        $('#s_sset').append('<option value="' + schemeset.id + '">' + schemeset.name + '</option>');
+        window.ssets[schemeset.id] = schemeset.schemes;
+    }
+});
 }
 
 function getSelText()
@@ -95,22 +130,27 @@ function addLocution(node) {
 
   window.nodeCounter = window.nodeCounter + 1;
   var newLNodeID = window.nodeCounter;
-  //var ltext = 'Speaker X says '.concat(t);
-  var ltext = (firstname + ' ' + surname + ' ' + 'says ').concat(t);
-  console.log(TrueCoords.x + ' ' + TrueCoords.y);
-  var n = nodes[nodes.length-1];
-  console.log(n.x);
-  AddNode(ltext, 'L', newLNodeID, (n.x + 450), n.y);
+  var ltext = (firstname + ' ' + surname + ': ').concat(t);
+  var nindex = findNodeIndex(CurrentlyEditing);
+  var n = nodes[nindex];
+  var yCoord = n.y;
+  if (nodes[nindex+1]){
+    if (nodes[nindex+1].type == 'L' ) {
+      yCoord +=50;
+    }
+  }
+
+  AddNode(ltext, 'L', '0', newLNodeID, (n.x + 450), yCoord);
 
   window.nodeCounter = window.nodeCounter + 1;
   var newYANodeID = window.nodeCounter;
-  AddNode('Asserting', 'YA', newYANodeID, (n.x+225), n.y);
+  AddNode('Asserting', 'YA', '0', newYANodeID, (n.x+225), yCoord);
 
   var edge = newEdge(newLNodeID, newYANodeID);
   DrawEdge(newLNodeID, newYANodeID)
   UpdateEdge(edge);
-  edge = newEdge(newYANodeID, newNodeID);
-  DrawEdge(newYANodeID, newNodeID);
+  edge = newEdge(newYANodeID, CurrentlyEditing);
+  DrawEdge(newYANodeID, CurrentlyEditing);
   UpdateEdge(edge);
 }
 
@@ -145,7 +185,6 @@ function addlclick(skipcheck){
             $('#p_surname').css('border-color', '#bbb');
         }
     }
-    console.log(mySel);
     addLocution(mySel);
     $('#new_participant').hide();
     $('#p_sel_wrap').show();
@@ -159,6 +198,33 @@ function addlclick(skipcheck){
     return false;
 }
 
+function getNodesIn(node) {
+    var nlist = [];
+    var l = edges.length;
+    for (var i = 0; i < l; i++) {
+        if(edges[i].toID == node.nodeID) {
+          var  nID = edges[i].fromID;
+          var nIndex = findNodeIndex(nID);
+            nlist.push(nodes[nIndex]);
+        }
+    }
+    return nlist;
+}
+
+function getNodesOut(node) {
+    var nlist = [];
+    var l = edges.length;
+    for (var i = 0; i < l; i++) {
+        if(edges[i].fromID == node.nodeID) {
+          var  nID = edges[i].fromID;
+          var nIndex = findNodeIndex(nID);
+          nlist.push(nodes[nIndex]);
+        }
+    }
+    return nlist;
+}
+
+
 function addlcancel(){
     $('#new_participant').hide();
     $('#p_sel_wrap').show();
@@ -169,9 +235,19 @@ function addlcancel(){
     $('#locution_add').hide();
     $('#modal-bg').hide();
 
-    var n = nodes[nodes.length-1];
-    deleteNode(n);
 
+    var index = findNodeIndex(CurrentlyEditing);
+    var toDelete = true;
+
+    for (var i = 0; i < edges.length; i++) {
+      if (edges[i].toID == CurrentlyEditing || edges[i].fromID == CurrentlyEditing) {
+        toDelete = false;
+      }
+    }
+
+    if (toDelete == true) {
+      deleteNode(nodes[index]);
+    }
     return false;
 }
 
@@ -238,3 +314,193 @@ function setAllText(txt) {
     }
 }
 
+function addCQ(fesel) {
+    fename = fesel.id.substring(2);
+    if(fesel.selectedIndex == 0){
+        $('#cqi-'+fename).css('color', '#c0392b');
+    }else{
+        $('#cqi-'+fename).css('color', '#27ae60');
+    }
+}
+
+function setdescriptors(schemeID, node) {
+    document.getElementById("descriptor_selects").style.display = "block";
+    //document.getElementById("node_edit").style.height = "350px";
+
+    $.getJSON("browserint.php?x=ipxx&url="+window.DBurl+"/formedges/scheme/"+schemeID, function(json_data){
+        $('#descriptor_selects').empty();
+        $('#descriptor_selects').append('<b>Descriptors</b>');
+        $('#cq_selects').empty();
+        var nodes_in = getNodesIn(node);
+        var nodes_out = getNodesOut(node);
+        var adddesc = false;
+        var addcq = false;
+        window.editnode = node;
+
+        var l = nodes.length;
+        var nodeselect = $('<select class="cqselect" onChange="addCQ(this);" style="display:none;"></select>');
+        nodeselect.append('<option value="-">Click to select</option>');
+        var ucselect = $('<select class="cqselect" onChange="addCQ(this);" style="display:none;"></select>');
+        ucselect.append('<option value="-">Click to select</option>');
+        for(index in nodes_in){
+            nin = nodes_in[index];
+            if(nin.type == 'I' || nin.type == 'L'){
+                nodeselect.append('<option value="' + nin.text + '">' + nin.text + '</option>');
+            }else{
+                nodes_in_in = getNodesIn(nin);
+                for(inindex in nodes_in_in){
+                    ninin = nodes_in_in[inindex];
+                    if(ninin.type == 'I'){
+                        ucselect.append('<option value="' + ninin.text + '">' + ninin.text + '</option>');
+                    }
+                }
+            }
+        }
+
+        for(index in json_data.formedges) {
+            adddesc = true;
+            formedge = json_data.formedges[index];
+
+            if(formedge.Explicit == 1){
+                selected = node.descriptors['s_'+formedge.name];
+                var newselect = $('<select id="s_'+formedge.name+'" class="dselect" onChange="addCQ(this);"></select>');
+                newselect.append('<option value="-">Click to select</option>');
+
+                if(formedge.CQ != null){
+                    addcq = true;
+                    $('#cq_selects').prepend('<div style="clear:both"><strong>Q: </strong>'+formedge.CQ+' <div style="color:#c0392b; float:right; font-size:22px; margin-top:-8px;" id="cqi-'+formedge.name+'">&#x25CF;</div></div>');
+                }
+
+                if(formedge.formEdgeTypeID in {'1':'','5':'','9':'','11':'','13':'','15':'','16':'','20':'','22':''}){
+                    for(index in nodes_in) {
+                        nin = nodes_in[index];
+                        if(nin.type == 'I' || nin.type == 'L'){
+                            if(nin.text == selected){
+                                $('#cqi-'+formedge.name).css('color', '#27ae60');
+                                newselect.append('<option value="' + nin.text + '" selected="selected">' + nin.text + '</option>');
+                            }else{
+                                newselect.append('<option value="' + nin.text + '">' + nin.text + '</option>');
+                            }
+                        }
+                    }
+                }else if(formedge.formEdgeTypeID in {'2':'','7':'','10':'','12':'','14':'','17':'','21':''}){
+                    for(index in nodes_out) {
+                        nut = nodes_out[index];
+                        if(nut.text == selected){
+                            newselect.append('<option value="' + nut.text + '" selected="selected">' + nut.text + '</option>');
+                        }else{
+                            newselect.append('<option value="' + nut.text + '">' + nut.text + '</option>');
+                        }
+                    }
+                }else{
+                    continue;
+                }
+
+                $('#descriptor_selects').append('<label id="">'+formedge.name+'</label>');
+                $('#descriptor_selects').append(newselect);
+            }else{
+                if(formedge.CQ != null){
+                    addcq = true;
+                    $('#cq_selects').append('<div style="clear:both"><strong>Q: </strong>'+formedge.CQ+' <div style="color:#c0392b; float:right; font-size:22px; margin-top:-8px;" id="cqi-'+formedge.name+'"><a href="" onClick="$(\'#cq'+formedge.name+'\').toggle();$(this).html($(this).text()==\'&#x25BE;\'?\'&#x25B4;\':\'&#x25BE;\');return false;" style="color:#444;text-decoration:none;font-size:16px;">&#x25BE;</a>&#x25CF;</div></div>');
+                    if(formedge.descriptorID != null){
+                        nsclone = nodeselect.clone().prop('id', 'cq'+formedge.name);
+                    }else{
+                        nsclone = ucselect.clone().prop('id', 'cq'+formedge.name);
+                    }
+                    $('#cq_selects').append(nsclone);
+                    if('cq'+formedge.name in node.cqdesc && node.cqdesc['cq'+formedge.name] != '-'){
+                        $('#cqi-'+formedge.name).css('color', '#27ae60');
+                        $("#cq"+formedge.name+" option").filter(function() {
+                            return $(this).text() == node.cqdesc['cq'+formedge.name];
+                        }).prop('selected', true);
+                    }
+                }
+            }
+        }
+
+        if(!adddesc){
+            $('#descriptor_selects').hide();
+        }
+
+        if(window.cqmode && addcq){
+            $('#cq_selects').prepend('<b>Critical Questions</b>');
+            $('#cq_selects').show();
+        }else{
+            $('#cq_selects').hide();
+        }
+    });
+}
+
+function filterschemes(schemesetID) {
+    $("#s_cscheme option").each(function() {
+        $(this).show();
+    });
+
+    $("#s_ischeme option").each(function() {
+        $(this).show();
+    });
+
+    $("#s_lscheme option").each(function() {
+        $(this).show();
+    });
+
+    $("#s_mscheme option").each(function() {
+        $(this).show();
+    });
+
+    $("#s_pscheme option").each(function() {
+        $(this).show();
+    });
+
+    $("#s_tscheme option").each(function() {
+        $(this).show();
+    });
+
+    if(schemesetID != "0"){
+        setschemes = window.ssets[schemesetID]
+
+        $("#s_cscheme option").each(function() {
+            if(setschemes.indexOf($(this).val()) == -1){
+                $(this).hide();
+            }
+        });
+
+        $("#s_ischeme option").each(function() {
+            if(setschemes.indexOf($(this).val()) == -1){
+                $(this).hide();
+            }
+        });
+
+        $("#s_lscheme option").each(function() {
+            if(setschemes.indexOf($(this).val()) == -1){
+                $(this).hide();
+            }
+        });
+
+        $("#s_mscheme option").each(function() {
+            if(setschemes.indexOf($(this).val()) == -1){
+                $(this).hide();
+            }
+        });
+
+        $("#s_pscheme option").each(function() {
+            if(setschemes.indexOf($(this).val()) == -1){
+                $(this).hide();
+            }
+        });
+
+        $("#s_tscheme option").each(function() {
+            if(setschemes.indexOf($(this).val()) == -1){
+                $(this).hide();
+            }
+        });
+    }
+}
+
+var sort_by = function(field, reverse, primer){
+    var key = function (x) {return primer ? primer(x[field]) : x[field]};
+    return function (a,b) {
+        var A = key(a), B = key(b);
+        return ((A < B) ? -1 : (A > B) ? +1 : 0) * [-1,1][+!!reverse];
+    }
+}
