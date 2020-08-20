@@ -441,7 +441,7 @@ function Drop(evt) {
         } else if (nodeFrom == "RA" && nodeTo == "I") {
 
         } else if (nodeFrom == "I" && nodeTo == "RA") {
-
+          
         } else {
           AddNode('Default Inference', 'RA', '72', 0, newNodeID, nx, ny);
         }
@@ -634,6 +634,7 @@ function saveNodeEdit() {
     }
   }
 
+
   function findEdges(nodeID) {
     var edgesToReturn = []
     for (var i = 0; i < edges.length; i++) {
@@ -643,6 +644,7 @@ function saveNodeEdit() {
     }
     return edgesToReturn;
   }
+
 
   function deleteNode(node) {
     var toDelType = node.type;
@@ -658,11 +660,14 @@ function saveNodeEdit() {
       // if (index > -1) { nodes.splice(index, 1); }
       // var edgesToDelete = [];
       for (var j = 0; j < edges.length; j++) {
+        console.log(edges[j].toID);
         if(edges[j].toID == CurrentlyEditing) {
           edgesToDelete.push(edges[j]);
+          console.log("deleting edge");
         }
         if(edges[j].fromID == CurrentlyEditing) {
           edgesToDelete.push(edges[j]);
+          console.log("deleting edge");
         }
       }
     for (var i=0; i<edgesToDelete.length; i++) {

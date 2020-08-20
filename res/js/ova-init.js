@@ -130,6 +130,7 @@ function addLocution(node) {
 
   window.nodeCounter = window.nodeCounter + 1;
   var newLNodeID = window.nodeCounter;
+
   var ltext = (firstname + ' ' + surname + ': ').concat(t);
   var nindex = findNodeIndex(CurrentlyEditing);
   var n = nodes[nindex];
@@ -142,6 +143,7 @@ function addLocution(node) {
 
   AddNode(ltext, 'L', '0', participantID, newLNodeID, (n.x + 450), yCoord);
   var index = findNodeIndex(newLNodeID);
+
 
   window.nodeCounter = window.nodeCounter + 1;
   var newYANodeID = window.nodeCounter;
@@ -314,6 +316,7 @@ function setAllText(txt) {
         $('#analysis_text').html(txt);
     }
 }
+
 
 function addCQ(fesel) {
     fename = fesel.id.substring(2);
@@ -505,3 +508,4 @@ var sort_by = function(field, reverse, primer){
         return ((A < B) ? -1 : (A > B) ? +1 : 0) * [-1,1][+!!reverse];
     }
 }
+
