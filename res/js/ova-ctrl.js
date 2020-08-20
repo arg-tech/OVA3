@@ -150,7 +150,7 @@ function Grab(evt) {
     if (window.nodeAddBtn == true) {
       window.nodeCounter = window.nodeCounter + 1;
       newNodeID = window.nodeCounter;
-      AddNode("", 'EN', '0', newNodeID, TrueCoords.x, TrueCoords.y - 10 );
+      AddNode("", 'EN', '0', 0, newNodeID, TrueCoords.x, TrueCoords.y - 10 );
       var index = findNodeIndex(newNodeID)
       mySel = nodes[index];
       CurrentlyEditing = newNodeID;
@@ -164,7 +164,7 @@ function Grab(evt) {
         if (IATMode == true) {
           window.nodeCounter = window.nodeCounter + 1;
           newNodeID = window.nodeCounter;
-          AddNode(t, 'I', '0', newNodeID, TrueCoords.x, TrueCoords.y - 10);
+          AddNode(t, 'I', '0', 0, newNodeID, TrueCoords.x, TrueCoords.y - 10);
           var nIndex = findNodeIndex(newNodeID)
           mySel = nodes[nIndex];
           CurrentlyEditing = mySel.nodeID;
@@ -236,14 +236,14 @@ function GetTrueCoords(evt) {
 }
 
 
-function AddNode(txt, type, scheme, nid, nx, ny) {
-  newNode(nid, type, scheme, txt, nx, ny);
+function AddNode(txt, type, scheme, pid, nid, nx, ny) {
+  newNode(nid, type, scheme, pid, txt, nx, ny);
   DrawNode(nid, type, txt, nx, ny);
 }
 
 function Drag(evt) {
   GetTrueCoords(evt);
-
+  //console.log(DragTarget);
   if (DragTarget) {
     var dx = TrueCoords.x - GrabPoint.x;
     var dy = TrueCoords.y - GrabPoint.y;
@@ -270,6 +270,9 @@ function Drag(evt) {
         cE.setAttributeNS(null, 'x', cnewX);
       }
     }
+      //console.log(DragTarget.getAttributeNS(null, 'id'));
+      //console.log(DragTarget);
+    //updateNodePosition(DragTarget.id, newX, newY);
     for (var j = 0; j < dragEdges.length; j++) {
       UpdateEdge(dragEdges[j]);
     }
@@ -380,8 +383,18 @@ function UnFocus(evt, unfocusElement) {
 
 
 function Drop(evt) {
+  //console.log(DragTarget.getAttributeNS(null, 'id'));
   if (DragTarget) {
+    children = DragTarget.children;
+    for (var j = 0; j < children.length-1; j++) {
+      var childElement = children[j];
+      xCoord = childElement.getAttributeNS(null, 'x');
+      yCoord = childElement.getAttributeNS(null, 'y');
+      updateNodePosition(DragTarget.id, xCoord, yCoord);
+    }
+
     if (DragTarget.getAttributeNS(null, 'id') == 'edge_to') {
+      console.log(evt.target.nodeName);
       if (evt.target.nodeName == 'rect') {
         var targetElement = evt.target.parentNode;
       } else if (evt.target.nodeName == 'tspan') {
@@ -389,60 +402,85 @@ function Drop(evt) {
       } else {
         var targetElement = evt.target;
       }
+      if (evt.target.nodeName != 'svg') {
+        from = document.getElementById(FromID).getElementsByTagName('rect')[0];
+        to = targetElement.getElementsByTagName('rect')[0];
 
-      from = document.getElementById(FromID).getElementsByTagName('rect')[0];
-      to = targetElement.getElementsByTagName('rect')[0];
+        fx = from.getAttributeNS(null, 'x');
+        fy = from.getAttributeNS(null, 'y');
+        fw = from.getAttributeNS(null, 'width');
+        fh = from.getAttributeNS(null, 'height');
+        tx = to.getAttributeNS(null, 'x');
+        ty = to.getAttributeNS(null, 'y');
+        tw = to.getAttributeNS(null, 'width');
+        th = to.getAttributeNS(null, 'height');
+        fx = parseInt(fx) + (parseInt(fw) / 2);
+        fy = parseInt(fy) + (parseInt(fh) / 2);
+        tx = parseInt(tx) + (parseInt(tw) / 2);
+        ty = parseInt(ty) + (parseInt(th) / 2);
 
-      fx = from.getAttributeNS(null, 'x');
-      fy = from.getAttributeNS(null, 'y');
-      fw = from.getAttributeNS(null, 'width');
-      fh = from.getAttributeNS(null, 'height');
-      tx = to.getAttributeNS(null, 'x');
-      ty = to.getAttributeNS(null, 'y');
-      tw = to.getAttributeNS(null, 'width');
-      th = to.getAttributeNS(null, 'height');
-      fx = parseInt(fx) + (parseInt(fw) / 2);
-      fy = parseInt(fy) + (parseInt(fh) / 2);
-      tx = parseInt(tx) + (parseInt(tw) / 2);
-      ty = parseInt(ty) + (parseInt(th) / 2);
+        window.nodeCounter = window.nodeCounter + 1;
+        newNodeID = window.nodeCounter;
+        nx = ((tx - fx) / 2) + fx;
+        ny = ((ty - fy) / 2) + fy;
+        //AddNode('Default Inference', 'RA', newNodeID, nx, ny);
+        var index = findNodeIndex(FromID);
+        var nodeFrom = nodes[index].type;
 
-      window.nodeCounter = window.nodeCounter + 1;
-      newNodeID = window.nodeCounter;
-      nx = ((tx - fx) / 2) + fx;
-      ny = ((ty - fy) / 2) + fy;
-      //AddNode('Default Inference', 'RA', newNodeID, nx, ny);
-      var index = findNodeIndex(FromID);
-      var nodeFrom = nodes[index].type;
+        index = findNodeIndex(targetElement.getAttributeNS(null, 'id'));
+        var nodeTo = nodes[index].type;
 
-      index = findNodeIndex(targetElement.getAttributeNS(null, 'id'));
-      var nodeTo = nodes[index].type;
+        if (nodeFrom == "I" && nodeTo == "I") {
+          AddNode('Default Inference', 'RA', '72', 0, newNodeID, nx, ny);
+        } else if (nodeFrom == "L" && nodeTo == "I") {
+          AddNode('Asserting', 'YA', '74', 0, newNodeID, nx, ny);
+        } else if (nodeFrom == "L" && nodeTo == "L") {
+          AddNode('Default Transition', 'TA', '82', 0, newNodeID, nx, ny);
+        } else if (nodeFrom == "TA" && nodeTo == "RA") {
+          AddNode('Default Illocuting', 'YA', '168', 0, newNodeID, nx, ny);
+        } else if (nodeFrom == "RA" && nodeTo == "I") {
 
-      if (nodeFrom == "I" && nodeTo == "I") {
-        AddNode('Default Inference', 'RA', '72', newNodeID, nx, ny);
-      } else if (nodeFrom == "L" && nodeTo == "I") {
-        AddNode('Asserting', 'YA', '75', newNodeID, nx, ny);
-      } else if (nodeFrom == "L" && nodeTo == "L") {
-        AddNode('Default Transition', 'TA', '82', newNodeID, nx, ny);
-      } else if (nodeFrom == "TA" && nodeTo == "RA") {
-        AddNode('Arguing', 'YA', '168', newNodeID, nx, ny);
+        } else if (nodeFrom == "I" && nodeTo == "RA") {
+
+        } else {
+          AddNode('Default Inference', 'RA', '72', 0, newNodeID, nx, ny);
+        }
+        //If linked argument
+        if ((nodeFrom == "RA" && nodeTo == "I") || (nodeFrom == "I" && nodeTo == "RA")) {
+          //only draw edge
+          DrawEdge(FromID, targetElement.getAttributeNS(null, 'id'));
+          var edge = newEdge(FromID, targetElement.getAttributeNS(null, 'id'));
+          UpdateEdge(edge);
+
+          tempedge = document.getElementById('n' + FromID + '-nedge_to');
+          tempnode = document.getElementById('edge_to');
+          SVGRoot.removeChild(tempedge);
+          SVGRoot.removeChild(tempnode);
+        }
+        else {
+          //from -> S
+          DrawEdge(FromID, newNodeID);
+          var edge = newEdge(FromID, newNodeID);
+          UpdateEdge(edge);
+
+          //S -> to
+          DrawEdge(newNodeID, targetElement.getAttributeNS(null, 'id'));
+          var edge = newEdge(newNodeID, targetElement.getAttributeNS(null, 'id'));
+          UpdateEdge(edge);
+
+          tempedge = document.getElementById('n' + FromID + '-nedge_to');
+          tempnode = document.getElementById('edge_to');
+          SVGRoot.removeChild(tempedge);
+          SVGRoot.removeChild(tempnode);
+        }
       } else {
-        AddNode('Default Inference', 'RA', '72', newNodeID, nx, ny);
+        //If edge is drawn to empty space and not to a node
+        tempedge = document.getElementById('n' + FromID + '-nedge_to');
+        tempnode = document.getElementById("edge_to");
+        SVGRoot.removeChild(tempedge);
+        SVGRoot.removeChild(tempnode);
       }
 
-      //from -> S
-      DrawEdge(FromID, newNodeID);
-      var edge = newEdge(FromID, newNodeID);
-      UpdateEdge(edge);
-
-      //S -> to
-      DrawEdge(newNodeID, targetElement.getAttributeNS(null, 'id'));
-      var edge = newEdge(newNodeID, targetElement.getAttributeNS(null, 'id'));
-      UpdateEdge(edge);
-
-      tempedge = document.getElementById('n' + FromID + '-nedge_to');
-      tempnode = document.getElementById('edge_to');
-      SVGRoot.removeChild(tempedge);
-      SVGRoot.removeChild(tempnode);
     }
     DragTarget.setAttributeNS(null, 'pointer-events', 'all');
     DragTarget = null;
@@ -512,19 +550,18 @@ function saveNodeEdit() {
     var yCoord = mySel.y;
     if(mySel.type == 'I' || mySel.type == 'L' || mySel.type == 'EN'){
       var ntext = document.getElementById("n_text").value;
-      var edgesToUpdate = findEdges(CurrentlyEditing);
+      //var edgesToUpdate = findEdges(CurrentlyEditing);
       document.getElementById(CurrentlyEditing).remove();
       DrawNode(CurrentlyEditing, type, ntext, xCoord, yCoord);
       updateNode(CurrentlyEditing, type, ntext, xCoord, yCoord);
-      for (var i = 0; i < edgesToUpdate.length; i++) {
-        UpdateEdge(edgesToUpdate[i]);
-      }
+      // for (var i = 0; i < edgesToUpdate.length; i++) {
+      //   UpdateEdge(edgesToUpdate[i]);
+      // }
     } else {
       mySel.type = document.getElementById("s_type").value;
         if(mySel.type == 'RA'){
             var ssel = document.getElementById("s_ischeme");
             mySel.scheme = ssel.value;
-            mySel.color = 'g';
             if(ssel.selectedIndex == 0){
                 mySel.text = 'Default Inference';
                 mySel.scheme = '72';
@@ -534,7 +571,6 @@ function saveNodeEdit() {
         }else if(mySel.type == 'CA'){
             var ssel = document.getElementById("s_cscheme");
             mySel.scheme = ssel.value;
-            mySel.color = 'r';
             if(ssel.selectedIndex == 0){
                 mySel.text = 'Default Conflict';
                 mySel.scheme = '71';
@@ -544,7 +580,6 @@ function saveNodeEdit() {
         }else if(mySel.type == 'YA'){
             var ssel = document.getElementById("s_lscheme");
             mySel.scheme = ssel.value;
-            mySel.color = 'y';
             if(ssel.selectedIndex == 0){
                 mySel.text = 'Default Illocuting';
                 mySel.scheme = '168';
@@ -554,7 +589,6 @@ function saveNodeEdit() {
         }else if(mySel.type == 'MA'){
             var ssel = document.getElementById("s_mscheme");
             mySel.scheme = ssel.value;
-            mySel.color = 'o';
             if(ssel.selectedIndex == 0){
                 mySel.text = 'Default Rephrase';
                 mySel.scheme = '144';
@@ -564,7 +598,6 @@ function saveNodeEdit() {
         }else if(mySel.type == 'PA'){
             var ssel = document.getElementById("s_pscheme");
             mySel.scheme = ssel.value;
-            mySel.color = 't';
             if(ssel.selectedIndex == 0){
                 mySel.text = 'Default Preference';
                 mySel.scheme = '161';
@@ -574,7 +607,6 @@ function saveNodeEdit() {
         }else if(mySel.type == 'TA'){
             var ssel = document.getElementById("s_tscheme");
             mySel.scheme = ssel.value;
-            mySel.color = 'p';
             if(ssel.selectedIndex == 0){
 	             mySel.text = 'Default Transition';
 	             mySel.scheme = '82';
@@ -582,7 +614,6 @@ function saveNodeEdit() {
                 mySel.text = ssel.options[ssel.selectedIndex].text;
             }
         }else {
-            mySel.color = 'y';
             mySel.text = mySel.type
         }
         document.getElementById(CurrentlyEditing).remove();
@@ -596,6 +627,10 @@ function saveNodeEdit() {
         $('.cqselect').each(function(index) {
             mySel.cqdesc[$(this).attr('id')] = $(this).val();
         });
+    }
+    var edgesToUpdate = findEdges(CurrentlyEditing);
+    for (var i = 0; i < edgesToUpdate.length; i++) {
+      UpdateEdge(edgesToUpdate[i]);
     }
   }
 

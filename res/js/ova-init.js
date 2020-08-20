@@ -69,7 +69,7 @@ function Init(evt){
         $('#s_sset').append('<option value="' + schemeset.id + '">' + schemeset.name + '</option>');
         window.ssets[schemeset.id] = schemeset.schemes;
     }
-});
+  });
 }
 
 function getSelText()
@@ -140,11 +140,12 @@ function addLocution(node) {
     }
   }
 
-  AddNode(ltext, 'L', '0', newLNodeID, (n.x + 450), yCoord);
+  AddNode(ltext, 'L', '0', participantID, newLNodeID, (n.x + 450), yCoord);
+  var index = findNodeIndex(newLNodeID);
 
   window.nodeCounter = window.nodeCounter + 1;
   var newYANodeID = window.nodeCounter;
-  AddNode('Asserting', 'YA', '0', newYANodeID, (n.x+225), yCoord);
+  AddNode('Asserting', 'YA', '74', 0, newYANodeID, (n.x+225), yCoord);
 
   var edge = newEdge(newLNodeID, newYANodeID);
   DrawEdge(newLNodeID, newYANodeID)

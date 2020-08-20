@@ -115,7 +115,6 @@ function cmenu(node) {
 }
 
 function editpopup(node) {
-  console.log("edit pop up");
     $('#n_text').hide(); $('#n_text_label').hide();
     $('#s_type').hide(); $('#s_type_label').hide();
     $('#s_ischeme').hide(); $('#s_ischeme_label').hide();
@@ -133,7 +132,6 @@ function editpopup(node) {
         $('#n_text_label').show();
     }else{
         nodesIn = getNodesIn(node);
-        console.log(nodesIn);
 
         var addRA = true;
         var addCA = true;
@@ -143,7 +141,6 @@ function editpopup(node) {
         var addMA = true;
 
         for(var i = 0; i < nodesIn.length; i++){
-          console.log("nodes in: " + nodesIn[i]);
             if(nodesIn[i].type == 'L' || nodesIn[i].type == 'TA'){
                 addYA = true;
             }

@@ -9,6 +9,7 @@ function Node() {
     this.type = '';
     this.scheme = '';
     this.descriptors = {};
+    this.participantID = 0;
     this.text = '';
     this.x = 0;
     this.y = 0;
@@ -38,11 +39,12 @@ function newParticipant(id, fname, sname) {
   return p;
 }
 
-function newNode(nodeID, type, scheme, text, x, y){
+function newNode(nodeID, type, scheme, participantID, text, x, y){
     var n = new Node;
     n.nodeID = nodeID;
     n.type = type;
     n.scheme = scheme;
+    n.participantID = participantID;
     n.text = text;
     n.x = x;
     n.y = y;
@@ -56,6 +58,13 @@ function updateNode(nodeID, type, scheme, text, x, y){
     n.type = type;
     n.scheme = scheme;
     n.text = text;
+    n.x = x;
+    n.y = y;
+}
+
+function updateNodePosition(nodeID, x, y){
+    var index = findNodeIndex(nodeID);
+    n = nodes[index];
     n.x = x;
     n.y = y;
 }
