@@ -11,7 +11,7 @@ function DrawNode(nid, type, txt, nx, ny)
               line = word;
           }else if(line.length + word.length <= 36){
               line = line + ' ' + word;
-              if(i == wa.length-1) {
+              if(i == wa.length) {
                 phraseArray.push(line)
               }
           }else{
@@ -127,7 +127,7 @@ function editpopup(node) {
     $('#cq_selects').hide();
     $('#s_sset').hide(); $('#s_sset_label').hide();
 
-    if(node.type == 'I' || node.type == 'L'){
+    if(node.type == 'I' || node.type == 'L' || node.type == 'EN'){
         $('#n_text').show();
         $('#n_text_label').show();
     }else{

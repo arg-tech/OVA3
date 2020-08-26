@@ -68,13 +68,14 @@ if (isset($_COOKIE['ovauser'])) {
   <script src="http://code.jquery.com/jquery-2.1.3.min.js"></script>
   <link rel="stylesheet"
     href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.10.0/css/smoothness/jquery-ui-1.10.0.custom.min.css" />
+
   <link rel="stylesheet" href="res/css/analysis.css" />
 
   <script src="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.10.0/jquery-ui.js"></script>
+  <script src="res/js/ova-analysis.js"></script>
   <script src="res/js/ova-fn.js"></script>
   <script src="res/js/svg-pan-zoom.js"></script>
   <script src="res/js/ova-model.js"></script>
-  <script src="res/js/ova-analysis.js"></script>
   <script src="res/js/ova-draw.js"></script>
   <script src="res/js/ova-ctrl.js"></script>
   <script src="res/js/ova-save.js"></script>
@@ -281,6 +282,7 @@ if (isset($_COOKIE['ovauser'])) {
 
   <!--  <a href="http://www.arg.tech" target="_blank" id="devby"><img src="res/img/arg-tech.svg" /></a> -->
   <div id="mainwrap">
+    <div id="spacer"></div>
     <?php if ($source == "local") { ?>
       <div id="left1">
         <div id="analysis_text" contenteditable="true" spellcheck="false">Enter your text here...</div>
@@ -290,11 +292,11 @@ if (isset($_COOKIE['ovauser'])) {
       <iframe src="<?php echo $analysis; ?>" id="left1" name="left1" style="width:35%;border-right:1px solid #666;"></iframe> <!-- data-step="1" data-intro="<p>Highlight sections of text from the webpage to create a node.</p>" data-position="right" -->
     <?php } ?>
 
-    <div id="spacer"></div>
+
     <div id="right1">
 
       <svg xmlns="http://www.w3.org/2000/svg" version="1.1"
-        style="width:80%; height:100%; position:absolute;  right:0; z-index:999; background-color:#fff;"
+        style="width:90%; height:100%; z-index:999; background-color:#fff;"
         onmousedown='Grab(evt)' onmousemove='Drag(evt)' onmouseup='Drop(evt)' onload='Init(evt)' id='inline'>
         <defs>
           <marker id='head' orient="auto" markerWidth='12' markerHeight='10' refX='12' refY='5'>
