@@ -1,4 +1,5 @@
 $(function() {
+  console.log("slider");
     mw = $("#mainwrap").width();
     $("#right1").width(mw - $("#left1").width() - 41);
     $("#left1").height($(window).height() - $("#toolbar").height() - 41);
@@ -43,7 +44,7 @@ $(function() {
     }
 
     // Expose to window namespace for testing purposes
-    window.panZoom = svgPanZoom('#inline2', {
+    window.panZoom = svgPanZoom('#inline', {
       zoomEnabled: true
     , controlIconsEnabled: true
     , minZoom: 0.1

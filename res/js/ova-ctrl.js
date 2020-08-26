@@ -118,11 +118,11 @@ function Grab(evt) {
 
       Focus(evt, targetElement);
 
-      //deselects the add edge icon button after adding an edge
-      if (window.eBtn) {
-        edgeMode('off');
-        window.eBtn = false;
-      }
+      // //deselects the add edge icon button after adding an edge
+      // if (window.eBtn) {
+      //   edgeMode('off');
+      //   window.eBtn = false;
+      // }
     }
     else if (editMode == true) {
       var index = findNodeIndex(targetElement.id)
@@ -177,37 +177,6 @@ function Grab(evt) {
           mySel = nodes[nIndex];
         }
       }
-
-        // if (IATMode == true) {
-        //   $('#locution_add').show();
-
-          // window.nodeCounter = window.nodeCounter + 1;
-          // var newLNodeID = window.nodeCounter;
-          // var ltext = 'Speaker X says '.concat(t);
-          // AddNode(ltext, 'L', newLNodeID, (TrueCoords.x + 450), TrueCoords.y - 10);
-          //
-          // window.nodeCounter = window.nodeCounter + 1;
-          // var newYANodeID = window.nodeCounter;
-          // AddNode('Asserting', 'YA', newYANodeID, (TrueCoords.x + 225), TrueCoords.y - 10);
-          //
-          // var edge = newEdge(newLNodeID, newYANodeID);
-          // DrawEdge(newLNodeID, newYANodeID)
-          // UpdateEdge(edge);
-          // edge = newEdge(newYANodeID, newNodeID);
-          // DrawEdge(newYANodeID, newNodeID);
-          // UpdateEdge(edge);
-
-        //}
-
-
-      // else {
-      //   {
-      //     t = "Lorem ipsum dolor sit amet";
-      //     window.nodeCounter = window.nodeCounter + 1;
-      //     newNodeID = window.nodeCounter;
-      //     AddNode(t, 'I', newNodeID, TrueCoords.x, TrueCoords.y - 10);
-      //   }
-      // }
     }
 
   }
@@ -430,19 +399,22 @@ function Drop(evt) {
         index = findNodeIndex(targetElement.getAttributeNS(null, 'id'));
         var nodeTo = nodes[index].type;
 
-        if (nodeFrom == "I" && nodeTo == "I") {
+        if (nodeFrom == "I" && nodeTo == "I" && window.altPress == false) {
           AddNode('Default Inference', 'RA', '72', 0, newNodeID, nx, ny);
+        } else if (nodeFrom == "I" && nodeTo == "I" && window.altPress == true) {
+          AddNode('Default Conflict', 'CA', '71', 0, newNodeID, nx, ny);
         } else if (nodeFrom == "L" && nodeTo == "I") {
           AddNode('Asserting', 'YA', '74', 0, newNodeID, nx, ny);
         } else if (nodeFrom == "L" && nodeTo == "L") {
           AddNode('Default Transition', 'TA', '82', 0, newNodeID, nx, ny);
-        } else if (nodeFrom == "TA" && nodeTo == "RA") {
+        } else if ((nodeFrom == "TA" && nodeTo == "RA") || (nodeFrom == "TA" && nodeTo == "CA") || (nodeFrom == "TA" && nodeTo == "MA")) {
           AddNode('Default Illocuting', 'YA', '168', 0, newNodeID, nx, ny);
         } else if (nodeFrom == "RA" && nodeTo == "I") {
 
         } else if (nodeFrom == "I" && nodeTo == "RA") {
-          
-        } else {
+
+        }
+        else {
           AddNode('Default Inference', 'RA', '72', 0, newNodeID, nx, ny);
         }
         //If linked argument
@@ -484,6 +456,11 @@ function Drop(evt) {
     }
     DragTarget.setAttributeNS(null, 'pointer-events', 'all');
     DragTarget = null;
+    //deselects the add edge icon button after adding an edge
+    if (window.eBtn) {
+      edgeMode('off');
+      window.eBtn = false;
+    }
   }
   dragEdges = [];
 }
@@ -652,6 +629,12 @@ function saveNodeEdit() {
     const index = nodes.indexOf(node);
     if (index > -1) { nodes.splice(index, 1); }
     var edgesToDelete = [];
+
+    if (mySel.type == 'L') {
+      console.log("node L");
+      console.log(node.nodeID);
+      remhl(node.nodeID);
+    }
 
     //if(mySel.type == 'I' || mySel.type == 'L' || mySel.type == 'EN'){
       //remhl(node.nodeID);
