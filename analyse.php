@@ -295,9 +295,11 @@ if (isset($_COOKIE['ovauser'])) {
 
     <div id="right1">
 
+      <!-- style="width:90%; height:100%; z-index:999; background-color:#fff;" -->
+
       <svg xmlns="http://www.w3.org/2000/svg" version="1.1"
-        style="width:90%; height:100%; z-index:999; background-color:#fff;"
-        onmousedown='Grab(evt)' onmousemove='Drag(evt)' onmouseup='Drop(evt)' onload='Init(evt)' id='inline'>
+        style="width: 1000px; height: 12775px; z-index:999; background-color:#fff;"
+        onmousedown='Grab(evt);' onmousemove='Drag(evt);' onmouseup='Drop(evt);' onload='Init(evt);' id='inline'>
         <defs>
           <marker id='head' orient="auto" markerWidth='12' markerHeight='10' refX='12' refY='5'>
             <!-- triangle pointing right (+x) -->

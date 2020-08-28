@@ -212,7 +212,6 @@ function AddNode(txt, type, scheme, pid, nid, nx, ny) {
 
 function Drag(evt) {
   GetTrueCoords(evt);
-  //console.log(DragTarget);
   if (DragTarget) {
     var dx = TrueCoords.x - GrabPoint.x;
     var dy = TrueCoords.y - GrabPoint.y;
@@ -363,7 +362,6 @@ function Drop(evt) {
     }
 
     if (DragTarget.getAttributeNS(null, 'id') == 'edge_to') {
-      console.log(evt.target.nodeName);
       if (evt.target.nodeName == 'rect') {
         var targetElement = evt.target.parentNode;
       } else if (evt.target.nodeName == 'tspan') {
@@ -631,8 +629,6 @@ function saveNodeEdit() {
     var edgesToDelete = [];
 
     if (mySel.type == 'L') {
-      console.log("node L");
-      console.log(node.nodeID);
       remhl(node.nodeID);
     }
 
@@ -643,14 +639,11 @@ function saveNodeEdit() {
       // if (index > -1) { nodes.splice(index, 1); }
       // var edgesToDelete = [];
       for (var j = 0; j < edges.length; j++) {
-        console.log(edges[j].toID);
         if(edges[j].toID == CurrentlyEditing) {
           edgesToDelete.push(edges[j]);
-          console.log("deleting edge");
         }
         if(edges[j].fromID == CurrentlyEditing) {
           edgesToDelete.push(edges[j]);
-          console.log("deleting edge");
         }
       }
     for (var i=0; i<edgesToDelete.length; i++) {
