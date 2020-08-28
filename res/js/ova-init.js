@@ -71,6 +71,8 @@ function Init(evt){
         window.ssets[schemeset.id] = schemeset.schemes;
     }
   });
+
+  getSocial();
 }
 
 function getSelText()
@@ -106,9 +108,9 @@ function getSelText()
             }
             span.id = "node"+(window.nodeCounter+2);
           }
-          console.log(span.id);
           range.surroundContents(span);
-          postEdit("text", "edit", $('#ova_arg_area_div').html());
+          postEdit("text", "edit", $('#analysis_text').html());
+          //postEdit("text", "edit", $('#ova_arg_area_div').html());
       }
   }else{
       var innerDoc = iframe.contentDocument || iframe.contentWindow.document;
@@ -125,11 +127,11 @@ function hlcurrent(nodeID) {
     if(nodeID != 'none'){
         //$("#node"+nodeID).addClass("hlcurrent");
         span.className="highlighted";
-        if($("#node"+nodeID).length != 0) {
-            $('#ova_arg_area_div').animate({
-            scrollTop: $('#ova_arg_area_div').scrollTop() + $("#node"+nodeID).offset().top - 200
+        //if($("#node"+nodeID).length != 0) {
+            $('#analysis_text').animate({
+            scrollTop: $('#analysis_text').scrollTop() + $("#node"+nodeID).offset().top - 200
             }, 1000);
-        }
+        //}
     }
 }
 
@@ -160,6 +162,23 @@ function postEdit(type, action, content){
         }
     }
     window.unsaved = true;
+}
+
+function getSocial() {
+    $.getJSON("social.json", function(json_data){
+        for(i in json_data.users) {
+            user = json_data.users[i];
+            uimg = '<img src="res/img/avatar_blank.gif" />';
+            for(j in user.info){
+                if(user.info[j].name == 'Avatar'){
+                    uimg = '<img src="'+user.info[j].value+'" />'
+                }
+            }
+            $('<a href="#" class="pselname" onClick="$(\'#p_firstname\').val(\''+user.firstname+'\');$(\'#p_surname\').val(\''+user.surname+'\');addlclick(true);return false;">'+uimg+user.firstname+' '+user.surname+'</a>').appendTo('#socialusers');
+            addParticipant(user.firstname,user.surname);
+        }
+        $('<a href="#" style="padding-left: 56px;" onClick="newprt();return false;">+ Add new</a>').appendTo('#socialusers');
+    });
 }
 
 function addParticipant(firstname, surname) {
@@ -220,7 +239,6 @@ function addLocution(node) {
 
   // span = document.getElementById("node"+newLNodeID);
   // span.className="highlighted";
-  console.log(newLNodeID);
 
   hlcurrent(newLNodeID);
 

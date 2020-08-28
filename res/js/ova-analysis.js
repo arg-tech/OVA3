@@ -1,5 +1,4 @@
 $(function() {
-  console.log("slider");
     mw = $("#mainwrap").width();
     $("#right1").width(mw - $("#left1").width() - 41);
     $("#left1").height($(window).height() - $("#toolbar").height() - 41);
@@ -53,7 +52,6 @@ $(function() {
     , center: 1
     , beforePan: beforePan
     });
-
     window.panZoom.resize(); // update SVG cached size and controls positions
     window.panZoom.fit();
     window.panZoom.center();
