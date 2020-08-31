@@ -8,8 +8,15 @@ html, body {
 }
 
 g {
-      cursor: move;
-  }
+  cursor: move;
+}
+
+g rect.bw{
+  fill:#ffffff !important;
+  stroke:#000000 !important;
+  stroke-width:1; 
+}
+
 
   svg text {
       -webkit-user-select: none;
@@ -50,10 +57,11 @@ a.pointer {
   left: 280px;
   cursor:col-resize;
 }
-#left1{
-  width:240px;
-  height:200px;
-  float:left;
+
+#left1 {
+  width: 240px;
+  height: 200px;
+  float: left;
   background-color: #f4f4f4;
   font-size: 13px;
   color: #333;
@@ -64,7 +72,7 @@ a.pointer {
 }
 
 #right1{
-  width:280px;
+  width:240px;
   height:200px;
   float:left;
   background-color: #f4f4f4;
@@ -238,17 +246,17 @@ div#modal-shade {
 }
 
 div.modal-box {
-    z-index: 99999;
-    position: absolute;
-    top: 110px;
-    right: 25%;
-    width: 500px;
-    color: #333;
-    background-color: #fff;
-    display: none;
-    border: 1px solid #bbb;
-    border-top: 0px;
-    padding: 0px;
+  z-index: 99999;
+  position: absolute;
+  top: 110px;
+  right: 25%;
+  width: 500px;
+  color: #333;
+  background-color: #fff;
+  display: none;
+  border: 1px solid #bbb;
+  border-top: 0px;
+  padding: 0px;
 }
 
 div.modal-dialog {
@@ -304,16 +312,16 @@ a.xmodal:hover img {
 }
 
 div.modal-btns a {
-    font-size: 11px;
-    font-weight: bold;
-    display: block;
-    height: 40px;
-    line-height: 40px;
-    color: #333;
-    float: right;
-    padding: 0px 20px;
-    text-decoration: none;
-    border-left: 1px solid #bbb;
+  font-size: 11px;
+  font-weight: bold;
+  display: block;
+  height: 40px;
+  line-height: 40px;
+  color: #333;
+  float: right;
+  padding: 0px 20px;
+  text-decoration: none;
+  border-left: 1px solid #bbb;
 }
 
 div.modal-btns a:hover {
@@ -321,19 +329,19 @@ div.modal-btns a:hover {
 }
 
 div.modal-btns a.save {
-    color: #27ae60;
+  color: #27ae60;
 }
 
 div.modal-btns a.save:hover {
-    background-color: #2ecc71;
+  background-color: #2ecc71;
 }
 
 div.modal-btns a.cancel {
-    color: #c0392b;
+  color: #c0392b;
 }
 
 div.modal-btns a.cancel:hover {
-    background-color: #e74c3c;
+  background-color: #e74c3c;
 }
 
 #modal-save2db {
@@ -411,7 +419,6 @@ ul.btnlist li a.bgblu:hover {
 }
 
 /* ---- formstyle ---- */
-/* todo: fix centering */
 form.fstyle {
   /*font: 11px "Lucida Grande", Verdana, Arial, "Bitstream Vera Sans", sans-serif;*/
   color: #333;
@@ -476,28 +483,143 @@ form.fstyle select {
 /* ========{ Context Menu Box }======== */
 
 #contextmenu {
-    z-index: 99999;
-    position: absolute;
-    color: #333;
-    background-color: #fff;
-    display: none;
-    border: 1px solid #999;
-    padding: 0px;
-    box-shadow: 5px 5px 5px #bbb;
+  z-index: 99999;
+  position: absolute;
+  color: #333;
+  background-color: #fff;
+  display: none;
+  border: 1px solid #999;
+  padding: 0px;
+  box-shadow: 5px 5px 5px #bbb;
 }
 
 #contextmenu a {
-    cursor: pointer;
-    background-color: #fff;
-    display: block;
-    padding: 4px 12px;
-    margin: 1px;
-    width: 100px;
-    font-size: 0.9em;
-    border: 1px solid #fff;
+  cursor: pointer;
+  background-color: #fff;
+  display: block;
+  padding: 4px 12px;
+  margin: 1px;
+  width: 100px;
+  font-size: 0.9em;
+  border: 1px solid #fff;
 }
 
 #contextmenu a:hover {
-    background-color: #ddd;
-    border: 1px solid #bbb;
+  background-color: #ddd;
+  border: 1px solid #bbb;
+}
+
+/* ==== Text Settings ==== */
+
+div#left1.ts div#analysis_text {
+  font-size: 11px;
+}
+
+div#left1.tm div#analysis_text {
+  font-size: 13px;
+}
+
+div#left1.tl div#analysis_text {
+  font-size: 18px;
+}
+
+div#left1.ts .highlighted {
+  box-shadow: 0px 0px 0 0px #2ecc71, 0px 0px 0 0px #2ecc71;
+}
+
+div#left1.ts .hlcurrent {
+  box-shadow: 0px 0px 0 0px, 0px 0px 0 0px !important;
+}
+
+div#left1.tm .highlighted, div#left1.tl .highlighted {
+  box-shadow: 0px -2px 0 1px #2ecc71, 0px 2px 0 1px #2ecc71;
+}
+
+div#left1.tm .hlcurrent, div#left1.tl .hlcurrent {
+  box-shadow: 0px -2px 0 1px #f39c12, 0px 2px 0 1px #f39c12 !important;
+}
+
+div#txtstg a.its, div#txtstg a.itm, div#txtstg a.itl {
+  background-position: 0px 0px;
+  background-color: #fff;
+}
+
+div#txtstg a.its.sel, div#txtstg a.itm.sel, div#txtstg a.itl.sel {
+  background-position: 0px -36px;
+  background-color: #27ae60;
+}
+
+div#txtstg a {
+  display: block;
+  width: 36px;
+  height: 36px;
+  background-position: 0px 0px;
+  background-color: #f8f9fc;
+  float: right;
+  margin-left: 24px;
+}
+
+div#txtstg a:hover {
+  background-position: 0px -36px !important;
+  background-color: #2ecc71 !important;
+}
+
+div#txtstg {
+  margin-bottom: 10px;
+}
+
+div#anastg {
+  clear: both;
+}
+
+/* CQ */
+
+/*div#cq_selects {
+  margin-top: 5px;
+  max-height: 200px;
+  line-height: normal;
+  overflow: auto;
+}
+
+div#descriptor_selects {
+  margin-top: 5px;
+}*/
+
+/* Toggle Switches */
+
+a.togglesw {
+  display: block;
+  height: 20px;
+  width: 60px;
+  margin: 1px solid #555;
+  background-color: #eee;
+  color: #333;
+}
+
+a.togglesw span.tson, a.togglesw span.tsoff {
+  display: inline-block;
+  height: 20px;
+  line-height: 20px;
+  width: 30px;
+  text-align: center;
+  font-size: 10px;
+  text-decoration: none;
+}
+
+a.togglesw.on span.tson {
+  background-color: #2ECC71;
+  color: #fff;
+}
+
+a.togglesw.on span.tsoff {
+  color: #ccc;
+}
+
+a.togglesw.off span.tsoff {
+  background-color: #444;
+  color: #fff;
+}
+
+a.togglesw.off span.tson {
+  color: #ccc;
 }

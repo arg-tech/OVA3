@@ -10,7 +10,7 @@ function DrawNode(nid, type, txt, nx, ny) {
                 line = word;
             } else if (line.length + word.length <= 36) {
                 line = line + ' ' + word;
-                if (i == wa.length - 1) {
+                if (i == wa.length) {
                     phraseArray.push(line)
                 }
             } else {
@@ -66,8 +66,9 @@ function DrawNode(nid, type, txt, nx, ny) {
         nbox.setAttribute('ry', (textheight + 24) / 2);
     }
     if (window.bwmode) {
-        nbox.setAttribute('style', 'fill:#ffffff;stroke:#000000;stroke-width:1;');
-    } else if (type == 'RA') {
+        nbox.classList.add('bw');;
+    }
+    if (type == 'RA') {
         nbox.setAttribute('style', 'fill:#def8e9;stroke:#2ecc71;stroke-width:1;');
     } else if (type == 'CA') {
         nbox.setAttribute('style', 'fill:#fbdedb;stroke:#e74c3c;stroke-width:1;');
@@ -101,8 +102,8 @@ function cmenu(node) {
     window.contextnode = node;
     $('#contextmenu').empty();
     $('#contextmenu').css({ top: node.y + 85, left: node.x + 210 });
-    $('#contextmenu').append("<a onClick='editNode(window.contextnode);$(\"#contextmenu\").hide();'>Edit Node</a>");
-    if ("plus" in getUrlVars() && node.type == 'I') {
+    $('#contextmenu').append("<a onClick='editpopup(window.contextnode);$(\"#contextmenu\").hide();'>Edit Node</a>");
+    if (node.type == 'I') {
         $('#contextmenu').append("<a onClick='$(\"#locution_add\").show();$(\"#contextmenu\").hide();'>Add Locution</a>");
     }
     $('#contextmenu').append("<a onClick='deleteNode(window.contextnode);$(\"#contextmenu\").hide();'>Delete Node</a>");
@@ -111,4 +112,205 @@ function cmenu(node) {
     //}
 
     $('#contextmenu').show();
+}
+
+function editpopup(node) {
+    $('#n_text').hide(); $('#n_text_label').hide();
+    $('#s_type').hide(); $('#s_type_label').hide();
+    $('#s_ischeme').hide(); $('#s_ischeme_label').hide();
+    $('#s_cscheme').hide(); $('#s_cscheme_label').hide();
+    $('#s_lscheme').hide(); $('#s_lscheme_label').hide();
+    $('#s_mscheme').hide(); $('#s_mscheme_label').hide();
+    $('#s_pscheme').hide(); $('#s_pscheme_label').hide();
+    $('#s_tscheme').hide(); $('#s_tscheme_label').hide();
+    $('#descriptor_selects').hide();
+    $('#cq_selects').hide();
+    $('#s_sset').hide(); $('#s_sset_label').hide();
+
+    if (node.type == 'I' || node.type == 'L' || node.type == 'EN') {
+        $('#n_text').show();
+        $('#n_text_label').show();
+    } else {
+        nodesIn = getNodesIn(node);
+
+        var addRA = true;
+        var addCA = true;
+        var addYA = false;
+        var addTA = true;
+        var addPA = true;
+        var addMA = true;
+
+        for (var i = 0; i < nodesIn.length; i++) {
+            if (nodesIn[i].type == 'L' || nodesIn[i].type == 'TA') {
+                addYA = true;
+            }
+        }
+
+        $('#s_type').empty();
+        if (addRA) {
+            $('#s_type').append('<option value="RA">RA</option>');
+        }
+        if (addCA) {
+            $('#s_type').append('<option value="CA">CA</option>');
+        }
+        if (addYA) {
+            $('#s_type').append('<option value="YA">YA</option>');
+        }
+        if (addTA) {
+            $('#s_type').append('<option value="TA">TA</option>');
+        }
+        if (addMA) {
+            $('#s_type').append('<option value="MA">MA</option>');
+        }
+        if (addPA) {
+            $('#s_type').append('<option value="PA">PA</option>');
+        }
+
+        $('#s_type').show();
+        $('#s_type_label').show();
+        $('#s_type').val(node.type);
+
+        if (node.scheme == 0) {
+            //$('#node_edit').height(180);
+        } else {
+            setdescriptors(node.scheme, node);
+            //$('#node_edit').height(350);
+            $('#descriptor_selects').show();
+        }
+
+        if (node.type == 'RA') {
+            $('#s_sset').show(); $('#s_sset_label').show();
+            $('#s_ischeme').show();
+            $('#s_ischeme_label').show();
+            $('#s_ischeme').val(node.scheme);
+        } else if (node.type == 'CA') {
+            $('#s_sset').show(); $('#s_sset_label').show();
+            $('#s_cscheme').show();
+            $('#s_cscheme_label').show();
+            $('#s_cscheme').val(node.scheme);
+        } else if (node.type == 'YA') {
+            $('#s_sset').show(); $('#s_sset_label').show();
+            $('#s_lscheme').show();
+            $('#s_lscheme_label').show();
+            $('#s_lscheme').val(node.scheme);
+        } else if (node.type == 'MA') {
+            $('#s_sset').show(); $('#s_sset_label').show();
+            $('#s_mscheme').show();
+            $('#s_mscheme_label').show();
+            $('#s_mscheme').val(node.scheme);
+        } else if (node.type == 'PA') {
+            $('#s_sset').show(); $('#s_sset_label').show();
+            $('#s_pscheme').show();
+            $('#s_pscheme_label').show();
+            $('#s_pscheme').val(node.scheme);
+        } else if (node.type == 'TA') {
+            $('#s_sset').show(); $('#s_sset_label').show();
+            $('#s_tscheme').show();
+            $('#s_tscheme_label').show();
+            $('#s_tscheme').val(node.scheme);
+        }
+    }
+
+    $('#n_text').val(node.text);
+    $('#modal-bg').show();
+    $('#node_edit').slideDown(100, function () {
+        $('#n_text').focus();
+    });
+}
+
+function showschemes(type) {
+    if (type == 'RA') {
+        $('#s_ischeme').show();
+        $('#s_ischeme_label').show();
+        $('#s_cscheme').hide();
+        $('#s_cscheme_label').hide();
+        $('#s_lscheme').hide();
+        $('#s_lscheme_label').hide();
+        $('#s_mscheme').hide();
+        $('#s_mscheme_label').hide();
+        $('#s_pscheme').hide();
+        $('#s_pscheme_label').hide();
+        $('#s_tscheme').hide();
+        $('#s_tscheme_label').hide();
+    } else if (type == 'CA') {
+        $('#s_ischeme').hide();
+        $('#s_ischeme_label').hide();
+        $('#s_cscheme').show();
+        $('#s_cscheme_label').show();
+        $('#s_lscheme').hide();
+        $('#s_lscheme_label').hide();
+        $('#s_mscheme').hide();
+        $('#s_mscheme_label').hide();
+        $('#s_pscheme').hide();
+        $('#s_pscheme_label').hide();
+        $('#s_tscheme').hide();
+        $('#s_tscheme_label').hide();
+    } else if (type == 'YA') {
+        $('#s_ischeme').hide();
+        $('#s_ischeme_label').hide();
+        $('#s_cscheme').hide();
+        $('#s_cscheme_label').hide();
+        $('#s_lscheme').show();
+        $('#s_lscheme_label').show();
+        $('#s_mscheme').hide();
+        $('#s_mscheme_label').hide();
+        $('#s_pscheme').hide();
+        $('#s_pscheme_label').hide();
+        $('#s_tscheme').hide();
+        $('#s_tscheme_label').hide();
+    } else if (type == 'MA') {
+        $('#s_ischeme').hide();
+        $('#s_ischeme_label').hide();
+        $('#s_cscheme').hide();
+        $('#s_cscheme_label').hide();
+        $('#s_lscheme').hide();
+        $('#s_lscheme_label').hide();
+        $('#s_mscheme').show();
+        $('#s_mscheme_label').show();
+        $('#s_pscheme').hide();
+        $('#s_pscheme_label').hide();
+        $('#s_tscheme').hide();
+        $('#s_tscheme_label').hide();
+    } else if (type == 'PA') {
+        $('#s_ischeme').hide();
+        $('#s_ischeme_label').hide();
+        $('#s_cscheme').hide();
+        $('#s_cscheme_label').hide();
+        $('#s_lscheme').hide();
+        $('#s_lscheme_label').hide();
+        $('#s_mscheme').hide();
+        $('#s_mscheme_label').hide();
+        $('#s_pscheme').show();
+        $('#s_pscheme_label').show();
+        $('#s_tscheme').hide();
+        $('#s_tscheme_label').hide();
+    } else if (type == 'TA') {
+        $('#s_ischeme').hide();
+        $('#s_ischeme_label').hide();
+        $('#s_cscheme').hide();
+        $('#s_cscheme_label').hide();
+        $('#s_lscheme').hide();
+        $('#s_lscheme_label').hide();
+        $('#s_mscheme').hide();
+        $('#s_mscheme_label').hide();
+        $('#s_pscheme').hide();
+        $('#s_pscheme_label').hide();
+        $('#s_tscheme').show();
+        $('#s_tscheme_label').show();
+    }
+
+}
+
+function bwModeOnOff() {
+    var allRects = document.getElementsByTagName('rect');
+    if (window.bwmode) {
+        for (rect of allRects) {
+            rect.classList.add('bw');
+        }
+    }
+    else {
+        for (rect of allRects) {
+            rect.classList.remove('bw');
+        }
+    }
 }
