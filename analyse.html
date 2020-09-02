@@ -145,8 +145,58 @@
       </div>
       <form id="node_edit_form" class="fstyle" style="width: 78%;">
         <!-- TODO: id and class names to be changed -->
+
+        <label for="s_type" id="s_type_label">Type</label>
+                <select id="s_type" onChange="showschemes(this.value);">
+                    <option value="RA">RA</option>
+                    <option value="CA">CA</option>
+                </select>
+
+                <label for="s_sset" id="s_sset_label">Scheme Set</label>
+                <select id="s_sset" onChange="filterschemes(this.value);">
+                    <option value="0">All Schemes</option>
+                </select>
+
+                <label for="s_cscheme" id="s_cscheme_label">Scheme</label>
+                <select id="s_cscheme" onChange="setdescriptors(this.value);">
+                    <option value="0">-</option>
+                </select>
+
+                <label for="s_ischeme" id="s_ischeme_label">Scheme</label>
+                <select id="s_ischeme" onChange="setdescriptors(this.value, mySel);">
+                    <option value="0">-</option>
+                </select>
+
+                <label for="s_lscheme" id="s_lscheme_label">Scheme</label>
+                <select id="s_lscheme" onChange="setdescriptors(this.value, mySel);">
+                    <option value="0">-</option>
+                </select>
+
+                <label for="s_mscheme" id="s_mscheme_label">Scheme</label>
+                <select id="s_mscheme" onChange="setdescriptors(this.value, mySel);">
+                    <option value="0">-</option>
+                </select>
+
+                <label for="s_pscheme" id="s_pscheme_label">Scheme</label>
+                <select id="s_pscheme" onChange="setdescriptors(this.value, mySel);">
+                    <option value="0">-</option>
+                </select>
+
+		<label for="s_tscheme" id="s_tscheme_label">Scheme</label>
+                <select id="s_tscheme" onChange="setdescriptors(this.value, mySel);">
+                    <option value="0">-</option>
+                </select>
+
+		<!-- <p style="text-align: right;">
+                    <a href="#" onClick="ask_detail(mySel); $('#ask_dialogue').show(); ask_init(); return false;">Click here to use ASK</a>
+                </p> -->
         <label for="n_text" id="n_text_label">Text</label>
         <textarea id="n_text" name="n_text"></textarea>
+
+        <div id="descriptor_selects" style="display:none;"></div>
+
+
+        <div id="cq_selects" style="display:none;"></div>
       </form>
       <div class="modal-btns">
         <a class="save" href="#" onClick="saveNodeEdit();this.parentNode.parentNode.style.display='none';$('#modal-shade').hide(); return false;">&#x2714; Save</a>

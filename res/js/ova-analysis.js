@@ -42,19 +42,19 @@ $(function () {
     return customPan
   }
 
-  // Expose to window namespace for testing purposes
-  window.panZoom = svgPanZoom('#inline', {
-    zoomEnabled: true
+    // Expose to window namespace for testing purposes
+    window.panZoom = svgPanZoom('#inline', {
+      zoomEnabled: true
     , controlIconsEnabled: true
     , minZoom: 0.1
     , maxZoom: 2
     , fit: 1
     , center: 1
     , beforePan: beforePan
-  });
-  window.panZoom.resize(); // update SVG cached size and controls positions
-  window.panZoom.fit();
-  window.panZoom.center();
+    });
+    window.panZoom.resize(); // update SVG cached size and controls positions
+    window.panZoom.fit();
+    window.panZoom.center();
 });
 
 function openModal(ident) {

@@ -1,4 +1,3 @@
-
 function DrawNode(nid, type, txt, nx, ny) {
     var phraseArray = [];
     if (txt.length > 36) {
