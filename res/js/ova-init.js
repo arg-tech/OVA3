@@ -10,7 +10,7 @@ var editMode = false;
 
 window.shiftPress = false;
 window.nodeCounter = 1;
-window.unsaved = true;
+window.unsaved = false;
 
 window.addEventListener('keydown', myKeyDown, true);
 window.addEventListener('keyup', myKeyUp, true);
@@ -29,25 +29,6 @@ window.cqmode = false;
 if ("cq" in getUrlVars()) {
     window.cqmode = true;
 }
-
-/*function postEdit(type, action, content) {
-    if (type == 'text') {
-        $.post("helpers/edit.php", { type: type, action: action, cnt: content, akey: window.akey, sessionid: window.sessionid }).done(function (data) {
-            dt = JSON.parse(data);
-            //lastedit = dt.last;
-        });
-    } else {
-        if (content == null) {
-            alert("Error with " + type + " " + action);
-        } else {
-            $.post("helpers/edit.php", { type: type, action: action, cnt: JSON.stringify(content), akey: window.akey, sessionid: window.sessionid }).done(function (data) {
-                dt = JSON.parse(data);
-                //lastedit = dt.last;
-            });
-        }
-    }
-    window.unsaved = true;
-}*/
 
 function Init(evt) {
     SVGRoot = document.getElementById('inline');
@@ -219,16 +200,22 @@ function getSocial() {
 }
 
 function addParticipant(firstname, surname) {
-    var p = new Participant;
-    p.firstname = firstname;
-    p.surname = surname;
-    p.participantID = participants.length + 1;
-    $('#p_select').append($("<option/>", {
-        value: p.participantID,
-        text: firstname + " " + surname
-    }));
-    participants.push(p);
-    return p;
+    var found = findParticipantID(firstname, surname);
+    if (found === 0) {
+        var p = new Participant;
+        p.firstname = firstname;
+        p.surname = surname;
+        p.participantID = participants.length + 1;
+        $('#p_select').append($("<option/>", {
+            value: p.participantID,
+            text: firstname + " " + surname
+        }));
+        participants.push(p);
+        return p;
+    }
+    else {
+        return participants[found - 1];
+    }
 }
 
 function addLocution(node) {
@@ -237,8 +224,8 @@ function addLocution(node) {
         surname = $('#p_surname').val();
         $('#p_firstname').val('');
         $('#p_surname').val('');
-        addParticipant(firstname, surname);
-        participantID = participants.length;
+        participant = addParticipant(firstname, surname);
+        participantID = participant.participantID;
     } else {
         participantID = $('#p_select').val();
         participant = participants[participantID - 1];

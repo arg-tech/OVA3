@@ -122,15 +122,14 @@ function genjson() {
     return jstr;
 }
 
-/* for collaberation
 function genlink() {
-    if($('#sharelink').is(':hidden')) {
+    if ($('#sharelink').is(':hidden')) {
         alink = window.location;
         $('#shareinput').val(alink);
     }
 
     return false;
-}*/
+}
 
 function save2file() {
     var jstr = genjson();
@@ -176,6 +175,13 @@ function loadfile(jstr) {
     }
 
     jnodes = json['nodes'];
+    var p = json['participants'];
+    var pID = 0;
+    for (var i = 0, l = p.length; i < l; i++) {
+        firstname = p[i].firstname;
+        surname = p[i].surname;
+        addParticipant(firstname, surname)
+    }
 
     if (jnodes.length > 0 && !(jnodes[0].hasOwnProperty('x'))) {
         loaddbjson(json);
@@ -186,12 +192,16 @@ function loadfile(jstr) {
             if (jnodes[i].id > window.nodeCounter) {
                 window.nodeCounter = jnodes[i].id;
             }
-            //AddNode(jnodes[i].text, jnodes[i].type, jnodes[i].id, jnodes[i].x, jnodes[i].y);
-            newNode(jnodes[i].id, jnodes[i].type, jnodes[i].scheme, jnodes[i].participantID, jnodes[i].text, jnodes[i].x, jnodes[i].y);
-            //postEdit("node", "add", jnodes[i]);
+            if (jnodes[i].type == "L") {
+                pID = findParticipantIDText(jnodes[i].text);
+                newNode(jnodes[i].id, jnodes[i].type, jnodes[i].scheme, pID, jnodes[i].text, jnodes[i].x, jnodes[i].y);
+            } else {
+                newNode(jnodes[i].id, jnodes[i].type, jnodes[i].scheme, 0, jnodes[i].text, jnodes[i].x, jnodes[i].y);
+            }
             if (jnodes[i].visible) {
                 DrawNode(jnodes[i].id, jnodes[i].type, jnodes[i].text, jnodes[i].x, jnodes[i].y);
             }
+            //postEdit("node", "add", jnodes[i]);
         }
         window.nodeCounter++;
 
@@ -211,6 +221,10 @@ function loadfile(jstr) {
                 window.nodeCounter = nodes[i].nodeID;
             }
             DrawNode(nodes[i].nodeID, nodes[i].type, nodes[i].text, nodes[i].x, nodes[i].y);
+            if (nodes[i].type == "L") {
+                pID = findParticipantIDText(nodes[i].text);
+                nodes[i].participantID = pID;
+            }
             //postEdit("node", "add", nodes[i]);
         }
         window.nodeCounter++;
@@ -227,15 +241,6 @@ function loadfile(jstr) {
         }
     }
 
-    $('#p_select').empty();
-    particpants = [];
-    var p = json['participants'];
-    for (var i = 0, l = p.length; i < l; i++) {
-        firstname = p[i].firstname;
-        surname = p[i].surname;
-        addParticipant(firstname, surname)
-    }
-
     setAllText(json['analysis']['txt']);
     //postEdit("text", "edit", json['analysis']['txt']);
 
@@ -249,11 +254,11 @@ function loaddbjson(json) {
     }
 
     var nodelist = {};
-
+    var pID;
     jnodes = json['nodes'];
     for (var i = 0, l = jnodes.length; i < l; i++) {
-        xpos = 20 + (i * 100);
-        ypos = 20;
+        xpos = 10 + (i * 10);
+        ypos = 10;
         node = jnodes[i];
         if (node.type == "CA") {
             nodelist[node.nodeID] = AddNode(node.text, node.type, 71, 0, node.nodeID, xpos, ypos);
@@ -275,13 +280,19 @@ function loaddbjson(json) {
             if (oplus) {
                 nodelist[node.nodeID] = AddNode(node.text, node.type, 161, 0, node.nodeID, xpos, ypos);
             }
-        } else {
+        } else if (node.type == "L") {
+            if (oplus) {
+                pID = findParticipantIDText(node.text);
+                nodelist[node.nodeID] = AddNode(node.text, node.type, 0, pID, node.nodeID, xpos, ypos);
+            }
+        }
+        else {
             if (node.type == "I" || oplus) {
                 nodelist[node.nodeID] = AddNode(node.text, node.type, 0, 0, node.nodeID, xpos, ypos);
             }
         }
     }
-
+    
     edges = json['edges'];
     for (var i = 0, l = edges.length; i < l; i++) {
         edge = edges[i];
@@ -290,17 +301,14 @@ function loaddbjson(json) {
             UpdateEdge(edge);
         }
     }
-    //todo: set participants & IDs
-    /*$('#p_select').empty();
-    particpants = [];
-    var p = json['participants'];
-    for (var i = 0, l = p.length; i < l; i++) {
-        firstname = p[i].firstname;
-        surname = p[i].surname;
-        addParticipant(firstname, surname)
-    }*/
-    //todo: set correct schemes
-    
+
+    var sf = json['schemefulfillments'];
+    //console.log(sf);
+    for (var i = 0; i < sf.length; i++) {
+        index = findNodeIndex(sf[i].nodeID);
+        //console.log("nodeID: " + sf[i].nodeID);
+        nodes[index].scheme = sf[i].schemeID;
+    }
 }
 
 //todo: test
@@ -314,8 +322,14 @@ function loadfromdb(nodeSetID) {
     }
     $.getJSON("helpers/layout.php?id=" + nodeSetID + uplus, function (ldata) {
         $.getJSON("helpers/getdbnodeset.php?id=" + nodeSetID, function (data) {
-            var nodelist = {};
 
+            //$('#p_select').empty();
+            //particpants = [];
+            $.each(data.participants, function (idx, p) {
+                addParticipant(p.firstname, p.surname);
+            });
+
+            var nodelist = {};
             $.each(data.nodes, function (idx, node) {
                 /*visi = true;
                 if (node.type == "YA" && node.text.indexOf('AnalysesAs') >= 0) {
@@ -357,7 +371,13 @@ function loadfromdb(nodeSetID) {
                     if (oplus) {
                         nodelist[node.nodeID] = AddNode(node.text, node.type, 161, 0, node.nodeID, xpos, ypos);
                     }
-                } else {
+                } else if (node.type == "L") {
+                    if (oplus) {
+                        pID = findParticipantIDText(node.text);
+                        nodelist[node.nodeID] = AddNode(node.text, node.type, 0, pID, node.nodeID, xpos, ypos);
+                    }
+                }
+                else {
                     if (node.type == "I" || oplus) {
                         nodelist[node.nodeID] = AddNode(node.text, node.type, 0, 0, node.nodeID, xpos, ypos);
                     }
@@ -371,10 +391,17 @@ function loadfromdb(nodeSetID) {
                     UpdateEdge(edge);
                 }
             });
-            console.log(edges);
+            //console.log(edges);
 
             $.get("helpers/gettext.php?id=" + nodeSetID, function (tdata) {
                 setAllText(tdata);
+            });
+
+            $.each(data.schemefulfillments, function (idx, sf) {
+                if (sf.nodeID in nodelist) {
+                    index = findNodeIndex(sf.nodeID);
+                    nodes[index].scheme = sf.schemeID;
+                }
             });
 
             /*if (mwidth > WIDTH || mheight > HEIGHT) {
@@ -428,7 +455,7 @@ function save2db() {
 
     jstring = JSON.stringify(json);
     console.log(jstring);
-    /* todo: uncomment
+    /* todo: uncomment & add error check
         $.post("ul/index.php", { data: JSON.stringify(json) },
             function(reply) {
                 console.log(reply);

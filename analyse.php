@@ -363,15 +363,15 @@ if (isset($_COOKIE['ovauser'])) {
   </div>
   <!-- Edit Node Form Ends here -->
 
-  <!-- todo: collaboration
-  <div id="linkto">
-        <a id="linklink" onClick="genlink();$('#sharelink').toggle();"><img src="res/img/linkicon.png" id="linkicon" data-step="9" data-intro="<p>Click here to share your analysis.</p><p>Shared analyses are collaborative and can be edited by multiple people.</p>" data-position="left" /></a>
-    </div>
 
-    <div id="sharelink">
-        <p>Share this analysis:</p>
-        <input type="text" id="shareinput" value="Generating link" onClick="this.select();" />
-    </div> -->
+  <div id="linkto">
+    <a id="linklink" onClick="genlink();$('#sharelink').toggle();"><img src="res/img/linkicon.png" id="linkicon" data-step="9" data-intro="<p>Click here to share your analysis.</p><p>Shared analyses are collaborative and can be edited by multiple people.</p>" data-position="left" /></a>
+  </div>
+
+  <div id="sharelink">
+    <p>Share this analysis:</p>
+    <input type="text" id="shareinput" value="Generating link" onClick="this.select();" />
+  </div>
 
   <!--  <a href="http://www.arg.tech" target="_blank" id="devby"><img src="res/img/arg-tech.svg" /></a> -->
   <div id="mainwrap">

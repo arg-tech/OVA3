@@ -1,3 +1,5 @@
+var dragEdges = [];
+
 function myKeyDown(e) {
   var keycode = e.keyCode;
   if (keycode == 16 || keycode == 83) {

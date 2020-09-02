@@ -21,7 +21,7 @@ function Edge() {
 }
 
 function Participant() {
-    this.participantID;
+    this.participantID = 0;
     this.firstname = '';
     this.surname = '';
 }
@@ -75,4 +75,20 @@ function newEdge(fromID, toID) {
     e.toID = toID;
     edges.push(e);
     return e;
+}
+
+function findParticipantID(firstname, surname) {
+    var found = participants.find(p => p.firstname == firstname && p.surname == surname);
+    if (typeof found !== "undefined") {
+        return found.participantID;
+    }
+    return 0;
+}
+
+function findParticipantIDText(text) {
+    var index = text.indexOf(":");
+    var str = text.slice(0, index);
+    var name = str.split(" ");
+    var found = findParticipantID(name[0], name[1]);
+    return found;
 }
