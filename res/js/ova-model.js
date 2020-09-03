@@ -21,25 +21,25 @@ function Edge() {
 }
 
 function Participant() {
-    this.participantID = 0;
+    this.id;
     this.firstname = '';
     this.surname = '';
 }
 
 function newParticipant(id, fname, sname) {
-    var p = new Participant;
-    p.participantID = id;
-    p.firstname = fname;
-    p.surname = sname;
-    $('#p_select').append($("<option/>", {
-        value: p.participantID,
-        text: firstname + " " + surname
-    }));
-    participants.push(p);
-    return p;
+  var p = new Participant;
+  p.id = id;
+  p.firstname = fname;
+  p.surname = sname;
+  $('#p_select').append($("<option/>", {
+    value: p.id,
+    text: firstname+" "+surname
+}));
+  participants.push(p);
+  return p;
 }
 
-function newNode(nodeID, type, scheme, participantID, text, x, y) {
+function newNode(nodeID, type, scheme, participantID, text, x, y){
     var n = new Node;
     n.nodeID = nodeID;
     n.type = type;
@@ -52,7 +52,7 @@ function newNode(nodeID, type, scheme, participantID, text, x, y) {
     return n;
 }
 
-function updateNode(nodeID, type, scheme, text, x, y) {
+function updateNode(nodeID, type, scheme, text, x, y){
     var index = findNodeIndex(nodeID);
     n = nodes[index];
     n.type = type;
@@ -62,7 +62,7 @@ function updateNode(nodeID, type, scheme, text, x, y) {
     n.y = y;
 }
 
-function updateNodePosition(nodeID, x, y) {
+function updateNodePosition(nodeID, x, y){
     var index = findNodeIndex(nodeID);
     n = nodes[index];
     n.x = x;
@@ -70,25 +70,9 @@ function updateNodePosition(nodeID, x, y) {
 }
 
 function newEdge(fromID, toID) {
-    var e = new Edge;
-    e.fromID = fromID;
-    e.toID = toID;
-    edges.push(e);
-    return e;
-}
-
-function findParticipantID(firstname, surname) {
-    var found = participants.find(p => p.firstname == firstname && p.surname == surname);
-    if (typeof found !== "undefined") {
-        return found.participantID;
-    }
-    return 0;
-}
-
-function findParticipantIDText(text) {
-    var index = text.indexOf(":");
-    var str = text.slice(0, index);
-    var name = str.split(" ");
-    var found = findParticipantID(name[0], name[1]);
-    return found;
+  var e = new Edge;
+  e.fromID = fromID;
+  e.toID = toID;
+  edges.push(e);
+  return e;
 }
