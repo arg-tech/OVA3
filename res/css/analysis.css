@@ -1,5 +1,4 @@
 @import url('https://fonts.googleapis.com/css?family=Open+Sans');
-
 html, body {
   width: 100%;
   padding: 0px;
@@ -8,18 +7,25 @@ html, body {
 }
 
 g {
-      cursor: move;
-  }
+  cursor: move;
+}
 
-  svg text {
-      -webkit-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
-      user-select: none;
-  }
-  svg text::selection {
-      background: none;
-  }
+g rect.bw {
+  fill: #ffffff !important;
+  stroke: #000000 !important;
+  stroke-width: 1;
+}
+
+svg text {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+svg text::selection {
+  background: none;
+}
 
 a.pointer {
   cursor: pointer;
@@ -28,6 +34,7 @@ a.pointer {
 #mainwrap {
   width: 100%;
 }
+
 #toolbar {
   position: relative;
   width: 100%;
@@ -35,24 +42,26 @@ a.pointer {
   border-bottom: 1px solid #000;
   height: 70px;
 }
-#spacer{
-  width:7px;
+
+#spacer {
+  width: 7px;
   border-left: 1px solid #e5e5e5;
   border-right: 1px solid #e5e5e5;
-  height:200px;
-  background-color:#f0f0f0;
+  height: 200px;
+  background-color: #f0f0f0;
   background-image: url("../img/spacer.png");
   background-position: center;
   background-repeat: no-repeat;
   background-size: 3px;
   position: absolute;
   left: 280px;
-  cursor:col-resize;
+  cursor: col-resize;
 }
-#left1{
-  width:240px;
-  height:200px;
-  float:left;
+
+#left1 {
+  width: 240px;
+  height: 200px;
+  float: left;
   background-color: #f4f4f4;
   font-size: 13px;
   color: #333;
@@ -62,16 +71,15 @@ a.pointer {
   line-height: 1.4em;
 }
 
-#right1{
-  width:240px;
-  height:200px;
-  float:left;
+#right1 {
+  width: 240px;
+  height: 200px;
+  float: left;
   background-color: #f4f4f4;
   overflow: hidden;
 }
 
-#toolbar a.home {
-}
+#toolbar a.home {}
 
 #toolbar a.home img {
   margin: 18px 0px 10px 20px;
@@ -104,20 +112,20 @@ a.pointer {
 }
 
 #toolbar a.icon:hover {
-  background-color: rgba(224,46,66,1);
-  border-color: rgba(224,46,66,1);
+  background-color: rgba(224, 46, 66, 1);
+  border-color: rgba(224, 46, 66, 1);
   /*background-image: url("../img/icons-grey.svg");*/
 }
 
 #toolbar a#nadd.active {
-  background-color: rgba(224,46,66,1);
-  border-color: rgba(224,46,66,1);
+  background-color: rgba(224, 46, 66, 1);
+  border-color: rgba(224, 46, 66, 1);
   color: #fff;
 }
 
 #toolbar a#eadd.attack {
-  background-color: rgba(224,46,66,1);
-  border-color: rgba(224,46,66,1);
+  background-color: rgba(224, 46, 66, 1);
+  border-color: rgba(224, 46, 66, 1);
   color: #fff;
 }
 
@@ -128,35 +136,36 @@ a.pointer {
 }
 
 #toolbar a.icon .tooltiptext {
-    visibility: hidden;
-    width: 74px;
-    background-color: rgba(0,0,0,0.8);
-    font-size: 9px;
-    color: #fff;
-    text-align: center;
-    border-radius: 6px;
-    padding: 5px 0;
-    position: absolute;
-    z-index: 1000;
-    top: 77px;
-    left: 50%;
-    margin-left: -37px;
+  visibility: hidden;
+  width: 74px;
+  background-color: rgba(0, 0, 0, 0.8);
+  font-size: 9px;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  position: absolute;
+  z-index: 1000;
+  top: 77px;
+  left: 50%;
+  margin-left: -37px;
 }
 
 /* Show the tooltip text when you mouse over the tooltip container */
+
 #toolbar a.icon:hover .tooltiptext {
-    visibility: visible;
+  visibility: visible;
 }
 
 #toolbar a.icon .tooltiptext::after {
-    content: "";
-    position: absolute;
-    bottom: 100%;
-    left: 50%;
-    margin-left: -5px;
-    border-width: 5px;
-    border-style: solid;
-    border-color: transparent transparent rgba(0,0,0,0.8) transparent;
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent transparent rgba(0, 0, 0, 0.8) transparent;
 }
 
 div#xmenu {
@@ -182,7 +191,7 @@ div#xmenu a.xicon {
 }
 
 div#xmenu a.xicon:hover {
-  background-color: rgba(224,46,66,1);
+  background-color: rgba(224, 46, 66, 1);
 }
 
 div#xmenu a.xicon div.icn {
@@ -213,41 +222,89 @@ div#xmenu a#devby img {
   width: 100px;
 }
 
+/* ==== share analysis ==== */
+div#linkto {
+  position: absolute;
+  top: 100px;
+  right: 10px;
+}
+
+a#linklink {
+  cursor: pointer;
+}
+
+img#linkicon {
+  background-color: #888888;
+}
+
+a#linklink:hover img#linkicon {
+  background-color: #333333;
+}
+
+div#sharelink {
+  z-index: 99999;
+  position: absolute;
+  top: 130px;
+  right: 10px;
+  width: 300px;
+  height: 60px;
+  background-color: #fff;
+  border: 1px solid #bbb;
+  padding: 20px;
+  display: none;
+}
+
+div#sharelink p {
+  font-weight: bold;
+  font-size: 11px;
+  padding: 0px;
+  margin: 0px 0px 5px 0px;
+}
+
+div#sharelink input {
+  padding: 6px;
+  width: 80%;
+  border: 1px solid #ccc;
+  font-size: 11px;
+}
+
 /* ========{ Left Hand Panel }======== */
+
 .highlighted {
-    color: #fff;
-    background-color: #2ecc71;
-    box-shadow: 0px -2px 0 1px #2ecc71, 0px 2px 0 1px #2ecc71;
+  color: #fff;
+  background-color: #2ecc71;
+  box-shadow: 0px -2px 0 1px #2ecc71, 0px 2px 0 1px #2ecc71;
 }
 
 .hlcurrent {
-    color: #fff;
-    background-color: #f39c12 !important;
-    box-shadow: 0px -2px 0 1px #f39c12, 0px 2px 0 1px #f39c12 !important;
+  color: #fff;
+  background-color: #f39c12 !important;
+  box-shadow: 0px -2px 0 1px #f39c12, 0px 2px 0 1px #f39c12 !important;
 }
 
 /* ---- Modals ---- */
+
 div#modal-shade {
   position: absolute;
   top: 71px;
   z-index: 99998;
   width: 100%;
-  background-color: rgba(0,0,0,0.4);
+  background-color: rgba(0, 0, 0, 0.4);
   display: none;
 }
 
 div.modal-box {
-    z-index: 99999;
-    position: absolute;
-    top: 110px;
-    right: 25%;
-    width: 500px;
-    color: #333;
-    background-color: #fff;
-    display: none;
-    border: 1px solid #bbb;
-    border-top: 0px;
-    padding: 0px;
+  z-index: 99999;
+  position: absolute;
+  top: 110px;
+  right: 25%;
+  width: 500px;
+  color: #333;
+  background-color: #fff;
+  display: none;
+  border: 1px solid #bbb;
+  border-top: 0px;
+  padding: 0px;
 }
 
 div.modal-dialog {
@@ -264,9 +321,9 @@ div.modal-dialog {
 }
 
 div.modal-content {
-    overflow: auto;
-    box-sizing: content-box;
-    -moz-box-sizing: content-box;
+  overflow: auto;
+  box-sizing: content-box;
+  -moz-box-sizing: content-box;
 }
 
 div.modal-header {
@@ -283,9 +340,7 @@ div.modal-header h4 {
   font-weight: normal;
 }
 
-div.modal-body {
-
-}
+div.modal-body {}
 
 a.xmodal {
   position: absolute;
@@ -293,46 +348,48 @@ a.xmodal {
   top: 0px;
   color: #fff;
 }
+
 a.xmodal img {
   margin: 14px 14px 0px 0px;
   width: 20px;
   opacity: 0.5;
 }
+
 a.xmodal:hover img {
   opacity: 1.0;
 }
 
 div.modal-btns a {
-    font-size: 11px;
-    font-weight: bold;
-    display: block;
-    height: 40px;
-    line-height: 40px;
-    color: #333;
-    float: right;
-    padding: 0px 20px;
-    text-decoration: none;
-    border-left: 1px solid #bbb;
+  font-size: 11px;
+  font-weight: bold;
+  display: block;
+  height: 40px;
+  line-height: 40px;
+  color: #333;
+  float: right;
+  padding: 0px 20px;
+  text-decoration: none;
+  border-left: 1px solid #bbb;
 }
 
 div.modal-btns a:hover {
-    color: #fff !important;
+  color: #fff !important;
 }
 
 div.modal-btns a.save {
-    color: #27ae60;
+  color: #27ae60;
 }
 
 div.modal-btns a.save:hover {
-    background-color: #2ecc71;
+  background-color: #2ecc71;
 }
 
 div.modal-btns a.cancel {
-    color: #c0392b;
+  color: #c0392b;
 }
 
 div.modal-btns a.cancel:hover {
-    background-color: #e74c3c;
+  background-color: #e74c3c;
 }
 
 #modal-save2db {
@@ -357,6 +414,7 @@ div.modal-btns a.cancel:hover {
 }
 
 /* ---- ul.btnlist ---- */
+
 ul.btnlist {
   list-style-type: none;
   margin: 8px 0px;
@@ -375,7 +433,7 @@ ul.btnlist li a {
   line-height: 18px;
 }
 
-ul.btnlist > li:last-child a {
+ul.btnlist>li:last-child a {
   border-bottom: 1px solid #eee;
 }
 
@@ -410,7 +468,7 @@ ul.btnlist li a.bgblu:hover {
 }
 
 /* ---- formstyle ---- */
-/* todo: fix centering */
+
 form.fstyle {
   /*font: 11px "Lucida Grande", Verdana, Arial, "Bitstream Vera Sans", sans-serif;*/
   color: #333;
@@ -427,6 +485,7 @@ form.fstyle label {
 }
 
 /* input,textarea,select */
+
 form.fstyle input, form.fstyle textarea, form.fstyle select {
   padding: 4px;
   margin: 1px 0px 6px 0px;
@@ -436,6 +495,7 @@ form.fstyle input, form.fstyle textarea, form.fstyle select {
 }
 
 /* input type=text */
+
 form.fstyle input.itext {
   width: 100%;
 }
@@ -445,6 +505,7 @@ form.fstyle input.itext:focus {
 }
 
 /* input type=submit,button */
+
 form.fstyle input.isubmit, form.fstyle input.ibutton {
   padding: 4px 12px;
   border-radius: 4px;
@@ -461,12 +522,14 @@ form.fstyle input.isubmit:hover, form.fstyle input.ibutton:hover {
 }
 
 /* textarea */
+
 form.fstyle textarea {
   width: 100%;
   font-family: "Lucida Grande", Verdana, Arial, "Bitstream Vera Sans", sans-serif;
 }
 
 /* select */
+
 form.fstyle select {
   width: 100%;
   font-family: "Lucida Grande", Verdana, Arial, "Bitstream Vera Sans", sans-serif;
@@ -475,63 +538,178 @@ form.fstyle select {
 /* ==== Social Users ==== */
 
 div#socialusers {
-    width: 320px;
-    border: 1px solid #bbb;
-    position: absolute;
-    top: 10px;
-    left: 0px;
-    background-color: #fff;
+  width: 320px;
+  border: 1px solid #bbb;
+  position: absolute;
+  top: 10px;
+  left: 0px;
+  background-color: #fff;
 }
 
 div#socialusers a {
-    display: block;
-    margin: 2px 0px;
-    padding: 6px 10px;
-    width: 100%;
-    box-sizing: border-box;
-    text-decoration: none;
-    line-height: 30px;
-    font-size: 11px;
-    color: #777;
-    font-weight: bold;
+  display: block;
+  margin: 2px 0px;
+  padding: 6px 10px;
+  width: 100%;
+  box-sizing: border-box;
+  text-decoration: none;
+  line-height: 30px;
+  font-size: 11px;
+  color: #777;
+  font-weight: bold;
 }
 
 div#socialusers a:hover {
-    background-color: #e0e0e0;
+  background-color: #e0e0e0;
 }
 
 div#socialusers img {
-    width: 28px;
-    border: 1px solid #bbb;
-    margin-right: 16px;
-    float: left;
+  width: 28px;
+  border: 1px solid #bbb;
+  margin-right: 16px;
+  float: left;
 }
 
 /* ========{ Context Menu Box }======== */
 
 #contextmenu {
-    z-index: 99999;
-    position: absolute;
-    color: #333;
-    background-color: #fff;
-    display: none;
-    border: 1px solid #999;
-    padding: 0px;
-    box-shadow: 5px 5px 5px #bbb;
+  z-index: 99999;
+  position: absolute;
+  color: #333;
+  background-color: #fff;
+  display: none;
+  border: 1px solid #999;
+  padding: 0px;
+  box-shadow: 5px 5px 5px #bbb;
 }
 
 #contextmenu a {
-    cursor: pointer;
-    background-color: #fff;
-    display: block;
-    padding: 4px 12px;
-    margin: 1px;
-    width: 100px;
-    font-size: 0.9em;
-    border: 1px solid #fff;
+  cursor: pointer;
+  background-color: #fff;
+  display: block;
+  padding: 4px 12px;
+  margin: 1px;
+  width: 100px;
+  font-size: 0.9em;
+  border: 1px solid #fff;
 }
 
 #contextmenu a:hover {
-    background-color: #ddd;
-    border: 1px solid #bbb;
+  background-color: #ddd;
+  border: 1px solid #bbb;
+}
+
+/* ==== Text Settings ==== */
+
+div#left1.ts div#analysis_text {
+  font-size: 11px;
+}
+
+div#left1.tm div#analysis_text {
+  font-size: 13px;
+}
+
+div#left1.tl div#analysis_text {
+  font-size: 18px;
+}
+
+div#left1.ts .highlighted {
+  box-shadow: 0px 0px 0 0px #2ecc71, 0px 0px 0 0px #2ecc71;
+}
+
+div#left1.ts .hlcurrent {
+  box-shadow: 0px 0px 0 0px, 0px 0px 0 0px !important;
+}
+
+div#left1.tm .highlighted, div#left1.tl .highlighted {
+  box-shadow: 0px -2px 0 1px #2ecc71, 0px 2px 0 1px #2ecc71;
+}
+
+div#left1.tm .hlcurrent, div#left1.tl .hlcurrent {
+  box-shadow: 0px -2px 0 1px #f39c12, 0px 2px 0 1px #f39c12 !important;
+}
+
+div#txtstg a.its, div#txtstg a.itm, div#txtstg a.itl {
+  background-position: 0px 0px;
+  background-color: #fff;
+}
+
+div#txtstg a.its.sel, div#txtstg a.itm.sel, div#txtstg a.itl.sel {
+  background-position: 0px -36px;
+  background-color: #27ae60;
+}
+
+div#txtstg a {
+  display: block;
+  width: 36px;
+  height: 36px;
+  background-position: 0px 0px;
+  background-color: #f8f9fc;
+  float: right;
+  margin-left: 24px;
+}
+
+div#txtstg a:hover {
+  background-position: 0px -36px !important;
+  background-color: #2ecc71 !important;
+}
+
+div#txtstg {
+  margin-bottom: 10px;
+}
+
+div#anastg {
+  clear: both;
+}
+
+/* CQ
+
+div#cq_selects {
+  margin-top: 5px;
+  max-height: 200px;
+  line-height: normal;
+  overflow: auto;
+}
+
+div#descriptor_selects {
+  margin-top: 5px;
+}*/
+
+/* Toggle Switches */
+
+a.togglesw {
+  display: block;
+  height: 20px;
+  width: 60px;
+  margin: 1px solid #555;
+  background-color: #eee;
+  color: #333;
+}
+
+a.togglesw span.tson, a.togglesw span.tsoff {
+  display: inline-block;
+  height: 20px;
+  line-height: 20px;
+  width: 30px;
+  text-align: center;
+  font-size: 10px;
+  text-decoration: none;
+}
+
+a.togglesw.on span.tson {
+  background-color: #2ECC71;
+  color: #fff;
+}
+
+a.togglesw.on span.tsoff {
+  color: #ccc;
+}
+
+a.togglesw.off span.tsoff {
+  background-color: #444;
+  color: #fff;
+}
+
+a.togglesw.off span.tson {
+  color: #ccc;
 }
