@@ -1,5 +1,3 @@
-var dragEdges = [];
-
 function myKeyDown(e) {
   var keycode = e.keyCode;
   if (keycode == 16 || keycode == 83) {
@@ -11,7 +9,12 @@ function myKeyDown(e) {
   if (keycode == 17) {
     editMode = true;
   }
+  //if (keycode == 37 || keycode == 38 || keycode == 39 || keycode == 40) {
+  if (keycode in NAV_MAP) {
+    panZoomMode(keycode);
+  }
 }
+
 function myKeyUp(e) {
   var keycode = e.keyCode;
   if (keycode == 16 || keycode == 83) {
@@ -23,6 +26,71 @@ function myKeyUp(e) {
   if (keycode == 17) {
     editMode = false;
   }
+}
+
+
+function panZoomMode(keycode) {
+
+  nav = NAV_MAP[keycode];
+  if(nav.act === 'move') {
+    // if((nav.dir === -1 && VB[nav.axis] <= 0) ||
+    //    (nav.dir ===  1 && VB[nav.axis] >= DMAX[nav.axis] - VB[2 + nav.axis])) {
+    //   return
+    // }
+    if (nav.axis == 1) {
+      tg[nav.axis] = VB[nav.axis] + .1*nav.dir*VB[1 + nav.axis];
+    } else if (nav.axis == 0) {
+      tg[nav.axis] = VB[nav.axis] + .1*nav.dir*VB[2 + nav.axis];
+    }
+  } else if (nav.act == 'zoom') {
+      if((nav.dir === -1 && VB[2] >= DMAX[0]) ||
+      (nav.dir ===  1 && VB[2] <= WMIN)) {
+        return
+      }
+
+
+    for(let i = 0; i < 2; i++) {
+      tg[i + 2] = VB[i + 2]/Math.pow(1.3, nav.dir);
+      tg[i] = .00001*(DMAX[i] - tg[i + 2]);
+    }
+  }
+  updateView();
+}
+
+function updateView() {
+  let k = ++f/NF, j = 1 - k, cvb = VB.slice();
+
+	if(nav.act === 'zoom') {
+		for(let i = 0; i < 4; i++)
+			cvb[i] = j*VB[i] + k*tg[i]
+	}
+
+	if(nav.act === 'move') {
+		cvb[nav.axis] = j*VB[nav.axis] + k*tg[nav.axis];
+  }
+
+	SVGRoot.setAttribute('viewBox', cvb.join(' '));
+
+
+	if(!(f%NF)) {
+		f = 0;
+		VB.splice(0, 4, ...cvb);
+		nav = {};
+		tg = Array(4);
+		stopAni();
+		return;
+	}
+  rID = requestAnimationFrame(updateView)
+}
+
+function stopAni() {
+  cancelAnimationFrame(rID);
+  rID = null;
+}
+
+function resetPosition() {
+  VB = [0,0,1000,12775];
+  SVGRoot.setAttribute('viewBox', [0,0,1000,12775]);
 }
 
 function edgeMode(status) {
@@ -58,20 +126,20 @@ function edgeMode(status) {
 }
 
 function nodeMode(status) {
-  if (status == 'switch' && window.nodeAddBtn) {
-    status = 'off';
-  } else if (status == 'switch') {
-    status = 'on';
+  if(status == 'switch' && window.nodeAddBtn){
+      status = 'off';
+  }else if(status == 'switch'){
+      status = 'on';
   }
 
-  if (status == 'on') {
-    window.nodeAddBtn = true;
-    document.getElementById("right1").style.cursor = 'crosshair';
-    $('#nadd').addClass("active");
-  } else {
-    window.nodeAddBtn = false;
-    document.getElementById("right1").style.cursor = 'auto';
-    $('#nadd').removeClass("active");
+  if(status == 'on'){
+      window.nodeAddBtn = true;
+      document.getElementById("right1").style.cursor = 'crosshair';
+      $('#nadd').addClass("active");
+  }else{
+      window.nodeAddBtn = false;
+      document.getElementById("right1").style.cursor = 'auto';
+      $('#nadd').removeClass("active");
   }
 }
 
@@ -79,10 +147,10 @@ function nodeMode(status) {
 function Grab(evt) {
   $("#contextmenu").hide();
 
-  if (evt.button != 0) {
-    myRClick(evt);
-    return;
-  }
+  if(evt.button != 0){
+        myRClick(evt);
+        return;
+    }
 
   GetTrueCoords(evt);
   if (evt.target.nodeName == 'rect') {
@@ -107,7 +175,7 @@ function Grab(evt) {
       nedge.setAttribute('stroke', 'black');
       nedge.setAttribute('d', 'M80,30 C200,30 30,380 200,380');
       nedge.setAttribute('marker-end', 'url(#head)');
-      SVGRoot.insertBefore(nedge, SVGRoot.childNodes[0]);
+      SVGRootG.insertBefore(nedge, SVGRootG.childNodes[0]);
 
       var edge = new Edge;
       edge.fromID = FromID;
@@ -152,7 +220,7 @@ function Grab(evt) {
     if (window.nodeAddBtn == true) {
       window.nodeCounter = window.nodeCounter + 1;
       newNodeID = window.nodeCounter;
-      AddNode("", 'EN', '0', 0, newNodeID, TrueCoords.x, TrueCoords.y - 10);
+      AddNode("", 'EN', '0', 0, newNodeID, TrueCoords.x, TrueCoords.y - 10 );
       var index = findNodeIndex(newNodeID)
       mySel = nodes[index];
       CurrentlyEditing = newNodeID;
@@ -174,7 +242,7 @@ function Grab(evt) {
         } else {
           window.nodeCounter = window.nodeCounter + 1;
           newNodeID = window.nodeCounter;
-          AddNode(t, 'I', '0', newNodeID, TrueCoords.x, TrueCoords.y - 10);
+          AddNode(t, 'I', '0', 0, newNodeID, TrueCoords.x, TrueCoords.y - 10);
           var nIndex = findNodeIndex(newNodeID)
           mySel = nodes[nIndex];
         }
@@ -197,13 +265,25 @@ function GetEdges(dragID) {
 }
 
 function GetTrueCoords(evt) {
+  // tsvg = document.getElementById('inline').getBoundingClientRect();
+  // svgleft = tsvg.left;
+  // svgtop = tsvg.top;
+  // var newScale = SVGRoot.currentScale;
+  // var translation = SVGRoot.currentTranslate;
+  // TrueCoords.x = (evt.clientX - translation.x) / newScale - svgleft;
+  // TrueCoords.y = (evt.clientY - translation.y) / newScale - svgtop;
   tsvg = document.getElementById('inline').getBoundingClientRect();
   svgleft = tsvg.left;
   svgtop = tsvg.top;
-  var newScale = SVGRoot.currentScale;
-  var translation = SVGRoot.currentTranslate;
-  TrueCoords.x = (evt.clientX - translation.x) / newScale - svgleft;
-  TrueCoords.y = (evt.clientY - translation.y) / newScale - svgtop;
+  var newScale = VB[2]/1000;
+  var translationX = VB[0];
+  var translationY = VB[1];
+
+
+  //Calculating new coordinates after panning and zooming
+  TrueCoords.x = ((evt.clientX - svgleft) * newScale) + translationX;
+  TrueCoords.y = ((evt.clientY  - svgtop)* newScale) + translationY;
+
 }
 
 
@@ -240,8 +320,7 @@ function Drag(evt) {
         cE.setAttributeNS(null, 'x', cnewX);
       }
     }
-    //console.log(DragTarget.getAttributeNS(null, 'id'));
-    //console.log(DragTarget);
+
     //updateNodePosition(DragTarget.id, newX, newY);
     for (var j = 0; j < dragEdges.length; j++) {
       UpdateEdge(dragEdges[j]);
@@ -353,10 +432,9 @@ function UnFocus(evt, unfocusElement) {
 
 
 function Drop(evt) {
-  //console.log(DragTarget.getAttributeNS(null, 'id'));
   if (DragTarget) {
     children = DragTarget.children;
-    for (var j = 0; j < children.length - 1; j++) {
+    for (var j = 0; j < children.length-1; j++) {
       var childElement = children[j];
       xCoord = childElement.getAttributeNS(null, 'x');
       yCoord = childElement.getAttributeNS(null, 'y');
@@ -426,8 +504,8 @@ function Drop(evt) {
 
           tempedge = document.getElementById('n' + FromID + '-nedge_to');
           tempnode = document.getElementById('edge_to');
-          SVGRoot.removeChild(tempedge);
-          SVGRoot.removeChild(tempnode);
+          SVGRootG.removeChild(tempedge);
+          SVGRootG.removeChild(tempnode);
         }
         else {
           //from -> S
@@ -442,15 +520,15 @@ function Drop(evt) {
 
           tempedge = document.getElementById('n' + FromID + '-nedge_to');
           tempnode = document.getElementById('edge_to');
-          SVGRoot.removeChild(tempedge);
-          SVGRoot.removeChild(tempnode);
+          SVGRootG.removeChild(tempedge);
+          SVGRootG.removeChild(tempnode);
         }
       } else {
         //If edge is drawn to empty space and not to a node
         tempedge = document.getElementById('n' + FromID + '-nedge_to');
         tempnode = document.getElementById("edge_to");
-        SVGRoot.removeChild(tempedge);
-        SVGRoot.removeChild(tempnode);
+        SVGRootG.removeChild(tempedge);
+        SVGRootG.removeChild(tempnode);
       }
 
     }
@@ -476,35 +554,35 @@ function AddPt(nx, ny) {
   nbox.setAttribute('width', 1);
   nbox.setAttribute('height', 1);
   g.appendChild(nbox)
-  SVGRoot.appendChild(g);
+  SVGRootG.appendChild(g);
 
   return g;
 }
 
 function myRClick(evt) {
-  GetTrueCoords(evt);
-  if (evt.target.nodeName == 'rect') {
-    var targetElement = evt.target.parentNode;
-  } else if (evt.target.nodeName == 'tspan') {
-    var targetElement = evt.target.parentNode.parentNode;
-  } else {
-    var targetElement = evt.target;
-  }
+    GetTrueCoords(evt);
+    if(evt.target.nodeName == 'rect'){
+        var targetElement = evt.target.parentNode;
+    }else if(evt.target.nodeName == 'tspan'){
+        var targetElement = evt.target.parentNode.parentNode;
+    }else{
+        var targetElement = evt.target;
+    }
 
-  if (targetElement.getAttributeNS(null, 'focusable')) {
-    n = targetElement;
-    nID = n.getAttributeNS(null, 'id');
-    CurrentlyEditing = nID;
-    //nHeight = n.getAttributeNS(null, 'height');
-    var index = findNodeIndex(nID);
-    mySel = nodes[index];
-    cmenu(mySel);
-    return false;
-  }
+    if ( targetElement.getAttributeNS(null, 'focusable') ){
+        n = targetElement;
+        nID = n.getAttributeNS(null, 'id');
+        CurrentlyEditing = nID;
+        //nHeight = n.getAttributeNS(null, 'height');
+        var index = findNodeIndex(nID);
+        mySel = nodes[index];
+        cmenu(mySel);
+        return false;
+    }
 }
 
 function findNodeIndex(nodeID) {
-  for (var i = 0; i < nodes.length; i++) {
+  for(var i=0; i < nodes.length; i++) {
     if (nodes[i]) {
       if (nodes[i].nodeID == nodeID) {
         return i;
@@ -514,7 +592,7 @@ function findNodeIndex(nodeID) {
 }
 
 function editNode(node) {
-  if (mySel.type == 'I' || mySel.type == 'L' || mySel.type == 'EN') {
+  if(mySel.type == 'I' || mySel.type == 'L' || mySel.type == 'EN'){
     $('#node_edit').show();
     $('#modal-shade').show();
     $('#n_text').val(node.text);
@@ -522,211 +600,211 @@ function editNode(node) {
 }
 
 function saveNodeEdit() {
-  var type = mySel.type;
-  var xCoord = mySel.x;
-  var yCoord = mySel.y;
-  if (mySel.type == 'I' || mySel.type == 'L' || mySel.type == 'EN') {
-    var ntext = document.getElementById("n_text").value;
-    //var edgesToUpdate = findEdges(CurrentlyEditing);
-    document.getElementById(CurrentlyEditing).remove();
-    DrawNode(CurrentlyEditing, type, ntext, xCoord, yCoord);
-    updateNode(CurrentlyEditing, type, ntext, xCoord, yCoord);
-    // for (var i = 0; i < edgesToUpdate.length; i++) {
-    //   UpdateEdge(edgesToUpdate[i]);
-    // }
-  } else {
-    mySel.type = document.getElementById("s_type").value;
-    if (mySel.type == 'RA') {
-      var ssel = document.getElementById("s_ischeme");
-      mySel.scheme = ssel.value;
-      if (ssel.selectedIndex == 0) {
-        mySel.text = 'Default Inference';
-        mySel.scheme = '72';
-      } else {
-        mySel.text = ssel.options[ssel.selectedIndex].text;
-      }
-    } else if (mySel.type == 'CA') {
-      var ssel = document.getElementById("s_cscheme");
-      mySel.scheme = ssel.value;
-      if (ssel.selectedIndex == 0) {
-        mySel.text = 'Default Conflict';
-        mySel.scheme = '71';
-      } else {
-        mySel.text = ssel.options[ssel.selectedIndex].text;
-      }
-    } else if (mySel.type == 'YA') {
-      var ssel = document.getElementById("s_lscheme");
-      mySel.scheme = ssel.value;
-      if (ssel.selectedIndex == 0) {
-        mySel.text = 'Default Illocuting';
-        mySel.scheme = '168';
-      } else {
-        mySel.text = ssel.options[ssel.selectedIndex].text;
-      }
-    } else if (mySel.type == 'MA') {
-      var ssel = document.getElementById("s_mscheme");
-      mySel.scheme = ssel.value;
-      if (ssel.selectedIndex == 0) {
-        mySel.text = 'Default Rephrase';
-        mySel.scheme = '144';
-      } else {
-        mySel.text = ssel.options[ssel.selectedIndex].text;
-      }
-    } else if (mySel.type == 'PA') {
-      var ssel = document.getElementById("s_pscheme");
-      mySel.scheme = ssel.value;
-      if (ssel.selectedIndex == 0) {
-        mySel.text = 'Default Preference';
-        mySel.scheme = '161';
-      } else {
-        mySel.text = ssel.options[ssel.selectedIndex].text;
-      }
-    } else if (mySel.type == 'TA') {
-      var ssel = document.getElementById("s_tscheme");
-      mySel.scheme = ssel.value;
-      if (ssel.selectedIndex == 0) {
-        mySel.text = 'Default Transition';
-        mySel.scheme = '82';
-      } else {
-        mySel.text = ssel.options[ssel.selectedIndex].text;
-      }
+    var type = mySel.type;
+    var xCoord = mySel.x;
+    var yCoord = mySel.y;
+    if(mySel.type == 'I' || mySel.type == 'L' || mySel.type == 'EN'){
+      var ntext = document.getElementById("n_text").value;
+      //var edgesToUpdate = findEdges(CurrentlyEditing);
+      document.getElementById(CurrentlyEditing).remove();
+      DrawNode(CurrentlyEditing, type, ntext, xCoord, yCoord);
+      updateNode(CurrentlyEditing, type, ntext, xCoord, yCoord);
+      // for (var i = 0; i < edgesToUpdate.length; i++) {
+      //   UpdateEdge(edgesToUpdate[i]);
+      // }
     } else {
-      mySel.text = mySel.type
+      mySel.type = document.getElementById("s_type").value;
+        if(mySel.type == 'RA'){
+            var ssel = document.getElementById("s_ischeme");
+            mySel.scheme = ssel.value;
+            if(ssel.selectedIndex == 0){
+                mySel.text = 'Default Inference';
+                mySel.scheme = '72';
+            }else{
+                mySel.text = ssel.options[ssel.selectedIndex].text;
+            }
+        }else if(mySel.type == 'CA'){
+            var ssel = document.getElementById("s_cscheme");
+            mySel.scheme = ssel.value;
+            if(ssel.selectedIndex == 0){
+                mySel.text = 'Default Conflict';
+                mySel.scheme = '71';
+            }else{
+                mySel.text = ssel.options[ssel.selectedIndex].text;
+            }
+        }else if(mySel.type == 'YA'){
+            var ssel = document.getElementById("s_lscheme");
+            mySel.scheme = ssel.value;
+            if(ssel.selectedIndex == 0){
+                mySel.text = 'Default Illocuting';
+                mySel.scheme = '168';
+            }else{
+                mySel.text = ssel.options[ssel.selectedIndex].text;
+            }
+        }else if(mySel.type == 'MA'){
+            var ssel = document.getElementById("s_mscheme");
+            mySel.scheme = ssel.value;
+            if(ssel.selectedIndex == 0){
+                mySel.text = 'Default Rephrase';
+                mySel.scheme = '144';
+            }else{
+                mySel.text = ssel.options[ssel.selectedIndex].text;
+            }
+        }else if(mySel.type == 'PA'){
+            var ssel = document.getElementById("s_pscheme");
+            mySel.scheme = ssel.value;
+            if(ssel.selectedIndex == 0){
+                mySel.text = 'Default Preference';
+                mySel.scheme = '161';
+            }else{
+                mySel.text = ssel.options[ssel.selectedIndex].text;
+            }
+        }else if(mySel.type == 'TA'){
+            var ssel = document.getElementById("s_tscheme");
+            mySel.scheme = ssel.value;
+            if(ssel.selectedIndex == 0){
+	             mySel.text = 'Default Transition';
+	             mySel.scheme = '82';
+            }else{
+                mySel.text = ssel.options[ssel.selectedIndex].text;
+            }
+        }else {
+            mySel.text = mySel.type
+        }
+        document.getElementById(CurrentlyEditing).remove();
+        DrawNode(CurrentlyEditing, mySel.type, mySel.text, xCoord, yCoord);
+        updateNode(CurrentlyEditing, mySel.type, mySel.scheme, mySel.text, xCoord, yCoord);
+
+        $('.dselect').each(function(index) {
+            mySel.descriptors[$(this).attr('id')] = $(this).val();
+        });
+
+        $('.cqselect').each(function(index) {
+            mySel.cqdesc[$(this).attr('id')] = $(this).val();
+        });
     }
+    var edgesToUpdate = findEdges(CurrentlyEditing);
+    for (var i = 0; i < edgesToUpdate.length; i++) {
+      UpdateEdge(edgesToUpdate[i]);
+    }
+  }
+
+
+  function findEdges(nodeID) {
+    var edgesToReturn = []
+    for (var i = 0; i < edges.length; i++) {
+      if (edges[i].fromID == nodeID || edges[i].toID == nodeID) {
+        edgesToReturn.push(edges[i]);
+      }
+    }
+    return edgesToReturn;
+  }
+
+
+  function deleteNode(node) {
+    var toDelType = node.type;
     document.getElementById(CurrentlyEditing).remove();
-    DrawNode(CurrentlyEditing, mySel.type, mySel.text, xCoord, yCoord);
-    updateNode(CurrentlyEditing, mySel.type, mySel.scheme, mySel.text, xCoord, yCoord);
+    const index = nodes.indexOf(node);
+    if (index > -1) { nodes.splice(index, 1); }
+    var edgesToDelete = [];
 
-    $('.dselect').each(function (index) {
-      mySel.descriptors[$(this).attr('id')] = $(this).val();
-    });
-
-    $('.cqselect').each(function (index) {
-      mySel.cqdesc[$(this).attr('id')] = $(this).val();
-    });
-  }
-  var edgesToUpdate = findEdges(CurrentlyEditing);
-  for (var i = 0; i < edgesToUpdate.length; i++) {
-    UpdateEdge(edgesToUpdate[i]);
-  }
-}
-
-
-function findEdges(nodeID) {
-  var edgesToReturn = []
-  for (var i = 0; i < edges.length; i++) {
-    if (edges[i].fromID == nodeID || edges[i].toID == nodeID) {
-      edgesToReturn.push(edges[i]);
+    if (mySel.type == 'L') {
+      remhl(node.nodeID);
     }
-  }
-  return edgesToReturn;
-}
 
-
-function deleteNode(node) {
-  var toDelType = node.type;
-  document.getElementById(CurrentlyEditing).remove();
-  const index = nodes.indexOf(node);
-  if (index > -1) { nodes.splice(index, 1); }
-  var edgesToDelete = [];
-
-  if (mySel.type == 'L') {
-    remhl(node.nodeID);
-  }
-
-  //if(mySel.type == 'I' || mySel.type == 'L' || mySel.type == 'EN'){
-  //remhl(node.nodeID);
-  // document.getElementById(CurrentlyEditing).remove();
-  // const index = nodes.indexOf(node);
-  // if (index > -1) { nodes.splice(index, 1); }
-  // var edgesToDelete = [];
-  for (var j = 0; j < edges.length; j++) {
-    if (edges[j].toID == CurrentlyEditing) {
-      edgesToDelete.push(edges[j]);
+    //if(mySel.type == 'I' || mySel.type == 'L' || mySel.type == 'EN'){
+      //remhl(node.nodeID);
+      // document.getElementById(CurrentlyEditing).remove();
+      // const index = nodes.indexOf(node);
+      // if (index > -1) { nodes.splice(index, 1); }
+      // var edgesToDelete = [];
+      for (var j = 0; j < edges.length; j++) {
+        if(edges[j].toID == CurrentlyEditing) {
+          edgesToDelete.push(edges[j]);
+        }
+        if(edges[j].fromID == CurrentlyEditing) {
+          edgesToDelete.push(edges[j]);
+        }
+      }
+    for (var i=0; i<edgesToDelete.length; i++) {
+      deleteEdges(edgesToDelete[i]);
     }
-    if (edges[j].fromID == CurrentlyEditing) {
-      edgesToDelete.push(edges[j]);
-    }
-  }
-  for (var i = 0; i < edgesToDelete.length; i++) {
-    deleteEdges(edgesToDelete[i]);
-  }
-  $("#contextmenu").hide();
+    $("#contextmenu").hide();
   //}
 }
 
-function deleteEdges(edge) {
-  edgeID = 'n' + edge.fromID + '-n' + edge.toID;
-  edgeFrom = edge.fromID;
-  edgeTo = edge.toID;
-  tempEdge = document.getElementById(edgeID);
-  tempEdge.remove();
-  const index = edges.indexOf(edge);
-  if (index > -1) { edges.splice(index, 1); }
+  function deleteEdges(edge) {
+    edgeID = 'n' + edge.fromID + '-n' + edge.toID;
+    edgeFrom = edge.fromID;
+    edgeTo = edge.toID;
+    tempEdge = document.getElementById(edgeID);
+    tempEdge.remove();
+    const index = edges.indexOf(edge);
+    if (index > -1) { edges.splice(index, 1); }
 
 
-  // for(var i=1; i<nodes.length; i++) {
-  //   if(nodes[i]) {
-  //     if(nodes[i].nodeID == edgeFrom && nodes[i].type != "I" && nodes[i].type != "L" && nodes[i].type != 'EN') {
-  //       CurrentlyEditing = nodes[i].nodeID;
-  //       deleteNode(nodes[i]);
-  //     }
-  //     if(nodes[i].nodeID == edgeTo && nodes[i].type != "I" && nodes[i].type != "L" &&  nodes[i].type != 'EN') {
-  //       CurrentlyEditing = nodes[i].nodeID;
-  //       deleteNode(nodes[i]);
-  //     }
-  //   }
-  // }
-  if (mySel.type == "I" || mySel.type == "EN") {
-    for (var i = 1; i < nodes.length; i++) {
-      if (nodes[i]) {
-        if (nodes[i].nodeID == edgeFrom && nodes[i].type != "I" && nodes[i].type != "L" && nodes[i].type != 'EN' && nodes[i].type != 'TA') {
-          CurrentlyEditing = nodes[i].nodeID;
-          deleteNode(nodes[i]);
-        }
-        if (nodes[i].nodeID == edgeTo && nodes[i].type != "I" && nodes[i].type != "L" && nodes[i].type != 'EN' && nodes[i].type != 'TA') {
-          CurrentlyEditing = nodes[i].nodeID;
-          deleteNode(nodes[i]);
+    // for(var i=1; i<nodes.length; i++) {
+    //   if(nodes[i]) {
+    //     if(nodes[i].nodeID == edgeFrom && nodes[i].type != "I" && nodes[i].type != "L" && nodes[i].type != 'EN') {
+    //       CurrentlyEditing = nodes[i].nodeID;
+    //       deleteNode(nodes[i]);
+    //     }
+    //     if(nodes[i].nodeID == edgeTo && nodes[i].type != "I" && nodes[i].type != "L" &&  nodes[i].type != 'EN') {
+    //       CurrentlyEditing = nodes[i].nodeID;
+    //       deleteNode(nodes[i]);
+    //     }
+    //   }
+    // }
+    if (mySel.type == "I" || mySel.type == "EN") {
+      for(var i=1; i<nodes.length; i++) {
+        if(nodes[i]) {
+          if(nodes[i].nodeID == edgeFrom && nodes[i].type != "I" && nodes[i].type != "L" && nodes[i].type != 'EN' && nodes[i].type != 'TA') {
+            CurrentlyEditing = nodes[i].nodeID;
+            deleteNode(nodes[i]);
+          }
+          if(nodes[i].nodeID == edgeTo && nodes[i].type != "I" && nodes[i].type != "L" &&  nodes[i].type != 'EN' && nodes[i].type != 'TA') {
+            CurrentlyEditing = nodes[i].nodeID;
+            deleteNode(nodes[i]);
+          }
         }
       }
-    }
-  } else if (mySel.type == "L") {
-    for (var i = 1; i < nodes.length; i++) {
-      if (nodes[i]) {
+    } else if (mySel.type == "L") {
+      for(var i=1; i<nodes.length; i++) {
+      if(nodes[i]) {
         // if(nodes[i].nodeID == edgeFrom && nodes[i].type != "I" && nodes[i].type != "L" && nodes[i].type != 'EN') {
-        if ((nodes[i].nodeID == edgeFrom && nodes[i].type == "TA") || (nodes[i].nodeID == edgeFrom && nodes[i].type == "YA")) {
+        if((nodes[i].nodeID == edgeFrom && nodes[i].type == "TA" ) || (nodes[i].nodeID == edgeFrom && nodes[i].type == "YA" )){
           CurrentlyEditing = nodes[i].nodeID;
           deleteNode(nodes[i]);
         }
-        else if ((nodes[i].nodeID == edgeTo && nodes[i].type == "TA") || (nodes[i].nodeID == edgeTo && nodes[i].type == "YA")) {
+        else if((nodes[i].nodeID == edgeTo && nodes[i].type == "TA" ) || (nodes[i].nodeID == edgeTo && nodes[i].type == "YA" )) {
           CurrentlyEditing = nodes[i].nodeID;
           deleteNode(nodes[i]);
         }
       }
     }
-  } else if (mySel.type == "YA") {
-  } else if (mySel.type == "TA") {
-    for (var i = 1; i < nodes.length; i++) {
-      if (nodes[i]) {
-        if (nodes[i].nodeID == edgeFrom && nodes[i].type != "I" && nodes[i].type != "L" && nodes[i].type != 'EN') {
+  } else if (mySel.type == "YA"){
+  }else if (mySel.type == "TA"){
+    for(var i=1; i<nodes.length; i++) {
+      if(nodes[i]) {
+         if(nodes[i].nodeID == edgeFrom && nodes[i].type != "I" && nodes[i].type != "L" && nodes[i].type != 'EN') {
           CurrentlyEditing = nodes[i].nodeID;
           deleteNode(nodes[i]);
         }
-        else if ((nodes[i].nodeID == edgeTo && nodes[i].type == "TA") || (nodes[i].nodeID == edgeTo && nodes[i].type == "YA")) {
+        else if((nodes[i].nodeID == edgeTo && nodes[i].type == "TA" ) || (nodes[i].nodeID == edgeTo && nodes[i].type == "YA" )) {
           CurrentlyEditing = nodes[i].nodeID;
           deleteNode(nodes[i]);
         }
       }
     }
   } else {
-    for (var i = 1; i < nodes.length; i++) {
-      if (nodes[i]) {
+    for(var i=1; i<nodes.length; i++) {
+      if(nodes[i]) {
         // if(nodes[i].nodeID == edgeFrom && nodes[i].type != "I" && nodes[i].type != "L" && nodes[i].type != 'EN') {
-        if (nodes[i].nodeID == edgeFrom && nodes[i].type != "I" && nodes[i].type != "L" && nodes[i].type != 'EN' && nodes[i].type != 'TA') {
+        if(nodes[i].nodeID == edgeFrom && nodes[i].type != "I" && nodes[i].type != "L" && nodes[i].type != 'EN' && nodes[i].type != 'TA'){
           CurrentlyEditing = nodes[i].nodeID;
           deleteNode(nodes[i]);
         }
-        else if (nodes[i].nodeID == edgeTo && nodes[i].type != "I" && nodes[i].type != "L" && nodes[i].type != 'EN' && nodes[i].type != 'TA') {
+        else if(nodes[i].nodeID == edgeTo && nodes[i].type != "I" && nodes[i].type != "L" &&  nodes[i].type != 'EN' && nodes[i].type != 'TA') {
           CurrentlyEditing = nodes[i].nodeID;
           deleteNode(nodes[i]);
         }

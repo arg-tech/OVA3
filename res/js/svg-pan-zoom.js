@@ -54,7 +54,7 @@ module.exports = {
     zoomGroup.appendChild(this._createZoomOut(instance))
 
     // Finally append created element
-    instance.svg.appendChild(zoomGroup)
+    SVGRootG.appendChild(zoomGroup)
 
     // Cache control instance
     instance.controlIcons = zoomGroup
@@ -207,11 +207,11 @@ ShadowViewport.prototype.cacheViewBox = function() {
     this.viewBox.height = viewBoxValues[3]
 
     var zoom = Math.min(this.options.width / this.viewBox.width, this.options.height / this.viewBox.height)
-
     // Update active state
     this.activeState.zoom = zoom
     this.activeState.x = (this.options.width - this.viewBox.width * zoom) / 2
     this.activeState.y = (this.options.height - this.viewBox.height * zoom) / 2
+
 
     // Force updating CTM
     this.updateCTMOnNextFrame()
@@ -343,7 +343,6 @@ ShadowViewport.prototype.getPan = function() {
  */
 ShadowViewport.prototype.getCTM = function() {
   var safeCTM = this.options.svg.createSVGMatrix()
-
   // Copy values manually as in FF they are not itterable
   safeCTM.a = this.activeState.zoom
   safeCTM.b = 0
