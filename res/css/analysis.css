@@ -472,6 +472,41 @@ form.fstyle select {
   font-family: "Lucida Grande", Verdana, Arial, "Bitstream Vera Sans", sans-serif;
 }
 
+/* ==== Social Users ==== */
+
+div#socialusers {
+    width: 320px;
+    border: 1px solid #bbb;
+    position: absolute;
+    top: 10px;
+    left: 0px;
+    background-color: #fff;
+}
+
+div#socialusers a {
+    display: block;
+    margin: 2px 0px;
+    padding: 6px 10px;
+    width: 100%;
+    box-sizing: border-box;
+    text-decoration: none;
+    line-height: 30px;
+    font-size: 11px;
+    color: #777;
+    font-weight: bold;
+}
+
+div#socialusers a:hover {
+    background-color: #e0e0e0;
+}
+
+div#socialusers img {
+    width: 28px;
+    border: 1px solid #bbb;
+    margin-right: 16px;
+    float: left;
+}
+
 /* ========{ Context Menu Box }======== */
 
 #contextmenu {

@@ -152,6 +152,7 @@ if (isset($_COOKIE['ovauser'])) {
     <div class="divider"></div>
     <a onClick="console.log('add edge btn clicked'); edgeMode('switch'); return false;" class="icon" id="eadd" style="background-position: -42px 50%;"><span class="tooltiptext">Add&nbsp;Edge</span></a> <!-- todo: add a CA when atk selected instead of RA -->
     <a onClick="console.log('add node btn clicked'); nodeMode('switch'); return false;" class="icon" id="nadd" style="background-position: -0px 50%;"><span class="tooltiptext">Add&nbsp;Node</span></a> <!-- todo: add node where selected, deselect btn once node added-->
+    <a onClick="resetPosition();" class="icon" id="reset" style="background-position: -0px 50%;"><span class="tooltiptext">Reset&nbsp;View</span></a>
   </div>
 
   <div id="xmenu">

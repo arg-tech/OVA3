@@ -11,7 +11,7 @@ function myKeyDown(e) {
   }
   //if (keycode == 37 || keycode == 38 || keycode == 39 || keycode == 40) {
   if (keycode in NAV_MAP) {
-    panMode(keycode);
+    panZoomMode(keycode);
   }
 }
 
@@ -28,14 +28,13 @@ function myKeyUp(e) {
   }
 }
 
-function panMode(keycode) {
+
+function panZoomMode(keycode) {
 
   nav = NAV_MAP[keycode];
   if(nav.act === 'move') {
     // if((nav.dir === -1 && VB[nav.axis] <= 0) ||
     //    (nav.dir ===  1 && VB[nav.axis] >= DMAX[nav.axis] - VB[2 + nav.axis])) {
-    //   //console.log(`at the edge, cannot go ${nav.name}`);
-    //   _MSG.textContent = `at the edge, cannot go ${nav.name}`;
     //   return
     // }
     if (nav.axis == 1) {
@@ -44,22 +43,21 @@ function panMode(keycode) {
       tg[nav.axis] = VB[nav.axis] + .1*nav.dir*VB[2 + nav.axis];
     }
   } else if (nav.act == 'zoom') {
-     //  if((nav.dir === -1 && VB[2] >= DMAX[0]) ||
-     // (nav.dir ===  1 && VB[2] <= WMIN)) {
-     //    //console.log(`cannot ${nav.act} ${nav.name} more`);
-     //    _MSG.textContent = `cannot ${nav.act} ${nav.name} more`;
-     //    return
-     //  }
+      if((nav.dir === -1 && VB[2] >= DMAX[0]) ||
+      (nav.dir ===  1 && VB[2] <= WMIN)) {
+        return
+      }
+
 
     for(let i = 0; i < 2; i++) {
       tg[i + 2] = VB[i + 2]/Math.pow(1.3, nav.dir);
       tg[i] = .00001*(DMAX[i] - tg[i + 2]);
     }
   }
-  update();
+  updateView();
 }
 
-function update() {
+function updateView() {
   let k = ++f/NF, j = 1 - k, cvb = VB.slice();
 
 	if(nav.act === 'zoom') {
@@ -82,13 +80,17 @@ function update() {
 		stopAni();
 		return;
 	}
-  console.log(VB);
-  rID = requestAnimationFrame(update)
+  rID = requestAnimationFrame(updateView)
 }
 
 function stopAni() {
   cancelAnimationFrame(rID);
   rID = null;
+}
+
+function resetPosition() {
+  VB = [0,0,1000,12775];
+  SVGRoot.setAttribute('viewBox', [0,0,1000,12775]);
 }
 
 function edgeMode(status) {
@@ -143,9 +145,6 @@ function nodeMode(status) {
 
 
 function Grab(evt) {
-  console.log("x: " + TrueCoords.x);
-  console.log("y: " + TrueCoords.y);
-  console.log("----------");
   $("#contextmenu").hide();
 
   if(evt.button != 0){
@@ -243,7 +242,7 @@ function Grab(evt) {
         } else {
           window.nodeCounter = window.nodeCounter + 1;
           newNodeID = window.nodeCounter;
-          AddNode(t, 'I', '0', newNodeID, TrueCoords.x, TrueCoords.y - 10);
+          AddNode(t, 'I', '0', 0, newNodeID, TrueCoords.x, TrueCoords.y - 10);
           var nIndex = findNodeIndex(newNodeID)
           mySel = nodes[nIndex];
         }
@@ -273,12 +272,6 @@ function GetTrueCoords(evt) {
   // var translation = SVGRoot.currentTranslate;
   // TrueCoords.x = (evt.clientX - translation.x) / newScale - svgleft;
   // TrueCoords.y = (evt.clientY - translation.y) / newScale - svgtop;
-
-  // console.log("oldX: " + TrueCoords.x);
-  // console.log("oldY: " + TrueCoords.y);
-  // console.log("scaleW: " + (VB[2]/1000));
-  // console.log("scaleH: " + (VB[3]/12775));
-
   tsvg = document.getElementById('inline').getBoundingClientRect();
   svgleft = tsvg.left;
   svgtop = tsvg.top;
@@ -286,14 +279,11 @@ function GetTrueCoords(evt) {
   var translationX = VB[0];
   var translationY = VB[1];
 
- // console.log("scale: " + newScale);
 
   //Calculating new coordinates after panning and zooming
   TrueCoords.x = ((evt.clientX - svgleft) * newScale) + translationX;
   TrueCoords.y = ((evt.clientY  - svgtop)* newScale) + translationY;
 
-  // console.log("newX: " + TrueCoords.x);
-  // console.log("newY: " + TrueCoords.y);
 }
 
 
