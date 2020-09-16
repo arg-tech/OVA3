@@ -99,8 +99,7 @@ if (isset($_COOKIE['ovauser'])) {
               <div class="btnicn" style="background-image: url('res/img/icon-savefile.svg');">&nbsp;</div> Save to local
               file
             </a></li>
-          <li><a href="#" onClick="console.log('save as image clicked');">
-              <!-- todo: onClick="canvas2image(); return false;"> -->
+          <li><a href="#" id="saveAsImage">
               <div class="btnicn" style="background-image: url('res/img/icon-saveimg.svg');">&nbsp;</div> Save as image
             </a></li>
           <li><a href="#" onClick="save2db(); $('#modal-save').hide(); return false;">
@@ -150,12 +149,12 @@ if (isset($_COOKIE['ovauser'])) {
     <a onClick='$("#xmenu").toggle("slide", {direction: "right"}, "slow");' class="icon" style="background-position: -126px 50%;"></a>
     <div class="divider"></div>
     <a onClick="openModal('#modal-load');" class="icon" style="background-position: -210px 50%;"><span class="tooltiptext">Load&nbsp;Analysis</span></a>
-    <a onClick="openModal('#modal-save');" class="icon" style="background-position: -84px 50%;"><span class="tooltiptext">Save&nbsp;Analysis</span></a>
+    <a onClick="svg2canvas2image(); openModal('#modal-save');" class="icon" style="background-position: -84px 50%;"><span class="tooltiptext">Save&nbsp;Analysis</span></a>
     <a href="<?php echo $newurl; ?>" class="icon" style="background-position: -168px 50%;"><span class="tooltiptext">New&nbsp;Analysis</span></a>
     <div class="divider"></div>
-    <a onClick="edgeMode('switch'); return false;" class="icon" id="eadd" style="background-position: -42px 50%;"><span class="tooltiptext">Add&nbsp;Edge</span></a> <!-- todo: add a CA when atk selected instead of RA -->
+    <a onClick="edgeMode('switch'); return false;" class="icon" id="eadd" style="background-position: -42px 50%;"><span class="tooltiptext">Add&nbsp;Edge</span></a>
     <a onClick="nodeMode('switch'); return false;" class="icon" id="nadd" style="background-position: -0px 50%;"><span class="tooltiptext">Add&nbsp;Node</span></a>
-<a onClick="resetPosition();" class="icon" id="reset" style="background-position: -0px 50%;"><span class="tooltiptext">Reset&nbsp;View</span></a>
+    <a onClick="resetPosition();" class="icon" id="reset" style="background-position: -0px 50%;"><span class="tooltiptext">Reset&nbsp;View</span></a> <!-- todo: change icon image -->
   </div>
 
   <div id="xmenu">
@@ -166,6 +165,16 @@ if (isset($_COOKIE['ovauser'])) {
     <a onClick="openModal('#modal-settings');" class="xicon">
       <div class="icn" style="background-position: -252px 50%;"></div>
       <div class="txt">Settings</div>
+    </a>
+    <!-- todo: change background image -->
+    <a onClick="genlink(); openModal('#modal-share');" class="xicon">
+      <div class="icn" style="background-image: url('res/img/linkicon.png'); background-position: 50% 50%;"></div>
+      <div class="txt">Share Analysis</div>
+    </a>
+    <!-- todo: autolayout function genldot() -->
+    <a onClick="console.log('autolayout btn clicked');" class="xicon">
+      <div class="icn" style="background-image: url('res/img/icon_alayout.png'); background-position: 50% 50%;"></div>
+      <div class="txt">Autolayout</div>
     </a>
   </div>
 
@@ -257,6 +266,24 @@ if (isset($_COOKIE['ovauser'])) {
     </div>
   </div>
   <!-- Settings Form Ends Here -->
+
+  <div id="modal-shade"></div>
+  <div class="modal-dialog" id="modal-share">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Share Analysis</h4>
+      </div>
+      <div class="modal-body">
+        <p style="padding: 20px 0px;">
+          <label> Share this analysis: </label>
+          <input type="text" id="shareinput" value="Generating link" onClick="this.select();" style="font-size: 16px; padding: 3px; width:90%;" />
+        </p>
+      </div>
+      <div class="modal-btns">
+        <a class="cancel" href="#" onClick="closeModal('#modal-share'); return false;">&#10008; Close</a>
+      </div>
+    </div>
+  </div>
 
   <div id="contextmenu"></div>
   <!-- Add Locution Form Starts here -->
@@ -364,16 +391,6 @@ if (isset($_COOKIE['ovauser'])) {
   </div>
   <!-- Edit Node Form Ends here -->
 
-
-  <div id="linkto">
-    <a id="linklink" onClick="genlink();$('#sharelink').toggle();"><img src="res/img/linkicon.png" id="linkicon" data-step="9" data-intro="<p>Click here to share your analysis.</p><p>Shared analyses are collaborative and can be edited by multiple people.</p>" data-position="left" /></a>
-  </div>
-
-  <div id="sharelink">
-    <p>Share this analysis:</p>
-    <input type="text" id="shareinput" value="Generating link" onClick="this.select();" />
-  </div>
-
   <!--  <a href="http://www.arg.tech" target="_blank" id="devby"><img src="res/img/arg-tech.svg" /></a> -->
   <div id="mainwrap">
     <div id="spacer"></div>
@@ -386,12 +403,11 @@ if (isset($_COOKIE['ovauser'])) {
       <iframe src="<?php echo $analysis; ?>" id="left1" name="left1" style="width:35%;border-right:1px solid #666;"></iframe> <!-- data-step="1" data-intro="<p>Highlight sections of text from the webpage to create a node.</p>" data-position="right" -->
     <?php } ?>
 
-
     <div id="right1">
 
       <!-- style="width:90%; height:100%; z-index:999; background-color:#fff;" -->
 
-      <svg viewBox='0 0 1000 12775' xmlns="http://www.w3.org/2000/svg" version="1.1" style="width: 1000px; height: 12775px; z-index:999; background-color:#fff;" onmousedown='Grab(evt);' onmousemove='Drag(evt);' onmouseup='Drop(evt);' onload='Init(evt);' id='inline'>
+      <svg viewBox='0 0 1000 12775' xmlns="http://www.w3.org/2000/svg" version="1.1" width="1000px" height="12775px" style="z-index:999; background-color:#fff;" onmousedown='Grab(evt);' onmousemove='Drag(evt);' onmouseup='Drop(evt);' onload='Init(evt);' id='inline'>
         <defs>
           <marker id='head' orient="auto" markerWidth='12' markerHeight='10' refX='12' refY='5'>
             <!-- triangle pointing right (+x) -->
@@ -402,5 +418,4 @@ if (isset($_COOKIE['ovauser'])) {
     </div>
   </div>
 </body>
-
 </html>

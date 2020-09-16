@@ -80,7 +80,6 @@ function Init(evt) {
     SVGRoot.appendChild(SVGRootG);
     TrueCoords = SVGRoot.createSVGPoint();
     GrabPoint = SVGRoot.createSVGPoint();
-    Canvas = document.getElementById('Canvas');
     window.sessionid = $.now().toString() + Math.random().toString().substring(3, 8);
 
     VB = SVGRoot.getAttribute('viewBox').split(' ').map(c => +c);
