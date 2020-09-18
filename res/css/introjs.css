@@ -49,7 +49,7 @@ tr.introjs-showElement > th {
 
 .introjs-helperLayer {
   position: absolute;
-  z-index: 9999998;
+  z-index: 9999999;
   background-color: #FFF;
   background-color: rgba(255,255,255,.9);
   border: 1px solid #777;
@@ -189,7 +189,7 @@ tr.introjs-showElement > th {
   line-height: 1.2em;
   color: #444;
   background-color: white;
-  min-width: 240px;
+  min-width: 200px;
   max-width: 300px;
   border-radius: 3px;
   box-shadow: 0 1px 10px rgba(0,0,0,.4);
