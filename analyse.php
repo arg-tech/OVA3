@@ -148,9 +148,9 @@ if (isset($_COOKIE['ovauser'])) {
     <a href="http://arg.tech/~nicole/index.php" class="home"><img src="res/img/logo.svg" /></a> <!--todo: change link to homepage after testing-->
     <a onClick='$("#xmenu").toggle("slide", {direction: "right"}, "slow");' class="icon" style="background-position: -126px 50%;"></a>
     <div class="divider"></div>
-    <a onClick="mainTut()" class="icon" style="background-position: -210px 50%;"><span class="tooltiptext">Tutorial</span></a>
+    <a onClick="mainTut()" class="icon" style="background-position: -378px 50%;"><span class="tooltiptext">Tutorial</span></a>
     <div class="divider"></div>
-    <a onClick="" class="icon" id="alay"style="background-position: -210px 50%;"><span class="tooltiptext">AutoLayout</span></a>
+    <a onClick="genldot()" class="icon" id="alay"style="background-position: -420px 50%;"><span class="tooltiptext">AutoLayout</span></a>
     <div class="divider"></div>
     <a onClick="$('#modal-load').show(); $('#modal-shade').show();" class="icon" id="loada"style="background-position: -210px 50%;"><span class="tooltiptext">Load&nbsp;Analysis</span></a>
     <a onClick="$('#modal-save').show(); $('#modal-shade').show();" class="icon" id="savea"style="background-position: -84px 50%;"><span class="tooltiptext">Save&nbsp;Analysis</span></a>
@@ -159,7 +159,7 @@ if (isset($_COOKIE['ovauser'])) {
     <a onClick="console.log('add edge btn clicked'); edgeMode('switch'); return false;" class="icon" id="eadd" style="background-position: -42px 50%;"><span class="tooltiptext">Add&nbsp;Edge</span></a> <!-- todo: add a CA when atk selected instead of RA -->
     <a onClick="console.log('add node btn clicked'); nodeMode('switch'); return false;" class="icon" id="nadd" style="background-position: -0px 50%;"><span class="tooltiptext">Add&nbsp;Node</span></a> <!-- todo: add node where selected, deselect btn once node added-->
     <div class="divider"></div>
-    <a onClick="resetPosition();" class="icon" id="reset" style="background-position: -0px 50%;"><span class="tooltiptext">Reset&nbsp;View</span></a>
+    <a onClick="resetPosition();" class="icon" id="reset" style="background-position: -336px 50%;"><span class="tooltiptext">Reset&nbsp;View</span></a>
     <div class="divider"></div>
   </div>
 
@@ -211,8 +211,8 @@ if (isset($_COOKIE['ovauser'])) {
   <div id="socialusers" style="display:none;"></div>
 
   <div class="modal-btns">
-      <a class="save" href="#" onClick="addlclick(false); $('#modal-shade').hide();return false;">Add</a>
-      <a class="cancel" href="#" onClick="addlcancel(); $('#modal-shade').hide();return false;">&#10008; Cancel</a>
+      <a class="save" href="#" onClick="addlclick(false); $('#modal-shade').hide(); FormOpen = false; return false;">Add</a>
+      <a class="cancel" href="#" onClick="addlcancel(); $('#modal-shade').hide();FormOpen = false; return false;">&#10008; Cancel</a>
   </div>
   </div>
   <!-- Add Locution Form Ends here -->
@@ -275,6 +275,13 @@ if (isset($_COOKIE['ovauser'])) {
 
       <div id="cq_selects" style="display:none;"></div>
     </form>
+    <ul class="btnlist">
+      <li><a href="#" onClick="this.parentNode.parentNode.parentNode.style.display='none';$('#modal-shade').hide(); FormOpen = false; deleteNode(mySel); return false;" class="bgred"><div class="btnicn" style="background-image: url('res/img/icon-delnode.png');">&nbsp;</div> Delete Node</a></li>
+        <!-- TODO: this if statement isn't working -->
+        <?php if($pro){ ?>
+          <li><a href="#" onClick="this.parentNode.parentNode.parentNode.style.display='none';$('#modal-shade').hide(); FormOpen = false;$('#locution_add').show();return false;"><div class="btnicn" style="background-image: url('res/img/icon_ladd.png');">&nbsp;</div> Add Locution</a></li>
+        <?php } ?>
+    </ul>
     <div class="modal-btns">
       <a class="save" href="#" onClick="saveNodeEdit();this.parentNode.parentNode.style.display='none';$('#modal-shade').hide(); FormOpen = false; return false;">&#x2714; Save</a>
       <a class="cancel" href="#" onClick="this.parentNode.parentNode.style.display='none';$('#modal-shade').hide(); FormOpen = false; return false;">&#10008; Cancel</a>

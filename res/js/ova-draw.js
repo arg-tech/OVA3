@@ -82,7 +82,7 @@ function DrawNode(nid, type, txt, nx, ny)
   }else if(type == 'MA'){
       nbox.setAttribute('style', 'fill:#fbeadb;stroke:#e67e22;stroke-width:1;');
   }else if(type == 'EN'){
-      nbox.setAttribute('style', 'fill:#c4c3c2;stroke:#969696;stroke-width:1;');
+      nbox.setAttribute('style', 'fill:#dedddc;stroke:#969696;stroke-width:1;');
   }else{
       nbox.setAttribute('style', 'fill:#ddeef9;stroke:#3498db;stroke-width:1;');
   }
@@ -101,10 +101,24 @@ function DrawEdge(fromid, toid) {
   SVGRootG.insertBefore(nedge, SVGRootG.childNodes[0]);
 }
 
-function cmenu(node) {
+function cmenu(node, evt) {
+
+  tsvg = document.getElementById('inline').getBoundingClientRect();
+  svgleft = tsvg.left;
+  svgtop = tsvg.top;
+  var newScale = VB[2]/1000;
+  var translationX = VB[0];
+  var translationY = VB[1];
+  //
+  //
+  // //Calculating new coordinates after panning and zooming
+  // var coordx = ((node.x - svgleft) * newScale) + translationX;
+  // var coordy = ((node.y  - svgtop)* newScale) + translationY;
+
     window.contextnode = node;
     $('#contextmenu').empty();
-    $('#contextmenu').css({top: node.y+85, left: node.x+210});
+    // $('#contextmenu').css({top: (node.y+85), left: (node.x+210)});
+    $('#contextmenu').css({top:(evt.clientY+5), left:evt.clientX-65});
     $('#contextmenu').append( "<a onClick='editpopup(window.contextnode);$(\"#contextmenu\").hide();'>Edit Node</a>" );
     if(node.type == 'I'){
         $('#contextmenu').append( "<a onClick='$(\"#locution_add\").show();$(\"#contextmenu\").hide();'>Add Locution</a>" );
