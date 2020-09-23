@@ -7,7 +7,7 @@ $fh = fopen($tmpfile, 'w') or die("can't open file");
 fwrite($fh, $_POST['data']);
 fclose($fh);
 
-$dotfile = $froot . '.dot';
+$dotfile = $froot . '.dottmp';
 exec("/usr/bin/dot -Tdot -o $dotfile $tmpfile");
 
 $doto = file_get_contents($dotfile);

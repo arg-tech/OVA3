@@ -11,6 +11,7 @@ var CurrentFocus = null;
 var CurrentlyEditing = 0;
 var editMode = false;
 var FormOpen = false;
+var dragEdges = [];
 
 const NAV_MAP = {
   187: { dir:  1, act: 'zoom', name: 'in' } /* + */,
@@ -135,34 +136,35 @@ function Init(evt){
   });
   getSocial();
 
-  $('#analysis_text').on('paste', function() {
-    setTimeout(function(e) {
-        var domString = "", temp = "";
-
-        $("#analysis_text div").each(function()
-        {
-            temp = $(this).html();
-            domString += ((temp == "<br>") ? "" : temp) + "<br>";
-        });
-
-        if(domString != ""){
-            $('#analysis_text').html(domString);
-        }
-
-        var orig_text = $('#analysis_text').html();
-        orig_text = orig_text.replace(/<br>/g, '&br&');
-        orig_text = orig_text.replace(/<br \/>/g, '&br&');
-        orig_text = orig_text.replace(/<span([^>]*)class="highlighted([^>]*)>([^>]*)<\/span>/g, "&span$1class=\"highlighted$2&$3&/span&");
-
-        $('#analysis_text').html(orig_text);
-
-        var repl_text = $('#analysis_text').text();
-        repl_text = repl_text.replace(/&br&/g, '<br>');
-        repl_text = repl_text.replace(/&span([^&]*)class="highlighted([^&]*)&([^&]*)&\/span&/g, "<span$1class=\"highlighted$2>$3</span>");
-
-        $('#analysis_text').html(repl_text);
-    }, 1);
-});
+//   $('#analysis_text').on('paste', function() {
+//     console.log("on paste");
+//     setTimeout(function(e) {
+//         var domString = "", temp = "";
+//         $("#analysis_text div").each(function()
+//         {
+//             temp = $(this).html();
+//             domString += ((temp == "<br>") ? "" : temp) + "<br>";
+//         });
+//
+//         if(domString != ""){
+//             $('#analysis_text').html(domString);
+//         }
+//         console.log($("analysis_text"));
+//         var orig_text = $('#analysis_text').html();
+//         console.log(orig_text);
+//         orig_text = orig_text.replace(/<br>/g, '&br&');
+//         orig_text = orig_text.replace(/<br \/>/g, '&br&');
+//         orig_text = orig_text.replace(/<span([^>]*)class="highlighted([^>]*)>([^>]*)<\/span>/g, "&span$1class=\"highlighted$2&$3&/span&");
+//
+//         $('#analysis_text').html(orig_text);
+//
+//         var repl_text = $('#analysis_text').text();
+//         repl_text = repl_text.replace(/&br&/g, '<br>');
+//         repl_text = repl_text.replace(/&span([^&]*)class="highlighted([^&]*)&([^&]*)&\/span&/g, "<span$1class=\"highlighted$2>$3</span>");
+//
+//         $('#analysis_text').html(repl_text);
+//     }, 1);
+// });
   // var resetBtn = drawResetButton();
   // SVGRoot.append(resetBtn);
 }
@@ -213,18 +215,22 @@ function getSelText()
 
 function hlcurrent(nodeID) {
   span = document.getElementById("node"+nodeID);
-  span.className="highlighted";
-    //$(".hlcurrent").removeClass("highlighted");
+  console.log(span);
+  if (span != null) {
+    span.className="highlighted";
+      //$(".hlcurrent").removeClass("highlighted");
 
-    if(nodeID != 'none'){
-        //$("#node"+nodeID).addClass("hlcurrent");
-        span.className="highlighted";
-        //if($("#node"+nodeID).length != 0) {
-            $('#analysis_text').animate({
-            scrollTop: $('#analysis_text').scrollTop() + $("#node"+nodeID).offset().top - 200
-            }, 1000);
-        //}
-    }
+      if(nodeID != 'none'){
+          //$("#node"+nodeID).addClass("hlcurrent");
+          span.className="highlighted";
+          //if($("#node"+nodeID).length != 0) {
+              $('#analysis_text').animate({
+              scrollTop: $('#analysis_text').scrollTop() + $("#node"+nodeID).offset().top - 200
+              }, 1000);
+          //}
+      }
+  }
+
 }
 
 function remhl(nodeID) {
@@ -331,7 +337,7 @@ function addLocution(node) {
 
   // span = document.getElementById("node"+newLNodeID);
   // span.className="highlighted";
-
+  console.log(newLNodeID);
   hlcurrent(newLNodeID);
 }
 
@@ -359,12 +365,14 @@ function addlclick(skipcheck){
         }else{
             $('#p_firstname').css('border-color', '#bbb');
         }
-        if($('#p_surname').val() == ''){
-            $('#p_surname').css('border-color', '#f00');
-            return false;
-        }else{
-            $('#p_surname').css('border-color', '#bbb');
-        }
+        $('#p_surname').css('border-color', '#bbb');
+        // if($('#p_surname').val() == ''){
+        //     $('#p_surname').css('border-color', '#f00');
+        //     return false;
+        // }else{
+        //     $('#p_surname').css('border-color', '#bbb');
+        // }
+        $('#locution_add').hide();
     }
     addLocution(mySel);
     $('#new_participant').hide();
@@ -712,7 +720,6 @@ function genldot() {
                 }
                 doto = doto + ';';
             }
-
             din = getNodesIn(dnode);
             for (var j = 0, ol = din.length; j < ol; j++) {
                 doto = doto + din[j].id + ' -> ' + dnode.id;

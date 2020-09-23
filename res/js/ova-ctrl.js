@@ -241,6 +241,7 @@ function Grab(evt) {
           CurrentlyEditing = mySel.nodeID;
           $('#locution_add').show();
           $('#modal-shade').show();
+          FormOpen = true;
         } else {
           window.nodeCounter = window.nodeCounter + 1;
           newNodeID = window.nodeCounter;
@@ -322,10 +323,11 @@ function Drag(evt) {
         cE.setAttributeNS(null, 'x', cnewX);
       }
     }
-
-    //updateNodePosition(DragTarget.id, newX, newY);
-    for (var j = 0; j < dragEdges.length; j++) {
-      UpdateEdge(dragEdges[j]);
+    if (dragEdges.length > 0) {
+      //updateNodePosition(DragTarget.id, newX, newY);
+      for (var j = 0; j < dragEdges.length; j++) {
+        UpdateEdge(dragEdges[j]);
+      }
     }
   }
 }
@@ -578,7 +580,7 @@ function myRClick(evt) {
         //nHeight = n.getAttributeNS(null, 'height');
         var index = findNodeIndex(nID);
         mySel = nodes[index];
-        cmenu(mySel);
+        cmenu(mySel,evt);
         return false;
     }
 }
