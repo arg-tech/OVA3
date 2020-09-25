@@ -307,6 +307,8 @@ function Drag(evt) {
     // apply a new tranform translation to the dragged focusElement, to display
     //    it in its new location
     children = DragTarget.children;
+    // console.log(DragTarget);
+    // console.log(DragTarget.children);
     for (var j = 0; j < children.length; j++) {
       var childElement = children[j];
       oldX = childElement.getAttributeNS(null, 'x');

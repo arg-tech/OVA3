@@ -84,15 +84,10 @@ function Init(evt){
     DMAX = [10604, 135472];
     WMIN = 455;
 
-    // var svgPanZoom = d3.select("#right1")
-    //   .append("svg")
-    //   .call(d3.zoom().on("zoom", function () {
-    //     svgPanZoom.attr("transform", d3.event.transform)
-    //   }))
-    //   .append(SVGRootG)
-
 
     document.getElementById('n_file').addEventListener('change', loadbutton, false);
+    window.sessionid = $.now().toString()+Math.random().toString().substring(3,8);
+
 
     $(window).bind('beforeunload', function(){
         if(window.unsaved){
@@ -204,7 +199,7 @@ function getSelText()
           }
           range.surroundContents(span);
           //postEdit("text", "edit", $('#analysis_text').html());
-          //postEdit("text", "edit", $('#analysis_text').html());
+          postEdit("text", "edit", $('#analysis_text').html());
       }
   }else{
       var innerDoc = iframe.contentDocument || iframe.contentWindow.document;
@@ -245,6 +240,7 @@ function remhl(nodeID) {
 
 function postEdit(type, action, content){
     if(type == 'text'){
+      console.log(window.sessionid);
         $.post( "helpers/edit.php", { type: type, action: action, cnt: content, akey: window.akey, sessionid: window.sessionid } ).done(function( data ) {
             dt = JSON.parse(data);
             //lastedit = dt.last;
@@ -405,7 +401,7 @@ function getNodesOut(node) {
     var l = edges.length;
     for (var i = 0; i < l; i++) {
         if(edges[i].fromID == node.nodeID) {
-          var  nID = edges[i].fromID;
+          var  nID = edges[i].toID;
           var nIndex = findNodeIndex(nID);
           nlist.push(nodes[nIndex]);
         }
@@ -700,36 +696,73 @@ var sort_by = function(field, reverse, primer){
 function genldot() {
     var doto = "digraph odg {";
     var ranks = "";
+    var alreadyDrawn={};
     if("plus" in getUrlVars()){
         doto = doto + "rankdir=RL;";
     }
 
     for (var i = 0, l = nodes.length; i < l; i++) {
         dnode = nodes[i];
-        doto = doto + dnode.id + ' [label="xxx xxx xxx xxx xxx\\nxxx xxx xxx xxx xxx\\nxxx xxx xxx xxx xxx\\nxxx xxx xxx xxx xxx"];';
+        //console.log(dnode);
+        //console.log(doto);
+        doto = doto + dnode.nodeID + ' [label="xxx xxx xxx xxx xxx\\nxxx xxx xxx xxx xxx\\nxxx xxx xxx xxx xxx\\nxxx xxx xxx xxx xxx"];';
+        //console.log(doto);
 
         if(dnode.type != 'I' && dnode.type != 'L'){
+
             dout = getNodesOut(dnode);
+            console.log("dout length: " + dout.length);
             for (var j = 0, ol = dout.length; j < ol; j++) {
-                doto = doto + dnode.id + ' -> ' + dout[j].id;
+              console.log(dnode);
+              console.log(dout[j]);
+              if (alreadyDrawn[dnode.nodeID+"-"+dout[j].nodeID]!==100) {
+                doto = doto + dnode.nodeID + ' -> ' + dout[j].nodeID;
+                alreadyDrawn[dnode.nodeID+"-"+dout[j].nodeID]=100;
+                console.log(doto);
                 if("plus" in getUrlVars() && dnode.type != 'YA' && dout[j].type != 'YA'){
                     doto = doto + " [constraint=false]";
                     if((dnode.type == 'RA' || dnode.type == 'CA') && dout[j].type == 'I'){
-                        ranks = ranks + '{ rank = same; ' + dnode.id + '; ' + dout[j].id + '; }';
+                        ranks = ranks + '{ rank = same; ' + dnode.nodeID + '; ' + dout[j].nodeID + '; }';
                     }
                 }
                 doto = doto + ';';
+              }
+                // doto = doto + dnode.nodeID + ' -> ' + dout[j].nodeID;
+                // alreadyDrawn[dnode.nodeID+"-"+dout[j].nodeID]=100;
+                // console.log(doto);
+                // if("plus" in getUrlVars() && dnode.type != 'YA' && dout[j].type != 'YA'){
+                //     doto = doto + " [constraint=false]";
+                //     if((dnode.type == 'RA' || dnode.type == 'CA') && dout[j].type == 'I'){
+                //         ranks = ranks + '{ rank = same; ' + dnode.nodeID + '; ' + dout[j].nodeID + '; }';
+                //     }
+                // }
+                // doto = doto + ';';
             }
+            console.log(alreadyDrawn);
             din = getNodesIn(dnode);
+            console.log("din length: " + din.length);
             for (var j = 0, ol = din.length; j < ol; j++) {
-                doto = doto + din[j].id + ' -> ' + dnode.id;
+              if (alreadyDrawn[din[j].nodeID+"-"+dnode.nodeID]!==100) {
+                doto = doto + din[j].nodeID + ' -> ' + dnode.nodeID;
+
+                alreadyDrawn[din[j].nodeID+"-"+dnode.nodeID]=100;
                 if("plus" in getUrlVars() && dnode.type != 'YA' && din[j].type != 'YA'){
                     doto = doto + " [constraint=false]";
                     if((din[j].type == 'RA' || din[j].type == 'CA') && dnode.type == 'I'){
-                        ranks = ranks + '{ rank = same; ' + din[j].id + '; ' + dnode.id + '; }';
+                        ranks = ranks + '{ rank = same; ' + din[j].nodeID + '; ' + dnode.nodeID + '; }';
                     }
                 }
                 doto = doto + ';';
+              }
+                // doto = doto + din[j].nodeID + ' -> ' + dnode.nodeID;
+                console.log(doto);
+            //     if("plus" in getUrlVars() && dnode.type != 'YA' && din[j].type != 'YA'){
+            //         doto = doto + " [constraint=false]";
+            //         if((din[j].type == 'RA' || din[j].type == 'CA') && dnode.type == 'I'){
+            //             ranks = ranks + '{ rank = same; ' + din[j].nodeID + '; ' + dnode.nodeID + '; }';
+            //         }
+            //     }
+            //     doto = doto + ';';
             }
         }
     }
@@ -743,13 +776,14 @@ function genldot() {
     $.post("dot/index.php", { data: doto },
         function(reply) {
             ldata = JSON.parse(reply);
+            console.log(ldata);
             for(var i = 0, l = nodes.length; i<l; i++) {
                 mnode = nodes[i];
-                if(mnode.id in ldata){
-                    xpos = parseInt(ldata[mnode.id]["x"]);
+                if(mnode.nodeID in ldata){
+                    xpos = parseInt(ldata[mnode.nodeID]["x"]);
                     mnode.x = xpos*0.8;
                     if(xpos > mwidth-100){ mwidth = xpos+100; }
-                    ypos = parseInt(ldata[mnode.id]["y"]);
+                    ypos = parseInt(ldata[mnode.nodeID]["y"]);
                     mnode.y = ypos;
                     if(ypos > mheight-100){ mheight = ypos+100; }
                 }
