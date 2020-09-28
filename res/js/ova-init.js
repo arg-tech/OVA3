@@ -12,6 +12,7 @@ var CurrentlyEditing = 0;
 var editMode = false;
 var FormOpen = false;
 var dragEdges = [];
+var count = 0;
 
 const NAV_MAP = {
   187: { dir:  1, act: 'zoom', name: 'in' } /* + */,
@@ -168,6 +169,7 @@ function getSelText()
 {
   var iframe = document.getElementById('left1');
   var txt = "";
+  count = count + 1;
   if(iframe.nodeName.toLowerCase() == 'div'){
       if(window.getSelection) {
           userSelection = window.getSelection();
@@ -205,6 +207,7 @@ function getSelText()
       var innerDoc = iframe.contentDocument || iframe.contentWindow.document;
       txt = iframe.contentWindow.getSelection().toString();
   }
+  console.log(count);
   return txt;
 }
 

@@ -740,6 +740,7 @@ function saveNodeEdit() {
       deleteEdges(edgesToDelete[i]);
     }
     $("#contextmenu").hide();
+    postEdit("node", "delete", node);
   //}
 }
 
@@ -751,6 +752,7 @@ function saveNodeEdit() {
     tempEdge.remove();
     const index = edges.indexOf(edge);
     if (index > -1) { edges.splice(index, 1); }
+    postEdit("edge", "delete", edge);
 
 
     // for(var i=1; i<nodes.length; i++) {

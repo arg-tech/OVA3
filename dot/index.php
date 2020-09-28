@@ -8,23 +8,28 @@ fwrite($fh, $_POST['data']);
 fclose($fh);
 
 $dotfile = $froot . '.dot';
+$jsonfile = $froot;
 
 exec("/usr/local/bin/dot -Tdot -o $dotfile $tmpfile");
+exec("/usr/local/bin/dot -Tplain -o $jsonfile $tmpfile");
+//dot -Txdot_json -ogrpaph.json graph.dot
 
 
-$doto = file_get_contents($dotfile);
+$return = file_get_contents($jsonfile);
 
-$n = array();
+// $n = array();
+// foreach(preg_split("/((\r?\n)|(\r\n?))/", $doto) as $line){
+//     if(preg_match('/^\s*([0-9]*)\s*\[label.*pos="([0-9]*),([0-9]*)"/', $line, $m)){
+//         $n[] = '"' . $m[1] . '":{"x":"' . $m[2] . '","y":"' . $m[3] . '"}';
+//       //"id" : {"x": "xval",
+//       //      "y": "yval"
+//      //       }
+//     }
+// }
 
-foreach(preg_split("/((\r?\n)|(\r\n?))/", $doto) as $line){
-    if(preg_match('/^\s*([0-9]*)\s*\[label.*pos="([0-9]*),([0-9]*)"/', $line, $m)){
-        $n[] = '"' . $m[1] . '":{"x":"' . $m[2] . '","y":"' . $m[3] . '"}';
-    }
-}
-
-$return = '{';
-$return = $return . implode(',', $n);
-$return = $return . '}';
+// $return = '{';
+// $return = $return . implode(',', $n);
+// $return = $return . '}';
 
 echo $return;
 ?>
