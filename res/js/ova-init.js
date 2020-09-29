@@ -14,6 +14,8 @@ var FormOpen = false;
 var dragEdges = [];
 var count = 0;
 
+var lastedit = 0;
+
 const NAV_MAP = {
   187: { dir:  1, act: 'zoom', name: 'in' } /* + */,
   61: { dir:  1, act: 'zoom', name: 'in' } /* + WTF, FF? */,
@@ -120,6 +122,7 @@ function Init(evt){
     }
 });
 
+updateAnalysis();
  $.getJSON("browserint.php?x=ipxx&url="+window.SSurl, function(json_data){
     window.ssets = {};
     schemesets = json_data.schemesets;
@@ -132,37 +135,94 @@ function Init(evt){
   });
   getSocial();
 
-//   $('#analysis_text').on('paste', function() {
-//     console.log("on paste");
-//     setTimeout(function(e) {
-//         var domString = "", temp = "";
-//         $("#analysis_text div").each(function()
-//         {
-//             temp = $(this).html();
-//             domString += ((temp == "<br>") ? "" : temp) + "<br>";
-//         });
-//
-//         if(domString != ""){
-//             $('#analysis_text').html(domString);
-//         }
-//         console.log($("analysis_text"));
-//         var orig_text = $('#analysis_text').html();
-//         console.log(orig_text);
-//         orig_text = orig_text.replace(/<br>/g, '&br&');
-//         orig_text = orig_text.replace(/<br \/>/g, '&br&');
-//         orig_text = orig_text.replace(/<span([^>]*)class="highlighted([^>]*)>([^>]*)<\/span>/g, "&span$1class=\"highlighted$2&$3&/span&");
-//
-//         $('#analysis_text').html(orig_text);
-//
-//         var repl_text = $('#analysis_text').text();
-//         repl_text = repl_text.replace(/&br&/g, '<br>');
-//         repl_text = repl_text.replace(/&span([^&]*)class="highlighted([^&]*)&([^&]*)&\/span&/g, "<span$1class=\"highlighted$2>$3</span>");
-//
-//         $('#analysis_text').html(repl_text);
-//     }, 1);
-// });
-  // var resetBtn = drawResetButton();
-  // SVGRoot.append(resetBtn);
+  $('#analysis_text').on('paste', function() {
+    setTimeout(function(e) {
+        var domString = "", temp = "";
+        $("#analysis_text div").each(function()
+        {
+            temp = $(this).html();
+            console.log(temp);
+            domString += ((temp == "<br>") ? "" : temp) + "<br>";
+        });
+
+        if(domString != ""){
+            $('#analysis_text').html(domString);
+        }
+        var orig_text = $('#analysis_text').html();
+        console.log(orig_text);
+        orig_text = orig_text.replace(/<br>/g, '&br&');
+        orig_text = orig_text.replace(/<br \/>/g, '&br&');
+        orig_text = orig_text.replace(/<span([^>]*)class="highlighted([^>]*)>([^>]*)<\/span>/g, "&span$1class=\"highlighted$2&$3&/span&");
+
+        $('#analysis_text').html(orig_text);
+        console.log(orig_text);
+
+        var repl_text = $('#analysis_text').text();
+        repl_text = repl_text.replace(/&br&/g, '<br>');
+        repl_text = repl_text.replace(/&span([^&]*)class="highlighted([^&]*)&([^&]*)&\/span&/g, "<span$1class=\"highlighted$2>$3</span>");
+
+        $('#analysis_text').html(repl_text);
+        console.log(repl_text);
+    }, 1);
+});
+}
+
+
+function updateAnalysis(){
+    var path = 'helpers/edithistory.php?last='+lastedit+'&akey='+window.akey;
+
+
+    $.get(path, function(data){
+        edits = JSON.parse(data);
+        console.log(edits);
+        eretry = [];
+        for (i=0;i<edits.edits.length;i++){
+            if(edits.edits[i].sessionid == window.sessionid){
+                //do nothing for our own edits
+            }else if(edits.edits[i].type == 'node' && edits.edits[i].action == 'add'){
+                node = JSON.parse(edits.edits[i].content);
+                updateAddNode(node);
+            }else if(edits.edits[i].type == 'node' && edits.edits[i].action == 'delete'){
+                node = JSON.parse(edits.edits[i].content);
+                updateDelNode(node);
+            }else if(edits.edits[i].type == 'node' && edits.edits[i].action == 'move'){
+                node = JSON.parse(edits.edits[i].content);
+                updateMoveNode(node);
+            }else if(edits.edits[i].type == 'node' && edits.edits[i].action == 'edit'){
+                node = JSON.parse(edits.edits[i].content);
+                updateEditNode(node);
+            }else if(edits.edits[i].type == 'edge' && edits.edits[i].action == 'add'){
+                edge = JSON.parse(edits.edits[i].content);
+                //s = updateAddEdge(edge);
+                //if(s == false){
+                    eretry.push([edge, 'add']);
+                //}
+            }else if(edits.edits[i].type == 'edge' && edits.edits[i].action == 'delete'){
+                edge = JSON.parse(edits.edits[i].content);
+                //updateDelEdge(edge);
+		eretry.push([edge, 'del']);
+            }else if(edits.edits[i].type == 'text' && edits.edits[i].action == 'edit'){
+                updateEditText(edits.edits[i].content);
+            }
+            lastedit = edits.edits[i].editID;
+
+        }
+	doretry = eretry;
+        eretry = [];
+        for (j=0;j<doretry.length;j++){
+            edge = doretry[j][0];
+            op = doretry[j][1];
+            if(op == 'add'){
+	        s = updateAddEdge(edge);
+	        if(s == false){
+	            eretry.push(edge);
+	        }
+            }else{
+                updateDelEdge(edge);
+            }
+        }
+        setTimeout(updateAnalysis, 2000);
+    });
 }
 
 function getSelText()
@@ -200,20 +260,17 @@ function getSelText()
             span.id = "node"+(window.nodeCounter+2);
           }
           range.surroundContents(span);
-          //postEdit("text", "edit", $('#analysis_text').html());
           postEdit("text", "edit", $('#analysis_text').html());
       }
   }else{
       var innerDoc = iframe.contentDocument || iframe.contentWindow.document;
       txt = iframe.contentWindow.getSelection().toString();
   }
-  console.log(count);
   return txt;
 }
 
 function hlcurrent(nodeID) {
   span = document.getElementById("node"+nodeID);
-  console.log(span);
   if (span != null) {
     span.className="highlighted";
       //$(".hlcurrent").removeClass("highlighted");
@@ -315,11 +372,11 @@ function addLocution(node) {
   var yCoord = n.y;
   if (nodes[nindex+1]){
     if (nodes[nindex+1].type == 'L' ) {
-      yCoord +=50;
+      yCoord = parseInt(yCoord)+50;
     }
   }
 
-  AddNode(ltext, 'L', '0', participantID, newLNodeID, (n.x + 450), yCoord);
+  AddNode(ltext, 'L', '0', participantID, newLNodeID, (parseInt(n.x)+450), yCoord);
   var index = findNodeIndex(newLNodeID);
 
 
@@ -336,7 +393,6 @@ function addLocution(node) {
 
   // span = document.getElementById("node"+newLNodeID);
   // span.className="highlighted";
-  console.log(newLNodeID);
   hlcurrent(newLNodeID);
 }
 
@@ -706,22 +762,15 @@ function genldot() {
 
     for (var i = 0, l = nodes.length; i < l; i++) {
         dnode = nodes[i];
-        //console.log(dnode);
-        //console.log(doto);
         doto = doto + dnode.nodeID + ' [label="xxx xxx xxx xxx xxx\\nxxx xxx xxx xxx xxx\\nxxx xxx xxx xxx xxx\\nxxx xxx xxx xxx xxx"];';
-        //console.log(doto);
 
         if(dnode.type != 'I' && dnode.type != 'L'){
 
             dout = getNodesOut(dnode);
-            console.log("dout length: " + dout.length);
             for (var j = 0, ol = dout.length; j < ol; j++) {
-              console.log(dnode);
-              console.log(dout[j]);
               if (alreadyDrawn[dnode.nodeID+"-"+dout[j].nodeID]!==100) {
                 doto = doto + dnode.nodeID + ' -> ' + dout[j].nodeID;
                 alreadyDrawn[dnode.nodeID+"-"+dout[j].nodeID]=100;
-                console.log(doto);
                 if("plus" in getUrlVars() && dnode.type != 'YA' && dout[j].type != 'YA'){
                     doto = doto + " [constraint=false]";
                     if((dnode.type == 'RA' || dnode.type == 'CA') && dout[j].type == 'I'){
@@ -741,9 +790,7 @@ function genldot() {
                 // }
                 // doto = doto + ';';
             }
-            console.log(alreadyDrawn);
             din = getNodesIn(dnode);
-            console.log("din length: " + din.length);
             for (var j = 0, ol = din.length; j < ol; j++) {
               if (alreadyDrawn[din[j].nodeID+"-"+dnode.nodeID]!==100) {
                 doto = doto + din[j].nodeID + ' -> ' + dnode.nodeID;
@@ -758,7 +805,6 @@ function genldot() {
                 doto = doto + ';';
               }
                 // doto = doto + din[j].nodeID + ' -> ' + dnode.nodeID;
-                console.log(doto);
             //     if("plus" in getUrlVars() && dnode.type != 'YA' && din[j].type != 'YA'){
             //         doto = doto + " [constraint=false]";
             //         if((din[j].type == 'RA' || din[j].type == 'CA') && dnode.type == 'I'){
@@ -779,7 +825,6 @@ function genldot() {
     $.post("dot/index.php", { data: doto },
         function(reply) {
             ldata = JSON.parse(reply);
-            console.log(ldata);
             for(var i = 0, l = nodes.length; i<l; i++) {
                 mnode = nodes[i];
                 if(mnode.nodeID in ldata){
