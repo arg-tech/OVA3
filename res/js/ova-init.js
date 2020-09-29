@@ -26,6 +26,7 @@ const NAV_MAP = {
     39: { dir: 1, act: 'move', name: 'right', axis: 0 } /* ? */,
     40: { dir: 1, act: 'move', name: 'down', axis: 1 } /* ? */
 };
+
 const NF = 16;
 var VB = null;
 var DMAX = 0;
@@ -133,7 +134,8 @@ if ("aifdb" in getUrlVars()) {
     }
 });
 
-updateAnalysis();
+  updateAnalysis();
+
  $.getJSON("browserint.php?x=ipxx&url="+window.SSurl, function(json_data){
     window.ssets = {};
     schemesets = json_data.schemesets;
@@ -176,6 +178,7 @@ updateAnalysis();
         console.log(repl_text);
     }, 1);
 });
+
 }
 
 
