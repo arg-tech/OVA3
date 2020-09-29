@@ -135,6 +135,7 @@ if ("aifdb" in getUrlVars()) {
 });
 
   updateAnalysis();
+
  $.getJSON("browserint.php?x=ipxx&url="+window.SSurl, function(json_data){
     window.ssets = {};
     schemesets = json_data.schemesets;
@@ -395,7 +396,6 @@ function addLocution(node) {
     if (nodes[nindex+1].type == 'L' ) {
       yCoord = parseInt(yCoord)+50;
     }
-  }
 
   AddNode(ltext, 'L', '0', participantID, newLNodeID, (parseInt(n.x)+450), yCoord);
   var index = findNodeIndex(newLNodeID);
