@@ -66,8 +66,7 @@ if (isset($_COOKIE['ovauser'])) {
   <title>OVA from ARG-tech</title>
   <meta name="description" content="">
   <script src="http://code.jquery.com/jquery-2.1.3.min.js"></script>
-  <link rel="stylesheet"
-    href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.10.0/css/smoothness/jquery-ui-1.10.0.custom.min.css" />
+  <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.10.0/css/smoothness/jquery-ui-1.10.0.custom.min.css" />
 
   <link rel="stylesheet" href="res/css/analysis.css" />
   <link rel="stylesheet" href="res/css/introjs.css" />
@@ -148,7 +147,8 @@ if (isset($_COOKIE['ovauser'])) {
     <?php
     $newurl = "analyse.php?url=" . $_GET['url'] . $plusval;
     ?>
-    <a href="http://arg.tech/~nicole/index.php" class="home"><img src="res/img/logo.svg" /></a> <!--todo: change link to homepage after testing-->
+    <a href="http://arg.tech/~nicole/index.php" class="home"><img src="res/img/logo.svg" /></a>
+    <!--todo: change link to homepage after testing-->
     <a onClick='$("#xmenu").toggle("slide", {direction: "right"}, "slow");' class="icon" style="background-position: -126px 50%;"></a>
     <div class="divider"></div>
     <a onClick="mainTut()" class="icon" style="background-position: -378px 50%;"><span class="tooltiptext">Tutorial</span></a>
@@ -389,11 +389,15 @@ if (isset($_COOKIE['ovauser'])) {
       <div id="cq_selects" style="display:none;"></div>
     </form>
     <ul class="btnlist">
-      <li><a href="#" onClick="this.parentNode.parentNode.parentNode.style.display='none';$('#modal-shade').hide(); FormOpen = false; deleteNode(mySel); return false;" class="bgred"><div class="btnicn" style="background-image: url('res/img/icon-delnode.png');">&nbsp;</div> Delete Node</a></li>
-        <!-- TODO: this if statement isn't working -->
-        <?php if($pro){ ?>
-          <li><a href="#" onClick="this.parentNode.parentNode.parentNode.style.display='none';$('#modal-shade').hide(); FormOpen = false;$('#locution_add').show();return false;"><div class="btnicn" style="background-image: url('res/img/icon_ladd.png');">&nbsp;</div> Add Locution</a></li>
-        <?php } ?>
+      <li><a href="#" onClick="this.parentNode.parentNode.parentNode.style.display='none';$('#modal-shade').hide(); FormOpen = false; deleteNode(mySel); return false;" class="bgred">
+          <div class="btnicn" style="background-image: url('res/img/icon-delnode.png');">&nbsp;</div> Delete Node
+        </a></li>
+      <!-- TODO: this if statement isn't working -->
+      <?php if ($pro) { ?>
+        <li><a href="#" onClick="this.parentNode.parentNode.parentNode.style.display='none';$('#modal-shade').hide(); FormOpen = false;$('#locution_add').show();return false;">
+            <div class="btnicn" style="background-image: url('res/img/icon_ladd.png');">&nbsp;</div> Add Locution
+          </a></li>
+      <?php } ?>
     </ul>
     <div class="modal-btns">
       <a class="save" href="#" onClick="saveNodeEdit();this.parentNode.parentNode.style.display='none';$('#modal-shade').hide(); FormOpen = false; return false;">&#x2714; Save</a>

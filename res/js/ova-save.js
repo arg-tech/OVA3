@@ -1,70 +1,3 @@
-/* autolayout
-function genldot() {
-    var doto = "digraph odg {";
-    var ranks = "";
-    if("plus" in getUrlVars()){
-        doto = doto + "rankdir=RL;";
-    }
-
-    for (var i = 0, l = nodes.length; i < l; i++) {
-        dnode = nodes[i];
-        doto = doto + dnode.id + ' [label="xxx xxx xxx xxx xxx\\nxxx xxx xxx xxx xxx\\nxxx xxx xxx xxx xxx\\nxxx xxx xxx xxx xxx"];';
-
-        if(dnode.type != 'I' && dnode.type != 'L'){
-            dout = getNodesOut(dnode);
-            for (var j = 0, ol = dout.length; j < ol; j++) {
-                doto = doto + dnode.id + ' -> ' + dout[j].id;
-                if("plus" in getUrlVars() && dnode.type != 'YA' && dout[j].type != 'YA'){
-                    doto = doto + " [constraint=false]";
-                    if((dnode.type == 'RA' || dnode.type == 'CA') && dout[j].type == 'I'){
-                        ranks = ranks + '{ rank = same; ' + dnode.id + '; ' + dout[j].id + '; }';
-                    }
-                }
-                doto = doto + ';';
-            }
-
-            din = getNodesIn(dnode);
-            for (var j = 0, ol = din.length; j < ol; j++) {
-                doto = doto + din[j].id + ' -> ' + dnode.id;
-                if("plus" in getUrlVars() && dnode.type != 'YA' && din[j].type != 'YA'){
-                    doto = doto + " [constraint=false]";
-                    if((din[j].type == 'RA' || din[j].type == 'CA') && dnode.type == 'I'){
-                        ranks = ranks + '{ rank = same; ' + din[j].id + '; ' + dnode.id + '; }';
-                    }
-                }   
-                doto = doto + ';';
-            }
-        }
-    }
-
-    doto = doto + ranks;
-    doto = doto + '}';
-
-    mwidth = WIDTH;
-    mheight = HEIGHT;
-
-    $.post("dot/index.php", { data: doto },
-        function(reply) {
-            ldata = JSON.parse(reply);
-            for(var i = 0, l = nodes.length; i<l; i++) {
-                mnode = nodes[i];
-                if(mnode.id in ldata){
-                    xpos = parseInt(ldata[mnode.id]["x"]);
-                    mnode.x = xpos*0.8;
-                    if(xpos > mwidth-100){ mwidth = xpos+100; }
-                    ypos = parseInt(ldata[mnode.id]["y"]);
-                    mnode.y = ypos;
-                    if(ypos > mheight-100){ mheight = ypos+100; }
-                }
-            }
-
-            if(mwidth > WIDTH || mheight > HEIGHT){
-                resize_canvas(mwidth, mheight);
-            }
-        }
-    );
-}*/
-
 function genjson() {
     var json = {}
     var jschemefulfillments = [];
@@ -123,11 +56,10 @@ function genjson() {
 }
 
 function genlink() {
-    if ($('#sharelink').is(':hidden')) {
-        alink = window.location;
-        $('#shareinput').val(alink);
-    }
-
+    alink = window.location;
+    $('#shareinput').val(alink);
+    console.log(nodes);
+    console.log(edges);
     return false;
 }
 
@@ -142,6 +74,15 @@ function save2file() {
 
     window.unsaved = false;
 
+    return false;
+}
+
+function clearAnalysis() {
+    SVGRoot.removeChild(SVGRootG);
+    nodes = [];
+    edges = [];
+    SVGRootG = document.createElementNS("http://www.w3.org/2000/svg", 'g');
+    SVGRoot.appendChild(SVGRootG);
     return false;
 }
 
@@ -168,6 +109,7 @@ function loadbutton(evt) {
 }
 
 function loadfile(jstr) {
+    clearAnalysis();
     if (typeof jstr !== 'object') {
         var json = JSON.parse(jstr);
     } else {
@@ -201,7 +143,6 @@ function loadfile(jstr) {
             if (jnodes[i].visible) {
                 DrawNode(jnodes[i].id, jnodes[i].type, jnodes[i].text, jnodes[i].x, jnodes[i].y);
             }
-            //postEdit("node", "add", jnodes[i]);
         }
         window.nodeCounter++;
 
@@ -220,12 +161,12 @@ function loadfile(jstr) {
             if (nodes[i].nodeID > window.nodeCounter) {
                 window.nodeCounter = nodes[i].nodeID;
             }
+            postEdit("node", "add", nodes[i]);
             DrawNode(nodes[i].nodeID, nodes[i].type, nodes[i].text, nodes[i].x, nodes[i].y);
             if (nodes[i].type == "L") {
                 pID = findParticipantIDText(nodes[i].text);
                 nodes[i].participantID = pID;
             }
-            //postEdit("node", "add", nodes[i]);
         }
         window.nodeCounter++;
 
@@ -242,7 +183,7 @@ function loadfile(jstr) {
     }
 
     setAllText(json['analysis']['txt']);
-    //postEdit("text", "edit", json['analysis']['txt']);
+    postEdit("text", "edit", json['analysis']['txt']);
 
 }
 
@@ -292,7 +233,7 @@ function loaddbjson(json) {
             }
         }
     }
-    
+
     edges = json['edges'];
     for (var i = 0, l = edges.length; i < l; i++) {
         edge = edges[i];
@@ -311,7 +252,6 @@ function loaddbjson(json) {
     }
 }
 
-//todo: test
 function loadfromdb(nodeSetID) {
     console.log("loadfromdb");
     var oplus = false;
@@ -323,8 +263,6 @@ function loadfromdb(nodeSetID) {
     $.getJSON("helpers/layout.php?id=" + nodeSetID + uplus, function (ldata) {
         $.getJSON("helpers/getdbnodeset.php?id=" + nodeSetID, function (data) {
 
-            //$('#p_select').empty();
-            //particpants = [];
             $.each(data.participants, function (idx, p) {
                 addParticipant(p.firstname, p.surname);
             });
@@ -391,7 +329,6 @@ function loadfromdb(nodeSetID) {
                     UpdateEdge(edge);
                 }
             });
-            //console.log(edges);
 
             $.get("helpers/gettext.php?id=" + nodeSetID, function (tdata) {
                 setAllText(tdata);
@@ -404,10 +341,6 @@ function loadfromdb(nodeSetID) {
                 }
             });
 
-            /*if (mwidth > WIDTH || mheight > HEIGHT) {
-                resize_canvas(mwidth, mheight);
-            }*/
-
             //var currenturl = window.location;
             //var newurl = currenturl.replace(/aifdb=[0-9]+/i, ""); 
             //history.pushState(null, null, newurl);
@@ -415,6 +348,7 @@ function loadfromdb(nodeSetID) {
     });
 }
 
+//todo: add error check & message
 function save2db() {
     $('#modal-save2db').show();
     $('#m_load').show();
@@ -455,75 +389,74 @@ function save2db() {
 
     jstring = JSON.stringify(json);
     console.log(jstring);
-    /* todo: uncomment & add error check
-        $.post("ul/index.php", { data: JSON.stringify(json) },
-            function(reply) {
-                console.log(reply);
-                var rs = reply.split(" ");
-                var nsID = rs[rs.length-1]
-                var dbURL = window.DBurl+"/argview/"+nsID;
-                var dbLink = "<a href='"+dbURL+"' target='_blank'>"+dbURL+"</a>";
-                $.getJSON( "helpers/corporalist.php", function(data) {
-                    $('#m_load').hide();
-                    $('#m_content').html("<p style='font-weight:700'>Uploaded to database:</p>"+dbLink+"<br /><p style='font-weight:700'>Add to corpus:</p>");
-    
-                    var s = $("<select id=\"s_corpus\" name=\"s_corpus\" />");
-                    $.each(data.corpora, function(idx, c) {
-                        if(c.locked == 0){
-                            title = c.title.replace(/&amp;#/g, "&#");
-                $("<option />", {value: c.corpusID, html: title}).appendTo(s);
-                        }
-                    });
-                    s.appendTo('#m_content');
-    
-                    $('<p style="text-align:right"><input type="button" value="Add to corpus" onClick="add2corpus('+nsID+');" /></p>').appendTo('#m_content');
-    
-                    if("aifdb" in getUrlVars()){
-                        olddbid = getUrlVars()["aifdb"];
-                        $.getJSON( "helpers/incorpora.php?nodesetID="+olddbid, function(crpdata) {
-                            var ncrp = 0;
-                            $.each(crpdata.corpora, function(idx, c) {
-                                if(ncrp == 0){
-                                    $('<p style="font-weight:700">Replace in existing corpora:</p>').appendTo('#m_content');
-                                }
-                                ncrp = ncrp+1;
-                                title = c.title.replace(/&amp;#/g, "&#");
-                                $('<p><input type="checkbox" class="rccb" name="add'+c.id+'" value="'+c.id+'" checked="checked"> '+title+'</p>').appendTo('#m_content');
-                            });
-                            if(ncrp > 0){
-                                $('<p style="text-align:right"><input type="button" value="Replace in corpora" onClick="rpl2corpus('+nsID+','+olddbid+');" /></p>').appendTo('#m_content');
-                            }
-                            $('#m_content').show();
-                        });
-                    }else{
-                        $('#m_content').show();
+    /*$.post("ul/index.php", { data: JSON.stringify(json) },
+        function (reply) {
+            console.log(reply);
+            var rs = reply.split(" ");
+            var nsID = rs[rs.length - 1]
+            var dbURL = window.DBurl + "/argview/" + nsID;
+            var dbLink = "<a href='" + dbURL + "' target='_blank'>" + dbURL + "</a>";
+            $.getJSON("helpers/corporalist.php", function (data) {
+                $('#m_load').hide();
+                $('#m_content').html("<p style='font-weight:700'>Uploaded to database:</p>" + dbLink + "<br /><p style='font-weight:700'>Add to corpus:</p>");
+
+                var s = $("<select id=\"s_corpus\" name=\"s_corpus\" />");
+                $.each(data.corpora, function (idx, c) {
+                    if (c.locked == 0) {
+                        title = c.title.replace(/&amp;#/g, "&#");
+                        $("<option />", { value: c.corpusID, html: title }).appendTo(s);
                     }
-    
-                    $('#m_content').show();
                 });
-    
-                var url = getUrlVars()["url"];
-                if(url == 'local'){
-                    txt = getAllText();
-                }else{
-                    txt = url;
+                s.appendTo('#m_content');
+
+                $('<p style="text-align:right"><input type="button" value="Add to corpus" onClick="add2corpus(' + nsID + ');" /></p>').appendTo('#m_content');
+
+                if ("aifdb" in getUrlVars()) {
+                    olddbid = getUrlVars()["aifdb"];
+                    $.getJSON("helpers/incorpora.php?nodesetID=" + olddbid, function (crpdata) {
+                        var ncrp = 0;
+                        $.each(crpdata.corpora, function (idx, c) {
+                            if (ncrp == 0) {
+                                $('<p style="font-weight:700">Replace in existing corpora:</p>').appendTo('#m_content');
+                            }
+                            ncrp = ncrp + 1;
+                            title = c.title.replace(/&amp;#/g, "&#");
+                            $('<p><input type="checkbox" class="rccb" name="add' + c.id + '" value="' + c.id + '" checked="checked"> ' + title + '</p>').appendTo('#m_content');
+                        });
+                        if (ncrp > 0) {
+                            $('<p style="text-align:right"><input type="button" value="Replace in corpora" onClick="rpl2corpus(' + nsID + ',' + olddbid + ');" /></p>').appendTo('#m_content');
+                        }
+                        $('#m_content').show();
+                    });
+                } else {
+                    $('#m_content').show();
                 }
-                var txtdata = {
-                    "txt" : txt,
-                };
-                $.post("helpers/textpost.php?nsID="+nsID, txtdata,
-                    function(reply) {
-                        return 0;
-                    }
-                );
-                $.post("db/ul.php?ns="+nsID, { data: genjson() },
-                    function(reply) {
-                        return 0;
-                    }
-                );
+
+                $('#m_content').show();
+            });
+
+            var url = getUrlVars()["url"];
+            if (url == 'local') {
+                txt = getAllText();
+            } else {
+                txt = url;
             }
-        );
-    */
+            var txtdata = {
+                "txt": txt,
+            };
+            $.post("helpers/textpost.php?nsID=" + nsID, txtdata,
+                function (reply) {
+                    return 0;
+                }
+            );
+            $.post("db/ul.php?ns=" + nsID, { data: genjson() },
+                function (reply) {
+                    return 0;
+                }
+            );
+        }
+    );*/
+
     window.unsaved = false;
 
     return false;
@@ -555,46 +488,35 @@ function rpl2corpus(addnsID, rplnsID) {
     $('#modal-bg').hide();
 }
 
-/*function canvas2image() {
-    var maxx = 0;
-    var maxy = 0;
-    var minx = 99999;
-    var miny = 99999;
-    for (var i = 0; i < nodes.length; i++) {
-        n = nodes[i];
-        if(n.x < minx){
-            minx = n.x;
-        }
-        if(n.y < miny){
-            miny = n.y;
-        }
-        if((n.x+n.w) > maxx){
-            maxx = n.x+n.w;
-        }
-        if((n.y+n.h) > maxy){
-            maxy = n.y+n.h;
-        }
+function svg2canvas2image() {
+    var box = SVGRoot.getBBox();
+    var x = box.x;
+    var y = box.y;
+    var w = box.width + x + 100;
+    var h = box.height + y + 150;
+
+    var svg = SVGRoot;
+    var svg64 = btoa(new XMLSerializer().serializeToString(svg));
+    var image = new Image();
+    var image64 = 'data:image/svg+xml;base64,' + svg64;
+    image.src = image64;
+
+    image.onload = function () {
+        var canvas = document.createElement("canvas");
+        canvas.width = w;
+        canvas.height = h;
+        var ctx = canvas.getContext("2d");
+        ctx.drawImage(image, 0, 0, w, h, 0, 0, w, h);
+        var imageURI = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
+        var anchor = document.getElementById("saveAsImage");
+        anchor.download = "analysis.png";
+        anchor.href = imageURI;
+
+        window.unsaved = false;
+        $(canvas).remove();
     }
-    var canvas  = document.getElementById("canvas");
-    var tempCanvas = document.createElement("canvas"),
-    tw = (maxx - minx) + 140;
-    th = (maxy - miny) + 140;
-    tCtx = tempCanvas.getContext("2d");
-
-    ratio = PIXEL_RATIO;
-    tCtx.scale(1/ratio, 1/ratio);
-
-    tempCanvas.width = tw * ratio;
-    tempCanvas.height = th * ratio;
-    tCtx.drawImage(canvas,20-minx,20-miny);
-    var dataUrl = tempCanvas.toDataURL("image/png");
-    window.unsaved = false;
-    closePopupIfOpen("Argument Map");
-    var amw = window.open("", "Argument Map", "width="+tw+",height="+th+",toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=yes,copyhistory=no,resizable=yes");
-    amw.document.write("<img src='"+dataUrl+"' width="+tw+" />");
-    amw.focus();
 }
-*/
+
 function closePopupIfOpen(popupName) {
     if (typeof (window[popupName]) != 'undefined' && !window[popupName].closed) {
         window[popupName].close();
