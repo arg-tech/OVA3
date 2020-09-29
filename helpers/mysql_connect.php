@@ -1,12 +1,11 @@
 <?php
 // Set the database access information as constants.
 //DEFINE ('DB_USER', 'root');
-DEFINE ('DB_USER', 'Kamila');
-DEFINE ('DB_PASSWORD', 'T^jCU{Z2#wM)<;<n8S');
-// DEFINE ('DB_PASSWORD', 'Ee7iN7oos8');
+DEFINE ('DB_USER', 'ova_user');
+DEFINE ('DB_PASSWORD', 'Ee7iN7oos8');
 //DEFINE ('DB_HOST', 'ova-lamp-mysql');
-DEFINE ('DB_HOST', 'localhost');
-DEFINE ('DB_NAME', 'OVA3');
+DEFINE ('DB_HOST', 'descartes.arg.tech');
+DEFINE ('DB_NAME', 'ova_db');
 
 try {
     # MySQL with PDO_MYSQL
