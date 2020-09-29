@@ -49,6 +49,7 @@ function newNode(nodeID, type, scheme, participantID, text, x, y) {
     n.x = x;
     n.y = y;
     nodes.push(n);
+    postEdit("node", "add", n);
     return n;
 }
 
@@ -60,6 +61,7 @@ function updateNode(nodeID, type, scheme, text, x, y) {
     n.text = text;
     n.x = x;
     n.y = y;
+    postEdit("node", "edit", n);
 }
 
 function updateNodePosition(nodeID, x, y) {
@@ -67,6 +69,7 @@ function updateNodePosition(nodeID, x, y) {
     n = nodes[index];
     n.x = x;
     n.y = y;
+    postEdit("node", "move", n);
 }
 
 function newEdge(fromID, toID) {
@@ -74,6 +77,7 @@ function newEdge(fromID, toID) {
     e.fromID = fromID;
     e.toID = toID;
     edges.push(e);
+    postEdit("edge", "add", e);
     return e;
 }
 
