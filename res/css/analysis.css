@@ -285,6 +285,7 @@ div.modal-dialog {
   margin-left: auto;
   margin-right: auto;
   display: none;
+  border: 1px solid #333;
 }
 
 div.modal-content {
@@ -326,6 +327,7 @@ a.xmodal:hover img {
   opacity: 1.0;
 }
 
+
 div.modal-btns a {
   font-size: 11px;
   font-weight: bold;
@@ -337,6 +339,7 @@ div.modal-btns a {
   padding: 0px 20px;
   text-decoration: none;
   border-left: 1px solid #bbb;
+  
 }
 
 div.modal-btns a:hover {

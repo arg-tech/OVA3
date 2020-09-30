@@ -1,3 +1,5 @@
+window.multisel = false;
+
 var SVGRoot = null;
 var SVGRootG = null;
 
@@ -8,11 +10,16 @@ var DragTarget = null;
 
 var IATMode = ("plus" in getUrlVars());
 var CurrentFocus = null;
+var multiSel = false;
+var multiSelRect = {};
 var CurrentlyEditing = 0;
 var editMode = false;
 var FormOpen = false;
 var dragEdges = [];
 var count = 0;
+
+var mSel = [];
+var mselo = [];
 
 var lastedit = 0;
 
@@ -39,8 +46,6 @@ const zoom = (event) => {
     if (FormOpen == false) {
         tsvg = document.getElementById('inline').getBoundingClientRect();
         svgleft = tsvg.left;
-        //console.log(document.activeElement.tagName);
-        //console.log(event.clientX);
         if (event.clientX > svgleft) {
             event.preventDefault();
             if (event.deltaY < 0) {
@@ -65,6 +70,7 @@ window.shiftPress = false;
 window.nodeCounter = 1;
 window.unsaved = false;
 
+document.addEventListener('contextmenu', event => event.preventDefault());
 window.addEventListener('keydown', myKeyDown, true);
 window.addEventListener('keyup', myKeyUp, true);
 document.onwheel = zoom;
@@ -135,7 +141,6 @@ if ("aifdb" in getUrlVars()) {
 });
 
   updateAnalysis();
-
  $.getJSON("browserint.php?x=ipxx&url="+window.SSurl, function(json_data){
     window.ssets = {};
     schemesets = json_data.schemesets;
@@ -151,31 +156,31 @@ if ("aifdb" in getUrlVars()) {
   $('#analysis_text').on('paste', function() {
     setTimeout(function(e) {
         var domString = "", temp = "";
-        $("#analysis_text div").each(function()
-        {
-            temp = $(this).html();
-            console.log(temp);
-            domString += ((temp == "<br>") ? "" : temp) + "<br>";
-        });
+        // $("#analysis_text div").each(function()
+        // {
+        //     temp = $(this).html();
+        //     console.log(temp);
+        //     domString += ((temp == "<br>") ? "" : temp) + "<br>";
+        // });
+        temp = $("#analysis_text div").html();
+
+        domString += ((temp == "<br>") ? "" : temp) + "<br>";
 
         if(domString != ""){
             $('#analysis_text').html(domString);
         }
         var orig_text = $('#analysis_text').html();
-        console.log(orig_text);
         orig_text = orig_text.replace(/<br>/g, '&br&');
         orig_text = orig_text.replace(/<br \/>/g, '&br&');
         orig_text = orig_text.replace(/<span([^>]*)class="highlighted([^>]*)>([^>]*)<\/span>/g, "&span$1class=\"highlighted$2&$3&/span&");
 
         $('#analysis_text').html(orig_text);
-        console.log(orig_text);
 
         var repl_text = $('#analysis_text').text();
         repl_text = repl_text.replace(/&br&/g, '<br>');
         repl_text = repl_text.replace(/&span([^&]*)class="highlighted([^&]*)&([^&]*)&\/span&/g, "<span$1class=\"highlighted$2>$3</span>");
 
         $('#analysis_text').html(repl_text);
-        console.log(repl_text);
     }, 1);
 });
 
@@ -188,7 +193,6 @@ function updateAnalysis(){
 
     $.get(path, function(data){
         edits = JSON.parse(data);
-        console.log(edits);
         eretry = [];
         for (i=0;i<edits.edits.length;i++){
             if(edits.edits[i].sessionid == window.sessionid){
@@ -314,11 +318,9 @@ function remhl(nodeID) {
 
 function postEdit(type, action, content) {
     if (type == 'text') {
-    	console.log(window.sessionid);
         $.post("helpers/edit.php", { type: type, action: action, cnt: content, akey: window.akey, sessionid: window.sessionid }).done(function (data) {
             dt = JSON.parse(data);
             lastedit = dt.last;
-            console.log("lastedit: "+lastedit);
         });
     } else {
         if (content == null) {
@@ -327,7 +329,7 @@ function postEdit(type, action, content) {
             $.post("helpers/edit.php", { type: type, action: action, cnt: JSON.stringify(content), akey: window.akey, sessionid: window.sessionid }).done(function (data) {
                 dt = JSON.parse(data);
                 lastedit = dt.last;
-                console.log("lastedit: "+lastedit);
+                // console.log("lastedit: "+lastedit);
             });
         }
     }
@@ -396,6 +398,7 @@ function addLocution(node) {
     if (nodes[nindex+1].type == 'L' ) {
       yCoord = parseInt(yCoord)+50;
     }
+  }
 
   AddNode(ltext, 'L', '0', participantID, newLNodeID, (parseInt(n.x)+450), yCoord);
   var index = findNodeIndex(newLNodeID);
@@ -521,13 +524,12 @@ function addlcancel() {
 function pfilter(element) {
     var value = $(element).val();
     var rgval = new RegExp(value, "i");
-    showing = 0;
+    var showing = 0;
 
     ipsn = $('#p_name').position();
     ih = $('#p_name').outerHeight();
     st = ipsn.top + ih;
     $('#socialusers').css({ "top": st + "px", "left": ipsn.left + "px" });
-
     $(".pselname").each(function () {
         if ($(this).text().search(rgval) > -1) {
             $(this).show();
@@ -541,14 +543,16 @@ function pfilter(element) {
         $('#socialusers').show();
     } else {
         $(".pselname").hide();
-        $('#socialusers').show();
+        $('#socialusers').hide();
     }
+
 }
 
 function newprt() {
     $('#socialusers').hide();
     $('#prt_name').hide();
     $('#p_sel_wrap').hide();
+
 
     var np_name = $('#p_name').val();
     splt = np_name.split(' ');
@@ -557,7 +561,6 @@ function newprt() {
 
     $('#p_firstname').val(np_firstname);
     $('#p_surname').val(np_surname);
-
     $('#new_participant').show();
 
     return false;
@@ -958,6 +961,33 @@ function nodeTut() {
     intro.start();
 }
 
+function setTut() {
+    var intro = introJs();
+    intro.setOptions({
+        steps: [
+          {
+              element: '#txtstgs',
+              intro: "Set text size."
+          },
+            {
+                element: '#cqtoggle',
+                intro: "Toggle Critical Question Mode"
+            },
+            {
+                element: '#bwtoggle',
+                intro: "Toggle Black and White Mode",
+            },
+            {
+                element: '#iattoggle',
+                intro: "<p>Toggle IAT Mode</p> <p>Turning off IAT move will remove the dialogical aspect.</p>",
+            }
+        ].filter(function (obj) { return $(obj.element).length && $(obj.element).is(':visible'); }),
+        showStepNumbers: false
+    });
+
+    intro.start();
+}
+
 function mainTut() {
     var intro = introJs();
     intro.setOptions({
@@ -974,7 +1004,7 @@ function mainTut() {
             },
             {
                 element: '#right1',
-                intro: "<p>Enter the text that you want to analyse here.</p><p>Select sections of text to create a node.</p>",
+                intro: "<p>Select text to the left and click here to add a node.</p><p>Ctrl+Click a node to edit.</p><p>Shift+Click and drag between nodes to add edges</p>",
                 position: 'left',
             },
             // {
@@ -1050,6 +1080,11 @@ function mainTut() {
             {
                 element: '#linkicon',
                 intro: "<p>Click here to share your analysis.</p><p>Shared analyses are collaborative and can be edited by multiple people.</p>",
+                position: 'left',
+            },
+            {
+                element: '#xmenutoggle',
+                intro: "<p>Click here to access your account, analysis settings, or to share your analysis for collborative working.</p>",
                 position: 'left',
             }
         ].filter(function (obj) { return $(obj.element).length && $(obj.element).is(':visible'); }),
