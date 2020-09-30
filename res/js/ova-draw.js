@@ -231,7 +231,6 @@ function editpopup(node) {
 
     $('#n_text').val(node.text);
     FormOpen = true;
-    console.log(FormOpen);
     $('#modal-shade').show();
     $('#node_edit').slideDown(100, function () {
         $('#n_text').focus();
