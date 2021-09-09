@@ -261,6 +261,13 @@ if (isset($_COOKIE['ovauser'])) {
                 <a href="#" id="iattoggle" class="togglesw off" onClick='$(this).toggleClass("on off"); window.IATMode=!window.IATMode; iatModeOnOff();'><span class="tson">On</span><span class="tsoff">Off</span></a>
               <?php } ?>
             </p>
+            <p style="color: #444; line-height: 22px;">Rapid IAT Mode
+              <?php if (isset($_GET['plus']) && $_GET['plus'] == 'true') { ?>
+                <a href="#" id="riattoggle" class="togglesw on" onClick='$(this).toggleClass("on off"); window.rIATMode=!window.rIATMode; return false;'><span class="tson">On</span><span class="tsoff">Off</span></a>
+              <?php } else { ?>
+                <a href="#" id="riattoggle" class="togglesw off" onClick='$(this).toggleClass("on off"); window.rIATMode=!window.rIATMode; return false;'><span class="tson">On</span><span class="tsoff">Off</span></a>
+              <?php } ?>
+            </p>
           </div>
         </form>
       </div>

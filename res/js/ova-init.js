@@ -9,6 +9,7 @@ var DragTarget = null;
 
 
 var IATMode = ("plus" in getUrlVars());
+var rIATMode = IATMode;
 var CurrentFocus = null;
 var multiSel = false;
 var multiSelRect = {};
@@ -261,7 +262,7 @@ function getSelText()
           txt = userSelection.toString();
 
           var span = document.createElement("span");
-          if (IATMode == false) {
+          if (rIATMode == false) {
             span.className="highlighted";
             if (window.nodeCounter == 1) {
               span.id = "node"+window.nodeCounter+1;
@@ -979,7 +980,11 @@ function setTut() {
             },
             {
                 element: '#iattoggle',
-                intro: "<p>Toggle IAT Mode</p> <p>Turning off IAT move will remove the dialogical aspect.</p>",
+                intro: "<p>Toggle IAT Mode</p> <p>Turning off IAT mode will remove the dialogical aspect.</p>",
+            },
+            {
+                element: '#riattoggle',
+                intro: "<p>Toggle Rapid IAT Mode</p> <p>Turning off Rapid IAT mode will stop the dialogical aspect from being automatically added.</p>",
             }
         ].filter(function (obj) { return $(obj.element).length && $(obj.element).is(':visible'); }),
         showStepNumbers: false

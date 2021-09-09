@@ -243,7 +243,7 @@ function Grab(evt) {
     else {
       t = getSelText();
       if (t != '') {
-        if (IATMode == true) {
+        if (rIATMode == true) {
           window.nodeCounter = window.nodeCounter + 1;
           newNodeID = window.nodeCounter;
           var xCoord = TrueCoords.x;
