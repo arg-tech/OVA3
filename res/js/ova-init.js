@@ -9,7 +9,7 @@ var DragTarget = null;
 
 
 var IATMode = ("plus" in getUrlVars());
-var rIATMode = IATMode;
+var rIATMode = false;
 var CurrentFocus = null;
 var multiSel = false;
 var multiSelRect = {};
