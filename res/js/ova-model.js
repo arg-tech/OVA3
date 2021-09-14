@@ -44,7 +44,7 @@ function newNode(nodeID, type, scheme, participantID, text, x, y) {
     n.nodeID = nodeID;
     n.type = type;
     n.scheme = scheme;
-    n.participantID = participantID;
+    n.participantID = participantID; //todo: test with loading analysis w/ several new participants
     n.text = text;
     n.x = x;
     n.y = y;
@@ -72,6 +72,21 @@ function updateNodePosition(nodeID, x, y) {
     postEdit("node", "move", n);
 }
 
+function delNode(node) {
+    var index = nodes.indexOf(node);
+    if (index > -1) {
+        nodes.splice(index, 1);
+        /*var l = edges.length;
+        for (var i = l - 1; i >= 0; i--) {
+            if (edges[i].toID == node.nodeID || edges[i].fromID == node.nodeID) {
+                postEdit("edge", "delete", edges[i]);
+                edges.splice(i, 1);
+            }
+        }*/
+        postEdit("node", "delete", node);
+    }
+}
+
 function newEdge(fromID, toID) {
     var e = new Edge;
     e.fromID = fromID;
@@ -79,6 +94,14 @@ function newEdge(fromID, toID) {
     edges.push(e);
     postEdit("edge", "add", e);
     return e;
+}
+
+function delEdge(edge) {
+    var index = edges.indexOf(edge);
+    if (index > -1) {
+        postEdit("edge", "delete", edge);
+        edges.splice(index, 1);
+    }
 }
 
 function findParticipantID(firstname, surname) {
