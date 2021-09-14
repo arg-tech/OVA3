@@ -13,6 +13,10 @@ function myKeyDown(e) {
   if (keycode in NAV_MAP) {
     panZoomMode(keycode);
   }
+  if (keycode == 18) {
+    multiSel = true;
+  }
+
 }
 
 function myKeyUp(e) {
@@ -25,6 +29,9 @@ function myKeyUp(e) {
   }
   if (keycode == 17) {
     editMode = false;
+  }
+  if (keycode == 18) {
+    multiSel = false;
   }
 }
 
@@ -229,12 +236,18 @@ function Grab(evt) {
       nodeMode('off');
       return;
     }
+    else if (multiSel == true) {
+      multiSelRect.startX = TrueCoords.x;
+      multiSelRect.startY = TrueCoords.y;
+    }
     else {
       t = getSelText();
       if (t != '') {
         if (IATMode == true) {
           window.nodeCounter = window.nodeCounter + 1;
           newNodeID = window.nodeCounter;
+          var xCoord = TrueCoords.x;
+          var yCoord = TrueCoords.y;
           AddNode(t, 'I', '0', 0, newNodeID, TrueCoords.x, TrueCoords.y - 10);
           var nIndex = findNodeIndex(newNodeID)
           mySel = nodes[nIndex];
@@ -304,32 +317,125 @@ function Drag(evt) {
     GrabPoint.x = TrueCoords.x;
     GrabPoint.y = TrueCoords.y;
 
-    // apply a new tranform translation to the dragged focusElement, to display
-    //    it in its new location
-    children = DragTarget.children;
-    for (var j = 0; j < children.length; j++) {
-      var childElement = children[j];
-      oldX = childElement.getAttributeNS(null, 'x');
-      oldY = childElement.getAttributeNS(null, 'y');
-      newX = parseInt(oldX) + dx;
-      newY = parseInt(oldY) + dy;
-      childElement.setAttributeNS(null, 'x', newX);
-      childElement.setAttributeNS(null, 'y', newY);
-      tchildren = childElement.getElementsByTagName('tspan')
-      for (var k = 0; k < tchildren.length; k++) {
-        var cE = tchildren[k];
-        coldX = cE.getAttributeNS(null, 'x');
-        cnewX = parseInt(coldX) + dx;
-        cE.setAttributeNS(null, 'x', cnewX);
+    //If moving multiple nodes
+    if (mSel.length > 0) {
+      children = DragTarget.children;
+      for (var j = 0; j < children.length; j++) {
+        var childElement = children[j];
+        oldX = childElement.getAttributeNS(null, 'x');
+        oldY = childElement.getAttributeNS(null, 'y');
+        newX = parseInt(oldX) + dx;
+        newY = parseInt(oldY) + dy;
+        childElement.setAttributeNS(null, 'x', newX);
+        childElement.setAttributeNS(null, 'y', newY);
+        tchildren = childElement.getElementsByTagName('tspan')
+        for (var k = 0; k < tchildren.length; k++) {
+          var cE = tchildren[k];
+          coldX = cE.getAttributeNS(null, 'x');
+          coldY = cE.getAttributeNS(null, 'y');
+          cnewX = parseInt(coldX) + dx;
+          cnewY = parseInt(coldY) + dy;
+          cE.setAttributeNS(null, 'x', cnewX);
+          cE.setAttributeNS(null, 'y', cnewY);
+        }
+      }
+      var xdiff = newX - oldX;
+      var ydiff = newY - oldY;
+      if (dragEdges.length > 0) {
+        //updateNodePosition(DragTarget.id, newX, newY);
+        for (var j = 0; j < dragEdges.length; j++) {
+          UpdateEdge(dragEdges[j]);
+        }
+      }
+      //Moving rest of selected nodes along with active one
+      for (var i = 0; i < mSel.length; i++) {
+        if (mSel[i].nodeID != DragTarget.id) {
+          children = document.getElementById(mSel[i].nodeID).children;
+
+          for (var j = 0; j < children.length; j++) {
+            var childElement = children[j];
+            oldX = childElement.getAttributeNS(null, 'x');
+            oldY = childElement.getAttributeNS(null, 'y');
+            newX = parseInt(oldX) + xdiff;
+            newY = parseInt(oldY) + ydiff;
+            childElement.setAttributeNS(null, 'x', newX);
+            childElement.setAttributeNS(null, 'y', newY);
+            tchildren = childElement.getElementsByTagName('tspan')
+            for (var k = 0; k < tchildren.length; k++) {
+              var cE = tchildren[k];
+              coldX = cE.getAttributeNS(null, 'x');
+              coldY = cE.getAttributeNS(null, 'y');
+              cnewX = parseInt(coldX) + xdiff;
+              cnewY = parseInt(coldY) + ydiff;
+              cE.setAttributeNS(null, 'x', cnewX);
+              cE.setAttributeNS(null, 'y', cnewY);
+            }
+          }
+          GetEdges(mSel[i].nodeID);
+          if (dragEdges.length > 0) {
+            //updateNodePosition(DragTarget.id, newX, newY);
+            for (var j = 0; j < dragEdges.length; j++) {
+              UpdateEdge(dragEdges[j]);
+            }
+          }
+        }
+      }
+    } else {
+      // apply a new transform translation to the dragged focusElement, to display
+      //    it in its new location
+      children = DragTarget.children;
+      for (var j = 0; j < children.length; j++) {
+        var childElement = children[j];
+        oldX = childElement.getAttributeNS(null, 'x');
+        oldY = childElement.getAttributeNS(null, 'y');
+        newX = parseInt(oldX) + dx;
+        newY = parseInt(oldY) + dy;
+        childElement.setAttributeNS(null, 'x', newX);
+        childElement.setAttributeNS(null, 'y', newY);
+        tchildren = childElement.getElementsByTagName('tspan')
+        for (var k = 0; k < tchildren.length; k++) {
+          var cE = tchildren[k];
+          coldX = cE.getAttributeNS(null, 'x');
+          coldY = cE.getAttributeNS(null, 'y');
+          cnewX = parseInt(coldX) + dx;
+          cnewY = parseInt(coldY) + dy;
+          cE.setAttributeNS(null, 'x', cnewX);
+          cE.setAttributeNS(null, 'y', cnewY);
+        }
+      }
+      if (dragEdges.length > 0) {
+        //updateNodePosition(DragTarget.id, newX, newY);
+        for (var j = 0; j < dragEdges.length; j++) {
+          UpdateEdge(dragEdges[j]);
+        }
       }
     }
-    if (dragEdges.length > 0) {
-      //updateNodePosition(DragTarget.id, newX, newY);
-      for (var j = 0; j < dragEdges.length; j++) {
-        UpdateEdge(dragEdges[j]);
-      }
+
+  }
+  else {
+    if (multiSel == true) {
+      var g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      var selbox = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+      g.setAttribute('id', 'multiSelBoxG');
+      selbox.setAttribute('id', 'multiSelBox');
+      selbox.setAttribute('x', multiSelRect.startX);
+      selbox.setAttribute('y', multiSelRect.startY);
+      selbox.setAttribute('width', TrueCoords.x - multiSelRect.startX);
+      selbox.setAttribute('height', TrueCoords.y - multiSelRect.startY);
+      selbox.setAttribute('style', 'fill:none;stroke:#a8a8a8;stroke-width:1;')
+      // selbox.setAttribute('style', 'fill:none;stroke:#3498db;stroke-width:1;');
+      g.append(selbox);
+      updateBox(g);
     }
   }
+}
+
+function updateBox(g) {
+  if (document.getElementById('multiSelBox')) {
+    document.getElementById('multiSelBox').remove();
+    document.getElementById('multiSelBoxG').remove();
+  }
+  SVGRootG.append(g);
 }
 
 function UpdateEdge(e) {
@@ -534,7 +640,6 @@ function Drop(evt) {
         SVGRootG.removeChild(tempedge);
         SVGRootG.removeChild(tempnode);
       }
-
     }
     DragTarget.setAttributeNS(null, 'pointer-events', 'all');
     DragTarget = null;
@@ -543,6 +648,22 @@ function Drop(evt) {
       edgeMode('off');
       window.eBtn = false;
     }
+  }
+  if (document.getElementById('multiSelBox')) {
+    var box = document.getElementById('multiSelBox');
+    var boxWidth = parseInt(box.getAttributeNS(null, 'width'));
+    var boxHeight = parseInt(box.getAttributeNS(null, 'height'));
+    for (var i = 0; i < nodes.length; i++) {
+      if (nodes[i].x > multiSelRect.startX && nodes[i].x < parseInt(multiSelRect.startX) + boxWidth
+        && nodes[i].y > multiSelRect.startY && nodes[i].y < parseInt(multiSelRect.startY) + boxHeight) {
+        mSel.push(nodes[i]);
+      }
+    }
+    document.getElementById('multiSelBoxG').remove();
+  } else {
+    mSel = [];
+    multiSel = false;
+
   }
   dragEdges = [];
 }
@@ -712,8 +833,7 @@ function findEdges(nodeID) {
 function deleteNode(node) {
   var toDelType = node.type;
   document.getElementById(CurrentlyEditing).remove();
-  const index = nodes.indexOf(node);
-  if (index > -1) { nodes.splice(index, 1); }
+  delNode(node);
   var edgesToDelete = [];
 
   if (mySel.type == 'L') {
@@ -747,9 +867,7 @@ function deleteEdges(edge) {
   edgeTo = edge.toID;
   tempEdge = document.getElementById(edgeID);
   tempEdge.remove();
-  const index = edges.indexOf(edge);
-  if (index > -1) { edges.splice(index, 1); }
-
+  delEdge(edge);
 
   // for(var i=1; i<nodes.length; i++) {
   //   if(nodes[i]) {

@@ -138,7 +138,7 @@ function loadfile(jstr) {
                 pID = findParticipantIDText(jnodes[i].text);
                 newNode(jnodes[i].id, jnodes[i].type, jnodes[i].scheme, pID, jnodes[i].text, jnodes[i].x, jnodes[i].y);
             } else {
-                newNode(jnodes[i].id, jnodes[i].type, jnodes[i].scheme, 0, jnodes[i].text, jnodes[i].x, jnodes[i].y);
+                newNode(jnodes[i].id, jnodes[i].type, jnodes[i].scheme, 0, jnodes[i].text, jnodes[i].x, jnodes[i].y); //todo: test with loading analysis w/ several new participants
             }
             if (jnodes[i].visible) {
                 DrawNode(jnodes[i].id, jnodes[i].type, jnodes[i].text, jnodes[i].x, jnodes[i].y);
@@ -184,7 +184,6 @@ function loadfile(jstr) {
 
     setAllText(json['analysis']['txt']);
     postEdit("text", "edit", json['analysis']['txt']);
-
 }
 
 function loaddbjson(json) {

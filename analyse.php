@@ -30,13 +30,13 @@ if (isset($_GET['plus']) && $_GET['plus'] == 'true') {
 if (isset($_GET['akey'])) {
   $akey = $_GET['akey'];
 } else {
-  //require_once('helpers/mysql_connect.php');
+  require_once('helpers/mysql_connect.php');
 
   $akey = md5(time());
 
-  /*$sql = "INSERT INTO analyses (analyst, akey) VALUES (1, :akey)";
+  $sql = "INSERT INTO analyses (analyst, akey) VALUES (1, :akey)";
   $q = $DBH->prepare($sql);
-  $q->execute(array(':akey'=>$akey));*/
+  $q->execute(array(':akey'=>$akey));
 
   $adb = "";
   $aurl = $_GET['url'];
@@ -148,16 +148,16 @@ if (isset($_COOKIE['ovauser'])) {
     <?php
     $newurl = "analyse.php?url=" . $_GET['url'] . $plusval;
     ?>
-    <a href="http://arg.tech/~nicole/index.php" class="home"><img src="res/img/logo.svg" /></a> <!--todo: change link to homepage after testing-->
-    <a onClick='$("#xmenu").toggle("slide", {direction: "right"}, "slow");' class="icon" style="background-position: -126px 50%;"></a>
+    <a href="http://localhost/index.php" class="home"><img src="res/img/logo.svg" /></a> <!--todo: change link to homepage-->
+    <a onClick='$("#xmenu").toggle("slide", {direction: "right"}, "slow");' class="icon" id="xmenutoggle" style="background-position: -126px 50%;"></a>
     <div class="divider"></div>
     <a onClick="mainTut()" class="icon" style="background-position: -378px 50%;"><span class="tooltiptext">Tutorial</span></a>
     <div class="divider"></div>
     <a onClick="genldot()" class="icon" id="alay" style="background-position: -420px 50%;"><span class="tooltiptext">AutoLayout</span></a>
     <div class="divider"></div>
-    <a onClick="openModal('#modal-load');" class="icon" style="background-position: -210px 50%;"><span class="tooltiptext">Load&nbsp;Analysis</span></a>
-    <a onClick="svg2canvas2image(); openModal('#modal-save');" class="icon" style="background-position: -84px 50%;"><span class="tooltiptext">Save&nbsp;Analysis</span></a>
-    <a href="<?php echo $newurl; ?>" class="icon" style="background-position: -168px 50%;"><span class="tooltiptext">New&nbsp;Analysis</span></a>
+    <a onClick="openModal('#modal-load');" class="icon" id="loada" style="background-position: -210px 50%;"><span class="tooltiptext">Load&nbsp;Analysis</span></a>
+    <a onClick="svg2canvas2image(); openModal('#modal-save');" class="icon" id="savea" style="background-position: -84px 50%;"><span class="tooltiptext">Save&nbsp;Analysis</span></a>
+    <a href="<?php echo $newurl; ?>" class="icon" id="newa" style="background-position: -168px 50%;"><span class="tooltiptext">New&nbsp;Analysis</span></a>
     <div class="divider"></div>
     <a onClick="edgeMode('switch'); return false;" class="icon" id="eadd" style="background-position: -42px 50%;"><span class="tooltiptext">Add&nbsp;Edge</span></a>
     <a onClick="nodeMode('switch'); return false;" class="icon" id="nadd" style="background-position: -0px 50%;"><span class="tooltiptext">Add&nbsp;Node</span></a>
@@ -167,7 +167,7 @@ if (isset($_COOKIE['ovauser'])) {
   </div>
 
   <div id="xmenu">
-    <a onClick="openModal('#modal-account'); console.log('account btn clicked');" class="xicon">
+    <a onClick="openModal('#modal-account');" class="xicon">
       <div class="icn" style="background-position: -294px 50%;"></div>
       <div class="txt">Account</div>
     </a>
@@ -224,6 +224,7 @@ if (isset($_COOKIE['ovauser'])) {
     <div class="modal-content">
       <div class="modal-header">
         <h4 class="modal-title">Settings</h4>
+        <a href="javascript:void(0);" class="helpbtn" onclick="setTut(); return false;">?</a>
       </div>
       <div class="modal-body">
         <form id="settings_form" class="fstyle">
@@ -248,16 +249,16 @@ if (isset($_COOKIE['ovauser'])) {
             </p>
             <p style="color: #444; line-height: 22px;">Black &amp; White Diagram
               <?php if (isset($_GET['bw']) && $_GET['bw'] == 'true') { ?>
-                <a href="#" class="togglesw on" onClick='$(this).toggleClass("on off"); window.bwmode=!window.bwmode; bwModeOnOff();'><span class="tson">On</span><span class="tsoff">Off</span></a>
+                <a href="#" id="bwtoggle" class="togglesw on" onClick='$(this).toggleClass("on off"); window.bwmode=!window.bwmode; bwModeOnOff();'><span class="tson">On</span><span class="tsoff">Off</span></a>
               <?php } else { ?>
-                <a href="#" class="togglesw off" onClick='$(this).toggleClass("on off"); window.bwmode=!window.bwmode; bwModeOnOff();'><span class="tson">On</span><span class="tsoff">Off</span></a>
+                <a href="#" id="bwtoggle" class="togglesw off" onClick='$(this).toggleClass("on off"); window.bwmode=!window.bwmode; bwModeOnOff();'><span class="tson">On</span><span class="tsoff">Off</span></a>
               <?php } ?>
             </p>
             <p style="color: #444; line-height: 22px;">IAT Mode
               <?php if (isset($_GET['plus']) && $_GET['plus'] == 'true') { ?>
-                <a href="#" class="togglesw on" onClick='$(this).toggleClass("on off"); window.IATMode=!window.IATMode; iatModeOnOff();'><span class="tson">On</span><span class="tsoff">Off</span></a>
+                <a href="#" id="iattoggle" class="togglesw on" onClick='$(this).toggleClass("on off"); window.IATMode=!window.IATMode; iatModeOnOff();'><span class="tson">On</span><span class="tsoff">Off</span></a>
               <?php } else { ?>
-                <a href="#" class="togglesw off" onClick='$(this).toggleClass("on off"); window.IATMode=!window.IATMode; iatModeOnOff();'><span class="tson">On</span><span class="tsoff">Off</span></a>
+                <a href="#" id="iattoggle" class="togglesw off" onClick='$(this).toggleClass("on off"); window.IATMode=!window.IATMode; iatModeOnOff();'><span class="tson">On</span><span class="tsoff">Off</span></a>
               <?php } ?>
             </p>
           </div>
@@ -290,12 +291,13 @@ if (isset($_COOKIE['ovauser'])) {
 
   <div id="contextmenu"></div>
   <!-- Add Locution Form Starts here -->
-  <!-- <div id="modal-shade"></div> -->
-  <div id="locution_add" class="modal-box">
+  <div id="locution_add" class="modal-dialog">
+    <div class="modal-content">
     <div class="modal-header">
       <h4>Locution Details</h4>
       <a href="javascript:void(0);" class="helpbtn" onclick="locTut(); return false;">?</a>
     </div>
+    <div class="modal-body">
     <form id="f_node_edit" class="fstyle">
       <div id="p_sel_wrap">
         <p style="font-weight: bold; color: #999;">Existing Participants</p>
@@ -310,7 +312,7 @@ if (isset($_COOKIE['ovauser'])) {
       <div id="prt_name">
         <p style="font-weight: bold; color: #999;">New Participant</p>
         <label for="p_name" id="p_name_label">Name</label>
-        <input id="p_name" name="p_name" class="itext" onkeyup="pfilter(this)" />
+        <input id="p_name" name="p_name" value="" class="itext" onkeyup="pfilter(this);" />
       </div>
 
       <div id="new_participant" style="display:none;">
@@ -321,22 +323,24 @@ if (isset($_COOKIE['ovauser'])) {
       </div>
       <!-- <button type="button" onClick="addLocution(mySel);this.parentNode.parentNode.style.display='none';">Add Locution</button> -->
     </form>
+  </div>
     <div id="socialusers" style="display:none;"></div>
-
     <div class="modal-btns">
-      <a class="save" href="#" onClick="addlclick(false); $('#modal-shade').hide(); FormOpen = false; return false;">Add</a>
+      <a class="save" href="#" onClick="addlclick(false); $('#modal-shade').hide(); FormOpen = false;  return false;">Add</a>
       <a class="cancel" href="#" onClick="addlcancel(); $('#modal-shade').hide();FormOpen = false; return false;">&#10008; Cancel</a>
     </div>
   </div>
+</div>
   <!-- Add Locution Form Ends here -->
 
   <!-- Edit Node Form Starts here -->
-  <div id="node_edit" class="modal-box">
+  <div id="node_edit" class="modal-dialog">
     <div class="modal-header">
       <h4>Edit Node</h4>
       <!-- This is the instruction button: -->
       <a href="javascript:void(0);" class="helpbtn" onclick="nodeTut(); return false;">?</a>
     </div>
+    <div class="modal-content">
     <form id="node_edit_form" class="fstyle" style="width: 78%;">
       <!-- TODO: id and class names to be changed -->
       <label for="n_text" id="n_text_label">Text</label>
@@ -388,6 +392,7 @@ if (isset($_COOKIE['ovauser'])) {
 
       <div id="cq_selects" style="display:none;"></div>
     </form>
+  </div>
     <ul class="btnlist">
       <li><a href="#" onClick="this.parentNode.parentNode.parentNode.style.display='none';$('#modal-shade').hide(); FormOpen = false; deleteNode(mySel); return false;" class="bgred"><div class="btnicn" style="background-image: url('res/img/icon-delnode.png');">&nbsp;</div> Delete Node</a></li>
         <!-- TODO: this if statement isn't working -->
