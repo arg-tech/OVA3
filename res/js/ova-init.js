@@ -156,15 +156,14 @@ function Init(evt) {
     $('#analysis_text').on('paste', function () {
         setTimeout(function (e) {
             var domString = "", temp = "";
-            // $("#analysis_text div").each(function()
-            // {
-            //     temp = $(this).html();
-            //     console.log(temp);
-            //     domString += ((temp == "<br>") ? "" : temp) + "<br>";
-            // });
-            temp = $("#analysis_text div").html();
+             $("#analysis_text div").each(function()
+             {
+                 temp = $(this).html();
+                 domString += ((temp == "<br>") ? "" : temp) + "<br>";
+             });
 
-            domString += ((temp == "<br>") ? "" : temp) + "<br>";
+            /*temp = $("#analysis_text div").html();
+            domString += ((temp == "<br>") ? "" : temp) + "<br>";*/
 
             if (domString != "") {
                 $('#analysis_text').html(domString);
