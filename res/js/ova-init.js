@@ -397,11 +397,12 @@ function hlcurrent(nodeID) {
                 scrollTop: $('#analysis_text').scrollTop() + $("#node" + nodeID).offset().top - 200
             }, 1000);
             //}
+            postEdit("text", "edit", $('#analysis_text').html());
         }
     }
-
 }
 
+//function to remove the highlight from text
 function remhl(nodeID) {
     var span;
     span = document.getElementById("node" + nodeID)
@@ -409,6 +410,7 @@ function remhl(nodeID) {
         var text = span.textContent || span.innerText;
         var node = document.createTextNode(text);
         span.parentNode.replaceChild(node, span);
+        postEdit("text", "edit", $('#analysis_text').html());
     }
 }
 
