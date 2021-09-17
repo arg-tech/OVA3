@@ -469,6 +469,7 @@ function addParticipant(firstname, surname) {
 }
 
 function addLocution(node) {
+    console.log("adding locution");
     if ($('#p_firstname').val() != '') {
         firstname = $('#p_firstname').val();
         surname = $('#p_surname').val();
@@ -485,8 +486,10 @@ function addLocution(node) {
 
     window.nodeCounter = window.nodeCounter + 1;
     var newLNodeID = window.nodeCounter;
+    console.log(node)
 
-    var ltext = (firstname + ' ' + surname + ': ').concat(t);
+    // var ltext = (firstname + ' ' + surname + ': ').concat(t);
+    var ltext = (firstname + ' ' + surname + ': ').concat(node.text);
     var nindex = findNodeIndex(CurrentlyEditing);
     var n = nodes[nindex];
     var yCoord = n.y;
@@ -495,14 +498,17 @@ function addLocution(node) {
             yCoord = parseInt(yCoord) + 50;
         }
     }
-
+    console.log(n.x)
     AddNode(ltext, 'L', '0', participantID, newLNodeID, (parseInt(n.x) + 450), yCoord);
     var index = findNodeIndex(newLNodeID);
+    
 
 
     window.nodeCounter = window.nodeCounter + 1;
     var newYANodeID = window.nodeCounter;
+    // AddNode('Asserting', 'YA', '74', 0, newYANodeID, (n.x + 225), yCoord);
     AddNode('Asserting', 'YA', '74', 0, newYANodeID, (n.x + 225), yCoord);
+    console.log(n.x)
 
     var edge = newEdge(newLNodeID, newYANodeID);
     DrawEdge(newLNodeID, newYANodeID)
@@ -551,6 +557,7 @@ function addlclick(skipcheck) {
         $('#locution_add').hide();
     }
     addLocution(mySel);
+    console.log(mySel)
     $('#new_participant').hide();
     $('#p_sel_wrap').show();
     $('#p_select').val('-');
