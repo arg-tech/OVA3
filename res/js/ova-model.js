@@ -13,11 +13,13 @@ function Node() {
     this.text = '';
     this.x = 0;
     this.y = 0;
+    this.visible = true;
 }
 
 function Edge() {
     this.fromID = '';
     this.toID = '';
+    this.visible = true;
 }
 
 function Participant() {
@@ -39,15 +41,16 @@ function newParticipant(id, fname, sname) {
     return p;
 }
 
-function newNode(nodeID, type, scheme, participantID, text, x, y) {
+function newNode(nodeID, type, scheme, participantID, text, x, y, visible) {
     var n = new Node;
     n.nodeID = nodeID;
     n.type = type;
     n.scheme = scheme;
-    n.participantID = participantID; //todo: test with loading analysis w/ several new participants
+    n.participantID = participantID;
     n.text = text;
     n.x = x;
     n.y = y;
+    n.visible = typeof visible !== 'undefined' ? visible : true;
     nodes.push(n);
     postEdit("node", "add", n);
     return n;
@@ -76,21 +79,15 @@ function delNode(node) {
     var index = nodes.indexOf(node);
     if (index > -1) {
         nodes.splice(index, 1);
-        /*var l = edges.length;
-        for (var i = l - 1; i >= 0; i--) {
-            if (edges[i].toID == node.nodeID || edges[i].fromID == node.nodeID) {
-                postEdit("edge", "delete", edges[i]);
-                edges.splice(i, 1);
-            }
-        }*/
         postEdit("node", "delete", node);
     }
 }
 
-function newEdge(fromID, toID) {
+function newEdge(fromID, toID, visible) {
     var e = new Edge;
     e.fromID = fromID;
     e.toID = toID;
+    e.visible = typeof visible !== 'undefined' ? visible : true;
     edges.push(e);
     postEdit("edge", "add", e);
     return e;

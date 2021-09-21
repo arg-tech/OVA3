@@ -18,6 +18,7 @@ function genjson() {
             jlocutions.push(jlocution);
         }
     }
+
     json['nodes'] = nodes;
     json['edges'] = edges;
     json['schemefulfillments'] = jschemefulfillments;
@@ -109,7 +110,7 @@ function loadbutton(evt) {
 }
 
 function loadfile(jstr) {
-    clearAnalysis();
+    clearAnalysis(); //remove the previous analysis before loading the new analysis
     if (typeof jstr !== 'object') {
         var json = JSON.parse(jstr);
     } else {
@@ -129,16 +130,16 @@ function loadfile(jstr) {
         loaddbjson(json);
         return;
     }
-    if (jnodes.length > 0 && jnodes[0].hasOwnProperty('id')) {
+    if (jnodes.length > 0 && jnodes[0].hasOwnProperty('id')) { //if in ova2 format convert to ova3 format
         for (var i = 0, l = jnodes.length; i < l; i++) {
             if (jnodes[i].id > window.nodeCounter) {
                 window.nodeCounter = jnodes[i].id;
             }
             if (jnodes[i].type == "L") {
                 pID = findParticipantIDText(jnodes[i].text);
-                newNode(jnodes[i].id, jnodes[i].type, jnodes[i].scheme, pID, jnodes[i].text, jnodes[i].x, jnodes[i].y);
+                newNode(jnodes[i].id, jnodes[i].type, jnodes[i].scheme, pID, jnodes[i].text, jnodes[i].x, jnodes[i].y, jnodes[i].visible);
             } else {
-                newNode(jnodes[i].id, jnodes[i].type, jnodes[i].scheme, 0, jnodes[i].text, jnodes[i].x, jnodes[i].y); //todo: test with loading analysis w/ several new participants
+                newNode(jnodes[i].id, jnodes[i].type, jnodes[i].scheme, 0, jnodes[i].text, jnodes[i].x, jnodes[i].y, jnodes[i].visible);
             }
             if (jnodes[i].visible) {
                 DrawNode(jnodes[i].id, jnodes[i].type, jnodes[i].text, jnodes[i].x, jnodes[i].y);
@@ -151,9 +152,11 @@ function loadfile(jstr) {
         for (var i = 0, l = e.length; i < l; i++) {
             from = e[i].from.id;
             to = e[i].to.id;
-            DrawEdge(from, to);
             var edge = newEdge(from, to);
-            UpdateEdge(edge);
+            if (e[i].visible) {
+                DrawEdge(from, to);
+                UpdateEdge(edge);
+            }
         }
     } else {
         nodes = jnodes;
@@ -161,11 +164,13 @@ function loadfile(jstr) {
             if (nodes[i].nodeID > window.nodeCounter) {
                 window.nodeCounter = nodes[i].nodeID;
             }
-            postEdit("node", "add", nodes[i]);
-            DrawNode(nodes[i].nodeID, nodes[i].type, nodes[i].text, nodes[i].x, nodes[i].y);
             if (nodes[i].type == "L") {
                 pID = findParticipantIDText(nodes[i].text);
                 nodes[i].participantID = pID;
+            }
+            postEdit("node", "add", nodes[i]);
+            if (nodes[i].visible) {
+                DrawNode(nodes[i].nodeID, nodes[i].type, nodes[i].text, nodes[i].x, nodes[i].y);
             }
         }
         window.nodeCounter++;
@@ -175,10 +180,11 @@ function loadfile(jstr) {
         for (var i = 0, l = e.length; i < l; i++) {
             from = e[i].fromID;
             to = e[i].toID;
-
-            DrawEdge(from, to);
             var edge = newEdge(from, to);
-            UpdateEdge(edge);
+            if (e[i].visible) {
+                DrawEdge(from, to);
+                UpdateEdge(edge);
+            }
         }
     }
 
@@ -186,6 +192,7 @@ function loadfile(jstr) {
     postEdit("text", "edit", json['analysis']['txt']);
 }
 
+//todo: test w/ invisible nodes & edges that adding & drawing correctly
 function loaddbjson(json) {
     console.log("loaddbjson");
     var oplus = false;
@@ -193,6 +200,7 @@ function loaddbjson(json) {
         oplus = true;
     }
 
+    //load nodes
     var nodelist = {};
     var pID;
     jnodes = json['nodes'];
@@ -233,15 +241,23 @@ function loaddbjson(json) {
         }
     }
 
-    edges = json['edges'];
-    for (var i = 0, l = edges.length; i < l; i++) {
-        edge = edges[i];
-        if (edge.fromID in nodelist && edge.toID in nodelist) {
-            DrawEdge(edge.fromID, edge.toID);
-            UpdateEdge(edge);
+    //load edges
+    jedges = json['edges'];
+    var visible = true;
+    var index = 0;
+    for (var i = 0, l = jedges.length; i < l; i++) {
+        if (jedges[i].fromID in nodelist && jedges[i].toID in nodelist) { //if both nodes the edge connects exist
+            index = findNodeIndex(jedges[i].fromID);
+            visible = nodes[index].visible; //if the edge connects an invisible node it should also be invisible
+            edge = newEdge(jedges[i].fromID, jedges[i].toID, visible);
+            if (visible) { //if the edge is visible then draw edge on svg
+                DrawEdge(edge.fromID, edge.toID);
+                UpdateEdge(edge);
+            }
         }
     }
 
+    //set any scheme fulfillments
     var sf = json['schemefulfillments'];
     //console.log(sf);
     for (var i = 0; i < sf.length; i++) {
@@ -251,6 +267,7 @@ function loaddbjson(json) {
     }
 }
 
+//todo: test
 function loadfromdb(nodeSetID) {
     console.log("loadfromdb");
     var oplus = false;
@@ -268,15 +285,15 @@ function loadfromdb(nodeSetID) {
 
             var nodelist = {};
             $.each(data.nodes, function (idx, node) {
-                /*visi = true;
+                visible = true;
                 if (node.type == "YA" && node.text.indexOf('AnalysesAs') >= 0) {
-                    visi = false;
-                    xpos = -10;
-                    ypos = -10;
+                    visible = false;
+                    xpos = 0;
+                    ypos = 0;
                 } else if (node.type == "L" && node.text.indexOf('Annot: ') >= 0) {
-                    visi = false;
-                    xpos = -10;
-                    ypos = -10;
+                    visible = false;
+                    xpos = 0;
+                    ypos = 0;
                 } else if (node.nodeID in ldata) {
                     xpos = parseInt(ldata[node.nodeID]["x"]);
                     xpos = xpos * 0.8;
@@ -286,7 +303,7 @@ function loadfromdb(nodeSetID) {
                 } else {
                     xpos = 10;
                     ypos = 10;
-                }*/
+                }
 
                 if (node.type == "CA") {
                     nodelist[node.nodeID] = AddNode(node.text, node.type, 71, 0, node.nodeID, xpos, ypos);
@@ -298,7 +315,11 @@ function loadfromdb(nodeSetID) {
                     }
                 } else if (node.type == "YA") {
                     if (oplus) {
-                        nodelist[node.nodeID] = AddNode(node.text, node.type, 168, 0, node.nodeID, xpos, ypos);
+                        if (node.text == 'Analysing') {
+                            nodelist[node.nodeID] = AddNode(node.text, node.type, 75, 0, node.nodeID, xpos, ypos, visible);
+                        } else {
+                            nodelist[node.nodeID] = AddNode(node.text, node.type, 168, 0, node.nodeID, xpos, ypos, visible);
+                        }
                     }
                 } else if (node.type == "MA") {
                     if (oplus) {
@@ -311,21 +332,25 @@ function loadfromdb(nodeSetID) {
                 } else if (node.type == "L") {
                     if (oplus) {
                         pID = findParticipantIDText(node.text);
-                        nodelist[node.nodeID] = AddNode(node.text, node.type, 0, pID, node.nodeID, xpos, ypos);
+                        nodelist[node.nodeID] = AddNode(node.text, node.type, 0, pID, node.nodeID, xpos, ypos, visible);
                     }
                 }
                 else {
                     if (node.type == "I" || oplus) {
-                        nodelist[node.nodeID] = AddNode(node.text, node.type, 0, 0, node.nodeID, xpos, ypos);
+                        nodelist[node.nodeID] = AddNode(node.text, node.type, 0, 0, node.nodeID, xpos, ypos, visible);
                     }
                 }
             });
 
             $.each(data.edges, function (idx, edge) {
                 if (edge.fromID in nodelist && edge.toID in nodelist) {
-                    var e = newEdge(edge.fromID, edge.toID);
-                    DrawEdge(edge.fromID, edge.toID);
-                    UpdateEdge(edge);
+                    index = findNodeIndex(edge.fromID);
+                    visible = nodes[index].visible; //if the edge connects an invisible node it should also be invisible
+                    var e = newEdge(edge.fromID, edge.toID, visible);
+                    if (visible) { //if the edge is visible then draw edge on svg
+                        DrawEdge(e.fromID, e.toID);
+                        UpdateEdge(e);
+                    }
                 }
             });
 
@@ -340,6 +365,10 @@ function loadfromdb(nodeSetID) {
                 }
             });
 
+            /*if(mwidth > WIDTH || mheight > HEIGHT){
+                resize_canvas(mwidth, mheight);
+            }*/
+
             //var currenturl = window.location;
             //var newurl = currenturl.replace(/aifdb=[0-9]+/i, ""); 
             //history.pushState(null, null, newurl);
@@ -348,6 +377,7 @@ function loadfromdb(nodeSetID) {
 }
 
 //todo: add error check & message
+//todo: check that saves in aif
 function save2db() {
     $('#modal-save2db').show();
     $('#m_load').show();
@@ -357,6 +387,7 @@ function save2db() {
     var jnodes = [];
     var jschemefulfillments = [];
     var jlocutions = [];
+    var jedges = [];
 
     for (var i = 0, l = nodes.length; i < l; i++) {
         var jnode = {};
@@ -380,14 +411,23 @@ function save2db() {
         }
     }
 
+    for (var i = 0, l = edges.length; i < l; i++) {
+        var jedge = {};
+        jedge['edgeID'] = i + 1;
+        jedge['fromID'] = edges[i].fromID;
+        jedge['toID'] = edges[i].toID;
+        jedges.push(jedge);
+    }
+
     json['nodes'] = jnodes;
-    json['edges'] = edges;
+    json['edges'] = jedges;
     json['schemefulfillments'] = jschemefulfillments;
-    json['participants'] = participants;
+    json['participants'] = participants; //todo: check if should be 'people' or 'participants'
     json['locutions'] = jlocutions;
 
     jstring = JSON.stringify(json);
     console.log(jstring);
+    //todo: uncomment code below
     /*$.post("ul/index.php", { data: JSON.stringify(json) },
         function (reply) {
             console.log(reply);

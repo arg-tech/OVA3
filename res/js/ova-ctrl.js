@@ -302,10 +302,23 @@ function GetTrueCoords(evt) {
 
 }
 
+function AddNode(txt, type, scheme, pid, nid, nx, ny, visible) {
+  var isVisible = typeof visible !== 'undefined' ? visible : true;
+  newNode(nid, type, scheme, pid, txt, nx, ny, isVisible);
+  if (isVisible) {
+    DrawNode(nid, type, txt, nx, ny); //if the node is visible then draw the node on the svg
 
-function AddNode(txt, type, scheme, pid, nid, nx, ny) {
-  newNode(nid, type, scheme, pid, txt, nx, ny);
-  DrawNode(nid, type, txt, nx, ny);
+    //create analyst nodes if they are needed 
+    if (type == 'L' && txt != "") {
+      var analysisLTxt = window.afirstname + ': ' + txt;
+      window.nodeCounter++;
+      var analysisYA = newNode(window.nodeCounter, 'YA', 75, 0, 'Analysing', 0, 0, false);
+      window.nodeCounter++;
+      var analysisL = newNode(window.nodeCounter, 'L', 0, 0, analysisLTxt, 0, 0, false);
+      newEdge(analysisYA.nodeID, nid, false);
+      newEdge(analysisL.nodeID, analysisYA.nodeID, false);
+    }
+  }
 }
 
 function Drag(evt) {
