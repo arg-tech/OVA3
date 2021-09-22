@@ -192,7 +192,6 @@ function loadfile(jstr) {
     postEdit("text", "edit", json['analysis']['txt']);
 }
 
-//todo: test w/ invisible nodes & edges that adding & drawing correctly
 function loaddbjson(json) {
     console.log("loaddbjson");
     var oplus = false;
@@ -203,40 +202,43 @@ function loaddbjson(json) {
     //load nodes
     var nodelist = {};
     var pID;
+    var xpos = 0;
+    var ypos = 0;
     jnodes = json['nodes'];
+
     for (var i = 0, l = jnodes.length; i < l; i++) {
+        node = jnodes[i];
         xpos = 10 + (i * 10);
         ypos = 10;
-        node = jnodes[i];
+
         if (node.type == "CA") {
             nodelist[node.nodeID] = AddNode(node.text, node.type, '71', 0, node.nodeID, xpos, ypos);
         } else if (node.type == "RA") {
             nodelist[node.nodeID] = AddNode(node.text, node.type, '72', 0, node.nodeID, xpos, ypos);
-        } else if (node.type == "TA") {
-            if (oplus) {
-                nodelist[node.nodeID] = AddNode(node.text, node.type, '82', 0, node.nodeID, xpos, ypos);
-            }
-        } else if (node.type == "YA") {
-            if (oplus) {
-                nodelist[node.nodeID] = AddNode(node.text, node.type, '168', 0, node.nodeID, xpos, ypos);
-            }
-        } else if (node.type == "MA") {
-            if (oplus) {
-                nodelist[node.nodeID] = AddNode(node.text, node.type, '144', 0, node.nodeID, xpos, ypos);
-            }
-        } else if (node.type == "PA") {
-            if (oplus) {
-                nodelist[node.nodeID] = AddNode(node.text, node.type, '161', 0, node.nodeID, xpos, ypos);
-            }
-        } else if (node.type == "L") {
-            if (oplus) {
-                pID = findParticipantIDText(node.text);
-                nodelist[node.nodeID] = AddNode(node.text, node.type, '0', pID, node.nodeID, xpos, ypos);
-            }
+        } else if (node.type == "I") {
+            nodelist[node.nodeID] = AddNode(node.text, node.type, '0', 0, node.nodeID, xpos, ypos);
         }
-        else {
-            if (node.type == "I" || oplus) {
-                nodelist[node.nodeID] = AddNode(node.text, node.type, '0', 0, node.nodeID, xpos, ypos);
+        else if (oplus) {
+            if (node.type == "TA") {
+                nodelist[node.nodeID] = AddNode(node.text, node.type, '82', 0, node.nodeID, xpos, ypos);
+            } else if (node.type == "YA") {
+                if (node.text == 'Analysing') { //if an analyst node
+                    nodelist[node.nodeID] = AddNode(node.text, node.type, '75', 0, node.nodeID, 0, 0, false);
+                } else {
+                    nodelist[node.nodeID] = AddNode(node.text, node.type, '168', 0, node.nodeID, xpos, ypos);
+                }
+            } else if (node.type == "MA") {
+                nodelist[node.nodeID] = AddNode(node.text, node.type, '144', 0, node.nodeID, xpos, ypos);
+            } else if (node.type == "PA") {
+                nodelist[node.nodeID] = AddNode(node.text, node.type, '161', 0, node.nodeID, xpos, ypos);
+            } else if (node.type == "L") {
+                pID = findParticipantIDText(node.text);
+                if (pID == 0) { //if an analyst node
+                    nodelist[node.nodeID] = AddNode(node.text, node.type, '0', 0, node.nodeID, 0, 0, false);
+                } else { //to prevent duplicate analyst nodes
+                    nodelist[node.nodeID] = newNode(node.nodeID, node.type, '0', pID, node.text, xpos, ypos);
+                    DrawNode(node.nodeID, node.type, node.text, xpos, ypos);
+                }
             }
         }
     }
@@ -259,10 +261,8 @@ function loaddbjson(json) {
 
     //set any scheme fulfillments
     var sf = json['schemefulfillments'];
-    //console.log(sf);
     for (var i = 0; i < sf.length; i++) {
         index = findNodeIndex(sf[i].nodeID);
-        //console.log("nodeID: " + sf[i].nodeID);
         nodes[index].scheme = sf[i].schemeID;
     }
 }
@@ -285,7 +285,7 @@ function loadfromdb(nodeSetID) {
 
             var nodelist = {};
             $.each(data.nodes, function (idx, node) {
-                visible = true;
+                /*visible = true;
                 if (node.type == "YA" && node.text.indexOf('AnalysesAs') >= 0) {
                     visible = false;
                     xpos = 0;
@@ -294,7 +294,9 @@ function loadfromdb(nodeSetID) {
                     visible = false;
                     xpos = 0;
                     ypos = 0;
-                } else if (node.nodeID in ldata) {
+                }*/
+
+                if (node.nodeID in ldata) {
                     xpos = parseInt(ldata[node.nodeID]["x"]);
                     xpos = xpos * 0.8;
                     if (xpos > mwidth - 100) { mwidth = xpos + 100; }
@@ -309,35 +311,30 @@ function loadfromdb(nodeSetID) {
                     nodelist[node.nodeID] = AddNode(node.text, node.type, '71', 0, node.nodeID, xpos, ypos);
                 } else if (node.type == "RA") {
                     nodelist[node.nodeID] = AddNode(node.text, node.type, '72', 0, node.nodeID, xpos, ypos);
-                } else if (node.type == "TA") {
-                    if (oplus) {
-                        nodelist[node.nodeID] = AddNode(node.text, node.type, '82', 0, node.nodeID, xpos, ypos);
-                    }
-                } else if (node.type == "YA") {
-                    if (oplus) {
-                        if (node.text == 'Analysing') {
-                            nodelist[node.nodeID] = AddNode(node.text, node.type, '75', 0, node.nodeID, xpos, ypos, visible);
-                        } else {
-                            nodelist[node.nodeID] = AddNode(node.text, node.type, '168', 0, node.nodeID, xpos, ypos, visible);
-                        }
-                    }
-                } else if (node.type == "MA") {
-                    if (oplus) {
-                        nodelist[node.nodeID] = AddNode(node.text, node.type, '144', 0, node.nodeID, xpos, ypos);
-                    }
-                } else if (node.type == "PA") {
-                    if (oplus) {
-                        nodelist[node.nodeID] = AddNode(node.text, node.type, '161', 0, node.nodeID, xpos, ypos);
-                    }
-                } else if (node.type == "L") {
-                    if (oplus) {
-                        pID = findParticipantIDText(node.text);
-                        nodelist[node.nodeID] = AddNode(node.text, node.type, '0', pID, node.nodeID, xpos, ypos, visible);
-                    }
+                } else if (node.type == "I") {
+                    nodelist[node.nodeID] = AddNode(node.text, node.type, '0', 0, node.nodeID, xpos, ypos);
                 }
-                else {
-                    if (node.type == "I" || oplus) {
-                        nodelist[node.nodeID] = AddNode(node.text, node.type, '0', 0, node.nodeID, xpos, ypos, visible);
+                else if (oplus) {
+                    if (node.type == "TA") {
+                        nodelist[node.nodeID] = AddNode(node.text, node.type, '82', 0, node.nodeID, xpos, ypos);
+                    } else if (node.type == "YA") {
+                        if (node.text == 'Analysing') { //if an analyst node
+                            nodelist[node.nodeID] = AddNode(node.text, node.type, '75', 0, node.nodeID, 0, 0, false);
+                        } else {
+                            nodelist[node.nodeID] = AddNode(node.text, node.type, '168', 0, node.nodeID, xpos, ypos);
+                        }
+                    } else if (node.type == "MA") {
+                        nodelist[node.nodeID] = AddNode(node.text, node.type, '144', 0, node.nodeID, xpos, ypos);
+                    } else if (node.type == "PA") {
+                        nodelist[node.nodeID] = AddNode(node.text, node.type, '161', 0, node.nodeID, xpos, ypos);
+                    } else if (node.type == "L") {
+                        pID = findParticipantIDText(node.text);
+                        if (pID == 0) { //if an analyst node
+                            nodelist[node.nodeID] = AddNode(node.text, node.type, '0', 0, node.nodeID, 0, 0, false);
+                        } else { //to prevent duplicate analyst nodes
+                            nodelist[node.nodeID] = newNode(node.nodeID, node.type, '0', pID, node.text, xpos, ypos);
+                            DrawNode(node.nodeID, node.type, node.text, xpos, ypos);
+                        }
                     }
                 }
             });
@@ -376,8 +373,7 @@ function loadfromdb(nodeSetID) {
     });
 }
 
-//todo: add error check & message
-//todo: check that saves in aif
+//todo: add error check & message and check that saves in aif
 function save2db() {
     $('#modal-save2db').show();
     $('#m_load').show();
