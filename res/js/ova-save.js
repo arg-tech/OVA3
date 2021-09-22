@@ -152,7 +152,7 @@ function loadfile(jstr) {
         for (var i = 0, l = e.length; i < l; i++) {
             from = e[i].from.id;
             to = e[i].to.id;
-            var edge = newEdge(from, to);
+            var edge = newEdge(from, to, e[i].visible);
             if (e[i].visible) {
                 DrawEdge(from, to);
                 UpdateEdge(edge);
@@ -180,7 +180,7 @@ function loadfile(jstr) {
         for (var i = 0, l = e.length; i < l; i++) {
             from = e[i].fromID;
             to = e[i].toID;
-            var edge = newEdge(from, to);
+            var edge = newEdge(from, to, e[i].visible);
             if (e[i].visible) {
                 DrawEdge(from, to);
                 UpdateEdge(edge);
