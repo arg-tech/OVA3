@@ -156,11 +156,10 @@ function Init(evt) {
     $('#analysis_text').on('paste', function () {
         setTimeout(function (e) {
             var domString = "", temp = "";
-             $("#analysis_text div").each(function()
-             {
-                 temp = $(this).html();
-                 domString += ((temp == "<br>") ? "" : temp) + "<br>";
-             });
+            $("#analysis_text div").each(function () {
+                temp = $(this).html();
+                domString += ((temp == "<br>") ? "" : temp) + "<br>";
+            });
 
             /*temp = $("#analysis_text div").html();
             domString += ((temp == "<br>") ? "" : temp) + "<br>";*/
@@ -243,7 +242,9 @@ function updateAddNode(node) {
         window.nodeCounter = node.nodeID;
     }
     nodes.push(node);
-    DrawNode(node.nodeID, node.type, node.text, node.x, node.y); //update svg
+    if (node.visible) {
+        DrawNode(node.nodeID, node.type, node.text, node.x, node.y); //if the node is visible then draw the node on the svg
+    }
 }
 
 function updateDelNode(node) {
@@ -253,20 +254,10 @@ function updateDelNode(node) {
     var index = findNodeIndex(node.nodeID);
     nodes.splice(index, 1);
     document.getElementById(node.nodeID).remove(); //remove the deleted node from svg
-
-    /*remove any edges previously connected to the deleted node
-    var l = edges.length;
-    for (var i = l - 1; i >= 0; i--) {
-        if (edges[i].toID == node.nodeID || edges[i].fromID == node.nodeID) {
-            edgeID = 'n' + edges[i].fromID + '-n' + edges[i].toID;
-            document.getElementById(edgeID).remove(); //remove the edge from svg
-            edges.splice(i, 1); //remove the edge
-        }
-    }*/
 }
 
 function updateMoveNode(node) {
-    //updateNodePosition(node.nodeID, node.x, node.y) is used for updating the original analysis (i.e. contains postEdit() call)
+    //updateNodePosition(nodeID, x, y) is used for updating the original analysis (i.e. contains postEdit() call)
     var index = findNodeIndex(node.nodeID);
     n = nodes[index];
     n.x = node.x;
@@ -289,7 +280,7 @@ function updateMoveNode(node) {
 }
 
 function updateEditNode(node) {
-    //updateNode(node.nodeID, node.type, node.scheme, node.text, node.x, node.y) is used for updating the original analysis (i.e. contains postEdit() call)
+    //updateNode(nodeID, type, scheme, text, x, y) is used for updating the original analysis (i.e. contains postEdit() call)
     var index = findNodeIndex(node.nodeID);
     n = nodes[index];
     n.type = node.type;
@@ -302,18 +293,20 @@ function updateEditNode(node) {
 }
 
 function updateAddEdge(edge) {
-    //newEdge(edge.fromID, edge.toID) is used for updating the original analysis (i.e. contains postEdit() call)
+    //newEdge(fromID, toID, visible) is used for updating the original analysis (i.e. contains postEdit() call) 
     if (edge.fromID == '' || edge.toID == '') {
         return false;
     } else {
         var e = new Edge;
         e.fromID = edge.fromID;
         e.toID = edge.toID;
+        e.visible = edge.visible;
         edges.push(e);
 
-        //update svg
-        DrawEdge(e.fromID, e.toID);
-        UpdateEdge(e);
+        if (e.visible) { //if the edge is visible then draw the edge on the svg
+            DrawEdge(e.fromID, e.toID);
+            UpdateEdge(e);
+        }
     }
     return true;
 }

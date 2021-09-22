@@ -312,9 +312,9 @@ function AddNode(txt, type, scheme, pid, nid, nx, ny, visible) {
     if (type == 'L' && txt != "") {
       var analysisLTxt = window.afirstname + ': ' + txt;
       window.nodeCounter++;
-      var analysisYA = newNode(window.nodeCounter, 'YA', 75, 0, 'Analysing', 0, 0, false);
+      var analysisYA = newNode(window.nodeCounter, 'YA', '75', 0, 'Analysing', 0, 0, false);
       window.nodeCounter++;
-      var analysisL = newNode(window.nodeCounter, 'L', 0, 0, analysisLTxt, 0, 0, false);
+      var analysisL = newNode(window.nodeCounter, 'L', '0', 0, analysisLTxt, 0, 0, false);
       newEdge(analysisYA.nodeID, nid, false);
       newEdge(analysisL.nodeID, analysisYA.nodeID, false);
     }

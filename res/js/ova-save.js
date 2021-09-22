@@ -209,34 +209,34 @@ function loaddbjson(json) {
         ypos = 10;
         node = jnodes[i];
         if (node.type == "CA") {
-            nodelist[node.nodeID] = AddNode(node.text, node.type, 71, 0, node.nodeID, xpos, ypos);
+            nodelist[node.nodeID] = AddNode(node.text, node.type, '71', 0, node.nodeID, xpos, ypos);
         } else if (node.type == "RA") {
-            nodelist[node.nodeID] = AddNode(node.text, node.type, 72, 0, node.nodeID, xpos, ypos);
+            nodelist[node.nodeID] = AddNode(node.text, node.type, '72', 0, node.nodeID, xpos, ypos);
         } else if (node.type == "TA") {
             if (oplus) {
-                nodelist[node.nodeID] = AddNode(node.text, node.type, 82, 0, node.nodeID, xpos, ypos);
+                nodelist[node.nodeID] = AddNode(node.text, node.type, '82', 0, node.nodeID, xpos, ypos);
             }
         } else if (node.type == "YA") {
             if (oplus) {
-                nodelist[node.nodeID] = AddNode(node.text, node.type, 168, 0, node.nodeID, xpos, ypos);
+                nodelist[node.nodeID] = AddNode(node.text, node.type, '168', 0, node.nodeID, xpos, ypos);
             }
         } else if (node.type == "MA") {
             if (oplus) {
-                nodelist[node.nodeID] = AddNode(node.text, node.type, 144, 0, node.nodeID, xpos, ypos);
+                nodelist[node.nodeID] = AddNode(node.text, node.type, '144', 0, node.nodeID, xpos, ypos);
             }
         } else if (node.type == "PA") {
             if (oplus) {
-                nodelist[node.nodeID] = AddNode(node.text, node.type, 161, 0, node.nodeID, xpos, ypos);
+                nodelist[node.nodeID] = AddNode(node.text, node.type, '161', 0, node.nodeID, xpos, ypos);
             }
         } else if (node.type == "L") {
             if (oplus) {
                 pID = findParticipantIDText(node.text);
-                nodelist[node.nodeID] = AddNode(node.text, node.type, 0, pID, node.nodeID, xpos, ypos);
+                nodelist[node.nodeID] = AddNode(node.text, node.type, '0', pID, node.nodeID, xpos, ypos);
             }
         }
         else {
             if (node.type == "I" || oplus) {
-                nodelist[node.nodeID] = AddNode(node.text, node.type, 0, 0, node.nodeID, xpos, ypos);
+                nodelist[node.nodeID] = AddNode(node.text, node.type, '0', 0, node.nodeID, xpos, ypos);
             }
         }
     }
@@ -306,38 +306,38 @@ function loadfromdb(nodeSetID) {
                 }
 
                 if (node.type == "CA") {
-                    nodelist[node.nodeID] = AddNode(node.text, node.type, 71, 0, node.nodeID, xpos, ypos);
+                    nodelist[node.nodeID] = AddNode(node.text, node.type, '71', 0, node.nodeID, xpos, ypos);
                 } else if (node.type == "RA") {
-                    nodelist[node.nodeID] = AddNode(node.text, node.type, 72, 0, node.nodeID, xpos, ypos);
+                    nodelist[node.nodeID] = AddNode(node.text, node.type, '72', 0, node.nodeID, xpos, ypos);
                 } else if (node.type == "TA") {
                     if (oplus) {
-                        nodelist[node.nodeID] = AddNode(node.text, node.type, 82, 0, node.nodeID, xpos, ypos);
+                        nodelist[node.nodeID] = AddNode(node.text, node.type, '82', 0, node.nodeID, xpos, ypos);
                     }
                 } else if (node.type == "YA") {
                     if (oplus) {
                         if (node.text == 'Analysing') {
-                            nodelist[node.nodeID] = AddNode(node.text, node.type, 75, 0, node.nodeID, xpos, ypos, visible);
+                            nodelist[node.nodeID] = AddNode(node.text, node.type, '75', 0, node.nodeID, xpos, ypos, visible);
                         } else {
-                            nodelist[node.nodeID] = AddNode(node.text, node.type, 168, 0, node.nodeID, xpos, ypos, visible);
+                            nodelist[node.nodeID] = AddNode(node.text, node.type, '168', 0, node.nodeID, xpos, ypos, visible);
                         }
                     }
                 } else if (node.type == "MA") {
                     if (oplus) {
-                        nodelist[node.nodeID] = AddNode(node.text, node.type, 144, 0, node.nodeID, xpos, ypos);
+                        nodelist[node.nodeID] = AddNode(node.text, node.type, '144', 0, node.nodeID, xpos, ypos);
                     }
                 } else if (node.type == "PA") {
                     if (oplus) {
-                        nodelist[node.nodeID] = AddNode(node.text, node.type, 161, 0, node.nodeID, xpos, ypos);
+                        nodelist[node.nodeID] = AddNode(node.text, node.type, '161', 0, node.nodeID, xpos, ypos);
                     }
                 } else if (node.type == "L") {
                     if (oplus) {
                         pID = findParticipantIDText(node.text);
-                        nodelist[node.nodeID] = AddNode(node.text, node.type, 0, pID, node.nodeID, xpos, ypos, visible);
+                        nodelist[node.nodeID] = AddNode(node.text, node.type, '0', pID, node.nodeID, xpos, ypos, visible);
                     }
                 }
                 else {
                     if (node.type == "I" || oplus) {
-                        nodelist[node.nodeID] = AddNode(node.text, node.type, 0, 0, node.nodeID, xpos, ypos, visible);
+                        nodelist[node.nodeID] = AddNode(node.text, node.type, '0', 0, node.nodeID, xpos, ypos, visible);
                     }
                 }
             });
