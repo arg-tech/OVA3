@@ -484,9 +484,10 @@ function addLocution(node) {
         surname = participant.surname;
     }
 
+
     window.nodeCounter = window.nodeCounter + 1;
     var newLNodeID = window.nodeCounter;
-    console.log(node)
+
 
     // var ltext = (firstname + ' ' + surname + ': ').concat(t);
     var ltext = (firstname + ' ' + surname + ': ').concat(node.text);
@@ -496,19 +497,19 @@ function addLocution(node) {
     if (nodes[nindex + 1]) {
         if (nodes[nindex + 1].type == 'L') {
             yCoord = parseInt(yCoord) + 50;
+            console.log(yCoord);
         }
     }
-    console.log(n.x)
-    AddNode(ltext, 'L', '0', participantID, newLNodeID, (parseInt(n.x) + 450), yCoord);
+
+    AddNode(ltext, 'L', '0', participantID, newLNodeID, (parseInt(n.x) + 450), parseInt(yCoord));
     var index = findNodeIndex(newLNodeID);
-    
 
 
     window.nodeCounter = window.nodeCounter + 1;
     var newYANodeID = window.nodeCounter;
     // AddNode('Asserting', 'YA', '74', 0, newYANodeID, (n.x + 225), yCoord);
-    AddNode('Asserting', 'YA', '74', 0, newYANodeID, (n.x + 225), yCoord);
-    console.log(n.x)
+    AddNode('Asserting', 'YA', '74', 0, newYANodeID, (parseInt(n.x) + 225), parseInt(yCoord));
+
 
     var edge = newEdge(newLNodeID, newYANodeID);
     DrawEdge(newLNodeID, newYANodeID)
