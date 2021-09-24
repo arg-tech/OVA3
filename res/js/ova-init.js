@@ -253,7 +253,9 @@ function updateDelNode(node) {
     //remove the node
     var index = findNodeIndex(node.nodeID);
     nodes.splice(index, 1);
-    document.getElementById(node.nodeID).remove(); //remove the deleted node from svg
+    if (node.visible) {
+        document.getElementById(node.nodeID).remove(); //remove the deleted node from svg
+    }
 }
 
 function updateMoveNode(node) {
@@ -263,18 +265,19 @@ function updateMoveNode(node) {
     n.x = node.x;
     n.y = node.y;
 
-    //update svg
-    document.getElementById(node.nodeID).remove(); //remove the node from the previous position
-    DrawNode(n.nodeID, n.type, n.text, n.x, n.y); //draw the node at the new position
+    if (node.visible) { //update svg if the node has been drawn on it
+        document.getElementById(node.nodeID).remove(); //remove the node from the previous position
+        DrawNode(n.nodeID, n.type, n.text, n.x, n.y); //draw the node at the new position
 
-    //move any connected edges
-    var l = edges.length;
-    for (var i = l - 1; i >= 0; i--) {
-        if (edges[i].toID == n.nodeID || edges[i].fromID == n.nodeID) {
-            edgeID = 'n' + edges[i].fromID + '-n' + edges[i].toID;
-            document.getElementById(edgeID).remove(); //remove the edge previously connected to the moved node
-            DrawEdge(edges[i].fromID, edges[i].toID); //draw the edge to connect the node at its new position
-            UpdateEdge(edges[i]); //update the edge position
+        //move any connected edges
+        var l = edges.length;
+        for (var i = l - 1; i >= 0; i--) {
+            if (edges[i].toID == n.nodeID || edges[i].fromID == n.nodeID) {
+                edgeID = 'n' + edges[i].fromID + '-n' + edges[i].toID;
+                document.getElementById(edgeID).remove(); //remove the edge previously connected to the moved node
+                DrawEdge(edges[i].fromID, edges[i].toID); //draw the edge to connect the node at its new position
+                UpdateEdge(edges[i]); //update the edge position
+            }
         }
     }
 }
@@ -287,9 +290,21 @@ function updateEditNode(node) {
     n.scheme = node.scheme;
     n.text = node.text;
 
-    //update svg
-    document.getElementById(node.nodeID).remove(); //remove the old version of the node
-    DrawNode(n.nodeID, n.type, n.text, n.x, n.y); //draw the updated version of the node
+    if (node.visible) { //update svg if the node has been drawn on it
+        document.getElementById(node.nodeID).remove(); //remove the old version of the node
+        DrawNode(n.nodeID, n.type, n.text, n.x, n.y); //draw the updated version of the node
+
+        //move any connected edges
+        var l = edges.length;
+        for (var i = l - 1; i >= 0; i--) {
+            if (edges[i].toID == n.nodeID || edges[i].fromID == n.nodeID) {
+                edgeID = 'n' + edges[i].fromID + '-n' + edges[i].toID;
+                document.getElementById(edgeID).remove(); //remove the edge previously connected to the moved node
+                DrawEdge(edges[i].fromID, edges[i].toID); //draw the edge to connect the node at its new position
+                UpdateEdge(edges[i]); //update the edge position
+            }
+        }
+    }
 }
 
 function updateAddEdge(edge) {
@@ -307,8 +322,8 @@ function updateAddEdge(edge) {
             DrawEdge(e.fromID, e.toID);
             UpdateEdge(e);
         }
+        return true;
     }
-    return true;
 }
 
 function updateDelEdge(edge) {
@@ -317,8 +332,10 @@ function updateDelEdge(edge) {
     var l = edges.length;
     for (var i = l - 1; i >= 0; i--) {
         if (edges[i].toID == edge.toID && edges[i].fromID == edge.fromID) {
-            edgeID = 'n' + edges[i].fromID + '-n' + edges[i].toID;
-            document.getElementById(edgeID).remove(); //remove the edge from svg
+            if (edges[i].visible) { //if the edge was drawn on the svg
+                edgeID = 'n' + edges[i].fromID + '-n' + edges[i].toID;
+                document.getElementById(edgeID).remove(); //remove the edge from svg
+            }
             edges.splice(i, 1); //remove the edge
             break;
         }
@@ -553,7 +570,7 @@ function addlclick(skipcheck) {
         $('#locution_add').hide();
     }
     addLocution(mySel);
-    console.log(mySel)
+    //console.log(mySel)
     $('#new_participant').hide();
     $('#p_sel_wrap').show();
     $('#p_select').val('-');

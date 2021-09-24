@@ -267,7 +267,6 @@ function loaddbjson(json) {
     }
 }
 
-//todo: test
 function loadfromdb(nodeSetID) {
     console.log("loadfromdb");
     var oplus = false;

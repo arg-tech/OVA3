@@ -452,10 +452,15 @@ function updateBox(g) {
 }
 
 function UpdateEdge(e) {
+  if (!e.visible) { return false; } //if the edge is invisible, i.e. it isn't drawn on the svg, do nothing
   edgeID = 'n' + e.fromID + '-n' + e.toID;
   ee = document.getElementById(edgeID);
-  nf = document.getElementById(e.fromID).getElementsByTagName('rect')[0];
-  nt = document.getElementById(e.toID).getElementsByTagName('rect')[0];
+  nodeFrom = document.getElementById(e.fromID);
+  nodeTo = document.getElementById(e.toID);
+  if (nodeFrom == null || nodeTo == null) { return false; } //if either of the nodes aren't drawn on the svg, do nothing
+  nf = nodeFrom.getElementsByTagName('rect')[0];
+  nt = nodeTo.getElementsByTagName('rect')[0];
+
   fw = parseInt(nf.getAttributeNS(null, 'width'));
   fh = parseInt(nf.getAttributeNS(null, 'height'));
   tw = parseInt(nt.getAttributeNS(null, 'width'));
@@ -844,24 +849,25 @@ function findEdges(nodeID) {
 
 
 function deleteNode(node) {
-  var toDelType = node.type;
-  document.getElementById(CurrentlyEditing).remove();
-  delNode(node);
-  var edgesToDelete = [];
-
-  if (mySel.type == 'L') {
-    remhl(node.nodeID);
+  //remove the node
+  if (node.visible) {
+    document.getElementById(CurrentlyEditing).remove(); //if the node was drawn on the svg remove it
+    if (mySel.type == 'L') {
+      remhl(node.nodeID);
+    }
   }
+  delNode(node);
 
-  //if(mySel.type == 'I' || mySel.type == 'L' || mySel.type == 'EN'){
-  //remhl(node.nodeID);
-  // document.getElementById(CurrentlyEditing).remove();
-  // const index = nodes.indexOf(node);
-  // if (index > -1) { nodes.splice(index, 1); }
-  // var edgesToDelete = [];
+  //remove any edges that were connected to the deleted node
+  var edgesToDelete = [];
+  lNodeToDelete = null;
   for (var j = 0; j < edges.length; j++) {
     if (edges[j].toID == CurrentlyEditing) {
       edgesToDelete.push(edges[j]);
+      if (node.type == 'YA' && !(node.visible)) { //if a YA analyst node then record the connected L analyst node
+        index = findNodeIndex(edges[j].fromID);
+        lNodeToDelete = nodes[index];
+      }
     }
     if (edges[j].fromID == CurrentlyEditing) {
       edgesToDelete.push(edges[j]);
@@ -870,30 +876,26 @@ function deleteNode(node) {
   for (var i = 0; i < edgesToDelete.length; i++) {
     deleteEdges(edgesToDelete[i]);
   }
+
+  if (lNodeToDelete != null) { //if a connected L analyst node was found then also delete it
+    CurrentlyEditing = lNodeToDelete.nodeID;
+    deleteNode(lNodeToDelete);
+  }
+
   $("#contextmenu").hide();
-  //}
 }
 
 function deleteEdges(edge) {
   edgeID = 'n' + edge.fromID + '-n' + edge.toID;
   edgeFrom = edge.fromID;
   edgeTo = edge.toID;
-  tempEdge = document.getElementById(edgeID);
-  tempEdge.remove();
+
+  if (edge.visible) { //if the edge was drawn on the svg remove it
+    tempEdge = document.getElementById(edgeID);
+    tempEdge.remove();
+  }
   delEdge(edge);
 
-  // for(var i=1; i<nodes.length; i++) {
-  //   if(nodes[i]) {
-  //     if(nodes[i].nodeID == edgeFrom && nodes[i].type != "I" && nodes[i].type != "L" && nodes[i].type != 'EN') {
-  //       CurrentlyEditing = nodes[i].nodeID;
-  //       deleteNode(nodes[i]);
-  //     }
-  //     if(nodes[i].nodeID == edgeTo && nodes[i].type != "I" && nodes[i].type != "L" &&  nodes[i].type != 'EN') {
-  //       CurrentlyEditing = nodes[i].nodeID;
-  //       deleteNode(nodes[i]);
-  //     }
-  //   }
-  // }
   if (mySel.type == "I" || mySel.type == "EN") {
     for (var i = 1; i < nodes.length; i++) {
       if (nodes[i]) {
