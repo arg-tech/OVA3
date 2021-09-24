@@ -42,7 +42,7 @@ var WMIN = 0;
 let rID = null, f = 0, nav = {}, tg = Array(4);
 var scale = 0;
 
-//zooming on mousewheel croll
+//zooming on mousewheel scroll
 const zoom = (event) => {
     if (FormOpen == false) {
         tsvg = document.getElementById('inline').getBoundingClientRect();
@@ -106,7 +106,7 @@ function Init(evt) {
         }
     });
 
-if ("aifdb" in getUrlVars()) {
+    if ("aifdb" in getUrlVars()) {
         aifdbid = getUrlVars()["aifdb"];
         $.get('./db/' + aifdbid, function (data) {
             if (lastedit == 0) {
@@ -117,126 +117,120 @@ if ("aifdb" in getUrlVars()) {
         });
     }
 
-    $.getJSON("browserint.php?x=ipxx&url="+window.DBurl+"/schemes/all/", function(json_data){
-    schemes = json_data.schemes;
-    schemes.sort(sort_by('name', true, function(a){return a.toUpperCase()}));
-    for(index in schemes){
-        scheme = schemes[index];
-        scheme_name = scheme.name.replace(/([a-z])([A-Z])/g, "$1 $2");
-        scheme_type = scheme.schemeTypeID
+    $.getJSON("browserint.php?x=ipxx&url=" + window.DBurl + "/schemes/all/", function (json_data) {
+        schemes = json_data.schemes;
+        schemes.sort(sort_by('name', true, function (a) { return a.toUpperCase() }));
+        for (index in schemes) {
+            scheme = schemes[index];
+            scheme_name = scheme.name.replace(/([a-z])([A-Z])/g, "$1 $2");
+            scheme_type = scheme.schemeTypeID
 
-        if(scheme_type == 1 || scheme_type == 2 || scheme_type == 3 || scheme_type == 9){
-            $('#s_ischeme').append('<option value="' + scheme.schemeID + '">' + scheme_name + '</option>');
-        }else if(scheme_type == 4 || scheme_type == 5){
-            $('#s_cscheme').append('<option value="' + scheme.schemeID + '">' + scheme_name + '</option>');
-        }else if(scheme_type == 7 || scheme_type == 12){
-            $('#s_lscheme').append('<option value="' + scheme.schemeID + '">' + scheme_name + '</option>');
-        }else if(scheme_type == 11){
-            $('#s_mscheme').append('<option value="' + scheme.schemeID + '">' + scheme_name + '</option>');
-        }else if(scheme_type == 6){
-            $('#s_pscheme').append('<option value="' + scheme.schemeID + '">' + scheme_name + '</option>');
-        }else if(scheme_type == 8){
-            $('#s_tscheme').append('<option value="' + scheme.schemeID + '">' + scheme_name + '</option>');
+            if (scheme_type == 1 || scheme_type == 2 || scheme_type == 3 || scheme_type == 9) {
+                $('#s_ischeme').append('<option value="' + scheme.schemeID + '">' + scheme_name + '</option>');
+            } else if (scheme_type == 4 || scheme_type == 5) {
+                $('#s_cscheme').append('<option value="' + scheme.schemeID + '">' + scheme_name + '</option>');
+            } else if (scheme_type == 7 || scheme_type == 12) {
+                $('#s_lscheme').append('<option value="' + scheme.schemeID + '">' + scheme_name + '</option>');
+            } else if (scheme_type == 11) {
+                $('#s_mscheme').append('<option value="' + scheme.schemeID + '">' + scheme_name + '</option>');
+            } else if (scheme_type == 6) {
+                $('#s_pscheme').append('<option value="' + scheme.schemeID + '">' + scheme_name + '</option>');
+            } else if (scheme_type == 8) {
+                $('#s_tscheme').append('<option value="' + scheme.schemeID + '">' + scheme_name + '</option>');
+            }
         }
-    }
-});
+    });
 
-  updateAnalysis();
- $.getJSON("browserint.php?x=ipxx&url="+window.SSurl, function(json_data){
-    window.ssets = {};
-    schemesets = json_data.schemesets;
-    schemesets.sort(sort_by('name', true, function(a){return a.toUpperCase()}));
-    for(index in schemesets){
-        schemeset = schemesets[index];
-        $('#s_sset').append('<option value="' + schemeset.id + '">' + schemeset.name + '</option>');
-        window.ssets[schemeset.id] = schemeset.schemes;
-    }
-  });
-  getSocial();
-
-  $('#analysis_text').on('paste', function() {
-    setTimeout(function(e) {
-        var domString = "", temp = "";
-        // $("#analysis_text div").each(function()
-        // {
-        //     temp = $(this).html();
-        //     console.log(temp);
-        //     domString += ((temp == "<br>") ? "" : temp) + "<br>";
-        // });
-        temp = $("#analysis_text div").html();
-
-        domString += ((temp == "<br>") ? "" : temp) + "<br>";
-
-        if(domString != ""){
-            $('#analysis_text').html(domString);
+    updateAnalysis();
+    $.getJSON("browserint.php?x=ipxx&url=" + window.SSurl, function (json_data) {
+        window.ssets = {};
+        schemesets = json_data.schemesets;
+        schemesets.sort(sort_by('name', true, function (a) { return a.toUpperCase() }));
+        for (index in schemesets) {
+            schemeset = schemesets[index];
+            $('#s_sset').append('<option value="' + schemeset.id + '">' + schemeset.name + '</option>');
+            window.ssets[schemeset.id] = schemeset.schemes;
         }
-        var orig_text = $('#analysis_text').html();
-        orig_text = orig_text.replace(/<br>/g, '&br&');
-        orig_text = orig_text.replace(/<br \/>/g, '&br&');
-        orig_text = orig_text.replace(/<span([^>]*)class="highlighted([^>]*)>([^>]*)<\/span>/g, "&span$1class=\"highlighted$2&$3&/span&");
+    });
+    getSocial();
 
-        $('#analysis_text').html(orig_text);
+    $('#analysis_text').on('paste', function () {
+        setTimeout(function (e) {
+            var domString = "", temp = "";
+            $("#analysis_text div").each(function () {
+                temp = $(this).html();
+                domString += ((temp == "<br>") ? "" : temp) + "<br>";
+            });
 
-        var repl_text = $('#analysis_text').text();
-        repl_text = repl_text.replace(/&br&/g, '<br>');
-        repl_text = repl_text.replace(/&span([^&]*)class="highlighted([^&]*)&([^&]*)&\/span&/g, "<span$1class=\"highlighted$2>$3</span>");
+            /*temp = $("#analysis_text div").html();
+            domString += ((temp == "<br>") ? "" : temp) + "<br>";*/
 
-        $('#analysis_text').html(repl_text);
-    }, 1);
-});
+            if (domString != "") {
+                $('#analysis_text').html(domString);
+            }
+            var orig_text = $('#analysis_text').html();
+            orig_text = orig_text.replace(/<br>/g, '&br&');
+            orig_text = orig_text.replace(/<br \/>/g, '&br&');
+            orig_text = orig_text.replace(/<span([^>]*)class="highlighted([^>]*)>([^>]*)<\/span>/g, "&span$1class=\"highlighted$2&$3&/span&");
+
+            $('#analysis_text').html(orig_text);
+
+            var repl_text = $('#analysis_text').text();
+            repl_text = repl_text.replace(/&br&/g, '<br>');
+            repl_text = repl_text.replace(/&span([^&]*)class="highlighted([^&]*)&([^&]*)&\/span&/g, "<span$1class=\"highlighted$2>$3</span>");
+
+            $('#analysis_text').html(repl_text);
+            postEdit("text", "edit", $('#analysis_text').html());
+        }, 1);
+    });
 
 }
 
+//start of main collaborate feature code//
+function updateAnalysis() {
+    var path = 'helpers/edithistory.php?last=' + lastedit + '&akey=' + window.akey;
 
-function updateAnalysis(){
-    var path = 'helpers/edithistory.php?last='+lastedit+'&akey='+window.akey;
-
-
-    $.get(path, function(data){
+    $.get(path, function (data) {
         edits = JSON.parse(data);
         eretry = [];
-        for (i=0;i<edits.edits.length;i++){
-            if(edits.edits[i].sessionid == window.sessionid){
+        for (i = 0; i < edits.edits.length; i++) {
+            if (edits.edits[i].sessionid == window.sessionid) {
                 //do nothing for our own edits
-            }else if(edits.edits[i].type == 'node' && edits.edits[i].action == 'add'){
+            } else if (edits.edits[i].type == 'node' && edits.edits[i].action == 'add') {
                 node = JSON.parse(edits.edits[i].content);
                 updateAddNode(node);
-            }else if(edits.edits[i].type == 'node' && edits.edits[i].action == 'delete'){
+            } else if (edits.edits[i].type == 'node' && edits.edits[i].action == 'delete') {
                 node = JSON.parse(edits.edits[i].content);
                 updateDelNode(node);
-            }else if(edits.edits[i].type == 'node' && edits.edits[i].action == 'move'){
+            } else if (edits.edits[i].type == 'node' && edits.edits[i].action == 'move') {
                 node = JSON.parse(edits.edits[i].content);
                 updateMoveNode(node);
-            }else if(edits.edits[i].type == 'node' && edits.edits[i].action == 'edit'){
+            } else if (edits.edits[i].type == 'node' && edits.edits[i].action == 'edit') {
                 node = JSON.parse(edits.edits[i].content);
                 updateEditNode(node);
-            }else if(edits.edits[i].type == 'edge' && edits.edits[i].action == 'add'){
+            } else if (edits.edits[i].type == 'edge' && edits.edits[i].action == 'add') {
                 edge = JSON.parse(edits.edits[i].content);
-                //s = updateAddEdge(edge);
-                //if(s == false){
-                    eretry.push([edge, 'add']);
-                //}
-            }else if(edits.edits[i].type == 'edge' && edits.edits[i].action == 'delete'){
+                eretry.push([edge, 'add']);
+            } else if (edits.edits[i].type == 'edge' && edits.edits[i].action == 'delete') {
                 edge = JSON.parse(edits.edits[i].content);
-                //updateDelEdge(edge);
-		eretry.push([edge, 'del']);
-            }else if(edits.edits[i].type == 'text' && edits.edits[i].action == 'edit'){
+                eretry.push([edge, 'del']);
+            } else if (edits.edits[i].type == 'text' && edits.edits[i].action == 'edit') {
                 updateEditText(edits.edits[i].content);
             }
             lastedit = edits.edits[i].editID;
 
         }
-	doretry = eretry;
+        doretry = eretry;
         eretry = [];
-        for (j=0;j<doretry.length;j++){
+        for (j = 0; j < doretry.length; j++) {
             edge = doretry[j][0];
             op = doretry[j][1];
-            if(op == 'add'){
-	        s = updateAddEdge(edge);
-	        if(s == false){
-	            eretry.push(edge);
-	        }
-            }else{
+            if (op == 'add') {
+                s = updateAddEdge(edge);
+                /*if(s == false){
+                    eretry.push(edge);
+                }*/
+            } else {
                 updateDelEdge(edge);
             }
         }
@@ -244,48 +238,160 @@ function updateAnalysis(){
     });
 }
 
-function getSelText()
-{
-  var iframe = document.getElementById('left1');
-  var txt = "";
-  count = count + 1;
-  if(iframe.nodeName.toLowerCase() == 'div'){
-      if(window.getSelection) {
-          userSelection = window.getSelection();
-      }else if(document.selection) {
-          userSelection = document.selection.createRange();
-      }
-      if (userSelection.text){ // IE
-          txt = userSelection.text;
-      }else if(userSelection != ""){
-          range = getRangeObject(userSelection);
-          txt = userSelection.toString();
+function updateAddNode(node) {
+    if (node.nodeID > window.nodeCounter) {
+        window.nodeCounter = node.nodeID;
+    }
+    nodes.push(node);
+    if (node.visible) {
+        DrawNode(node.nodeID, node.type, node.text, node.x, node.y); //if the node is visible then draw the node on the svg
+    }
+}
 
-          var span = document.createElement("span");
-          if (rIATMode == false) {
-            span.className="highlighted";
-            if (window.nodeCounter == 1) {
-              span.id = "node"+window.nodeCounter+1;
-            } else {
-              span.id = "node"+window.nodeCounter;
+function updateDelNode(node) {
+    //deleteNode(node) is used for updating the original analysis (i.e. contains postEdit() call)
+
+    //remove the node
+    var index = findNodeIndex(node.nodeID);
+    nodes.splice(index, 1);
+    if (node.visible) {
+        document.getElementById(node.nodeID).remove(); //remove the deleted node from svg
+    }
+}
+
+function updateMoveNode(node) {
+    //updateNodePosition(nodeID, x, y) is used for updating the original analysis (i.e. contains postEdit() call)
+    var index = findNodeIndex(node.nodeID);
+    n = nodes[index];
+    n.x = node.x;
+    n.y = node.y;
+
+    if (node.visible) { //update svg if the node has been drawn on it
+        document.getElementById(node.nodeID).remove(); //remove the node from the previous position
+        DrawNode(n.nodeID, n.type, n.text, n.x, n.y); //draw the node at the new position
+
+        //move any connected edges
+        var l = edges.length;
+        for (var i = l - 1; i >= 0; i--) {
+            if (edges[i].toID == n.nodeID || edges[i].fromID == n.nodeID) {
+                edgeID = 'n' + edges[i].fromID + '-n' + edges[i].toID;
+                document.getElementById(edgeID).remove(); //remove the edge previously connected to the moved node
+                DrawEdge(edges[i].fromID, edges[i].toID); //draw the edge to connect the node at its new position
+                UpdateEdge(edges[i]); //update the edge position
             }
-          } else {
-            span.className="hlcurrent";
-            if (window.nodeCounter == 1) {
-              span.id = "node"+window.nodeCounter+3;
-            } else {
-              span.id = "node"+window.nodeCounter+2;
+        }
+    }
+}
+
+function updateEditNode(node) {
+    //updateNode(nodeID, type, scheme, text, x, y) is used for updating the original analysis (i.e. contains postEdit() call)
+    var index = findNodeIndex(node.nodeID);
+    n = nodes[index];
+    n.type = node.type;
+    n.scheme = node.scheme;
+    n.text = node.text;
+
+    if (node.visible) { //update svg if the node has been drawn on it
+        document.getElementById(node.nodeID).remove(); //remove the old version of the node
+        DrawNode(n.nodeID, n.type, n.text, n.x, n.y); //draw the updated version of the node
+
+        //move any connected edges
+        var l = edges.length;
+        for (var i = l - 1; i >= 0; i--) {
+            if (edges[i].toID == n.nodeID || edges[i].fromID == n.nodeID) {
+                edgeID = 'n' + edges[i].fromID + '-n' + edges[i].toID;
+                document.getElementById(edgeID).remove(); //remove the edge previously connected to the moved node
+                DrawEdge(edges[i].fromID, edges[i].toID); //draw the edge to connect the node at its new position
+                UpdateEdge(edges[i]); //update the edge position
             }
-            span.id = "node"+(window.nodeCounter+2);
-          }
-          range.surroundContents(span);
-          postEdit("text", "edit", $('#analysis_text').html());
-      }
-  }else{
-      var innerDoc = iframe.contentDocument || iframe.contentWindow.document;
-      txt = iframe.contentWindow.getSelection().toString();
-  }
-  return txt;
+        }
+    }
+}
+
+function updateAddEdge(edge) {
+    //newEdge(fromID, toID, visible) is used for updating the original analysis (i.e. contains postEdit() call) 
+    if (edge.fromID == '' || edge.toID == '') {
+        return false;
+    } else {
+        var e = new Edge;
+        e.fromID = edge.fromID;
+        e.toID = edge.toID;
+        e.visible = edge.visible;
+        edges.push(e);
+
+        if (e.visible) { //if the edge is visible then draw the edge on the svg
+            DrawEdge(e.fromID, e.toID);
+            UpdateEdge(e);
+        }
+        return true;
+    }
+}
+
+function updateDelEdge(edge) {
+    //deleteEdges(edge) is used for updating the original analysis (i.e. contains postEdit() call)
+
+    var l = edges.length;
+    for (var i = l - 1; i >= 0; i--) {
+        if (edges[i].toID == edge.toID && edges[i].fromID == edge.fromID) {
+            if (edges[i].visible) { //if the edge was drawn on the svg
+                edgeID = 'n' + edges[i].fromID + '-n' + edges[i].toID;
+                document.getElementById(edgeID).remove(); //remove the edge from svg
+            }
+            edges.splice(i, 1); //remove the edge
+            break;
+        }
+    }
+}
+
+function updateEditText(txt) {
+    var iframe = document.getElementById('left1');
+    if (iframe.nodeName.toLowerCase() == 'div') {
+        $('#analysis_text').html(txt);
+    }
+}
+//end of main collaborate feature code//
+
+function getSelText() {
+    var iframe = document.getElementById('left1');
+    var txt = "";
+    count = count + 1;
+    if (iframe.nodeName.toLowerCase() == 'div') {
+        if (window.getSelection) {
+            userSelection = window.getSelection();
+        } else if (document.selection) {
+            userSelection = document.selection.createRange();
+        }
+        if (userSelection.text) { // IE
+            txt = userSelection.text;
+        } else if (userSelection != "") {
+            range = getRangeObject(userSelection);
+            txt = userSelection.toString();
+
+            var span = document.createElement("span");
+            if (IATMode == false) {
+                span.className = "highlighted";
+                if (window.nodeCounter == 1) {
+                    span.id = "node" + window.nodeCounter + 1;
+                } else {
+                    span.id = "node" + window.nodeCounter;
+                }
+            } else {
+                span.className = "hlcurrent";
+                if (window.nodeCounter == 1) {
+                    span.id = "node" + window.nodeCounter + 3;
+                } else {
+                    span.id = "node" + window.nodeCounter + 2;
+                }
+                span.id = "node" + (window.nodeCounter + 2);
+            }
+            range.surroundContents(span);
+            postEdit("text", "edit", $('#analysis_text').html());
+        }
+    } else {
+        var innerDoc = iframe.contentDocument || iframe.contentWindow.document;
+        txt = iframe.contentWindow.getSelection().toString();
+    }
+    return txt;
 }
 
 function hlcurrent(nodeID) {
@@ -302,11 +408,12 @@ function hlcurrent(nodeID) {
                 scrollTop: $('#analysis_text').scrollTop() + $("#node" + nodeID).offset().top - 200
             }, 1000);
             //}
+            postEdit("text", "edit", $('#analysis_text').html());
         }
     }
-
 }
 
+//function to remove the highlight from text
 function remhl(nodeID) {
     var span;
     span = document.getElementById("node" + nodeID)
@@ -314,6 +421,7 @@ function remhl(nodeID) {
         var text = span.textContent || span.innerText;
         var node = document.createTextNode(text);
         span.parentNode.replaceChild(node, span);
+        postEdit("text", "edit", $('#analysis_text').html());
     }
 }
 
@@ -330,7 +438,7 @@ function postEdit(type, action, content) {
             $.post("helpers/edit.php", { type: type, action: action, cnt: JSON.stringify(content), akey: window.akey, sessionid: window.sessionid }).done(function (data) {
                 dt = JSON.parse(data);
                 lastedit = dt.last;
-                // console.log("lastedit: "+lastedit);
+                console.log("lastedit: " + lastedit);
             });
         }
     }
@@ -374,6 +482,7 @@ function addParticipant(firstname, surname) {
 }
 
 function addLocution(node) {
+    console.log("adding locution");
     if ($('#p_firstname').val() != '') {
         firstname = $('#p_firstname').val();
         surname = $('#p_surname').val();
@@ -388,26 +497,32 @@ function addLocution(node) {
         surname = participant.surname;
     }
 
+
     window.nodeCounter = window.nodeCounter + 1;
     var newLNodeID = window.nodeCounter;
 
-  var ltext = (firstname + ' ' + surname + ': ').concat(t);
-  var nindex = findNodeIndex(CurrentlyEditing);
-  var n = nodes[nindex];
-  var yCoord = n.y;
-  if (nodes[nindex+1]){
-    if (nodes[nindex+1].type == 'L' ) {
-      yCoord = parseInt(yCoord)+50;
-    }
-  }
 
-  AddNode(ltext, 'L', '0', participantID, newLNodeID, (parseInt(n.x)+450), yCoord);
-  var index = findNodeIndex(newLNodeID);
+    // var ltext = (firstname + ' ' + surname + ': ').concat(t);
+    var ltext = (firstname + ' ' + surname + ': ').concat(node.text);
+    var nindex = findNodeIndex(CurrentlyEditing);
+    var n = nodes[nindex];
+    var yCoord = n.y;
+    if (nodes[nindex + 1]) {
+        if (nodes[nindex + 1].type == 'L') {
+            yCoord = parseInt(yCoord) + 50;
+            console.log(yCoord);
+        }
+    }
+
+    AddNode(ltext, 'L', '0', participantID, newLNodeID, (parseInt(n.x) + 450), parseInt(yCoord));
+    var index = findNodeIndex(newLNodeID);
 
 
     window.nodeCounter = window.nodeCounter + 1;
     var newYANodeID = window.nodeCounter;
-    AddNode('Asserting', 'YA', '74', 0, newYANodeID, (n.x + 225), yCoord);
+    // AddNode('Asserting', 'YA', '74', 0, newYANodeID, (n.x + 225), yCoord);
+    AddNode('Asserting', 'YA', '74', 0, newYANodeID, (parseInt(n.x) + 225), parseInt(yCoord));
+
 
     var edge = newEdge(newLNodeID, newYANodeID);
     DrawEdge(newLNodeID, newYANodeID)
@@ -456,6 +571,7 @@ function addlclick(skipcheck) {
         $('#locution_add').hide();
     }
     addLocution(mySel);
+    //console.log(mySel)
     $('#new_participant').hide();
     $('#p_sel_wrap').show();
     $('#p_select').val('-');
@@ -485,10 +601,10 @@ function getNodesOut(node) {
     var nlist = [];
     var l = edges.length;
     for (var i = 0; i < l; i++) {
-        if(edges[i].fromID == node.nodeID) {
-          var  nID = edges[i].toID;
-          var nIndex = findNodeIndex(nID);
-          nlist.push(nodes[nIndex]);
+        if (edges[i].fromID == node.nodeID) {
+            var nID = edges[i].toID;
+            var nIndex = findNodeIndex(nID);
+            nlist.push(nodes[nIndex]);
         }
     }
     return nlist;
@@ -797,8 +913,8 @@ function iatModeOnOff() {
 function genldot() {
     var doto = "digraph odg {";
     var ranks = "";
-    var alreadyDrawn={};
-    if("plus" in getUrlVars()){
+    var alreadyDrawn = {};
+    if ("plus" in getUrlVars()) {
         doto = doto + "rankdir=RL;";
     }
 
@@ -806,21 +922,21 @@ function genldot() {
         dnode = nodes[i];
         doto = doto + dnode.nodeID + ' [label="xxx xxx xxx xxx xxx\\nxxx xxx xxx xxx xxx\\nxxx xxx xxx xxx xxx\\nxxx xxx xxx xxx xxx"];';
 
-        if(dnode.type != 'I' && dnode.type != 'L'){
+        if (dnode.type != 'I' && dnode.type != 'L') {
 
             dout = getNodesOut(dnode);
             for (var j = 0, ol = dout.length; j < ol; j++) {
-              if (alreadyDrawn[dnode.nodeID+"-"+dout[j].nodeID]!==100) {
-                doto = doto + dnode.nodeID + ' -> ' + dout[j].nodeID;
-                alreadyDrawn[dnode.nodeID+"-"+dout[j].nodeID]=100;
-                if("plus" in getUrlVars() && dnode.type != 'YA' && dout[j].type != 'YA'){
-                    doto = doto + " [constraint=false]";
-                    if((dnode.type == 'RA' || dnode.type == 'CA') && dout[j].type == 'I'){
-                        ranks = ranks + '{ rank = same; ' + dnode.nodeID + '; ' + dout[j].nodeID + '; }';
+                if (alreadyDrawn[dnode.nodeID + "-" + dout[j].nodeID] !== 100) {
+                    doto = doto + dnode.nodeID + ' -> ' + dout[j].nodeID;
+                    alreadyDrawn[dnode.nodeID + "-" + dout[j].nodeID] = 100;
+                    if ("plus" in getUrlVars() && dnode.type != 'YA' && dout[j].type != 'YA') {
+                        doto = doto + " [constraint=false]";
+                        if ((dnode.type == 'RA' || dnode.type == 'CA') && dout[j].type == 'I') {
+                            ranks = ranks + '{ rank = same; ' + dnode.nodeID + '; ' + dout[j].nodeID + '; }';
+                        }
                     }
+                    doto = doto + ';';
                 }
-                doto = doto + ';';
-              }
                 // doto = doto + dnode.nodeID + ' -> ' + dout[j].nodeID;
                 // alreadyDrawn[dnode.nodeID+"-"+dout[j].nodeID]=100;
                 // console.log(doto);
@@ -834,26 +950,26 @@ function genldot() {
             }
             din = getNodesIn(dnode);
             for (var j = 0, ol = din.length; j < ol; j++) {
-              if (alreadyDrawn[din[j].nodeID+"-"+dnode.nodeID]!==100) {
-                doto = doto + din[j].nodeID + ' -> ' + dnode.nodeID;
+                if (alreadyDrawn[din[j].nodeID + "-" + dnode.nodeID] !== 100) {
+                    doto = doto + din[j].nodeID + ' -> ' + dnode.nodeID;
 
-                alreadyDrawn[din[j].nodeID+"-"+dnode.nodeID]=100;
-                if("plus" in getUrlVars() && dnode.type != 'YA' && din[j].type != 'YA'){
-                    doto = doto + " [constraint=false]";
-                    if((din[j].type == 'RA' || din[j].type == 'CA') && dnode.type == 'I'){
-                        ranks = ranks + '{ rank = same; ' + din[j].nodeID + '; ' + dnode.nodeID + '; }';
+                    alreadyDrawn[din[j].nodeID + "-" + dnode.nodeID] = 100;
+                    if ("plus" in getUrlVars() && dnode.type != 'YA' && din[j].type != 'YA') {
+                        doto = doto + " [constraint=false]";
+                        if ((din[j].type == 'RA' || din[j].type == 'CA') && dnode.type == 'I') {
+                            ranks = ranks + '{ rank = same; ' + din[j].nodeID + '; ' + dnode.nodeID + '; }';
+                        }
                     }
+                    doto = doto + ';';
                 }
-                doto = doto + ';';
-              }
                 // doto = doto + din[j].nodeID + ' -> ' + dnode.nodeID;
-            //     if("plus" in getUrlVars() && dnode.type != 'YA' && din[j].type != 'YA'){
-            //         doto = doto + " [constraint=false]";
-            //         if((din[j].type == 'RA' || din[j].type == 'CA') && dnode.type == 'I'){
-            //             ranks = ranks + '{ rank = same; ' + din[j].nodeID + '; ' + dnode.nodeID + '; }';
-            //         }
-            //     }
-            //     doto = doto + ';';
+                //     if("plus" in getUrlVars() && dnode.type != 'YA' && din[j].type != 'YA'){
+                //         doto = doto + " [constraint=false]";
+                //         if((din[j].type == 'RA' || din[j].type == 'CA') && dnode.type == 'I'){
+                //             ranks = ranks + '{ rank = same; ' + din[j].nodeID + '; ' + dnode.nodeID + '; }';
+                //         }
+                //     }
+                //     doto = doto + ';';
             }
         }
     }
@@ -865,17 +981,17 @@ function genldot() {
     mheight = 12775;
 
     $.post("dot/index.php", { data: doto },
-        function(reply) {
+        function (reply) {
             ldata = JSON.parse(reply);
-            for(var i = 0, l = nodes.length; i<l; i++) {
+            for (var i = 0, l = nodes.length; i < l; i++) {
                 mnode = nodes[i];
-                if(mnode.nodeID in ldata){
+                if (mnode.nodeID in ldata) {
                     xpos = parseInt(ldata[mnode.nodeID]["x"]);
-                    mnode.x = xpos*0.8;
-                    if(xpos > mwidth-100){ mwidth = xpos+100; }
+                    mnode.x = xpos * 0.8;
+                    if (xpos > mwidth - 100) { mwidth = xpos + 100; }
                     ypos = parseInt(ldata[mnode.nodeID]["y"]);
                     mnode.y = ypos;
-                    if(ypos > mheight-100){ mheight = ypos+100; }
+                    if (ypos > mheight - 100) { mheight = ypos + 100; }
                 }
             }
             //
@@ -966,10 +1082,10 @@ function setTut() {
     var intro = introJs();
     intro.setOptions({
         steps: [
-          {
-              element: '#txtstgs',
-              intro: "Set text size."
-          },
+            {
+                element: '#txtstgs',
+                intro: "Set text size."
+            },
             {
                 element: '#cqtoggle',
                 intro: "Toggle Critical Question Mode"

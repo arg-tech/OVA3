@@ -13,11 +13,13 @@ function Node() {
     this.text = '';
     this.x = 0;
     this.y = 0;
+    this.visible = true;
 }
 
 function Edge() {
     this.fromID = '';
     this.toID = '';
+    this.visible = true;
 }
 
 function Participant() {
@@ -39,7 +41,7 @@ function newParticipant(id, fname, sname) {
     return p;
 }
 
-function newNode(nodeID, type, scheme, participantID, text, x, y) {
+function newNode(nodeID, type, scheme, participantID, text, x, y, visible) {
     var n = new Node;
     n.nodeID = nodeID;
     n.type = type;
@@ -48,6 +50,7 @@ function newNode(nodeID, type, scheme, participantID, text, x, y) {
     n.text = text;
     n.x = x;
     n.y = y;
+    n.visible = typeof visible !== 'undefined' ? visible : true;
     nodes.push(n);
     postEdit("node", "add", n);
     return n;
@@ -72,13 +75,30 @@ function updateNodePosition(nodeID, x, y) {
     postEdit("node", "move", n);
 }
 
-function newEdge(fromID, toID) {
+function delNode(node) {
+    var index = nodes.indexOf(node);
+    if (index > -1) {
+        nodes.splice(index, 1);
+        postEdit("node", "delete", node);
+    }
+}
+
+function newEdge(fromID, toID, visible) {
     var e = new Edge;
     e.fromID = fromID;
     e.toID = toID;
+    e.visible = typeof visible !== 'undefined' ? visible : true;
     edges.push(e);
     postEdit("edge", "add", e);
     return e;
+}
+
+function delEdge(edge) {
+    var index = edges.indexOf(edge);
+    if (index > -1) {
+        postEdit("edge", "delete", edge);
+        edges.splice(index, 1);
+    }
 }
 
 function findParticipantID(firstname, surname) {

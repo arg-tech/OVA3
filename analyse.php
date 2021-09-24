@@ -30,13 +30,13 @@ if (isset($_GET['plus']) && $_GET['plus'] == 'true') {
 if (isset($_GET['akey'])) {
   $akey = $_GET['akey'];
 } else {
-  //require_once('helpers/mysql_connect.php');
+  require_once('helpers/mysql_connect.php');
 
   $akey = md5(time());
 
-  /*$sql = "INSERT INTO analyses (analyst, akey) VALUES (1, :akey)";
+  $sql = "INSERT INTO analyses (analyst, akey) VALUES (1, :akey)";
   $q = $DBH->prepare($sql);
-  $q->execute(array(':akey'=>$akey));*/
+  $q->execute(array(':akey'=>$akey));
 
   $adb = "";
   $aurl = $_GET['url'];
@@ -148,7 +148,7 @@ if (isset($_COOKIE['ovauser'])) {
     <?php
     $newurl = "analyse.php?url=" . $_GET['url'] . $plusval;
     ?>
-    <a href="http://arg.tech/~nicole/index.php" class="home"><img src="res/img/logo.svg" /></a> <!--todo: change link to homepage after testing-->
+    <a href="http://localhost/index.php" class="home"><img src="res/img/logo.svg" /></a> <!--todo: change link to homepage-->
     <a onClick='$("#xmenu").toggle("slide", {direction: "right"}, "slow");' class="icon" id="xmenutoggle" style="background-position: -126px 50%;"></a>
     <div class="divider"></div>
     <a onClick="mainTut()" class="icon" style="background-position: -378px 50%;"><span class="tooltiptext">Tutorial</span></a>
