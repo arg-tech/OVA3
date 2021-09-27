@@ -212,7 +212,7 @@ if (isset($_COOKIE['ovauser'])) {
         </form>
       </div>
       <div class="modal-btns">
-        <a class="save" href="#" onClick="closeModal('#modal-username'); iatModeOnOff(); return false;">Continue</a>
+        <a class="save" href="#" onClick="closeModal('#modal-username'); dialogicalModeOnOff(); return false;">Continue</a>
         <a class="cancel" href="#" onClick="closeModal('#modal-username'); return false;">&#10008; Cancel</a>
       </div>
     </div>
@@ -229,6 +229,7 @@ if (isset($_COOKIE['ovauser'])) {
       <div class="modal-body">
         <form id="settings_form" class="fstyle">
           <?php if ($source == "local") { ?>
+            <!-- Text Settings  -->
             <div id="txtstg">
               <strong>Text Settings</strong>
               <p style="color: #444; line-height: 36px;">Font Size
@@ -240,6 +241,7 @@ if (isset($_COOKIE['ovauser'])) {
           <?php } ?>
           <div id="anastg">
             <strong>Analysis Settings</strong>
+            <!-- Critical Questions Toggle  -->
             <p style="color: #444; line-height: 22px;">Critical Questions
               <?php if (isset($_GET['cq']) && $_GET['cq'] == 'true') { ?>
                 <a href="#" id="cqtoggle" class="togglesw on" onClick='$("#cqtoggle").toggleClass("on off"); window.cqmode=!window.cqmode; return false;'><span class="tson">On</span><span class="tsoff">Off</span></a>
@@ -247,6 +249,7 @@ if (isset($_COOKIE['ovauser'])) {
                 <a href="#" id="cqtoggle" class="togglesw off" onClick='$("#cqtoggle").toggleClass("on off"); window.cqmode=!window.cqmode; return false;'><span class="tson">On</span><span class="tsoff">Off</span></a>
               <?php } ?>
             </p>
+            <!-- Black & White Toggle  -->
             <p style="color: #444; line-height: 22px;">Black &amp; White Diagram
               <?php if (isset($_GET['bw']) && $_GET['bw'] == 'true') { ?>
                 <a href="#" id="bwtoggle" class="togglesw on" onClick='$(this).toggleClass("on off"); window.bwmode=!window.bwmode; bwModeOnOff();'><span class="tson">On</span><span class="tsoff">Off</span></a>
@@ -254,13 +257,24 @@ if (isset($_COOKIE['ovauser'])) {
                 <a href="#" id="bwtoggle" class="togglesw off" onClick='$(this).toggleClass("on off"); window.bwmode=!window.bwmode; bwModeOnOff();'><span class="tson">On</span><span class="tsoff">Off</span></a>
               <?php } ?>
             </p>
-            <p style="color: #444; line-height: 22px;">IAT Mode
-              <?php if (isset($_GET['plus']) && $_GET['plus'] == 'true') { ?>
-                <a href="#" id="iattoggle" class="togglesw on" onClick='$(this).toggleClass("on off"); window.IATMode=!window.IATMode; iatModeOnOff();'><span class="tson">On</span><span class="tsoff">Off</span></a>
+            <!-- Dialogical Mode Toggle  -->
+            <p style="color: #444; line-height: 22px;">Dialogical Mode
+              <?php if ($pro) { ?>
+                <a href="#" id="dialogicaltoggle" class="togglesw on" onClick='$(this).toggleClass("on off"); window.dialogicalMode=!window.dialogicalMode; dialogicalModeOnOff();'><span class="tson">On</span><span class="tsoff">Off</span></a>
               <?php } else { ?>
-                <a href="#" id="iattoggle" class="togglesw off" onClick='$(this).toggleClass("on off"); window.IATMode=!window.IATMode; iatModeOnOff();'><span class="tson">On</span><span class="tsoff">Off</span></a>
+                <a href="#" id="dialogicaltoggle" class="togglesw off" onClick='$(this).toggleClass("on off"); window.dialogicalMode=!window.dialogicalMode; dialogicalModeOnOff();'><span class="tson">On</span><span class="tsoff">Off</span></a>
               <?php } ?>
             </p>
+            <!-- Rapid IAT Mode Toggle  -->
+            <?php if ($pro) { ?>  <!-- only if Dialogical Mode is on then show the option for Rapid IAT Mode -->
+            <p style="color: #444; line-height: 22px;">Rapid IAT Mode
+              <?php if (isset($_GET['plus']) && $_GET['plus'] == 'true') { ?>
+                <a href="#" id="riattoggle" class="togglesw on" onClick='$(this).toggleClass("on off"); window.rIATMode=!window.rIATMode; return false;'><span class="tson">On</span><span class="tsoff">Off</span></a>
+              <?php } else { ?>
+                <a href="#" id="riattoggle" class="togglesw off" onClick='$(this).toggleClass("on off"); window.rIATMode=!window.rIATMode; return false;'><span class="tson">On</span><span class="tsoff">Off</span></a>
+              <?php } ?>
+            </p>
+            <?php } ?>
           </div>
         </form>
       </div>

@@ -117,7 +117,12 @@ function loadfile(jstr) {
         var json = jstr;
     }
 
-    jnodes = json['nodes'];
+    var oplus = false;
+    if ("plus" in getUrlVars()) {
+        oplus = true;
+    }
+
+    //load participants
     var p = json['participants'];
     var pID = 0;
     for (var i = 0, l = p.length; i < l; i++) {
@@ -126,6 +131,8 @@ function loadfile(jstr) {
         addParticipant(firstname, surname)
     }
 
+    var jnodes = json['nodes'];
+    var nodelist = {};
     if (jnodes.length > 0 && !(jnodes[0].hasOwnProperty('x'))) {
         loaddbjson(json);
         return;
@@ -135,14 +142,18 @@ function loadfile(jstr) {
             if (jnodes[i].id > window.nodeCounter) {
                 window.nodeCounter = jnodes[i].id;
             }
-            if (jnodes[i].type == "L") {
-                pID = findParticipantIDText(jnodes[i].text);
-                newNode(jnodes[i].id, jnodes[i].type, jnodes[i].scheme, pID, jnodes[i].text, jnodes[i].x, jnodes[i].y, jnodes[i].visible);
-            } else {
-                newNode(jnodes[i].id, jnodes[i].type, jnodes[i].scheme, 0, jnodes[i].text, jnodes[i].x, jnodes[i].y, jnodes[i].visible);
-            }
-            if (jnodes[i].visible) {
-                DrawNode(jnodes[i].id, jnodes[i].type, jnodes[i].text, jnodes[i].x, jnodes[i].y);
+            if (oplus) {
+                if (jnodes[i].type == "L") {
+                    pID = findParticipantIDText(jnodes[i].text);
+                    nodelist[jnodes[i].id] = newNode(jnodes[i].id, jnodes[i].type, jnodes[i].scheme, pID, jnodes[i].text, jnodes[i].x, jnodes[i].y, jnodes[i].visible);
+                    if (jnodes[i].visible) {
+                        DrawNode(jnodes[i].id, jnodes[i].type, jnodes[i].text, jnodes[i].x, jnodes[i].y);
+                    }
+                } else {
+                    nodelist[jnodes[i].id] = AddNode(jnodes[i].text, jnodes[i].type, jnodes[i].scheme, 0, jnodes[i].id, jnodes[i].x, jnodes[i].y, jnodes[i].visible);
+                }
+            } else if (jnodes[i].type == "RA" || jnodes[i].type == "CA" || jnodes[i].type == "I" || jnodes[i].type == "EN") {
+                nodelist[jnodes[i].id] = AddNode(jnodes[i].text, jnodes[i].type, jnodes[i].scheme, 0, jnodes[i].id, jnodes[i].x, jnodes[i].y, jnodes[i].visible);
             }
         }
         window.nodeCounter++;
@@ -152,25 +163,31 @@ function loadfile(jstr) {
         for (var i = 0, l = e.length; i < l; i++) {
             from = e[i].from.id;
             to = e[i].to.id;
-            var edge = newEdge(from, to, e[i].visible);
-            if (e[i].visible) {
-                DrawEdge(from, to);
-                UpdateEdge(edge);
+            if (from in nodelist && to in nodelist) { //if both the nodes the edge connects exist
+                var edge = newEdge(from, to, e[i].visible);
+                if (e[i].visible) {
+                    DrawEdge(from, to);
+                    UpdateEdge(edge);
+                }
             }
         }
     } else {
-        nodes = jnodes;
-        for (var i = 0, l = nodes.length; i < l; i++) {
-            if (nodes[i].nodeID > window.nodeCounter) {
-                window.nodeCounter = nodes[i].nodeID;
+        for (var i = 0, l = jnodes.length; i < l; i++) {
+            if (jnodes[i].nodeID > window.nodeCounter) {
+                window.nodeCounter = jnodes[i].nodeID;
             }
-            if (nodes[i].type == "L") {
-                pID = findParticipantIDText(nodes[i].text);
-                nodes[i].participantID = pID;
-            }
-            postEdit("node", "add", nodes[i]);
-            if (nodes[i].visible) {
-                DrawNode(nodes[i].nodeID, nodes[i].type, nodes[i].text, nodes[i].x, nodes[i].y);
+            if (oplus) {
+                if (jnodes[i].type == "L") {
+                    pID = findParticipantIDText(jnodes[i].text);
+                    nodelist[jnodes[i].nodeID] = newNode(jnodes[i].nodeID, jnodes[i].type, 0, pID, jnodes[i].text, jnodes[i].x, jnodes[i].y, jnodes[i].visible);
+                    if (jnodes[i].visible) {
+                        DrawNode(jnodes[i].nodeID, jnodes[i].type, jnodes[i].text, jnodes[i].x, jnodes[i].y);
+                    }
+                } else {
+                    nodelist[jnodes[i].nodeID] = AddNode(jnodes[i].text, jnodes[i].type, jnodes[i].scheme, 0, jnodes[i].nodeID, jnodes[i].x, jnodes[i].y, jnodes[i].visible);
+                }
+            } else if (jnodes[i].type == "RA" || jnodes[i].type == "CA" || jnodes[i].type == "I" || jnodes[i].type == "EN") {
+                nodelist[jnodes[i].nodeID] = AddNode(jnodes[i].text, jnodes[i].type, jnodes[i].scheme, 0, jnodes[i].nodeID, jnodes[i].x, jnodes[i].y, jnodes[i].visible);
             }
         }
         window.nodeCounter++;
@@ -180,10 +197,12 @@ function loadfile(jstr) {
         for (var i = 0, l = e.length; i < l; i++) {
             from = e[i].fromID;
             to = e[i].toID;
-            var edge = newEdge(from, to, e[i].visible);
-            if (e[i].visible) {
-                DrawEdge(from, to);
-                UpdateEdge(edge);
+            if (from in nodelist && to in nodelist) { //if both the nodes the edge connects exist
+                var edge = newEdge(from, to, e[i].visible);
+                if (e[i].visible) {
+                    DrawEdge(from, to);
+                    UpdateEdge(edge);
+                }
             }
         }
     }
@@ -201,7 +220,7 @@ function loaddbjson(json) {
 
     //load nodes
     var nodelist = {};
-    var pID;
+    var pID = 0;
     var xpos = 0;
     var ypos = 0;
     jnodes = json['nodes'];

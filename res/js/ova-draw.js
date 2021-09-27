@@ -1,94 +1,93 @@
 
 
-function DrawNode(nid, type, txt, nx, ny)
-{
-  var phraseArray = [];
-  if(txt.length > 36){
-      var wa = txt.split(' ');
-      line = "";
-      for (var i=0;i<wa.length;i++) {
-          word = wa[i];
-          if(line.length == 0){
-              line = word;
-          }else if(line.length + word.length <= 36){
-              line = line + ' ' + word;
-              if(i == wa.length-1) {
-                phraseArray.push(line)
-              }
-          }else{
-              phraseArray.push(line);
-              line = word;
-              if(i == wa.length-1) {
-                phraseArray.push(line)
-              }
-          }
-      }
-    }else{
+function DrawNode(nid, type, txt, nx, ny) {
+    var phraseArray = [];
+    if (txt.length > 36) {
+        var wa = txt.split(' ');
+        line = "";
+        for (var i = 0; i < wa.length; i++) {
+            word = wa[i];
+            if (line.length == 0) {
+                line = word;
+            } else if (line.length + word.length <= 36) {
+                line = line + ' ' + word;
+                if (i == wa.length - 1) {
+                    phraseArray.push(line)
+                }
+            } else {
+                phraseArray.push(line);
+                line = word;
+                if (i == wa.length - 1) {
+                    phraseArray.push(line)
+                }
+            }
+        }
+    } else {
         phraseArray.push(txt);
     }
-  var g = document.createElementNS("http://www.w3.org/2000/svg", "g");
-  g.setAttribute('id', nid);
-  g.setAttribute('focusable', 'true');
+    var g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+    g.setAttribute('id', nid);
+    g.setAttribute('focusable', 'true');
 
-  var ntext=document.createElementNS("http://www.w3.org/2000/svg", "text");
-  ntext.setAttribute('x', nx);
-  ntext.setAttribute('y', ny);
-  ntext.setAttribute('style', 'font-family: sans-serif; font-weight: normal; font-style: normal;font-size: 10px;');
+    var ntext = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    ntext.setAttribute('x', nx);
+    ntext.setAttribute('y', ny);
+    ntext.setAttribute('style', 'font-family: sans-serif; font-weight: normal; font-style: normal;font-size: 10px;');
 
-  for(var i=0;i<phraseArray.length;i++){
-    var tspan = document.createElementNS("http://www.w3.org/2000/svg", "tspan");
-    tspan.setAttribute('text-anchor','middle');
-    tspan.setAttribute('x', nx);
-    tspan.setAttribute('dy', 14);
-    var myText = document.createTextNode(phraseArray[i]);
-    tspan.appendChild(myText);
-    ntext.appendChild(tspan);
-  }
-
-  g.appendChild(ntext)
-  SVGRootG.appendChild(g)
-
-  var textbox = ntext.getBBox();
-  var textwidth = textbox.width;
-  var textheight = textbox.height;
-  var nbox=document.createElementNS("http://www.w3.org/2000/svg", "rect")
-
-  if(type == 'I' || type == 'L' || type == 'EN'){
-      nbox.setAttribute('x', nx-(textwidth/2)-16);
-      nbox.setAttribute('y', ny-2);
-      nbox.setAttribute('width', textwidth+32);
-      nbox.setAttribute('height', textheight+14);
-      nbox.setAttribute('rx', '5');
-      nbox.setAttribute('ry', '5');
-      nbox.setAttribute('style', 'fill:#ddeef9;stroke:#3498db;stroke-width:1;')
-  }else{
-        nbox.setAttribute('x', nx-(textwidth/2)-16);
-        nbox.setAttribute('y', ny-7);
-        nbox.setAttribute('width', textwidth+32);
-        nbox.setAttribute('height', textheight+24);
-        nbox.setAttribute('rx', (textwidth+32)/2);
-        nbox.setAttribute('ry', (textheight+24)/2);
+    for (var i = 0; i < phraseArray.length; i++) {
+        var tspan = document.createElementNS("http://www.w3.org/2000/svg", "tspan");
+        tspan.setAttribute('text-anchor', 'middle');
+        tspan.setAttribute('x', nx);
+        tspan.setAttribute('dy', 14);
+        var myText = document.createTextNode(phraseArray[i]);
+        tspan.appendChild(myText);
+        ntext.appendChild(tspan);
     }
-  if (window.bwmode) {
-        nbox.classList.add('bw');;
+
+    g.appendChild(ntext)
+    SVGRootG.appendChild(g)
+
+    var textbox = ntext.getBBox();
+    var textwidth = textbox.width;
+    var textheight = textbox.height;
+    var nbox = document.createElementNS("http://www.w3.org/2000/svg", "rect")
+
+    if (type == 'I' || type == 'L' || type == 'EN') {
+        nbox.setAttribute('x', nx - (textwidth / 2) - 16);
+        nbox.setAttribute('y', ny - 2);
+        nbox.setAttribute('width', textwidth + 32);
+        nbox.setAttribute('height', textheight + 14);
+        nbox.setAttribute('rx', '5');
+        nbox.setAttribute('ry', '5');
+        nbox.setAttribute('style', 'fill:#ddeef9;stroke:#3498db;stroke-width:1;')
+    } else {
+        nbox.setAttribute('x', nx - (textwidth / 2) - 16);
+        nbox.setAttribute('y', ny - 7);
+        nbox.setAttribute('width', textwidth + 32);
+        nbox.setAttribute('height', textheight + 24);
+        nbox.setAttribute('rx', (textwidth + 32) / 2);
+        nbox.setAttribute('ry', (textheight + 24) / 2);
     }
-  if(type == 'RA'){
-      nbox.setAttribute('style', 'fill:#def8e9;stroke:#2ecc71;stroke-width:1;');
-  }else if(type == 'CA'){
-      nbox.setAttribute('style', 'fill:#fbdedb;stroke:#e74c3c;stroke-width:1;');
-  }else if(type == 'YA'){
-      nbox.setAttribute('style', 'fill:#fdf6d9;stroke:#f1c40f;stroke-width:1;');
-  }else if(type == 'TA'){
-      nbox.setAttribute('style', 'fill:#eee3f3;stroke:#9b59b6;stroke-width:1;');
-  }else if(type == 'MA'){
-      nbox.setAttribute('style', 'fill:#fbeadb;stroke:#e67e22;stroke-width:1;');
-  }else if(type == 'EN'){
-      nbox.setAttribute('style', 'fill:#dedddc;stroke:#969696;stroke-width:1;');
-  }else{
-      nbox.setAttribute('style', 'fill:#ddeef9;stroke:#3498db;stroke-width:1;');
-  }
-  g.appendChild(nbox)
-  g.appendChild(ntext)
+    if (window.bwmode) {
+        nbox.classList.add('bw');
+    }
+    if (type == 'RA') {
+        nbox.setAttribute('style', 'fill:#def8e9;stroke:#2ecc71;stroke-width:1;');
+    } else if (type == 'CA') {
+        nbox.setAttribute('style', 'fill:#fbdedb;stroke:#e74c3c;stroke-width:1;');
+    } else if (type == 'YA') {
+        nbox.setAttribute('style', 'fill:#fdf6d9;stroke:#f1c40f;stroke-width:1;');
+    } else if (type == 'TA') {
+        nbox.setAttribute('style', 'fill:#eee3f3;stroke:#9b59b6;stroke-width:1;');
+    } else if (type == 'MA') {
+        nbox.setAttribute('style', 'fill:#fbeadb;stroke:#e67e22;stroke-width:1;');
+    } else if (type == 'EN') {
+        nbox.setAttribute('style', 'fill:#dedddc;stroke:#969696;stroke-width:1;');
+    } else {
+        nbox.setAttribute('style', 'fill:#ddeef9;stroke:#3498db;stroke-width:1;');
+    }
+    g.appendChild(nbox)
+    g.appendChild(ntext)
 }
 
 function DrawEdge(fromid, toid) {
@@ -121,7 +120,7 @@ function cmenu(node, evt) {
     // $('#contextmenu').css({top: (node.y+85), left: (node.x+210)});
     $('#contextmenu').css({ top: (evt.clientY + 5), left: evt.clientX - 65 });
     $('#contextmenu').append("<a onClick='editpopup(window.contextnode);$(\"#contextmenu\").hide();'>Edit Node</a>");
-    if (node.type == 'I') {
+    if (node.type == 'I' && dialogicalMode) {
         $('#contextmenu').append("<a onClick='$(\"#locution_add\").show();$(\"#contextmenu\").hide();'>Add Locution</a>");
     }
     $('#contextmenu').append("<a onClick='deleteNode(window.contextnode);$(\"#contextmenu\").hide();'>Delete Node</a>");
@@ -154,13 +153,19 @@ function editpopup(node) {
         var addRA = true;
         var addCA = true;
         var addYA = false;
-        var addTA = true;
-        var addPA = true;
-        var addMA = true;
+        var addTA = false;
+        var addPA = false;
+        var addMA = false;
 
-        for (var i = 0; i < nodesIn.length; i++) {
-            if (nodesIn[i].type == 'L' || nodesIn[i].type == 'TA') {
-                addYA = true;
+        if (dialogicalMode) {
+            addTA = true;
+            addPA = true;
+            addMA = true;
+
+            for (var i = 0; i < nodesIn.length; i++) {
+                if (nodesIn[i].type == 'L' || nodesIn[i].type == 'TA') {
+                    addYA = true;
+                }
             }
         }
 
