@@ -7,9 +7,8 @@ var TrueCoords = null;
 var GrabPoint = null;
 var DragTarget = null;
 
-
-var IATMode = ("plus" in getUrlVars());
-var rIATMode = false;
+var rIATMode = ("plus" in getUrlVars());
+var dialogicalMode = rIATMode;
 var CurrentFocus = null;
 var multiSel = false;
 var multiSelRect = {};
@@ -368,7 +367,7 @@ function getSelText() {
             txt = userSelection.toString();
 
             var span = document.createElement("span");
-            if (IATMode == false) {
+            if (rIATMode == false) {
                 span.className = "highlighted";
                 if (window.nodeCounter == 1) {
                     span.id = "node" + window.nodeCounter + 1;
@@ -893,8 +892,8 @@ var sort_by = function (field, reverse, primer) {
     }
 }
 
-function iatModeOnOff() {
-    if (IATMode) {
+function dialogicalModeOnOff() {
+    if (dialogicalMode) {
         if ($('#afinput').val() == "Anon" || $('#afinput').val() == "" || $('#asinput').val() == "User" || $('#asinput').val() == "") {
             openModal('#modal-username');
         }
@@ -1095,8 +1094,8 @@ function setTut() {
                 intro: "Toggle Black and White Mode",
             },
             {
-                element: '#iattoggle',
-                intro: "<p>Toggle IAT Mode</p> <p>Turning off IAT mode will remove the dialogical aspect.</p>",
+                element: '#dialogicaltoggle',
+                intro: "<p>Toggle Dialogical Mode</p> <p>Turning off dialogical mode will remove the dialogical aspect.</p>",
             },
             {
                 element: '#riattoggle',
