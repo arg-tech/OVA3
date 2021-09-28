@@ -60,6 +60,7 @@ function panZoomMode(keycode) {
         tg[i + 2] = VB[i + 2] / Math.pow(1.3, nav.dir);
         tg[i] = .00001 * (DMAX[i] - tg[i + 2]);
       }
+      console.log("1: " + VB);
     }
     updateView();
   }
@@ -67,18 +68,19 @@ function panZoomMode(keycode) {
 
 function updateView() {
   let k = ++f / NF, j = 1 - k, cvb = VB.slice();
-
   if (nav.act === 'zoom') {
     for (let i = 0; i < 4; i++)
       cvb[i] = j * VB[i] + k * tg[i]
+    console.log(cvb)
   }
-
+  console.log("2: " + VB);
   if (nav.act === 'move') {
     cvb[nav.axis] = j * VB[nav.axis] + k * tg[nav.axis];
   }
-
+  console.log("3: " + VB);
   SVGRoot.setAttribute('viewBox', cvb.join(' '));
-
+  VB = cvb;
+  console.log("4: " + VB);
 
   if (!(f % NF)) {
     f = 0;
@@ -88,6 +90,7 @@ function updateView() {
     stopAni();
     return;
   }
+  console.log("5: " + VB);
   rID = requestAnimationFrame(updateView)
 }
 
@@ -299,7 +302,6 @@ function GetTrueCoords(evt) {
   //Calculating new coordinates after panning and zooming
   TrueCoords.x = ((evt.clientX - svgleft) * newScale) + translationX;
   TrueCoords.y = ((evt.clientY - svgtop) * newScale) + translationY;
-
 }
 
 
@@ -678,7 +680,10 @@ function AddPt(nx, ny) {
   nbox.setAttribute('y', ny + 1);
   nbox.setAttribute('width', 1);
   nbox.setAttribute('height', 1);
+  console.log("nbox x: " + nx);
+  console.log("nbox y: " + ny);
   g.appendChild(nbox)
+  console.log(g)
   SVGRootG.appendChild(g);
 
   return g;

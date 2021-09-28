@@ -240,13 +240,13 @@ if (isset($_COOKIE['ovauser'])) {
           <?php } ?>
           <div id="anastg">
             <strong>Analysis Settings</strong>
-            <p style="color: #444; line-height: 22px;">Critical Questions
+            <!-- <p style="color: #444; line-height: 22px;">Critical Questions
               <?php if (isset($_GET['cq']) && $_GET['cq'] == 'true') { ?>
                 <a href="#" id="cqtoggle" class="togglesw on" onClick='$("#cqtoggle").toggleClass("on off"); window.cqmode=!window.cqmode; return false;'><span class="tson">On</span><span class="tsoff">Off</span></a>
               <?php } else { ?>
                 <a href="#" id="cqtoggle" class="togglesw off" onClick='$("#cqtoggle").toggleClass("on off"); window.cqmode=!window.cqmode; return false;'><span class="tson">On</span><span class="tsoff">Off</span></a>
               <?php } ?>
-            </p>
+            </p> -->
             <p style="color: #444; line-height: 22px;">Black &amp; White Diagram
               <?php if (isset($_GET['bw']) && $_GET['bw'] == 'true') { ?>
                 <a href="#" id="bwtoggle" class="togglesw on" onClick='$(this).toggleClass("on off"); window.bwmode=!window.bwmode; bwModeOnOff();'><span class="tson">On</span><span class="tsoff">Off</span></a>
@@ -254,7 +254,7 @@ if (isset($_COOKIE['ovauser'])) {
                 <a href="#" id="bwtoggle" class="togglesw off" onClick='$(this).toggleClass("on off"); window.bwmode=!window.bwmode; bwModeOnOff();'><span class="tson">On</span><span class="tsoff">Off</span></a>
               <?php } ?>
             </p>
-            <p style="color: #444; line-height: 22px;">IAT Mode
+            <p style="color: #444; line-height: 22px;">Dialogue Mode
               <?php if (isset($_GET['plus']) && $_GET['plus'] == 'true') { ?>
                 <a href="#" id="iattoggle" class="togglesw on" onClick='$(this).toggleClass("on off"); window.IATMode=!window.IATMode; iatModeOnOff();'><span class="tson">On</span><span class="tsoff">Off</span></a>
               <?php } else { ?>
@@ -419,13 +419,21 @@ if (isset($_COOKIE['ovauser'])) {
       <iframe src="<?php echo $analysis; ?>" id="left1" name="left1" style="width:35%;border-right:1px solid #666;"></iframe> <!-- data-step="1" data-intro="<p>Highlight sections of text from the webpage to create a node.</p>" data-position="right" -->
     <?php } ?>
 
-
+    <script>
+        var w = window.innerWidth;
+        var h = window.innerHeight;
+        console.log("width: " + w + " height:" + h)
+      </script>
     <div id="right1">
-
+    <!-- <script>
+    document.getElementById('right1').style.width = w;
+    document.getElementById('right1').style.height = w
+    </script> -->
       <!-- style="width:90%; height:100%; z-index:999; background-color:#fff;" -->
-
-      <svg viewBox='0 0 1000 12775' xmlns="http://www.w3.org/2000/svg" version="1.1" width="1000px" height="12775px" style="z-index:999; background-color:#fff;" onmousedown='Grab(evt);' onmousemove='Drag(evt);' onmouseup='Drop(evt);' onload='Init(evt);' id='inline'>
+      
+      <svg viewBox='0 0 1000 12775' xmlns="http://www.w3.org/2000/svg" version="1.1" width="1000" height="12775" style="z-index:999; background-color:#fff;" onmousedown='Grab(evt);' onmousemove='Drag(evt);' onmouseup='Drop(evt);' onload='Init(evt);' id='inline'>
         <defs>
+          
           <marker id='head' orient="auto" markerWidth='12' markerHeight='10' refX='12' refY='5'>
             <!-- triangle pointing right (+x) -->
             <path d='M0,0 V10 L12,5 Z' fill="black" />
