@@ -125,10 +125,12 @@ function loadfile(jstr) {
     //load participants
     var p = json['participants'];
     var pID = 0;
-    for (var i = 0, l = p.length; i < l; i++) {
-        firstname = p[i].firstname;
-        surname = p[i].surname;
-        addParticipant(firstname, surname)
+    if (p != undefined) {
+        for (var i = 0, l = p.length; i < l; i++) {
+            firstname = p[i].firstname;
+            surname = p[i].surname;
+            addParticipant(firstname, surname)
+        }
     }
 
     var jnodes = json['nodes'];
@@ -280,9 +282,11 @@ function loaddbjson(json) {
 
     //set any scheme fulfillments
     var sf = json['schemefulfillments'];
-    for (var i = 0; i < sf.length; i++) {
-        index = findNodeIndex(sf[i].nodeID);
-        nodes[index].scheme = sf[i].schemeID;
+    if (sf != undefined) {
+        for (var i = 0; i < sf.length; i++) {
+            index = findNodeIndex(sf[i].nodeID);
+            nodes[index].scheme = sf[i].schemeID;
+        }
     }
 }
 
