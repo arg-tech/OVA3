@@ -217,8 +217,8 @@ function updateAnalysis() {
                 updateEditText(edits.edits[i].content);
             }
             lastedit = edits.edits[i].editID;
-
         }
+
         doretry = eretry;
         eretry = [];
         for (j = 0; j < doretry.length; j++) {
@@ -442,6 +442,108 @@ function postEdit(type, action, content) {
         }
     }
     window.unsaved = true;
+}
+
+function undo() {
+    var index = 0;
+    var action = '';
+
+    var path = 'helpers/edithistory.php?last=' + 0 + '&akey=' + window.akey;
+    $.get(path, function (data) {
+        allEdits = JSON.parse(data);
+        index = allEdits.edits.length - 1;
+        edits = [];
+
+        for (i = index; i > 0; i--) {
+            while (action == '') {
+                if (allEdits.edits[i].action == 'add' || allEdits.edits[i].action == 'delete') {
+                    action = allEdits.edits[i].action;
+                }
+            }
+            //get array of edits to undo
+            if (allEdits.edits[i].action == action) {
+                edits.push(allEdits.edits[i]);
+            } else {
+                break;
+            }
+        }
+        console.log(edits);
+
+        if (action == 'add') {
+            undoAdd(edits);
+        } else if (action == 'delete') {
+            undoDelete(edits);
+        }
+    });
+}
+
+function undoDelete(deleted) {
+    deletedNodes = [];
+    deletedEdges = [];
+
+    //separate the deleted array into an array of nodes and edges
+    for (i = 0; i < deleted.length; i++) {
+        deletedContent = JSON.parse(deleted[i].content);
+        if (deletedContent.nodeID != null) {
+            deletedNodes.push(deletedContent); //if a node add to the deleted nodes array
+        } else if (deletedContent.fromID != null) {
+            deletedEdges.push(deletedContent); //if an edge add to the deleted edges array
+        }
+    }
+
+    //readd all of the deleted nodes
+    for (i = 0; i < deletedNodes.length; i++) {
+        if (nodes.indexOf(deletedNodes[i]) == -1) { //if the node doesn't exist then add it
+            console.log("adding node: " + deletedNodes[i].nodeID);
+            AddNode(deletedNodes[i].text, deletedNodes[i].type, deletedNodes[i].scheme, deletedNodes[i].participantID,
+                deletedNodes[i].nodeID, deletedNodes[i].x, deletedNodes[i].y, deletedNodes[i].visible); //readd node
+        }
+    }
+
+    //readd all of the deleted edges
+    for (i = 0; i < deletedEdges.length; i++) {
+        if (edges.indexOf(deletedEdges[i]) == -1) { //if the edge doesn't exist then add it
+            console.log("adding edge: " + deletedEdges[i].fromID + "->" + deletedEdges[i].toID);
+            //readd edge
+            updateAddEdge(deletedEdges[i]);
+            postEdit("edge", "add", deletedEdges[i]);
+        }
+    }
+}
+
+function undoAdd(added) {
+    addedNodes = [];
+    addedEdges = [];
+
+    //separate the added array into an array of nodes and edges
+    for (i = 0; i < added.length; i++) {
+        addedContent = JSON.parse(added[i].content);
+        if (addedContent.nodeID != null) {
+            addedNodes.push(addedContent); //if a node add to the added nodes array
+        } else if (addedContent.fromID != null) {
+            addedEdges.push(addedContent); //if an edge add to the added edges array
+        }
+    }
+
+    //delete all of the added nodes
+    for (i = 0; i < addedNodes.length; i++) {
+        if (nodes.indexOf(addedNodes[i]) == -1) { //if the node exists then remove it
+            console.log("deleting node: " + addedNodes[i].nodeID);
+            //delete node
+            updateDelNode(addedNodes[i]);
+            postEdit("node", "delete", addedNodes[i]);
+        }
+    }
+
+    //delete all of the added edges
+    for (i = 0; i < addedEdges.length; i++) {
+        if (edges.indexOf(addedEdges[i]) == -1) { //if the edge exists then remove it
+            console.log("deleting edge: " + addedEdges[i].fromID + "->" + addedEdges[i].toID);
+            //delete edge
+            updateDelEdge(addedEdges[i]);
+            postEdit("edge", "delete", addedEdges[i]);
+        }
+    }
 }
 
 function getSocial() {

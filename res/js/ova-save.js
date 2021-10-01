@@ -124,11 +124,13 @@ function loadfile(jstr) {
 
     //load participants
     var p = json['participants'];
-    var pID = 0;
-    for (var i = 0, l = p.length; i < l; i++) {
-        firstname = p[i].firstname;
-        surname = p[i].surname;
-        addParticipant(firstname, surname)
+    if (p != undefined) {
+        var pID = 0;
+        for (var i = 0, l = p.length; i < l; i++) {
+            firstname = p[i].firstname;
+            surname = p[i].surname;
+            addParticipant(firstname, surname)
+        }
     }
 
     var jnodes = json['nodes'];
@@ -280,9 +282,11 @@ function loaddbjson(json) {
 
     //set any scheme fulfillments
     var sf = json['schemefulfillments'];
-    for (var i = 0; i < sf.length; i++) {
-        index = findNodeIndex(sf[i].nodeID);
-        nodes[index].scheme = sf[i].schemeID;
+    if (sf != undefined) {
+        for (var i = 0; i < sf.length; i++) {
+            index = findNodeIndex(sf[i].nodeID);
+            nodes[index].scheme = sf[i].schemeID;
+        }
     }
 }
 
@@ -442,7 +446,7 @@ function save2db() {
     jstring = JSON.stringify(json);
     console.log(jstring);
     //todo: uncomment code below
-    /*$.post("ul/index.php", { data: JSON.stringify(json) },
+    $.post("ul/index.php", { data: JSON.stringify(json) },
         function (reply) {
             console.log(reply);
             var rs = reply.split(" ");
@@ -508,7 +512,7 @@ function save2db() {
                 }
             );
         }
-    );*/
+    );
 
     window.unsaved = false;
 

@@ -16,7 +16,6 @@ function myKeyDown(e) {
   if (keycode == 18) {
     multiSel = true;
   }
-
 }
 
 function myKeyUp(e) {
@@ -32,6 +31,10 @@ function myKeyUp(e) {
   }
   if (keycode == 18) {
     multiSel = false;
+  }
+  if (keycode == 90 && e.ctrlKey) { //ctrl + z for undo shortcut
+    console.log("undo");
+    undo();
   }
 }
 
