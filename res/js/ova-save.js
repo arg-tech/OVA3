@@ -79,9 +79,11 @@ function save2file() {
 }
 
 function clearAnalysis() {
-    //reload the page with a new akey value
-    extra = "&af=" + $('#afinput').val() + "&as=" + $('#asinput').val();
-    window.location.href = "analyse.php?url=local&plus=true" + extra;
+    SVGRoot.removeChild(SVGRootG);
+    nodes = [];
+    edges = [];
+    SVGRootG = document.createElementNS("http://www.w3.org/2000/svg", 'g');
+    SVGRoot.appendChild(SVGRootG);
     return false;
 }
 
@@ -442,8 +444,7 @@ function save2db() {
     json['locutions'] = jlocutions;
 
     jstring = JSON.stringify(json);
-    //console.log(jstring);
-    //todo: uncomment code below
+    console.log(jstring);
     $.post("ul/index.php", { data: JSON.stringify(json) },
         function (reply) {
             console.log(reply);
