@@ -242,9 +242,10 @@ function updateAddNode(node) {
         window.nodeCounter = node.nodeID;
     }
     console.log("updateAddNode called");
-    console.log("node:" + node);
+    console.log(node);
     nodes.push(node);
-    console.log("all nodes:" + nodes);
+    console.log("all nodes:");
+    console.log(nodes);
     if (node.visible) {
         DrawNode(node.nodeID, node.type, node.text, node.x, node.y); //if the node is visible then draw the node on the svg
     }
@@ -253,19 +254,22 @@ function updateAddNode(node) {
 function updateDelNode(node) {
     //deleteNode(node) is used for updating the original analysis (i.e. contains postEdit() call)
     console.log("updateDelNode called");
-    console.log("node:" + node);
+    console.log("node:");
+    console.log(node);
     //remove the node
     var index = findNodeIndex(node.nodeID);
     nodes.splice(index, 1);
     if (node.visible) {
         document.getElementById(node.nodeID).remove(); //remove the deleted node from svg
     }
-    console.log("all nodes:" + nodes);
+    console.log("all nodes:");
+    console.log(nodes);
 }
 
 function updateMoveNode(node) {
     console.log("updateMoveNode called");
-    console.log("node:" + node);
+    console.log("node:");
+    console.log(node);
     //updateNodePosition(nodeID, x, y) is used for updating the original analysis (i.e. contains postEdit() call)
     var index = findNodeIndex(node.nodeID);
     n = nodes[index];
@@ -276,15 +280,18 @@ function updateMoveNode(node) {
         document.getElementById(node.nodeID).remove(); //remove the node from the previous position
         DrawNode(n.nodeID, n.type, n.text, n.x, n.y); //draw the node at the new position
 
-        //move any connected edges
-        var l = edges.length;
-        for (var i = l - 1; i >= 0; i--) {
-            if (edges[i].toID == n.nodeID || edges[i].fromID == n.nodeID) {
-                edgeID = 'n' + edges[i].fromID + '-n' + edges[i].toID;
-                document.getElementById(edgeID).remove(); //remove the edge previously connected to the moved node
-                DrawEdge(edges[i].fromID, edges[i].toID); //draw the edge to connect the node at its new position
-                UpdateEdge(edges[i]); //update the edge position
-                console.log("moved edge:" + edges[i]);
+        if (edge.visible) {
+            //move any connected edges
+            var l = edges.length;
+            for (var i = l - 1; i >= 0; i--) {
+                if (edges[i].toID == n.nodeID || edges[i].fromID == n.nodeID) {
+                    edgeID = 'n' + edges[i].fromID + '-n' + edges[i].toID;
+                    document.getElementById(edgeID).remove(); //remove the edge previously connected to the moved node
+                    DrawEdge(edges[i].fromID, edges[i].toID); //draw the edge to connect the node at its new position
+                    UpdateEdge(edges[i]); //update the edge position
+                    console.log("moved edge:");
+                    console.log(edges[i]);
+                }
             }
         }
     }
@@ -292,28 +299,33 @@ function updateMoveNode(node) {
 
 function updateEditNode(node) {
     console.log("updateEditNode called");
-    console.log("node edited:" + node);
+    console.log("node edited:");
+    console.log(node);
     //updateNode(nodeID, type, scheme, text, x, y) is used for updating the original analysis (i.e. contains postEdit() call)
     var index = findNodeIndex(node.nodeID);
     n = nodes[index];
     n.type = node.type;
     n.scheme = node.scheme;
     n.text = node.text;
-    console.log("all nodes:" + nodes);
+    console.log("all nodes:");
+    console.log(nodes);
 
     if (node.visible) { //update svg if the node has been drawn on it
         document.getElementById(node.nodeID).remove(); //remove the old version of the node
         DrawNode(n.nodeID, n.type, n.text, n.x, n.y); //draw the updated version of the node
 
-        //move any connected edges
-        var l = edges.length;
-        for (var i = l - 1; i >= 0; i--) {
-            if (edges[i].toID == n.nodeID || edges[i].fromID == n.nodeID) {
-                edgeID = 'n' + edges[i].fromID + '-n' + edges[i].toID;
-                document.getElementById(edgeID).remove(); //remove the edge previously connected to the moved node
-                DrawEdge(edges[i].fromID, edges[i].toID); //draw the edge to connect the node at its new position
-                UpdateEdge(edges[i]); //update the edge position
-                console.log("moved edge:" + edges[i]);
+        if (edge.visible) {
+            //move any connected edges
+            var l = edges.length;
+            for (var i = l - 1; i >= 0; i--) {
+                if (edges[i].toID == n.nodeID || edges[i].fromID == n.nodeID) {
+                    edgeID = 'n' + edges[i].fromID + '-n' + edges[i].toID;
+                    document.getElementById(edgeID).remove(); //remove the edge previously connected to the moved node
+                    DrawEdge(edges[i].fromID, edges[i].toID); //draw the edge to connect the node at its new position
+                    UpdateEdge(edges[i]); //update the edge position
+                    console.log("moved edge:");
+                    console.log(edges[i]);
+                }
             }
         }
     }
@@ -321,7 +333,8 @@ function updateEditNode(node) {
 
 function updateAddEdge(edge) {
     console.log("updateAddEdge called");
-    console.log("edge to add: " + edge);
+    console.log("edge to add: ");
+    console.log(edge);
     //newEdge(fromID, toID, visible) is used for updating the original analysis (i.e. contains postEdit() call) 
     if (edge.fromID == '' || edge.toID == '') {
         return false;
@@ -336,7 +349,8 @@ function updateAddEdge(edge) {
             DrawEdge(e.fromID, e.toID);
             UpdateEdge(e);
         }
-        console.log("added edge:" + e);
+        console.log("added edge:");
+        console.log(e);
         return true;
     }
 }
@@ -344,7 +358,8 @@ function updateAddEdge(edge) {
 function updateDelEdge(edge) {
     //deleteEdges(edge) is used for updating the original analysis (i.e. contains postEdit() call)
     console.log("updateDelEdge called");
-    console.log("edge:" + edge);
+    console.log("edge:");
+    console.log(edge);
     var l = edges.length;
     for (var i = l - 1; i >= 0; i--) {
         if (edges[i].toID == edge.toID && edges[i].fromID == edge.fromID) {
@@ -353,7 +368,8 @@ function updateDelEdge(edge) {
                 document.getElementById(edgeID).remove(); //remove the edge from svg
             }
             edges.splice(i, 1); //remove the edge
-            console.log("all edges:" + edges);
+            console.log("all edges:");
+            console.log(edges);
             break;
         }
     }
