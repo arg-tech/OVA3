@@ -571,6 +571,32 @@ div#socialusers img {
 
 /* ========{ Left Hand Panel }======== */
 
+div#extsite {
+  position: absolute;
+  top: 92px;
+  left: 0;
+  width: 20%;
+  height: 80%;
+  border: 0px;
+  background-color: #fff;
+  outline: 0;
+}
+
+div#extsite div#ova_arg_area_div {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  font-size: 13px;
+  background-color: #f8f9fc;
+  border-right: 1px solid #d0d1d8;
+  color: #333;
+  font-family: "Lucida Grande", Verdana, Arial, "Bitstream Vera Sans", sans-serif;
+  padding: 20px;
+  overflow: auto;
+  outline: 0;
+  line-height: 1.4em;
+}
+
 .highlighted {
   color: #fff;
   background-color: #2ecc71;

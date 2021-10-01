@@ -474,8 +474,8 @@ if (isset($_COOKIE['ovauser'])) {
         <div id="analysis_text" contenteditable="true" spellcheck="false">Enter your text here...</div>
         <!-- data-step="1" data-intro="<p>Enter the text that you want to analyse here.</p><p>Select sections of text to create a node.</p> -->
       </div>
-    <?php } else { ?>
-      <iframe src="<?php echo $analysis; ?>" id="left1" name="left1" style="width:35%;border-right:1px solid #666;"></iframe> <!-- data-step="1" data-intro="<p>Highlight sections of text from the webpage to create a node.</p>" data-position="right" -->
+    <?php } else { ?>  <!-- if url was added to be loaded into LHS -->
+      <iframe src="<?php echo $analysis; ?>" id="extside" name="extsite" style="width:35%;border-right:1px solid #666;"></iframe> <!-- data-step="1" data-intro="<p>Highlight sections of text from the webpage to create a node.</p>" data-position="right" -->
     <?php } ?>
 
 
