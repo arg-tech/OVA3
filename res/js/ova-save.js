@@ -79,11 +79,9 @@ function save2file() {
 }
 
 function clearAnalysis() {
-    SVGRoot.removeChild(SVGRootG);
-    nodes = [];
-    edges = [];
-    SVGRootG = document.createElementNS("http://www.w3.org/2000/svg", 'g');
-    SVGRoot.appendChild(SVGRootG);
+    //reload the page with a new akey value
+    extra = "&af=" + $('#afinput').val() + "&as=" + $('#asinput').val();
+    window.location.href = "analyse.php?url=local&plus=true" + extra;
     return false;
 }
 
