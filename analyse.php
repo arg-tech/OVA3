@@ -153,8 +153,9 @@ if (isset($_COOKIE['ovauser'])) {
     <div class="divider"></div>
     <a onClick="mainTut()" class="icon" style="background-position: -378px 50%;"><span class="tooltiptext">Tutorial</span></a>
     <div class="divider"></div>
-    <a onClick="genldot()" class="icon" id="alay" style="background-position: -420px 50%;"><span class="tooltiptext">AutoLayout</span></a>
-    <div class="divider"></div>
+    <!-- AUTOLAYOUT - To be added back in when functional -->
+    <!-- <a onClick="genldot()" class="icon" id="alay" style="background-position: -420px 50%;"><span class="tooltiptext">AutoLayout</span></a>
+    <div class="divider"></div> -->
     <a onClick="openModal('#modal-load');" class="icon" id="loada" style="background-position: -210px 50%;"><span class="tooltiptext">Load&nbsp;Analysis</span></a>
     <a onClick="svg2canvas2image(); openModal('#modal-save');" class="icon" id="savea" style="background-position: -84px 50%;"><span class="tooltiptext">Save&nbsp;Analysis</span></a>
     <a href="<?php echo $newurl; ?>" class="icon" id="newa" style="background-position: -168px 50%;"><span class="tooltiptext">New&nbsp;Analysis</span></a>
@@ -167,10 +168,11 @@ if (isset($_COOKIE['ovauser'])) {
   </div>
 
   <div id="xmenu">
-    <a onClick="openModal('#modal-account');" class="xicon">
+    <!-- ACCOUNT - Account settings to be possibly implemented -->
+    <!-- <a onClick="openModal('#modal-account');" class="xicon">
       <div class="icn" style="background-position: -294px 50%;"></div>
       <div class="txt">Account</div>
-    </a>
+    </a> -->
     <a onClick="openModal('#modal-settings');" class="xicon">
       <div class="icn" style="background-position: -252px 50%;"></div>
       <div class="txt" id="stngs">Settings</div>
@@ -178,6 +180,10 @@ if (isset($_COOKIE['ovauser'])) {
     <a onClick="genlink(); openModal('#modal-share');" class="xicon">
       <div class="icn" style="background-image: url('res/img/linkicon.png'); background-position: 50% 50%;"></div>
       <div class="txt">Share Analysis</div>
+    </a>
+    <a onClick="openModal('#modal-help');" class="xicon">
+      <div class="icn" style=" background-position: 50% 50%;"></div>
+      <div class="txt" id="help">Helpsheet</div>
     </a>
   </div>
 
@@ -285,6 +291,7 @@ if (isset($_COOKIE['ovauser'])) {
   </div>
   <!-- Settings Form Ends Here -->
 
+  <!-- Share analysis Form starts here -->
   <div id="modal-shade"></div>
   <div class="modal-dialog" id="modal-share">
     <div class="modal-content">
@@ -302,6 +309,44 @@ if (isset($_COOKIE['ovauser'])) {
       </div>
     </div>
   </div>
+  <!-- Share analysis form ends here -->
+
+<!-- Helpsheet modal starts here -->
+  <div id="modal-shade"></div>
+  <div class="modal-dialog" id="modal-help">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Helpsheet</h4>
+        <!-- <a href="javascript:void(0);" class="helpbtn" onclick="setTut(); return false;">?</a> -->
+      </div>
+      <div class="modal-body">
+        <form id="help-form" class="fstyle">
+          <div id="anastg">
+            <strong>Adding Nodes to the Canvas</strong>
+            <p style="color: #444; font-size: 12px;">To add a node, enter the text you would like to use into the left hand side panel. Then, highlight the text and click on the canvas, the highlighted text will be added to a node.</p>
+            <strong>Adding Edges Between Nodes</strong>
+            <p style="color: #444; font-size: 12px;">To add an edge, either click on the add edge button in the top menu and then click and drag between the two nodes you would like to connect. Or click and drag from one node to another while pressing shift for an infrence relation or the 'A' key for a conflict.</p>
+            <strong>Editing Nodes</strong>
+            <p style="color: #444; font-size: 12px;">To access the edit node menu, either right click on a node and select 'Edit Node' from the menu or ctrl+click on the node you would like to edit.</p>
+            <strong>Keyboard Shortcuts:</strong>
+            <p style="color: #444; font-size: 12px;">
+            <pre>
+<strong>shift+drag</strong> from one node to another: add edge
+<strong>ctrl+click</strong> on node: edit node menu
+<strong>arrow keys: </strong> move canvas
+<strong>+/- : </strong> zoom in/out
+</pre>
+          </p>
+            
+          </div>
+        </form>
+      </div>
+      <div class="modal-btns">
+        <a class="cancel" href="#" onClick="closeModal('#modal-help'); return false;">&#10008; Close</a>
+      </div>
+    </div>
+  </div>
+  <!-- Helpsheet Modal ends here -->
 
   <div id="contextmenu"></div>
   <!-- Add Locution Form Starts here -->
