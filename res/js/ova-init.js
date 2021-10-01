@@ -437,7 +437,7 @@ function postEdit(type, action, content) {
             $.post("helpers/edit.php", { type: type, action: action, cnt: JSON.stringify(content), akey: window.akey, sessionid: window.sessionid }).done(function (data) {
                 dt = JSON.parse(data);
                 lastedit = dt.last;
-                console.log("lastedit: " + lastedit);
+                //console.log("lastedit: " + lastedit);
             });
         }
     }
@@ -481,7 +481,7 @@ function addParticipant(firstname, surname) {
 }
 
 function addLocution(node) {
-    console.log("adding locution");
+    //console.log("adding locution");
     if ($('#p_firstname').val() != '') {
         firstname = $('#p_firstname').val();
         surname = $('#p_surname').val();
@@ -509,7 +509,7 @@ function addLocution(node) {
     if (nodes[nindex + 1]) {
         if (nodes[nindex + 1].type == 'L') {
             yCoord = parseInt(yCoord) + 50;
-            console.log(yCoord);
+            //console.log(yCoord);
         }
     }
 

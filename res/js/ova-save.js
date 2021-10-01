@@ -59,8 +59,8 @@ function genjson() {
 function genlink() {
     alink = window.location;
     $('#shareinput').val(alink);
-    console.log(nodes);
-    console.log(edges);
+    //console.log(nodes);
+    //console.log(edges);
     return false;
 }
 
@@ -125,10 +125,12 @@ function loadfile(jstr) {
     //load participants
     var p = json['participants'];
     var pID = 0;
-    for (var i = 0, l = p.length; i < l; i++) {
-        firstname = p[i].firstname;
-        surname = p[i].surname;
-        addParticipant(firstname, surname)
+    if (p != undefined) {
+        for (var i = 0, l = p.length; i < l; i++) {
+            firstname = p[i].firstname;
+            surname = p[i].surname;
+            addParticipant(firstname, surname)
+        }
     }
 
     var jnodes = json['nodes'];
@@ -212,7 +214,7 @@ function loadfile(jstr) {
 }
 
 function loaddbjson(json) {
-    console.log("loaddbjson");
+    //console.log("loaddbjson");
     var oplus = false;
     if ("plus" in getUrlVars()) {
         oplus = true;
@@ -280,14 +282,16 @@ function loaddbjson(json) {
 
     //set any scheme fulfillments
     var sf = json['schemefulfillments'];
-    for (var i = 0; i < sf.length; i++) {
-        index = findNodeIndex(sf[i].nodeID);
-        nodes[index].scheme = sf[i].schemeID;
+    if (sf != undefined) {
+        for (var i = 0; i < sf.length; i++) {
+            index = findNodeIndex(sf[i].nodeID);
+            nodes[index].scheme = sf[i].schemeID;
+        }
     }
 }
 
 function loadfromdb(nodeSetID) {
-    console.log("loadfromdb");
+    //console.log("loadfromdb");
     var oplus = false;
     var uplus = "&plus=false";
     if ("plus" in getUrlVars()) {
@@ -440,9 +444,9 @@ function save2db() {
     json['locutions'] = jlocutions;
 
     jstring = JSON.stringify(json);
-    console.log(jstring);
+    //console.log(jstring);
     //todo: uncomment code below
-    /*$.post("ul/index.php", { data: JSON.stringify(json) },
+    $.post("ul/index.php", { data: JSON.stringify(json) },
         function (reply) {
             console.log(reply);
             var rs = reply.split(" ");
@@ -508,7 +512,7 @@ function save2db() {
                 }
             );
         }
-    );*/
+    );
 
     window.unsaved = false;
 

@@ -148,7 +148,7 @@ if (isset($_COOKIE['ovauser'])) {
     <?php
     $newurl = "analyse.php?url=" . $_GET['url'] . $plusval;
     ?>
-    <a href="http://localhost/index.php" class="home"><img src="res/img/logo.svg" /></a> <!--todo: change link to homepage-->
+    <a href="http://index.php" class="home"><img src="res/img/logo.svg" /></a>
     <a onClick='$("#xmenu").toggle("slide", {direction: "right"}, "slow");' class="icon" id="xmenutoggle" style="background-position: -126px 50%;"></a>
     <div class="divider"></div>
     <a onClick="mainTut()" class="icon" style="background-position: -378px 50%;"><span class="tooltiptext">Tutorial</span></a>
