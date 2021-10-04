@@ -181,7 +181,7 @@ function loadfile(jstr) {
             if (oplus) {
                 if (jnodes[i].type == "L") {
                     pID = findParticipantIDText(jnodes[i].text);
-                    nodelist[jnodes[i].nodeID] = newNode(jnodes[i].nodeID, jnodes[i].type, 0, pID, jnodes[i].text, jnodes[i].x, jnodes[i].y, jnodes[i].visible);
+                    nodelist[jnodes[i].nodeID] = newNode(jnodes[i].nodeID, jnodes[i].type, null, pID, jnodes[i].text, jnodes[i].x, jnodes[i].y, jnodes[i].visible);
                     if (jnodes[i].visible) {
                         DrawNode(jnodes[i].nodeID, jnodes[i].type, jnodes[i].text, jnodes[i].x, jnodes[i].y);
                     }
@@ -237,7 +237,7 @@ function loaddbjson(json) {
         } else if (node.type == "RA") {
             nodelist[node.nodeID] = AddNode(node.text, node.type, '72', 0, node.nodeID, xpos, ypos);
         } else if (node.type == "I") {
-            nodelist[node.nodeID] = AddNode(node.text, node.type, '0', 0, node.nodeID, xpos, ypos);
+            nodelist[node.nodeID] = AddNode(node.text, node.type, null, 0, node.nodeID, xpos, ypos);
         }
         else if (oplus) {
             if (node.type == "TA") {
@@ -255,9 +255,9 @@ function loaddbjson(json) {
             } else if (node.type == "L") {
                 pID = findParticipantIDText(node.text);
                 if (pID == 0) { //if an analyst node
-                    nodelist[node.nodeID] = AddNode(node.text, node.type, '0', 0, node.nodeID, 0, 0, false);
+                    nodelist[node.nodeID] = AddNode(node.text, node.type, null, 0, node.nodeID, 0, 0, false);
                 } else { //to prevent duplicate analyst nodes
-                    nodelist[node.nodeID] = newNode(node.nodeID, node.type, '0', pID, node.text, xpos, ypos);
+                    nodelist[node.nodeID] = newNode(node.nodeID, node.type, null, pID, node.text, xpos, ypos);
                     DrawNode(node.nodeID, node.type, node.text, xpos, ypos);
                 }
             }
@@ -334,7 +334,7 @@ function loadfromdb(nodeSetID) {
                 } else if (node.type == "RA") {
                     nodelist[node.nodeID] = AddNode(node.text, node.type, '72', 0, node.nodeID, xpos, ypos);
                 } else if (node.type == "I") {
-                    nodelist[node.nodeID] = AddNode(node.text, node.type, '0', 0, node.nodeID, xpos, ypos);
+                    nodelist[node.nodeID] = AddNode(node.text, node.type, null, 0, node.nodeID, xpos, ypos);
                 }
                 else if (oplus) {
                     if (node.type == "TA") {
@@ -352,9 +352,9 @@ function loadfromdb(nodeSetID) {
                     } else if (node.type == "L") {
                         pID = findParticipantIDText(node.text);
                         if (pID == 0) { //if an analyst node
-                            nodelist[node.nodeID] = AddNode(node.text, node.type, '0', 0, node.nodeID, 0, 0, false);
+                            nodelist[node.nodeID] = AddNode(node.text, node.type, null, 0, node.nodeID, 0, 0, false);
                         } else { //to prevent duplicate analyst nodes
-                            nodelist[node.nodeID] = newNode(node.nodeID, node.type, '0', pID, node.text, xpos, ypos);
+                            nodelist[node.nodeID] = newNode(node.nodeID, node.type, null, pID, node.text, xpos, ypos);
                             DrawNode(node.nodeID, node.type, node.text, xpos, ypos);
                         }
                     }
@@ -414,7 +414,7 @@ function save2db() {
         jnode['type'] = nodes[i].type;
         jnodes.push(jnode);
 
-        if (nodes[i].scheme != 0) {
+        if (nodes[i].scheme != null) {
             var jschemefulfillment = {};
             jschemefulfillment['nodeID'] = nodes[i].nodeID;
             jschemefulfillment['schemeID'] = nodes[i].scheme;

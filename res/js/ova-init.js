@@ -238,16 +238,33 @@ function updateAnalysis() {
 }
 
 function updateAddNode(node) {
+    console.log("updateAddNode called");
+    console.log(node);
+
+    var found = nodes.find(n => n.nodeID == node.nodeID);
+    if (typeof found !== "undefined") { //if a node with the same nodeID already exists
+        node.nodeID += 1;
+    }
     if (node.nodeID > window.nodeCounter) {
         window.nodeCounter = node.nodeID;
     }
-    console.log("updateAddNode called");
-    console.log(node);
-    nodes.push(node);
+
+    //create a new node and add to array of all nodes
+    var n = new Node;
+    n.nodeID = node.nodeID;
+    n.type = node.type;
+    n.scheme = node.scheme;
+    n.participantID = node.participantID;
+    n.text = node.text;
+    n.x = node.x;
+    n.y = node.y;
+    n.visible = node.visible;
+    nodes.push(n);
     console.log("all nodes:");
     console.log(nodes);
-    if (node.visible) {
-        DrawNode(node.nodeID, node.type, node.text, node.x, node.y); //if the node is visible then draw the node on the svg
+    
+    if (n.visible) {
+        DrawNode(n.nodeID, n.type, n.text, n.x, n.y); //if the node is visible then draw the node on the svg
     }
 }
 
@@ -280,18 +297,16 @@ function updateMoveNode(node) {
         document.getElementById(node.nodeID).remove(); //remove the node from the previous position
         DrawNode(n.nodeID, n.type, n.text, n.x, n.y); //draw the node at the new position
 
-        if (edge.visible) {
-            //move any connected edges
-            var l = edges.length;
-            for (var i = l - 1; i >= 0; i--) {
-                if (edges[i].toID == n.nodeID || edges[i].fromID == n.nodeID) {
-                    edgeID = 'n' + edges[i].fromID + '-n' + edges[i].toID;
-                    document.getElementById(edgeID).remove(); //remove the edge previously connected to the moved node
-                    DrawEdge(edges[i].fromID, edges[i].toID); //draw the edge to connect the node at its new position
-                    UpdateEdge(edges[i]); //update the edge position
-                    console.log("moved edge:");
-                    console.log(edges[i]);
-                }
+        //move any connected edges
+        var l = edges.length;
+        for (var i = l - 1; i >= 0; i--) {
+            if (edges[i].visible && (edges[i].toID == n.nodeID || edges[i].fromID == n.nodeID)) {
+                edgeID = 'n' + edges[i].fromID + '-n' + edges[i].toID;
+                document.getElementById(edgeID).remove(); //remove the edge previously connected to the moved node
+                DrawEdge(edges[i].fromID, edges[i].toID); //draw the edge to connect the node at its new position
+                UpdateEdge(edges[i]); //update the edge position
+                console.log("moved edge:");
+                console.log(edges[i]);
             }
         }
     }
@@ -314,18 +329,16 @@ function updateEditNode(node) {
         document.getElementById(node.nodeID).remove(); //remove the old version of the node
         DrawNode(n.nodeID, n.type, n.text, n.x, n.y); //draw the updated version of the node
 
-        if (edge.visible) {
-            //move any connected edges
-            var l = edges.length;
-            for (var i = l - 1; i >= 0; i--) {
-                if (edges[i].toID == n.nodeID || edges[i].fromID == n.nodeID) {
-                    edgeID = 'n' + edges[i].fromID + '-n' + edges[i].toID;
-                    document.getElementById(edgeID).remove(); //remove the edge previously connected to the moved node
-                    DrawEdge(edges[i].fromID, edges[i].toID); //draw the edge to connect the node at its new position
-                    UpdateEdge(edges[i]); //update the edge position
-                    console.log("moved edge:");
-                    console.log(edges[i]);
-                }
+        //move any connected edges
+        var l = edges.length;
+        for (var i = l - 1; i >= 0; i--) {
+            if (edges[i].visible && (edges[i].toID == n.nodeID || edges[i].fromID == n.nodeID)) {
+                edgeID = 'n' + edges[i].fromID + '-n' + edges[i].toID;
+                document.getElementById(edgeID).remove(); //remove the edge previously connected to the moved node
+                DrawEdge(edges[i].fromID, edges[i].toID); //draw the edge to connect the node at its new position
+                UpdateEdge(edges[i]); //update the edge position
+                console.log("moved edge:");
+                console.log(edges[i]);
             }
         }
     }
@@ -428,6 +441,10 @@ function getSelText() {
 
 function hlcurrent(nodeID) {
     span = document.getElementById("node" + nodeID);
+    if (span == null && mySel.type == 'I') {
+        span = document.getElementById("node" + (CurrentlyEditing + 1));
+        span.id = "node" + nodeID;
+    }
     if (span != null) {
         span.className = "highlighted";
         //$(".hlcurrent").removeClass("highlighted");
@@ -546,8 +563,8 @@ function addLocution(node) {
         }
     }
 
-    AddNode(ltext, 'L', '0', participantID, newLNodeID, (parseInt(n.x) + 450), parseInt(yCoord));
-    var index = findNodeIndex(newLNodeID);
+    AddNode(ltext, 'L', null, participantID, newLNodeID, (parseInt(n.x) + 450), parseInt(yCoord));
+    //var index = findNodeIndex(newLNodeID);
 
 
     window.nodeCounter = window.nodeCounter + 1;
