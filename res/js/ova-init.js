@@ -17,11 +17,13 @@ var editMode = false;
 var FormOpen = false;
 var dragEdges = [];
 var count = 0;
+//var users = [];
 
 var mSel = [];
 var mselo = [];
 
 var lastedit = 0;
+var lasteditCollab = 0;
 
 const NAV_MAP = {
     187: { dir: 1, act: 'zoom', name: 'in' } /* + */,
@@ -187,7 +189,7 @@ function Init(evt) {
 
 //start of main collaborate feature code//
 function updateAnalysis() {
-    var path = 'helpers/edithistory.php?last=' + lastedit + '&akey=' + window.akey;
+    var path = 'helpers/edithistory.php?last=' + lasteditCollab + '&akey=' + window.akey;
 
     $.get(path, function (data) {
         edits = JSON.parse(data);
@@ -216,7 +218,7 @@ function updateAnalysis() {
             } else if (edits.edits[i].type == 'text' && edits.edits[i].action == 'edit') {
                 updateEditText(edits.edits[i].content);
             }
-            lastedit = edits.edits[i].editID;
+            lasteditCollab = edits.edits[i].editID;
 
         }
         doretry = eretry;
@@ -260,8 +262,8 @@ function updateAddNode(node) {
     n.y = node.y;
     n.visible = node.visible;
     nodes.push(n);
-    console.log("all nodes:");
-    console.log(nodes);
+    /*console.log("all nodes:");
+    console.log(nodes);*/
     
     if (n.visible) {
         DrawNode(n.nodeID, n.type, n.text, n.x, n.y); //if the node is visible then draw the node on the svg
@@ -279,8 +281,8 @@ function updateDelNode(node) {
     if (node.visible) {
         document.getElementById(node.nodeID).remove(); //remove the deleted node from svg
     }
-    console.log("all nodes:");
-    console.log(nodes);
+    /*console.log("all nodes:");
+    console.log(nodes);*/
 }
 
 function updateMoveNode(node) {
@@ -305,8 +307,6 @@ function updateMoveNode(node) {
                 document.getElementById(edgeID).remove(); //remove the edge previously connected to the moved node
                 DrawEdge(edges[i].fromID, edges[i].toID); //draw the edge to connect the node at its new position
                 UpdateEdge(edges[i]); //update the edge position
-                console.log("moved edge:");
-                console.log(edges[i]);
             }
         }
     }
@@ -322,8 +322,8 @@ function updateEditNode(node) {
     n.type = node.type;
     n.scheme = node.scheme;
     n.text = node.text;
-    console.log("all nodes:");
-    console.log(nodes);
+    /*console.log("all nodes:");
+    console.log(nodes);*/
 
     if (node.visible) { //update svg if the node has been drawn on it
         document.getElementById(node.nodeID).remove(); //remove the old version of the node
@@ -337,17 +337,15 @@ function updateEditNode(node) {
                 document.getElementById(edgeID).remove(); //remove the edge previously connected to the moved node
                 DrawEdge(edges[i].fromID, edges[i].toID); //draw the edge to connect the node at its new position
                 UpdateEdge(edges[i]); //update the edge position
-                console.log("moved edge:");
-                console.log(edges[i]);
             }
         }
     }
 }
 
 function updateAddEdge(edge) {
-    console.log("updateAddEdge called");
+    /*console.log("updateAddEdge called");
     console.log("edge to add: ");
-    console.log(edge);
+    console.log(edge);*/
     //newEdge(fromID, toID, visible) is used for updating the original analysis (i.e. contains postEdit() call) 
     if (edge.fromID == '' || edge.toID == '') {
         return false;
@@ -362,17 +360,17 @@ function updateAddEdge(edge) {
             DrawEdge(e.fromID, e.toID);
             UpdateEdge(e);
         }
-        console.log("added edge:");
-        console.log(e);
+        /*console.log("added edge:");
+        console.log(e);*/
         return true;
     }
 }
 
 function updateDelEdge(edge) {
     //deleteEdges(edge) is used for updating the original analysis (i.e. contains postEdit() call)
-    console.log("updateDelEdge called");
+    /*console.log("updateDelEdge called");
     console.log("edge:");
-    console.log(edge);
+    console.log(edge);*/
     var l = edges.length;
     for (var i = l - 1; i >= 0; i--) {
         if (edges[i].toID == edge.toID && edges[i].fromID == edge.fromID) {
@@ -381,8 +379,8 @@ function updateDelEdge(edge) {
                 document.getElementById(edgeID).remove(); //remove the edge from svg
             }
             edges.splice(i, 1); //remove the edge
-            console.log("all edges:");
-            console.log(edges);
+            /*console.log("all edges:");
+            console.log(edges);*/
             break;
         }
     }
@@ -487,7 +485,8 @@ function postEdit(type, action, content) {
             $.post("helpers/edit.php", { type: type, action: action, cnt: JSON.stringify(content), akey: window.akey, sessionid: window.sessionid }).done(function (data) {
                 dt = JSON.parse(data);
                 lastedit = dt.last;
-                //console.log("lastedit: " + lastedit);
+                console.log("lastedit: " + lastedit);
+                console.log("lasteditCollab: " + lasteditCollab);
             });
         }
     }
