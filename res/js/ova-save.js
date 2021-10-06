@@ -59,8 +59,9 @@ function genjson() {
 function genlink() {
     alink = window.location;
     $('#shareinput').val(alink);
-    //console.log(nodes);
-    //console.log(edges);
+    console.log(nodes);
+    console.log(edges);
+    //document.getElementById("edited-by").innerHTML = users.toString();
     return false;
 }
 
@@ -440,7 +441,7 @@ function save2db() {
     json['nodes'] = jnodes;
     json['edges'] = jedges;
     json['schemefulfillments'] = jschemefulfillments;
-    json['participants'] = participants; //todo: check if should be 'people' or 'participants'
+    json['participants'] = participants;
     json['locutions'] = jlocutions;
 
     jstring = JSON.stringify(json);
@@ -552,6 +553,9 @@ function svg2canvas2image() {
     var h = box.height + y + 150;
 
     var svg = SVGRoot;
+    /*console.log(svg);
+    var encoded = encodeURIComponent(svg);
+    var svg64 = btoa(encoded);*/
     var svg64 = btoa(new XMLSerializer().serializeToString(svg));
     var image = new Image();
     var image64 = 'data:image/svg+xml;base64,' + svg64;

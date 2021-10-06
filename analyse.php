@@ -299,10 +299,12 @@ if (isset($_COOKIE['ovauser'])) {
         <h4 class="modal-title">Share Analysis</h4>
       </div>
       <div class="modal-body">
-        <p style="padding: 20px 0px;">
+        <form id="share_form" class="fstyle">
           <label> Share this analysis: </label>
           <input type="text" id="shareinput" value="Generating link" onClick="this.select();" style="font-size: 16px; padding: 3px; width:90%;" />
-        </p>
+          <!-- <p style="color: #444; font-size: 12px;">Analysis edited by: </p>
+          <p id="edited-by" style="color: #444; font-size: 12px;"></p> -->
+        </form>
       </div>
       <div class="modal-btns">
         <a class="cancel" href="#" onClick="closeModal('#modal-share'); return false;">&#10008; Close</a>
