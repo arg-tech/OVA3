@@ -302,8 +302,7 @@ if (isset($_COOKIE['ovauser'])) {
         <form id="share_form" class="fstyle">
           <label> Share this analysis: </label>
           <input type="text" id="shareinput" value="Generating link" onClick="this.select();" style="font-size: 16px; padding: 3px; width:90%;" />
-          <!-- <p style="color: #444; font-size: 12px;">Analysis edited by: </p>
-          <p id="edited-by" style="color: #444; font-size: 12px;"></p> -->
+          <p id="edited-by" style="color: #444; font-size: 12px;"></p>
         </form>
       </div>
       <div class="modal-btns">

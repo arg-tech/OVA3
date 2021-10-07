@@ -17,7 +17,7 @@ var editMode = false;
 var FormOpen = false;
 var dragEdges = [];
 var count = 0;
-//var users = [];
+var users = [];
 
 var mSel = [];
 var mselo = [];
@@ -262,11 +262,15 @@ function updateAddNode(node) {
     n.y = node.y;
     n.visible = node.visible;
     nodes.push(n);
-    /*console.log("all nodes:");
-    console.log(nodes);*/
-    
+
     if (n.visible) {
         DrawNode(n.nodeID, n.type, n.text, n.x, n.y); //if the node is visible then draw the node on the svg
+    } else if (n.type == 'L') {  //if the node is an analyst node
+        var index = n.text.indexOf(":");
+        var username = ' ' + n.text.slice(0, index);
+        if (users.indexOf(username) == -1) {
+            users.push(username);
+        }
     }
 }
 

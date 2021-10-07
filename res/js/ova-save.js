@@ -61,7 +61,7 @@ function genlink() {
     $('#shareinput').val(alink);
     console.log(nodes);
     console.log(edges);
-    //document.getElementById("edited-by").innerHTML = users.toString();
+    document.getElementById("edited-by").innerHTML = "Analysis edited by: " + users.toString();
     return false;
 }
 
@@ -308,16 +308,6 @@ function loadfromdb(nodeSetID) {
 
             var nodelist = {};
             $.each(data.nodes, function (idx, node) {
-                /*visible = true;
-                if (node.type == "YA" && node.text.indexOf('AnalysesAs') >= 0) {
-                    visible = false;
-                    xpos = 0;
-                    ypos = 0;
-                } else if (node.type == "L" && node.text.indexOf('Annot: ') >= 0) {
-                    visible = false;
-                    xpos = 0;
-                    ypos = 0;
-                }*/
 
                 if (node.nodeID in ldata) {
                     xpos = parseInt(ldata[node.nodeID]["x"]);
@@ -396,7 +386,6 @@ function loadfromdb(nodeSetID) {
     });
 }
 
-//todo: add error check & message and check that saves in aif
 function save2db() {
     $('#modal-save2db').show();
     $('#m_load').show();
@@ -549,14 +538,14 @@ function svg2canvas2image() {
     var box = SVGRoot.getBBox();
     var x = box.x;
     var y = box.y;
-    var w = box.width + x + 100;
+    var w = box.width + x + 150;
     var h = box.height + y + 150;
 
     var svg = SVGRoot;
-    /*console.log(svg);
-    var encoded = encodeURIComponent(svg);
-    var svg64 = btoa(encoded);*/
-    var svg64 = btoa(new XMLSerializer().serializeToString(svg));
+    var str = new XMLSerializer().serializeToString(svg);
+    var svg64 = btoa(str.replace(/[\u00A0-\u2666]/g, function(c) {
+        return '&#' + c.charCodeAt(0) + ';';
+    }));
     var image = new Image();
     var image64 = 'data:image/svg+xml;base64,' + svg64;
     image.src = image64;

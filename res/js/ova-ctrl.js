@@ -318,11 +318,11 @@ function AddNode(txt, type, scheme, pid, nid, nx, ny, visible) {
       newEdge(analysisYA.nodeID, nid, false);
       newEdge(analysisL.nodeID, analysisYA.nodeID, false);
 
-      /*var username = window.afirstname + ' ' + window.asurname;
+      var username = ' ' + window.afirstname;
       if(users.indexOf(username) == -1)
       {
         users.push(username);
-      }*/
+      }
     }
   }
 }
