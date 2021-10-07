@@ -61,6 +61,7 @@ function genlink() {
     $('#shareinput').val(alink);
     console.log(nodes);
     console.log(edges);
+    document.getElementById("edited-by").innerHTML = "Analysis edited by: " + users.toString();
     return false;
 }
 
@@ -124,8 +125,8 @@ function loadfile(jstr) {
 
     //load participants
     var p = json['participants'];
+    var pID = 0;
     if (p != undefined) {
-        var pID = 0;
         for (var i = 0, l = p.length; i < l; i++) {
             firstname = p[i].firstname;
             surname = p[i].surname;
@@ -181,7 +182,7 @@ function loadfile(jstr) {
             if (oplus) {
                 if (jnodes[i].type == "L") {
                     pID = findParticipantIDText(jnodes[i].text);
-                    nodelist[jnodes[i].nodeID] = newNode(jnodes[i].nodeID, jnodes[i].type, 0, pID, jnodes[i].text, jnodes[i].x, jnodes[i].y, jnodes[i].visible);
+                    nodelist[jnodes[i].nodeID] = newNode(jnodes[i].nodeID, jnodes[i].type, null, pID, jnodes[i].text, jnodes[i].x, jnodes[i].y, jnodes[i].visible);
                     if (jnodes[i].visible) {
                         DrawNode(jnodes[i].nodeID, jnodes[i].type, jnodes[i].text, jnodes[i].x, jnodes[i].y);
                     }
@@ -214,7 +215,7 @@ function loadfile(jstr) {
 }
 
 function loaddbjson(json) {
-    console.log("loaddbjson");
+    //console.log("loaddbjson");
     var oplus = false;
     if ("plus" in getUrlVars()) {
         oplus = true;
@@ -237,7 +238,7 @@ function loaddbjson(json) {
         } else if (node.type == "RA") {
             nodelist[node.nodeID] = AddNode(node.text, node.type, '72', 0, node.nodeID, xpos, ypos);
         } else if (node.type == "I") {
-            nodelist[node.nodeID] = AddNode(node.text, node.type, '0', 0, node.nodeID, xpos, ypos);
+            nodelist[node.nodeID] = AddNode(node.text, node.type, null, 0, node.nodeID, xpos, ypos);
         }
         else if (oplus) {
             if (node.type == "TA") {
@@ -255,9 +256,9 @@ function loaddbjson(json) {
             } else if (node.type == "L") {
                 pID = findParticipantIDText(node.text);
                 if (pID == 0) { //if an analyst node
-                    nodelist[node.nodeID] = AddNode(node.text, node.type, '0', 0, node.nodeID, 0, 0, false);
+                    nodelist[node.nodeID] = AddNode(node.text, node.type, null, 0, node.nodeID, 0, 0, false);
                 } else { //to prevent duplicate analyst nodes
-                    nodelist[node.nodeID] = newNode(node.nodeID, node.type, '0', pID, node.text, xpos, ypos);
+                    nodelist[node.nodeID] = newNode(node.nodeID, node.type, null, pID, node.text, xpos, ypos);
                     DrawNode(node.nodeID, node.type, node.text, xpos, ypos);
                 }
             }
@@ -291,7 +292,7 @@ function loaddbjson(json) {
 }
 
 function loadfromdb(nodeSetID) {
-    console.log("loadfromdb");
+    //console.log("loadfromdb");
     var oplus = false;
     var uplus = "&plus=false";
     if ("plus" in getUrlVars()) {
@@ -307,16 +308,6 @@ function loadfromdb(nodeSetID) {
 
             var nodelist = {};
             $.each(data.nodes, function (idx, node) {
-                /*visible = true;
-                if (node.type == "YA" && node.text.indexOf('AnalysesAs') >= 0) {
-                    visible = false;
-                    xpos = 0;
-                    ypos = 0;
-                } else if (node.type == "L" && node.text.indexOf('Annot: ') >= 0) {
-                    visible = false;
-                    xpos = 0;
-                    ypos = 0;
-                }*/
 
                 if (node.nodeID in ldata) {
                     xpos = parseInt(ldata[node.nodeID]["x"]);
@@ -334,7 +325,7 @@ function loadfromdb(nodeSetID) {
                 } else if (node.type == "RA") {
                     nodelist[node.nodeID] = AddNode(node.text, node.type, '72', 0, node.nodeID, xpos, ypos);
                 } else if (node.type == "I") {
-                    nodelist[node.nodeID] = AddNode(node.text, node.type, '0', 0, node.nodeID, xpos, ypos);
+                    nodelist[node.nodeID] = AddNode(node.text, node.type, null, 0, node.nodeID, xpos, ypos);
                 }
                 else if (oplus) {
                     if (node.type == "TA") {
@@ -352,9 +343,9 @@ function loadfromdb(nodeSetID) {
                     } else if (node.type == "L") {
                         pID = findParticipantIDText(node.text);
                         if (pID == 0) { //if an analyst node
-                            nodelist[node.nodeID] = AddNode(node.text, node.type, '0', 0, node.nodeID, 0, 0, false);
+                            nodelist[node.nodeID] = AddNode(node.text, node.type, null, 0, node.nodeID, 0, 0, false);
                         } else { //to prevent duplicate analyst nodes
-                            nodelist[node.nodeID] = newNode(node.nodeID, node.type, '0', pID, node.text, xpos, ypos);
+                            nodelist[node.nodeID] = newNode(node.nodeID, node.type, null, pID, node.text, xpos, ypos);
                             DrawNode(node.nodeID, node.type, node.text, xpos, ypos);
                         }
                     }
@@ -395,7 +386,6 @@ function loadfromdb(nodeSetID) {
     });
 }
 
-//todo: add error check & message and check that saves in aif
 function save2db() {
     $('#modal-save2db').show();
     $('#m_load').show();
@@ -414,7 +404,7 @@ function save2db() {
         jnode['type'] = nodes[i].type;
         jnodes.push(jnode);
 
-        if (nodes[i].scheme != 0) {
+        if (nodes[i].scheme != null) {
             var jschemefulfillment = {};
             jschemefulfillment['nodeID'] = nodes[i].nodeID;
             jschemefulfillment['schemeID'] = nodes[i].scheme;
@@ -440,12 +430,11 @@ function save2db() {
     json['nodes'] = jnodes;
     json['edges'] = jedges;
     json['schemefulfillments'] = jschemefulfillments;
-    json['participants'] = participants; //todo: check if should be 'people' or 'participants'
+    json['participants'] = participants;
     json['locutions'] = jlocutions;
 
     jstring = JSON.stringify(json);
     console.log(jstring);
-    //todo: uncomment code below
     $.post("ul/index.php", { data: JSON.stringify(json) },
         function (reply) {
             console.log(reply);
@@ -549,11 +538,14 @@ function svg2canvas2image() {
     var box = SVGRoot.getBBox();
     var x = box.x;
     var y = box.y;
-    var w = box.width + x + 100;
+    var w = box.width + x + 150;
     var h = box.height + y + 150;
 
     var svg = SVGRoot;
-    var svg64 = btoa(new XMLSerializer().serializeToString(svg));
+    var str = new XMLSerializer().serializeToString(svg);
+    var svg64 = btoa(str.replace(/[\u00A0-\u2666]/g, function(c) {
+        return '&#' + c.charCodeAt(0) + ';';
+    }));
     var image = new Image();
     var image64 = 'data:image/svg+xml;base64,' + svg64;
     image.src = image64;

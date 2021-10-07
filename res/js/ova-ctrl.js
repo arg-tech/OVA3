@@ -320,6 +320,12 @@ function AddNode(txt, type, scheme, pid, nid, nx, ny, visible) {
       var analysisL = newNode(window.nodeCounter, 'L', null, 0, analysisLTxt, 0, 0, false);
       newEdge(analysisYA.nodeID, nid, false);
       newEdge(analysisL.nodeID, analysisYA.nodeID, false);
+
+      var username = ' ' + window.afirstname;
+      if(users.indexOf(username) == -1)
+      {
+        users.push(username);
+      }
     }
   }
 }
