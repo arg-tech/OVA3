@@ -229,6 +229,7 @@ function Grab(evt) {
     }
   } else {
     if (window.nodeAddBtn == true) {
+      window.groupID += 1;
       window.nodeCounter = window.nodeCounter + 1;
       newNodeID = window.nodeCounter;
       AddNode("", 'EN', null, 0, newNodeID, TrueCoords.x, TrueCoords.y - 10);
@@ -246,9 +247,10 @@ function Grab(evt) {
     else {
       t = getSelText();
       if (t != '') {
+        window.nodeCounter = window.nodeCounter + 1;
+        newNodeID = window.nodeCounter;
+
         if (rIATMode == true) {
-          window.nodeCounter = window.nodeCounter + 1;
-          newNodeID = window.nodeCounter;
           var xCoord = TrueCoords.x;
           var yCoord = TrueCoords.y;
           AddNode(t, 'I', null, 0, newNodeID, TrueCoords.x, TrueCoords.y - 10);
@@ -259,8 +261,6 @@ function Grab(evt) {
           $('#modal-shade').show();
           FormOpen = true;
         } else {
-          window.nodeCounter = window.nodeCounter + 1;
-          newNodeID = window.nodeCounter;
           AddNode(t, 'I', null, 0, newNodeID, TrueCoords.x, TrueCoords.y - 10);
           var nIndex = findNodeIndex(newNodeID)
           mySel = nodes[nIndex];
@@ -322,8 +322,7 @@ function AddNode(txt, type, scheme, pid, nid, nx, ny, visible) {
       newEdge(analysisL.nodeID, analysisYA.nodeID, false);
 
       var username = ' ' + window.afirstname;
-      if(users.indexOf(username) == -1)
-      {
+      if (users.indexOf(username) == -1) {
         users.push(username);
       }
     }
@@ -575,7 +574,8 @@ function Drop(evt) {
       var childElement = children[j];
       xCoord = childElement.getAttributeNS(null, 'x');
       yCoord = childElement.getAttributeNS(null, 'y');
-      updateNodePosition(DragTarget.id, xCoord, yCoord);
+      //updateNodePosition(DragTarget.id, xCoord, yCoord);
+      updateNode(DragTarget.id, xCoord, yCoord);
     }
 
     if (DragTarget.getAttributeNS(null, 'id') == 'edge_to') {
@@ -603,6 +603,7 @@ function Drop(evt) {
         tx = parseInt(tx) + (parseInt(tw) / 2);
         ty = parseInt(ty) + (parseInt(th) / 2);
 
+        window.groupID += 1;
         window.nodeCounter = window.nodeCounter + 1;
         newNodeID = window.nodeCounter;
         nx = ((tx - fx) / 2) + fx;
@@ -741,6 +742,7 @@ function findNodeIndex(nodeID) {
       }
     }
   }
+  return -1;
 }
 //
 // function editNode(node) {
@@ -764,7 +766,7 @@ function saveNodeEdit() {
     //var edgesToUpdate = findEdges(CurrentlyEditing);
     document.getElementById(CurrentlyEditing).remove();
     DrawNode(CurrentlyEditing, type, ntext, xCoord, yCoord);
-    updateNode(CurrentlyEditing, type, 0, ntext, xCoord, yCoord);
+    updateNode(CurrentlyEditing, xCoord, yCoord, type, null, ntext);
     // for (var i = 0; i < edgesToUpdate.length; i++) {
     //   UpdateEdge(edgesToUpdate[i]);
     // }
@@ -829,7 +831,7 @@ function saveNodeEdit() {
     }
     document.getElementById(CurrentlyEditing).remove();
     DrawNode(CurrentlyEditing, mySel.type, mySel.text, xCoord, yCoord);
-    updateNode(CurrentlyEditing, mySel.type, mySel.scheme, mySel.text, xCoord, yCoord);
+    updateNode(CurrentlyEditing, xCoord, yCoord, mySel.type, mySel.scheme, mySel.text);
 
     $('.dselect').each(function (index) {
       mySel.descriptors[$(this).attr('id')] = $(this).val();

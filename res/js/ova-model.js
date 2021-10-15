@@ -52,34 +52,30 @@ function newNode(nodeID, type, scheme, participantID, text, x, y, visible) {
     n.y = y;
     n.visible = typeof visible !== 'undefined' ? visible : true;
     nodes.push(n);
-    postEdit("node", "add", n);
+    postEdit("node", "add", n, 0, n.nodeID);
     return n;
 }
 
-function updateNode(nodeID, type, scheme, text, x, y) {
-    var index = findNodeIndex(nodeID);
-    n = nodes[index];
-    n.type = type;
-    n.scheme = scheme;
-    n.text = text;
-    n.x = x;
-    n.y = y;
-    postEdit("node", "edit", n);
-}
-
-function updateNodePosition(nodeID, x, y) {
+function updateNode(nodeID, x, y, type, scheme, text) {
     var index = findNodeIndex(nodeID);
     n = nodes[index];
     n.x = x;
     n.y = y;
-    postEdit("node", "move", n);
+    
+    if (type != undefined && scheme != undefined && text != undefined) {
+        n.type = type;
+        n.scheme = scheme;
+        n.text = text;
+    }
+    window.groupID += 1;
+    postEdit("node", "edit", n, 0, n.nodeID);
 }
 
 function delNode(node) {
     var index = nodes.indexOf(node);
     if (index > -1) {
         nodes.splice(index, 1);
-        postEdit("node", "delete", node);
+        postEdit("node", "delete", node, 0, node.nodeID);
     }
 }
 
