@@ -45,20 +45,33 @@ function panZoomMode(keycode) {
       //   return
       // }
       if (nav.axis == 1) {
-        tg[nav.axis] = VB[nav.axis] + .1 * nav.dir * VB[1 + nav.axis];
+        tg[nav.axis] = parseFloat(VB[nav.axis] + .1 * nav.dir * VB[1 + nav.axis]);
       } else if (nav.axis == 0) {
-        tg[nav.axis] = VB[nav.axis] + .1 * nav.dir * VB[2 + nav.axis];
+        tg[nav.axis] = parseFloat(VB[nav.axis] + .1 * nav.dir * VB[2 + nav.axis]);
       }
-    } else if (nav.act == 'zoom') {
+    } 
+    else if (nav.act == 'zoom') {
+      //If at maximum 'zoomed out' view or 'zoomed in' view
       if ((nav.dir === -1 && VB[2] >= DMAX[0]) ||
         (nav.dir === 1 && VB[2] <= WMIN)) {
         return
       }
 
-
+      //for each direction (horizontal and vertical)
       for (let i = 0; i < 2; i++) {
-        tg[i + 2] = VB[i + 2] / Math.pow(1.3, nav.dir);
-        tg[i] = .00001 * (DMAX[i] - tg[i + 2]);
+        console.log(VB)
+        //setting target size along current axis
+        tg[i + 2] = parseFloat(VB[i + 2] / Math.pow(1.3, nav.dir)).toFixed(5);
+        // console.log("VB " + VB[i+2])
+        // console.log("direction " + nav.dir)
+        // console.log("target " + tg[i+2])
+        // mathvalue = 0;
+        // mathvalue = 0.7692307692
+        // console.log("value " + mathvalue)
+        // console.log((VB[i+2]) / 1.3**nav.dir).toFixed(5);
+        // tg[i] = .00000000001 * (DMAX[i] - tg[i + 2]);
+        tg[i] = VB[i]
+        // console.log(tg)
       }
       console.log("1: " + VB);
     }
@@ -67,21 +80,26 @@ function panZoomMode(keycode) {
 }
 
 function updateView() {
-  let k = ++f / NF, j = 1 - k, cvb = VB.slice();
+  //progress k - frame index updated over total number of frames
+  let k = ++f / NF
+  j = 1 - k 
+  //current view box
+  cvb = VB.slice();
+  console.log("VB1 " + VB[1])
+  console.log("VB2 " + VB[2])
+
   if (nav.act === 'zoom') {
     for (let i = 0; i < 4; i++)
-      cvb[i] = j * VB[i] + k * tg[i]
-    console.log(cvb)
+      cvb[i] = parseFloat(j * VB[i] + k * tg[i]);
   }
   console.log("2: " + VB);
   if (nav.act === 'move') {
-    cvb[nav.axis] = j * VB[nav.axis] + k * tg[nav.axis];
+    cvb[nav.axis] = parseFloat(j * VB[nav.axis] + k * tg[nav.axis]);
   }
   console.log("3: " + VB);
   SVGRoot.setAttribute('viewBox', cvb.join(' '));
-  VB = cvb;
-  console.log("4: " + VB);
 
+//if f reaches total number of frames - stop animation
   if (!(f % NF)) {
     f = 0;
     VB.splice(0, 4, ...cvb);
@@ -231,7 +249,7 @@ function Grab(evt) {
     if (window.nodeAddBtn == true) {
       window.nodeCounter = window.nodeCounter + 1;
       newNodeID = window.nodeCounter;
-      AddNode("", 'EN', '0', 0, newNodeID, TrueCoords.x, TrueCoords.y - 10);
+      AddNode("", 'EN', null, 0, newNodeID, TrueCoords.x, TrueCoords.y - 10);
       var index = findNodeIndex(newNodeID)
       mySel = nodes[index];
       CurrentlyEditing = newNodeID;
@@ -246,12 +264,12 @@ function Grab(evt) {
     else {
       t = getSelText();
       if (t != '') {
-        if (IATMode == true) {
+        if (rIATMode == true) {
           window.nodeCounter = window.nodeCounter + 1;
           newNodeID = window.nodeCounter;
           var xCoord = TrueCoords.x;
           var yCoord = TrueCoords.y;
-          AddNode(t, 'I', '0', 0, newNodeID, TrueCoords.x, TrueCoords.y - 10);
+          AddNode(t, 'I', null, 0, newNodeID, TrueCoords.x, TrueCoords.y - 10);
           var nIndex = findNodeIndex(newNodeID)
           mySel = nodes[nIndex];
           CurrentlyEditing = mySel.nodeID;
@@ -261,7 +279,7 @@ function Grab(evt) {
         } else {
           window.nodeCounter = window.nodeCounter + 1;
           newNodeID = window.nodeCounter;
-          AddNode(t, 'I', '0', 0, newNodeID, TrueCoords.x, TrueCoords.y - 10);
+          AddNode(t, 'I', null, 0, newNodeID, TrueCoords.x, TrueCoords.y - 10);
           var nIndex = findNodeIndex(newNodeID)
           mySel = nodes[nIndex];
         }
@@ -297,17 +315,47 @@ function GetTrueCoords(evt) {
   var newScale = VB[2] / 1000;
   var translationX = VB[0];
   var translationY = VB[1];
-
+  var tempCoords = [0,0];
 
   //Calculating new coordinates after panning and zooming
-  TrueCoords.x = ((evt.clientX - svgleft) * newScale) + translationX;
-  TrueCoords.y = ((evt.clientY - svgtop) * newScale) + translationY;
+  tempCoords.x = (((evt.clientX - svgleft) * newScale) + translationX);
+  tempCoords.y = (((evt.clientY - svgtop) * newScale) + translationY);
+
+  TrueCoords.x = Math.round(tempCoords.x);
+  TrueCoords.y = Math.round(tempCoords.y);
+
+  console.log("clientX " + evt.clientX)
+  console.log("clientY " + evt.clientY)
+  console.log("svgleft " + svgleft)
+  console.log("newScale " + newScale)
+  console.log("translationX " + translationX)
+  console.log("truecoordsX " + TrueCoords.x)
+
 }
 
+function AddNode(txt, type, scheme, pid, nid, nx, ny, visible) {
+  var isVisible = typeof visible !== 'undefined' ? visible : true;
+  newNode(nid, type, scheme, pid, txt, nx, ny, isVisible);
+  if (isVisible) {
+    DrawNode(nid, type, txt, nx, ny); //if the node is visible then draw the node on the svg
 
-function AddNode(txt, type, scheme, pid, nid, nx, ny) {
-  newNode(nid, type, scheme, pid, txt, nx, ny);
-  DrawNode(nid, type, txt, nx, ny);
+    //create analyst nodes if they are needed 
+    if (type == 'L' && txt != "") {
+      var analysisLTxt = window.afirstname + ': ' + txt;
+      window.nodeCounter++;
+      var analysisYA = newNode(window.nodeCounter, 'YA', '75', 0, 'Analysing', 0, 0, false);
+      window.nodeCounter++;
+      var analysisL = newNode(window.nodeCounter, 'L', null, 0, analysisLTxt, 0, 0, false);
+      newEdge(analysisYA.nodeID, nid, false);
+      newEdge(analysisL.nodeID, analysisYA.nodeID, false);
+
+      var username = ' ' + window.afirstname;
+      if(users.indexOf(username) == -1)
+      {
+        users.push(username);
+      }
+    }
+  }
 }
 
 function Drag(evt) {
@@ -441,10 +489,15 @@ function updateBox(g) {
 }
 
 function UpdateEdge(e) {
+  if (!e.visible) { return false; } //if the edge is invisible, i.e. it isn't drawn on the svg, do nothing
   edgeID = 'n' + e.fromID + '-n' + e.toID;
   ee = document.getElementById(edgeID);
-  nf = document.getElementById(e.fromID).getElementsByTagName('rect')[0];
-  nt = document.getElementById(e.toID).getElementsByTagName('rect')[0];
+  nodeFrom = document.getElementById(e.fromID);
+  nodeTo = document.getElementById(e.toID);
+  if (nodeFrom == null || nodeTo == null) { return false; } //if either of the nodes aren't drawn on the svg, do nothing
+  nf = nodeFrom.getElementsByTagName('rect')[0];
+  nt = nodeTo.getElementsByTagName('rect')[0];
+
   fw = parseInt(nf.getAttributeNS(null, 'width'));
   fh = parseInt(nf.getAttributeNS(null, 'height'));
   tw = parseInt(nt.getAttributeNS(null, 'width'));
@@ -836,24 +889,25 @@ function findEdges(nodeID) {
 
 
 function deleteNode(node) {
-  var toDelType = node.type;
-  document.getElementById(CurrentlyEditing).remove();
-  delNode(node);
-  var edgesToDelete = [];
-
-  if (mySel.type == 'L') {
-    remhl(node.nodeID);
+  //remove the node
+  if (node.visible) {
+    document.getElementById(CurrentlyEditing).remove(); //if the node was drawn on the svg remove it
+    if (mySel.type == 'L') {
+      remhl(node.nodeID);
+    }
   }
+  delNode(node);
 
-  //if(mySel.type == 'I' || mySel.type == 'L' || mySel.type == 'EN'){
-  //remhl(node.nodeID);
-  // document.getElementById(CurrentlyEditing).remove();
-  // const index = nodes.indexOf(node);
-  // if (index > -1) { nodes.splice(index, 1); }
-  // var edgesToDelete = [];
+  //remove any edges that were connected to the deleted node
+  var edgesToDelete = [];
+  lNodeToDelete = null;
   for (var j = 0; j < edges.length; j++) {
     if (edges[j].toID == CurrentlyEditing) {
       edgesToDelete.push(edges[j]);
+      if (node.type == 'YA' && !(node.visible)) { //if a YA analyst node then record the connected L analyst node
+        index = findNodeIndex(edges[j].fromID);
+        lNodeToDelete = nodes[index];
+      }
     }
     if (edges[j].fromID == CurrentlyEditing) {
       edgesToDelete.push(edges[j]);
@@ -862,30 +916,26 @@ function deleteNode(node) {
   for (var i = 0; i < edgesToDelete.length; i++) {
     deleteEdges(edgesToDelete[i]);
   }
+
+  if (lNodeToDelete != null) { //if a connected L analyst node was found then also delete it
+    CurrentlyEditing = lNodeToDelete.nodeID;
+    deleteNode(lNodeToDelete);
+  }
+
   $("#contextmenu").hide();
-  //}
 }
 
 function deleteEdges(edge) {
   edgeID = 'n' + edge.fromID + '-n' + edge.toID;
   edgeFrom = edge.fromID;
   edgeTo = edge.toID;
-  tempEdge = document.getElementById(edgeID);
-  tempEdge.remove();
+
+  if (edge.visible) { //if the edge was drawn on the svg remove it
+    tempEdge = document.getElementById(edgeID);
+    tempEdge.remove();
+  }
   delEdge(edge);
 
-  // for(var i=1; i<nodes.length; i++) {
-  //   if(nodes[i]) {
-  //     if(nodes[i].nodeID == edgeFrom && nodes[i].type != "I" && nodes[i].type != "L" && nodes[i].type != 'EN') {
-  //       CurrentlyEditing = nodes[i].nodeID;
-  //       deleteNode(nodes[i]);
-  //     }
-  //     if(nodes[i].nodeID == edgeTo && nodes[i].type != "I" && nodes[i].type != "L" &&  nodes[i].type != 'EN') {
-  //       CurrentlyEditing = nodes[i].nodeID;
-  //       deleteNode(nodes[i]);
-  //     }
-  //   }
-  // }
   if (mySel.type == "I" || mySel.type == "EN") {
     for (var i = 1; i < nodes.length; i++) {
       if (nodes[i]) {

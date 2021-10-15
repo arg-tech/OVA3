@@ -148,13 +148,14 @@ if (isset($_COOKIE['ovauser'])) {
     <?php
     $newurl = "analyse.php?url=" . $_GET['url'] . $plusval;
     ?>
-    <a href="http://localhost/index.php" class="home"><img src="res/img/logo.svg" /></a> <!--todo: change link to homepage-->
+    <a href="http://index.php" class="home"><img src="res/img/logo.svg" /></a>
     <a onClick='$("#xmenu").toggle("slide", {direction: "right"}, "slow");' class="icon" id="xmenutoggle" style="background-position: -126px 50%;"></a>
     <div class="divider"></div>
     <a onClick="mainTut()" class="icon" style="background-position: -378px 50%;"><span class="tooltiptext">Tutorial</span></a>
     <div class="divider"></div>
-    <a onClick="genldot()" class="icon" id="alay" style="background-position: -420px 50%;"><span class="tooltiptext">AutoLayout</span></a>
-    <div class="divider"></div>
+    <!-- AUTOLAYOUT - To be added back in when functional -->
+    <!-- <a onClick="genldot()" class="icon" id="alay" style="background-position: -420px 50%;"><span class="tooltiptext">AutoLayout</span></a>
+    <div class="divider"></div> -->
     <a onClick="openModal('#modal-load');" class="icon" id="loada" style="background-position: -210px 50%;"><span class="tooltiptext">Load&nbsp;Analysis</span></a>
     <a onClick="svg2canvas2image(); openModal('#modal-save');" class="icon" id="savea" style="background-position: -84px 50%;"><span class="tooltiptext">Save&nbsp;Analysis</span></a>
     <a href="<?php echo $newurl; ?>" class="icon" id="newa" style="background-position: -168px 50%;"><span class="tooltiptext">New&nbsp;Analysis</span></a>
@@ -167,10 +168,11 @@ if (isset($_COOKIE['ovauser'])) {
   </div>
 
   <div id="xmenu">
-    <a onClick="openModal('#modal-account');" class="xicon">
+    <!-- ACCOUNT - Account settings to be possibly implemented -->
+    <!-- <a onClick="openModal('#modal-account');" class="xicon">
       <div class="icn" style="background-position: -294px 50%;"></div>
       <div class="txt">Account</div>
-    </a>
+    </a> -->
     <a onClick="openModal('#modal-settings');" class="xicon">
       <div class="icn" style="background-position: -252px 50%;"></div>
       <div class="txt" id="stngs">Settings</div>
@@ -178,6 +180,10 @@ if (isset($_COOKIE['ovauser'])) {
     <a onClick="genlink(); openModal('#modal-share');" class="xicon">
       <div class="icn" style="background-image: url('res/img/linkicon.png'); background-position: 50% 50%;"></div>
       <div class="txt">Share Analysis</div>
+    </a>
+    <a onClick="openModal('#modal-help');" class="xicon">
+      <div class="icn" style=" background-position: 50% 50%;"></div>
+      <div class="txt" id="help">Helpsheet</div>
     </a>
   </div>
 
@@ -212,7 +218,7 @@ if (isset($_COOKIE['ovauser'])) {
         </form>
       </div>
       <div class="modal-btns">
-        <a class="save" href="#" onClick="closeModal('#modal-username'); iatModeOnOff(); return false;">Continue</a>
+        <a class="save" href="#" onClick="closeModal('#modal-username'); dialogicalModeOnOff(); return false;">Continue</a>
         <a class="cancel" href="#" onClick="closeModal('#modal-username'); return false;">&#10008; Cancel</a>
       </div>
     </div>
@@ -229,6 +235,7 @@ if (isset($_COOKIE['ovauser'])) {
       <div class="modal-body">
         <form id="settings_form" class="fstyle">
           <?php if ($source == "local") { ?>
+            <!-- Text Settings  -->
             <div id="txtstg">
               <strong>Text Settings</strong>
               <p style="color: #444; line-height: 36px;">Font Size
@@ -240,13 +247,15 @@ if (isset($_COOKIE['ovauser'])) {
           <?php } ?>
           <div id="anastg">
             <strong>Analysis Settings</strong>
-            <!-- <p style="color: #444; line-height: 22px;">Critical Questions
+            <!-- Critical Questions Toggle  -->
+            <p style="color: #444; line-height: 22px;">Critical Questions
               <?php if (isset($_GET['cq']) && $_GET['cq'] == 'true') { ?>
                 <a href="#" id="cqtoggle" class="togglesw on" onClick='$("#cqtoggle").toggleClass("on off"); window.cqmode=!window.cqmode; return false;'><span class="tson">On</span><span class="tsoff">Off</span></a>
               <?php } else { ?>
                 <a href="#" id="cqtoggle" class="togglesw off" onClick='$("#cqtoggle").toggleClass("on off"); window.cqmode=!window.cqmode; return false;'><span class="tson">On</span><span class="tsoff">Off</span></a>
               <?php } ?>
-            </p> -->
+            </p>
+            <!-- Black & White Toggle  -->
             <p style="color: #444; line-height: 22px;">Black &amp; White Diagram
               <?php if (isset($_GET['bw']) && $_GET['bw'] == 'true') { ?>
                 <a href="#" id="bwtoggle" class="togglesw on" onClick='$(this).toggleClass("on off"); window.bwmode=!window.bwmode; bwModeOnOff();'><span class="tson">On</span><span class="tsoff">Off</span></a>
@@ -254,13 +263,24 @@ if (isset($_COOKIE['ovauser'])) {
                 <a href="#" id="bwtoggle" class="togglesw off" onClick='$(this).toggleClass("on off"); window.bwmode=!window.bwmode; bwModeOnOff();'><span class="tson">On</span><span class="tsoff">Off</span></a>
               <?php } ?>
             </p>
-            <p style="color: #444; line-height: 22px;">Dialogue Mode
-              <?php if (isset($_GET['plus']) && $_GET['plus'] == 'true') { ?>
-                <a href="#" id="iattoggle" class="togglesw on" onClick='$(this).toggleClass("on off"); window.IATMode=!window.IATMode; iatModeOnOff();'><span class="tson">On</span><span class="tsoff">Off</span></a>
+            <!-- Dialogical Mode Toggle  -->
+            <p style="color: #444; line-height: 22px;">Dialogical Mode
+              <?php if ($pro) { ?>
+                <a href="#" id="dialogicaltoggle" class="togglesw on" onClick='$(this).toggleClass("on off"); window.dialogicalMode=!window.dialogicalMode; dialogicalModeOnOff();'><span class="tson">On</span><span class="tsoff">Off</span></a>
               <?php } else { ?>
-                <a href="#" id="iattoggle" class="togglesw off" onClick='$(this).toggleClass("on off"); window.IATMode=!window.IATMode; iatModeOnOff();'><span class="tson">On</span><span class="tsoff">Off</span></a>
+                <a href="#" id="dialogicaltoggle" class="togglesw off" onClick='$(this).toggleClass("on off"); window.dialogicalMode=!window.dialogicalMode; dialogicalModeOnOff();'><span class="tson">On</span><span class="tsoff">Off</span></a>
               <?php } ?>
             </p>
+            <!-- Rapid IAT Mode Toggle  -->
+            <?php if ($pro) { ?>  <!-- only if Dialogical Mode is on then show the option for Rapid IAT Mode -->
+            <p style="color: #444; line-height: 22px;">Rapid IAT Mode
+              <?php if (isset($_GET['plus']) && $_GET['plus'] == 'true') { ?>
+                <a href="#" id="riattoggle" class="togglesw on" onClick='$(this).toggleClass("on off"); window.rIATMode=!window.rIATMode; return false;'><span class="tson">On</span><span class="tsoff">Off</span></a>
+              <?php } else { ?>
+                <a href="#" id="riattoggle" class="togglesw off" onClick='$(this).toggleClass("on off"); window.rIATMode=!window.rIATMode; return false;'><span class="tson">On</span><span class="tsoff">Off</span></a>
+              <?php } ?>
+            </p>
+            <?php } ?>
           </div>
         </form>
       </div>
@@ -271,6 +291,7 @@ if (isset($_COOKIE['ovauser'])) {
   </div>
   <!-- Settings Form Ends Here -->
 
+  <!-- Share analysis Form starts here -->
   <div id="modal-shade"></div>
   <div class="modal-dialog" id="modal-share">
     <div class="modal-content">
@@ -278,16 +299,55 @@ if (isset($_COOKIE['ovauser'])) {
         <h4 class="modal-title">Share Analysis</h4>
       </div>
       <div class="modal-body">
-        <p style="padding: 20px 0px;">
+        <form id="share_form" class="fstyle">
           <label> Share this analysis: </label>
           <input type="text" id="shareinput" value="Generating link" onClick="this.select();" style="font-size: 16px; padding: 3px; width:90%;" />
-        </p>
+          <p id="edited-by" style="color: #444; font-size: 12px;"></p>
+        </form>
       </div>
       <div class="modal-btns">
         <a class="cancel" href="#" onClick="closeModal('#modal-share'); return false;">&#10008; Close</a>
       </div>
     </div>
   </div>
+  <!-- Share analysis form ends here -->
+
+<!-- Helpsheet modal starts here -->
+  <div id="modal-shade"></div>
+  <div class="modal-dialog" id="modal-help">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Helpsheet</h4>
+        <!-- <a href="javascript:void(0);" class="helpbtn" onclick="setTut(); return false;">?</a> -->
+      </div>
+      <div class="modal-body">
+        <form id="help-form" class="fstyle">
+          <div id="anastg">
+            <strong>Adding Nodes to the Canvas</strong>
+            <p style="color: #444; font-size: 12px;">To add a node, enter the text you would like to use into the left hand side panel. Then, highlight the text and click on the canvas, the highlighted text will be added to a node.</p>
+            <strong>Adding Edges Between Nodes</strong>
+            <p style="color: #444; font-size: 12px;">To add an edge, either click on the add edge button in the top menu and then click and drag between the two nodes you would like to connect. Or click and drag from one node to another while pressing shift for an infrence relation or the 'A' key for a conflict.</p>
+            <strong>Editing Nodes</strong>
+            <p style="color: #444; font-size: 12px;">To access the edit node menu, either right click on a node and select 'Edit Node' from the menu or ctrl+click on the node you would like to edit.</p>
+            <strong>Keyboard Shortcuts:</strong>
+            <p style="color: #444; font-size: 12px;">
+            <pre>
+<strong>shift+drag</strong> from one node to another: add edge
+<strong>ctrl+click</strong> on node: edit node menu
+<strong>arrow keys: </strong> move canvas
+<strong>+/- : </strong> zoom in/out
+</pre>
+          </p>
+            
+          </div>
+        </form>
+      </div>
+      <div class="modal-btns">
+        <a class="cancel" href="#" onClick="closeModal('#modal-help'); return false;">&#10008; Close</a>
+      </div>
+    </div>
+  </div>
+  <!-- Helpsheet Modal ends here -->
 
   <div id="contextmenu"></div>
   <!-- Add Locution Form Starts here -->
@@ -415,8 +475,8 @@ if (isset($_COOKIE['ovauser'])) {
         <div id="analysis_text" contenteditable="true" spellcheck="false">Enter your text here...</div>
         <!-- data-step="1" data-intro="<p>Enter the text that you want to analyse here.</p><p>Select sections of text to create a node.</p> -->
       </div>
-    <?php } else { ?>
-      <iframe src="<?php echo $analysis; ?>" id="left1" name="left1" style="width:35%;border-right:1px solid #666;"></iframe> <!-- data-step="1" data-intro="<p>Highlight sections of text from the webpage to create a node.</p>" data-position="right" -->
+    <?php } else { ?>  <!-- if url was added to be loaded into LHS -->
+      <iframe src="<?php echo $analysis; ?>" id="extside" name="extsite" style="width:35%;border-right:1px solid #666;"></iframe> <!-- data-step="1" data-intro="<p>Highlight sections of text from the webpage to create a node.</p>" data-position="right" -->
     <?php } ?>
 
     <script>

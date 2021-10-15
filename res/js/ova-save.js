@@ -18,6 +18,7 @@ function genjson() {
             jlocutions.push(jlocution);
         }
     }
+
     json['nodes'] = nodes;
     json['edges'] = edges;
     json['schemefulfillments'] = jschemefulfillments;
@@ -60,6 +61,7 @@ function genlink() {
     $('#shareinput').val(alink);
     console.log(nodes);
     console.log(edges);
+    document.getElementById("edited-by").innerHTML = "Analysis edited by: " + users.toString();
     return false;
 }
 
@@ -109,39 +111,52 @@ function loadbutton(evt) {
 }
 
 function loadfile(jstr) {
-    clearAnalysis();
+    clearAnalysis(); //remove the previous analysis before loading the new analysis
     if (typeof jstr !== 'object') {
         var json = JSON.parse(jstr);
     } else {
         var json = jstr;
     }
 
-    jnodes = json['nodes'];
-    var p = json['participants'];
-    var pID = 0;
-    for (var i = 0, l = p.length; i < l; i++) {
-        firstname = p[i].firstname;
-        surname = p[i].surname;
-        addParticipant(firstname, surname)
+    var oplus = false;
+    if ("plus" in getUrlVars()) {
+        oplus = true;
     }
 
+    //load participants
+    var p = json['participants'];
+    var pID = 0;
+    if (p != undefined) {
+        for (var i = 0, l = p.length; i < l; i++) {
+            firstname = p[i].firstname;
+            surname = p[i].surname;
+            addParticipant(firstname, surname)
+        }
+    }
+
+    var jnodes = json['nodes'];
+    var nodelist = {};
     if (jnodes.length > 0 && !(jnodes[0].hasOwnProperty('x'))) {
         loaddbjson(json);
         return;
     }
-    if (jnodes.length > 0 && jnodes[0].hasOwnProperty('id')) {
+    if (jnodes.length > 0 && jnodes[0].hasOwnProperty('id')) { //if in ova2 format convert to ova3 format
         for (var i = 0, l = jnodes.length; i < l; i++) {
             if (jnodes[i].id > window.nodeCounter) {
                 window.nodeCounter = jnodes[i].id;
             }
-            if (jnodes[i].type == "L") {
-                pID = findParticipantIDText(jnodes[i].text);
-                newNode(jnodes[i].id, jnodes[i].type, jnodes[i].scheme, pID, jnodes[i].text, jnodes[i].x, jnodes[i].y);
-            } else {
-                newNode(jnodes[i].id, jnodes[i].type, jnodes[i].scheme, 0, jnodes[i].text, jnodes[i].x, jnodes[i].y); //todo: test with loading analysis w/ several new participants
-            }
-            if (jnodes[i].visible) {
-                DrawNode(jnodes[i].id, jnodes[i].type, jnodes[i].text, jnodes[i].x, jnodes[i].y);
+            if (oplus) {
+                if (jnodes[i].type == "L") {
+                    pID = findParticipantIDText(jnodes[i].text);
+                    nodelist[jnodes[i].id] = newNode(jnodes[i].id, jnodes[i].type, jnodes[i].scheme, pID, jnodes[i].text, jnodes[i].x, jnodes[i].y, jnodes[i].visible);
+                    if (jnodes[i].visible) {
+                        DrawNode(jnodes[i].id, jnodes[i].type, jnodes[i].text, jnodes[i].x, jnodes[i].y);
+                    }
+                } else {
+                    nodelist[jnodes[i].id] = AddNode(jnodes[i].text, jnodes[i].type, jnodes[i].scheme, 0, jnodes[i].id, jnodes[i].x, jnodes[i].y, jnodes[i].visible);
+                }
+            } else if (jnodes[i].type == "RA" || jnodes[i].type == "CA" || jnodes[i].type == "I" || jnodes[i].type == "EN") {
+                nodelist[jnodes[i].id] = AddNode(jnodes[i].text, jnodes[i].type, jnodes[i].scheme, 0, jnodes[i].id, jnodes[i].x, jnodes[i].y, jnodes[i].visible);
             }
         }
         window.nodeCounter++;
@@ -151,21 +166,31 @@ function loadfile(jstr) {
         for (var i = 0, l = e.length; i < l; i++) {
             from = e[i].from.id;
             to = e[i].to.id;
-            DrawEdge(from, to);
-            var edge = newEdge(from, to);
-            UpdateEdge(edge);
+            if (from in nodelist && to in nodelist) { //if both the nodes the edge connects exist
+                var edge = newEdge(from, to, e[i].visible);
+                if (e[i].visible) {
+                    DrawEdge(from, to);
+                    UpdateEdge(edge);
+                }
+            }
         }
     } else {
-        nodes = jnodes;
-        for (var i = 0, l = nodes.length; i < l; i++) {
-            if (nodes[i].nodeID > window.nodeCounter) {
-                window.nodeCounter = nodes[i].nodeID;
+        for (var i = 0, l = jnodes.length; i < l; i++) {
+            if (jnodes[i].nodeID > window.nodeCounter) {
+                window.nodeCounter = jnodes[i].nodeID;
             }
-            postEdit("node", "add", nodes[i]);
-            DrawNode(nodes[i].nodeID, nodes[i].type, nodes[i].text, nodes[i].x, nodes[i].y);
-            if (nodes[i].type == "L") {
-                pID = findParticipantIDText(nodes[i].text);
-                nodes[i].participantID = pID;
+            if (oplus) {
+                if (jnodes[i].type == "L") {
+                    pID = findParticipantIDText(jnodes[i].text);
+                    nodelist[jnodes[i].nodeID] = newNode(jnodes[i].nodeID, jnodes[i].type, null, pID, jnodes[i].text, jnodes[i].x, jnodes[i].y, jnodes[i].visible);
+                    if (jnodes[i].visible) {
+                        DrawNode(jnodes[i].nodeID, jnodes[i].type, jnodes[i].text, jnodes[i].x, jnodes[i].y);
+                    }
+                } else {
+                    nodelist[jnodes[i].nodeID] = AddNode(jnodes[i].text, jnodes[i].type, jnodes[i].scheme, 0, jnodes[i].nodeID, jnodes[i].x, jnodes[i].y, jnodes[i].visible);
+                }
+            } else if (jnodes[i].type == "RA" || jnodes[i].type == "CA" || jnodes[i].type == "I" || jnodes[i].type == "EN") {
+                nodelist[jnodes[i].nodeID] = AddNode(jnodes[i].text, jnodes[i].type, jnodes[i].scheme, 0, jnodes[i].nodeID, jnodes[i].x, jnodes[i].y, jnodes[i].visible);
             }
         }
         window.nodeCounter++;
@@ -175,10 +200,13 @@ function loadfile(jstr) {
         for (var i = 0, l = e.length; i < l; i++) {
             from = e[i].fromID;
             to = e[i].toID;
-
-            DrawEdge(from, to);
-            var edge = newEdge(from, to);
-            UpdateEdge(edge);
+            if (from in nodelist && to in nodelist) { //if both the nodes the edge connects exist
+                var edge = newEdge(from, to, e[i].visible);
+                if (e[i].visible) {
+                    DrawEdge(from, to);
+                    UpdateEdge(edge);
+                }
+            }
         }
     }
 
@@ -187,72 +215,84 @@ function loadfile(jstr) {
 }
 
 function loaddbjson(json) {
-    console.log("loaddbjson");
+    //console.log("loaddbjson");
     var oplus = false;
     if ("plus" in getUrlVars()) {
         oplus = true;
     }
 
+    //load nodes
     var nodelist = {};
-    var pID;
+    var pID = 0;
+    var xpos = 0;
+    var ypos = 0;
     jnodes = json['nodes'];
+
     for (var i = 0, l = jnodes.length; i < l; i++) {
+        node = jnodes[i];
         xpos = 10 + (i * 10);
         ypos = 10;
-        node = jnodes[i];
+
         if (node.type == "CA") {
-            nodelist[node.nodeID] = AddNode(node.text, node.type, 71, 0, node.nodeID, xpos, ypos);
+            nodelist[node.nodeID] = AddNode(node.text, node.type, '71', 0, node.nodeID, xpos, ypos);
         } else if (node.type == "RA") {
-            nodelist[node.nodeID] = AddNode(node.text, node.type, 72, 0, node.nodeID, xpos, ypos);
-        } else if (node.type == "TA") {
-            if (oplus) {
-                nodelist[node.nodeID] = AddNode(node.text, node.type, 82, 0, node.nodeID, xpos, ypos);
-            }
-        } else if (node.type == "YA") {
-            if (oplus) {
-                nodelist[node.nodeID] = AddNode(node.text, node.type, 168, 0, node.nodeID, xpos, ypos);
-            }
-        } else if (node.type == "MA") {
-            if (oplus) {
-                nodelist[node.nodeID] = AddNode(node.text, node.type, 144, 0, node.nodeID, xpos, ypos);
-            }
-        } else if (node.type == "PA") {
-            if (oplus) {
-                nodelist[node.nodeID] = AddNode(node.text, node.type, 161, 0, node.nodeID, xpos, ypos);
-            }
-        } else if (node.type == "L") {
-            if (oplus) {
+            nodelist[node.nodeID] = AddNode(node.text, node.type, '72', 0, node.nodeID, xpos, ypos);
+        } else if (node.type == "I") {
+            nodelist[node.nodeID] = AddNode(node.text, node.type, null, 0, node.nodeID, xpos, ypos);
+        }
+        else if (oplus) {
+            if (node.type == "TA") {
+                nodelist[node.nodeID] = AddNode(node.text, node.type, '82', 0, node.nodeID, xpos, ypos);
+            } else if (node.type == "YA") {
+                if (node.text == 'Analysing') { //if an analyst node
+                    nodelist[node.nodeID] = AddNode(node.text, node.type, '75', 0, node.nodeID, 0, 0, false);
+                } else {
+                    nodelist[node.nodeID] = AddNode(node.text, node.type, '168', 0, node.nodeID, xpos, ypos);
+                }
+            } else if (node.type == "MA") {
+                nodelist[node.nodeID] = AddNode(node.text, node.type, '144', 0, node.nodeID, xpos, ypos);
+            } else if (node.type == "PA") {
+                nodelist[node.nodeID] = AddNode(node.text, node.type, '161', 0, node.nodeID, xpos, ypos);
+            } else if (node.type == "L") {
                 pID = findParticipantIDText(node.text);
-                nodelist[node.nodeID] = AddNode(node.text, node.type, 0, pID, node.nodeID, xpos, ypos);
-            }
-        }
-        else {
-            if (node.type == "I" || oplus) {
-                nodelist[node.nodeID] = AddNode(node.text, node.type, 0, 0, node.nodeID, xpos, ypos);
+                if (pID == 0) { //if an analyst node
+                    nodelist[node.nodeID] = AddNode(node.text, node.type, null, 0, node.nodeID, 0, 0, false);
+                } else { //to prevent duplicate analyst nodes
+                    nodelist[node.nodeID] = newNode(node.nodeID, node.type, null, pID, node.text, xpos, ypos);
+                    DrawNode(node.nodeID, node.type, node.text, xpos, ypos);
+                }
             }
         }
     }
 
-    edges = json['edges'];
-    for (var i = 0, l = edges.length; i < l; i++) {
-        edge = edges[i];
-        if (edge.fromID in nodelist && edge.toID in nodelist) {
-            DrawEdge(edge.fromID, edge.toID);
-            UpdateEdge(edge);
+    //load edges
+    jedges = json['edges'];
+    var visible = true;
+    var index = 0;
+    for (var i = 0, l = jedges.length; i < l; i++) {
+        if (jedges[i].fromID in nodelist && jedges[i].toID in nodelist) { //if both nodes the edge connects exist
+            index = findNodeIndex(jedges[i].fromID);
+            visible = nodes[index].visible; //if the edge connects an invisible node it should also be invisible
+            edge = newEdge(jedges[i].fromID, jedges[i].toID, visible);
+            if (visible) { //if the edge is visible then draw edge on svg
+                DrawEdge(edge.fromID, edge.toID);
+                UpdateEdge(edge);
+            }
         }
     }
 
+    //set any scheme fulfillments
     var sf = json['schemefulfillments'];
-    //console.log(sf);
-    for (var i = 0; i < sf.length; i++) {
-        index = findNodeIndex(sf[i].nodeID);
-        //console.log("nodeID: " + sf[i].nodeID);
-        nodes[index].scheme = sf[i].schemeID;
+    if (sf != undefined) {
+        for (var i = 0; i < sf.length; i++) {
+            index = findNodeIndex(sf[i].nodeID);
+            nodes[index].scheme = sf[i].schemeID;
+        }
     }
 }
 
 function loadfromdb(nodeSetID) {
-    console.log("loadfromdb");
+    //console.log("loadfromdb");
     var oplus = false;
     var uplus = "&plus=false";
     if ("plus" in getUrlVars()) {
@@ -268,16 +308,8 @@ function loadfromdb(nodeSetID) {
 
             var nodelist = {};
             $.each(data.nodes, function (idx, node) {
-                /*visi = true;
-                if (node.type == "YA" && node.text.indexOf('AnalysesAs') >= 0) {
-                    visi = false;
-                    xpos = -10;
-                    ypos = -10;
-                } else if (node.type == "L" && node.text.indexOf('Annot: ') >= 0) {
-                    visi = false;
-                    xpos = -10;
-                    ypos = -10;
-                } else if (node.nodeID in ldata) {
+
+                if (node.nodeID in ldata) {
                     xpos = parseInt(ldata[node.nodeID]["x"]);
                     xpos = xpos * 0.8;
                     if (xpos > mwidth - 100) { mwidth = xpos + 100; }
@@ -286,46 +318,49 @@ function loadfromdb(nodeSetID) {
                 } else {
                     xpos = 10;
                     ypos = 10;
-                }*/
+                }
 
                 if (node.type == "CA") {
-                    nodelist[node.nodeID] = AddNode(node.text, node.type, 71, 0, node.nodeID, xpos, ypos);
+                    nodelist[node.nodeID] = AddNode(node.text, node.type, '71', 0, node.nodeID, xpos, ypos);
                 } else if (node.type == "RA") {
-                    nodelist[node.nodeID] = AddNode(node.text, node.type, 72, 0, node.nodeID, xpos, ypos);
-                } else if (node.type == "TA") {
-                    if (oplus) {
-                        nodelist[node.nodeID] = AddNode(node.text, node.type, 82, 0, node.nodeID, xpos, ypos);
-                    }
-                } else if (node.type == "YA") {
-                    if (oplus) {
-                        nodelist[node.nodeID] = AddNode(node.text, node.type, 168, 0, node.nodeID, xpos, ypos);
-                    }
-                } else if (node.type == "MA") {
-                    if (oplus) {
-                        nodelist[node.nodeID] = AddNode(node.text, node.type, 144, 0, node.nodeID, xpos, ypos);
-                    }
-                } else if (node.type == "PA") {
-                    if (oplus) {
-                        nodelist[node.nodeID] = AddNode(node.text, node.type, 161, 0, node.nodeID, xpos, ypos);
-                    }
-                } else if (node.type == "L") {
-                    if (oplus) {
-                        pID = findParticipantIDText(node.text);
-                        nodelist[node.nodeID] = AddNode(node.text, node.type, 0, pID, node.nodeID, xpos, ypos);
-                    }
+                    nodelist[node.nodeID] = AddNode(node.text, node.type, '72', 0, node.nodeID, xpos, ypos);
+                } else if (node.type == "I") {
+                    nodelist[node.nodeID] = AddNode(node.text, node.type, null, 0, node.nodeID, xpos, ypos);
                 }
-                else {
-                    if (node.type == "I" || oplus) {
-                        nodelist[node.nodeID] = AddNode(node.text, node.type, 0, 0, node.nodeID, xpos, ypos);
+                else if (oplus) {
+                    if (node.type == "TA") {
+                        nodelist[node.nodeID] = AddNode(node.text, node.type, '82', 0, node.nodeID, xpos, ypos);
+                    } else if (node.type == "YA") {
+                        if (node.text == 'Analysing') { //if an analyst node
+                            nodelist[node.nodeID] = AddNode(node.text, node.type, '75', 0, node.nodeID, 0, 0, false);
+                        } else {
+                            nodelist[node.nodeID] = AddNode(node.text, node.type, '168', 0, node.nodeID, xpos, ypos);
+                        }
+                    } else if (node.type == "MA") {
+                        nodelist[node.nodeID] = AddNode(node.text, node.type, '144', 0, node.nodeID, xpos, ypos);
+                    } else if (node.type == "PA") {
+                        nodelist[node.nodeID] = AddNode(node.text, node.type, '161', 0, node.nodeID, xpos, ypos);
+                    } else if (node.type == "L") {
+                        pID = findParticipantIDText(node.text);
+                        if (pID == 0) { //if an analyst node
+                            nodelist[node.nodeID] = AddNode(node.text, node.type, null, 0, node.nodeID, 0, 0, false);
+                        } else { //to prevent duplicate analyst nodes
+                            nodelist[node.nodeID] = newNode(node.nodeID, node.type, null, pID, node.text, xpos, ypos);
+                            DrawNode(node.nodeID, node.type, node.text, xpos, ypos);
+                        }
                     }
                 }
             });
 
             $.each(data.edges, function (idx, edge) {
                 if (edge.fromID in nodelist && edge.toID in nodelist) {
-                    var e = newEdge(edge.fromID, edge.toID);
-                    DrawEdge(edge.fromID, edge.toID);
-                    UpdateEdge(edge);
+                    index = findNodeIndex(edge.fromID);
+                    visible = nodes[index].visible; //if the edge connects an invisible node it should also be invisible
+                    var e = newEdge(edge.fromID, edge.toID, visible);
+                    if (visible) { //if the edge is visible then draw edge on svg
+                        DrawEdge(e.fromID, e.toID);
+                        UpdateEdge(e);
+                    }
                 }
             });
 
@@ -340,6 +375,10 @@ function loadfromdb(nodeSetID) {
                 }
             });
 
+            /*if(mwidth > WIDTH || mheight > HEIGHT){
+                resize_canvas(mwidth, mheight);
+            }*/
+
             //var currenturl = window.location;
             //var newurl = currenturl.replace(/aifdb=[0-9]+/i, ""); 
             //history.pushState(null, null, newurl);
@@ -347,7 +386,6 @@ function loadfromdb(nodeSetID) {
     });
 }
 
-//todo: add error check & message
 function save2db() {
     $('#modal-save2db').show();
     $('#m_load').show();
@@ -357,6 +395,7 @@ function save2db() {
     var jnodes = [];
     var jschemefulfillments = [];
     var jlocutions = [];
+    var jedges = [];
 
     for (var i = 0, l = nodes.length; i < l; i++) {
         var jnode = {};
@@ -365,7 +404,7 @@ function save2db() {
         jnode['type'] = nodes[i].type;
         jnodes.push(jnode);
 
-        if (nodes[i].scheme != 0) {
+        if (nodes[i].scheme != null) {
             var jschemefulfillment = {};
             jschemefulfillment['nodeID'] = nodes[i].nodeID;
             jschemefulfillment['schemeID'] = nodes[i].scheme;
@@ -380,15 +419,23 @@ function save2db() {
         }
     }
 
+    for (var i = 0, l = edges.length; i < l; i++) {
+        var jedge = {};
+        jedge['edgeID'] = i + 1;
+        jedge['fromID'] = edges[i].fromID;
+        jedge['toID'] = edges[i].toID;
+        jedges.push(jedge);
+    }
+
     json['nodes'] = jnodes;
-    json['edges'] = edges;
+    json['edges'] = jedges;
     json['schemefulfillments'] = jschemefulfillments;
     json['participants'] = participants;
     json['locutions'] = jlocutions;
 
     jstring = JSON.stringify(json);
     console.log(jstring);
-    /*$.post("ul/index.php", { data: JSON.stringify(json) },
+    $.post("ul/index.php", { data: JSON.stringify(json) },
         function (reply) {
             console.log(reply);
             var rs = reply.split(" ");
@@ -454,7 +501,7 @@ function save2db() {
                 }
             );
         }
-    );*/
+    );
 
     window.unsaved = false;
 
@@ -491,11 +538,14 @@ function svg2canvas2image() {
     var box = SVGRoot.getBBox();
     var x = box.x;
     var y = box.y;
-    var w = box.width + x + 100;
+    var w = box.width + x + 150;
     var h = box.height + y + 150;
 
     var svg = SVGRoot;
-    var svg64 = btoa(new XMLSerializer().serializeToString(svg));
+    var str = new XMLSerializer().serializeToString(svg);
+    var svg64 = btoa(str.replace(/[\u00A0-\u2666]/g, function(c) {
+        return '&#' + c.charCodeAt(0) + ';';
+    }));
     var image = new Image();
     var image64 = 'data:image/svg+xml;base64,' + svg64;
     image.src = image64;

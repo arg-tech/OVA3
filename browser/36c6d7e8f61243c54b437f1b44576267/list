@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<!--[if IE 7]>
+<html class="ie ie7" lang="en-US" xmlns:og="http://opengraphprotocol.org/schema/" xmlns:fb="http://www.facebook.com/2008/fbml">
+<![endif]-->
+<!--[if IE 8]>
+<html class="ie ie8" lang="en-US" xmlns:og="http://opengraphprotocol.org/schema/" xmlns:fb="http://www.facebook.com/2008/fbml">
+<![endif]-->
+<!--[if !(IE 7) | !(IE 8)  ]><!-->
+<html lang="en-US" xmlns:og="http://opengraphprotocol.org/schema/" xmlns:fb="http://www.facebook.com/2008/fbml">
+<!--<![endif]-->
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>ARG-tech | Centre for Argument Technology</title>
+<link rel="profile" href="http://gmpg.org/xfn/11" />
+<link rel="pingback" href="https://arg-tech.org/xmlrpc.php" />
+<!--[if lt IE 9]>
+<script src="https://arg-tech.org/wp-content/themes/arg/js/html5.js" type="text/javascript"></script>
+<![endif]-->
+<link rel='dns-prefetch' href='https://fonts.googleapis.com/' />
+<link rel='dns-prefetch' href='https://s.w.org/' />
+<link rel="alternate" type="application/rss+xml" title="ARG-tech &raquo; Feed" href="https://arg-tech.org/index.php/feed/" />
+<link rel="alternate" type="application/rss+xml" title="ARG-tech &raquo; Comments Feed" href="https://arg-tech.org/index.php/comments/feed/" />
+<link rel="alternate" type="application/rss+xml" title="ARG-tech &raquo; Home Comments Feed" href="https://arg-tech.org/index.php/home/feed/" />
+<meta property="og:title" content="Home" /><meta property="og:type" content="article" /><meta property="og:url" content="https://arg-tech.org/" /><meta property="og:site_name" content="Centre for Argument Technology" /><meta property="og:image" content="" />
+		<script type="text/javascript">
+			window._wpemojiSettings = {"baseUrl":"https:\/\/s.w.org\/images\/core\/emoji\/12.0.0-1\/72x72\/","ext":".png","svgUrl":"https:\/\/s.w.org\/images\/core\/emoji\/12.0.0-1\/svg\/","svgExt":".svg","source":{"concatemoji":"https:\/\/arg-tech.org\/wp-includes\/js\/wp-emoji-release.min.js?ver=5.4.7"}};
+			/*! This file is auto-generated */
+			!function(e,a,t){var n,r,o,i=a.createElement("canvas"),p=i.getContext&&i.getContext("2d");function s(e,t){var a=String.fromCharCode;p.clearRect(0,0,i.width,i.height),p.fillText(a.apply(this,e),0,0);e=i.toDataURL();return p.clearRect(0,0,i.width,i.height),p.fillText(a.apply(this,t),0,0),e===i.toDataURL()}function c(e){var t=a.createElement("script");t.src=e,t.defer=t.type="text/javascript",a.getElementsByTagName("head")[0].appendChild(t)}for(o=Array("flag","emoji"),t.supports={everything:!0,everythingExceptFlag:!0},r=0;r<o.length;r++)t.supports[o[r]]=function(e){if(!p||!p.fillText)return!1;switch(p.textBaseline="top",p.font="600 32px Arial",e){case"flag":return s([127987,65039,8205,9895,65039],[127987,65039,8203,9895,65039])?!1:!s([55356,56826,55356,56819],[55356,56826,8203,55356,56819])&&!s([55356,57332,56128,56423,56128,56418,56128,56421,56128,56430,56128,56423,56128,56447],[55356,57332,8203,56128,56423,8203,56128,56418,8203,56128,56421,8203,56128,56430,8203,56128,56423,8203,56128,56447]);case"emoji":return!s([55357,56424,55356,57342,8205,55358,56605,8205,55357,56424,55356,57340],[55357,56424,55356,57342,8203,55358,56605,8203,55357,56424,55356,57340])}return!1}(o[r]),t.supports.everything=t.supports.everything&&t.supports[o[r]],"flag"!==o[r]&&(t.supports.everythingExceptFlag=t.supports.everythingExceptFlag&&t.supports[o[r]]);t.supports.everythingExceptFlag=t.supports.everythingExceptFlag&&!t.supports.flag,t.DOMReady=!1,t.readyCallback=function(){t.DOMReady=!0},t.supports.everything||(n=function(){t.readyCallback()},a.addEventListener?(a.addEventListener("DOMContentLoaded",n,!1),e.addEventListener("load",n,!1)):(e.attachEvent("onload",n),a.attachEvent("onreadystatechange",function(){"complete"===a.readyState&&t.readyCallback()})),(n=t.source||{}).concatemoji?c(n.concatemoji):n.wpemoji&&n.twemoji&&(c(n.twemoji),c(n.wpemoji)))}(window,document,window._wpemojiSettings);
+		</script>
+		<style type="text/css">
+img.wp-smiley,
+img.emoji {
+	display: inline !important;
+	border: none !important;
+	box-shadow: none !important;
+	height: 1em !important;
+	width: 1em !important;
+	margin: 0 .07em !important;
+	vertical-align: -0.1em !important;
+	background: none !important;
+	padding: 0 !important;
+}
+</style>
+	<link rel='stylesheet' id='wp-block-library-css'  href='https://arg-tech.org/wp-includes/css/dist/block-library/style.min.css?ver=5.4.7' type='text/css' media='all' />
+<link rel='stylesheet' id='twentytwelve-fonts-css'  href='https://fonts.googleapis.com/css?family=Open+Sans:400italic,700italic,400,700&#038;subset=latin,latin-ext' type='text/css' media='all' />
+<link rel='stylesheet' id='twentytwelve-style-css'  href='https://arg-tech.org/wp-content/themes/arg/style.css?ver=5.4.7' type='text/css' media='all' />
+<!--[if lt IE 9]>
+<link rel='stylesheet' id='twentytwelve-ie-css'  href='https://arg-tech.org/wp-content/themes/arg/css/ie.css?ver=20121010' type='text/css' media='all' />
+<![endif]-->
+<script type='text/javascript' src='https://arg-tech.org/wp-includes/js/jquery/jquery.js?ver=1.12.4-wp'></script>
+<script type='text/javascript' src='https://arg-tech.org/wp-includes/js/jquery/jquery-migrate.min.js?ver=1.4.1'></script>
+<link rel='https://api.w.org/' href='https://arg-tech.org/index.php/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="https://arg-tech.org/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="https://arg-tech.org/wp-includes/wlwmanifest.xml" /> 
+<meta name="generator" content="WordPress 5.4.7" />
+<link rel="canonical" href="list" />
+<link rel='shortlink' href='list' />
+<link rel="alternate" type="application/json+oembed" href="https://arg-tech.org/index.php/wp-json/oembed/1.0/embed?url=https%3A%2F%2Farg-tech.org%2F" />
+<link rel="alternate" type="text/xml+oembed" href="https://arg-tech.org/index.php/wp-json/oembed/1.0/embed?url=https%3A%2F%2Farg-tech.org%2F&#038;format=xml" />
+<style type="text/css" id="custom-background-css">
+body.custom-background { background-color: #ffffff; }
+</style>
+	<style>button#responsive-menu-button,
+#responsive-menu-container {
+    display: none;
+    -webkit-text-size-adjust: 100%;
+}
+
+@media screen and (max-width: 840px) {
+
+    #responsive-menu-container {
+        display: block;
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        z-index: 99998;
+        padding-bottom: 5px;
+        margin-bottom: -5px;
+        outline: 1px solid transparent;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    #responsive-menu-container .responsive-menu-search-box {
+        width: 100%;
+        padding: 0 2%;
+        border-radius: 2px;
+        height: 50px;
+        -webkit-appearance: none;
+    }
+
+    #responsive-menu-container.push-left,
+    #responsive-menu-container.slide-left {
+        transform: translateX(-100%);
+        -ms-transform: translateX(-100%);
+        -webkit-transform: translateX(-100%);
+        -moz-transform: translateX(-100%);
+    }
+
+    .responsive-menu-open #responsive-menu-container.push-left,
+    .responsive-menu-open #responsive-menu-container.slide-left {
+        transform: translateX(0);
+        -ms-transform: translateX(0);
+        -webkit-transform: translateX(0);
+        -moz-transform: translateX(0);
+    }
+
+    #responsive-menu-container.push-top,
+    #responsive-menu-container.slide-top {
+        transform: translateY(-100%);
+        -ms-transform: translateY(-100%);
+        -webkit-transform: translateY(-100%);
+        -moz-transform: translateY(-100%);
+    }
+
+    .responsive-menu-open #responsive-menu-container.push-top,
+    .responsive-menu-open #responsive-menu-container.slide-top {
+        transform: translateY(0);
+        -ms-transform: translateY(0);
+        -webkit-transform: translateY(0);
+        -moz-transform: translateY(0);
+    }
+
+    #responsive-menu-container.push-right,
+    #responsive-menu-container.slide-right {
+        transform: translateX(100%);
+        -ms-transform: translateX(100%);
+        -webkit-transform: translateX(100%);
+        -moz-transform: translateX(100%);
+    }
+
+    .responsive-menu-open #responsive-menu-container.push-right,
+    .responsive-menu-open #responsive-menu-container.slide-right {
+        transform: translateX(0);
+        -ms-transform: translateX(0);
+        -webkit-transform: translateX(0);
+        -moz-transform: translateX(0);
+    }
+
+    #responsive-menu-container.push-bottom,
+    #responsive-menu-container.slide-bottom {
+        transform: translateY(100%);
+        -ms-transform: translateY(100%);
+        -webkit-transform: translateY(100%);
+        -moz-transform: translateY(100%);
+    }
+
+    .responsive-menu-open #responsive-menu-container.push-bottom,
+    .responsive-menu-open #responsive-menu-container.slide-bottom {
+        transform: translateY(0);
+        -ms-transform: translateY(0);
+        -webkit-transform: translateY(0);
+        -moz-transform: translateY(0);
+    }
+
+    #responsive-menu-container,
+    #responsive-menu-container:before,
+    #responsive-menu-container:after,
+    #responsive-menu-container *,
+    #responsive-menu-container *:before,
+    #responsive-menu-container *:after {
+         box-sizing: border-box;
+         margin: 0;
+         padding: 0;
+    }
+
+    #responsive-menu-container #responsive-menu-search-box,
+    #responsive-menu-container #responsive-menu-additional-content,
+    #responsive-menu-container #responsive-menu-title {
+        padding: 25px 5%;
+    }
+
+    #responsive-menu-container #responsive-menu,
+    #responsive-menu-container #responsive-menu ul {
+        width: 100%;
+    }
+    #responsive-menu-container #responsive-menu ul.responsive-menu-submenu {
+        display: none;
+    }
+
+    #responsive-menu-container #responsive-menu ul.responsive-menu-submenu.responsive-menu-submenu-open {
+         display: block;
+    }
+
+    #responsive-menu-container #responsive-menu ul.responsive-menu-submenu-depth-1 a.responsive-menu-item-link {
+        padding-left: 10%;
+    }
+
+    #responsive-menu-container #responsive-menu ul.responsive-menu-submenu-depth-2 a.responsive-menu-item-link {
+        padding-left: 15%;
+    }
+
+    #responsive-menu-container #responsive-menu ul.responsive-menu-submenu-depth-3 a.responsive-menu-item-link {
+        padding-left: 20%;
+    }
+
+    #responsive-menu-container #responsive-menu ul.responsive-menu-submenu-depth-4 a.responsive-menu-item-link {
+        padding-left: 25%;
+    }
+
+    #responsive-menu-container #responsive-menu ul.responsive-menu-submenu-depth-5 a.responsive-menu-item-link {
+        padding-left: 30%;
+    }
+
+    #responsive-menu-container li.responsive-menu-item {
+        width: 100%;
+        list-style: none;
+    }
+
+    #responsive-menu-container li.responsive-menu-item a {
+        width: 100%;
+        display: block;
+        text-decoration: none;
+        
+        position: relative;
+    }
+
+
+     #responsive-menu-container #responsive-menu li.responsive-menu-item a {
+                    padding: 0   5%;
+            }
+
+    #responsive-menu-container .responsive-menu-submenu li.responsive-menu-item a {
+                    padding: 0   5%;
+            }
+
+    #responsive-menu-container li.responsive-menu-item a .fa {
+        margin-right: 15px;
+    }
+
+    #responsive-menu-container li.responsive-menu-item a .responsive-menu-subarrow {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        text-align: center;
+        overflow: hidden;
+    }
+
+    #responsive-menu-container li.responsive-menu-item a .responsive-menu-subarrow  .fa {
+        margin-right: 0;
+    }
+
+    button#responsive-menu-button .responsive-menu-button-icon-inactive {
+        display: none;
+    }
+
+    button#responsive-menu-button {
+        z-index: 99999;
+        display: none;
+        overflow: hidden;
+        outline: none;
+    }
+
+    button#responsive-menu-button img {
+        max-width: 100%;
+    }
+
+    .responsive-menu-label {
+        display: inline-block;
+        font-weight: 600;
+        margin: 0 5px;
+        vertical-align: middle;
+    }
+
+    .responsive-menu-label .responsive-menu-button-text-open {
+        display: none;
+    }
+
+    .responsive-menu-accessible {
+        display: inline-block;
+    }
+
+    .responsive-menu-accessible .responsive-menu-box {
+        display: inline-block;
+        vertical-align: middle;
+    }
+
+    .responsive-menu-label.responsive-menu-label-top,
+    .responsive-menu-label.responsive-menu-label-bottom
+    {
+        display: block;
+        margin: 0 auto;
+    }
+
+    button#responsive-menu-button {
+        padding: 0 0;
+        display: inline-block;
+        cursor: pointer;
+        transition-property: opacity, filter;
+        transition-duration: 0.15s;
+        transition-timing-function: linear;
+        font: inherit;
+        color: inherit;
+        text-transform: none;
+        background-color: transparent;
+        border: 0;
+        margin: 0;
+        overflow: visible;
+    }
+
+    .responsive-menu-box {
+        width: 25px;
+        height: 19px;
+        display: inline-block;
+        position: relative;
+    }
+
+    .responsive-menu-inner {
+        display: block;
+        top: 50%;
+        margin-top: -1.5px;
+    }
+
+    .responsive-menu-inner,
+    .responsive-menu-inner::before,
+    .responsive-menu-inner::after {
+         width: 25px;
+         height: 3px;
+         background-color: #ffffff;
+         border-radius: 4px;
+         position: absolute;
+         transition-property: transform;
+         transition-duration: 0.15s;
+         transition-timing-function: ease;
+    }
+
+    .responsive-menu-open .responsive-menu-inner,
+    .responsive-menu-open .responsive-menu-inner::before,
+    .responsive-menu-open .responsive-menu-inner::after {
+        background-color: #ffffff;
+    }
+
+    button#responsive-menu-button:hover .responsive-menu-inner,
+    button#responsive-menu-button:hover .responsive-menu-inner::before,
+    button#responsive-menu-button:hover .responsive-menu-inner::after,
+    button#responsive-menu-button:hover .responsive-menu-open .responsive-menu-inner,
+    button#responsive-menu-button:hover .responsive-menu-open .responsive-menu-inner::before,
+    button#responsive-menu-button:hover .responsive-menu-open .responsive-menu-inner::after,
+    button#responsive-menu-button:focus .responsive-menu-inner,
+    button#responsive-menu-button:focus .responsive-menu-inner::before,
+    button#responsive-menu-button:focus .responsive-menu-inner::after,
+    button#responsive-menu-button:focus .responsive-menu-open .responsive-menu-inner,
+    button#responsive-menu-button:focus .responsive-menu-open .responsive-menu-inner::before,
+    button#responsive-menu-button:focus .responsive-menu-open .responsive-menu-inner::after {
+        background-color: #ffffff;
+    }
+
+    .responsive-menu-inner::before,
+    .responsive-menu-inner::after {
+         content: "";
+         display: block;
+    }
+
+    .responsive-menu-inner::before {
+         top: -8px;
+    }
+
+    .responsive-menu-inner::after {
+         bottom: -8px;
+    }
+
+            .responsive-menu-boring .responsive-menu-inner,
+.responsive-menu-boring .responsive-menu-inner::before,
+.responsive-menu-boring .responsive-menu-inner::after {
+    transition-property: none;
+}
+
+.responsive-menu-boring.is-active .responsive-menu-inner {
+    transform: rotate(45deg);
+}
+
+.responsive-menu-boring.is-active .responsive-menu-inner::before {
+    top: 0;
+    opacity: 0;
+}
+
+.responsive-menu-boring.is-active .responsive-menu-inner::after {
+    bottom: 0;
+    transform: rotate(-90deg);
+}    
+    button#responsive-menu-button {
+        width: 55px;
+        height: 68px;
+        position: absolute;
+        top: 0px;
+        right: 0%;
+                    background: #000000
+            }
+
+            .responsive-menu-open button#responsive-menu-button {
+            background: #000000
+        }
+    
+            .responsive-menu-open button#responsive-menu-button:hover,
+        .responsive-menu-open button#responsive-menu-button:focus,
+        button#responsive-menu-button:hover,
+        button#responsive-menu-button:focus {
+            background: #000000
+        }
+    
+    button#responsive-menu-button .responsive-menu-box {
+        color: #ffffff;
+    }
+
+    .responsive-menu-open button#responsive-menu-button .responsive-menu-box {
+        color: #ffffff;
+    }
+
+    .responsive-menu-label {
+        color: #ffffff;
+        font-size: 14px;
+        line-height: 13px;
+            }
+
+    button#responsive-menu-button {
+        display: inline-block;
+        transition: transform   0.5s, background-color   0.5s;
+    }
+
+    
+    
+    #responsive-menu-container {
+        width: 75%;
+        left: 0;
+        transition: transform   0.5s;
+        text-align: left;
+                                            background: #212121;
+            }
+
+    #responsive-menu-container #responsive-menu-wrapper {
+        background: #212121;
+    }
+
+    #responsive-menu-container #responsive-menu-additional-content {
+        color: #ffffff;
+    }
+
+    #responsive-menu-container .responsive-menu-search-box {
+        background: #ffffff;
+        border: 2px solid   #dadada;
+        color: #333333;
+    }
+
+    #responsive-menu-container .responsive-menu-search-box:-ms-input-placeholder {
+        color: #c7c7cd;
+    }
+
+    #responsive-menu-container .responsive-menu-search-box::-webkit-input-placeholder {
+        color: #c7c7cd;
+    }
+
+    #responsive-menu-container .responsive-menu-search-box:-moz-placeholder {
+        color: #c7c7cd;
+        opacity: 1;
+    }
+
+    #responsive-menu-container .responsive-menu-search-box::-moz-placeholder {
+        color: #c7c7cd;
+        opacity: 1;
+    }
+
+    #responsive-menu-container .responsive-menu-item-link,
+    #responsive-menu-container #responsive-menu-title,
+    #responsive-menu-container .responsive-menu-subarrow {
+        transition: background-color   0.5s, border-color   0.5s, color   0.5s;
+    }
+
+    #responsive-menu-container #responsive-menu-title {
+        background-color: #212121;
+        color: #ffffff;
+        font-size: 13px;
+        text-align: left;
+    }
+
+    #responsive-menu-container #responsive-menu-title a {
+        color: #ffffff;
+        font-size: 13px;
+        text-decoration: none;
+    }
+
+    #responsive-menu-container #responsive-menu-title a:hover {
+        color: #ffffff;
+    }
+
+    #responsive-menu-container #responsive-menu-title:hover {
+        background-color: #212121;
+        color: #ffffff;
+    }
+
+    #responsive-menu-container #responsive-menu-title:hover a {
+        color: #ffffff;
+    }
+
+    #responsive-menu-container #responsive-menu-title #responsive-menu-title-image {
+        display: inline-block;
+        vertical-align: middle;
+        max-width: 100%;
+        margin-bottom: 15px;
+    }
+
+    #responsive-menu-container #responsive-menu-title #responsive-menu-title-image img {
+                        max-width: 100%;
+    }
+
+    #responsive-menu-container #responsive-menu > li.responsive-menu-item:first-child > a {
+        border-top: 1px solid   #212121;
+    }
+
+    #responsive-menu-container #responsive-menu li.responsive-menu-item .responsive-menu-item-link {
+        font-size: 13px;
+    }
+
+    #responsive-menu-container #responsive-menu li.responsive-menu-item a {
+        line-height: 40px;
+        border-bottom: 1px solid   #212121;
+        color: #ffffff;
+        background-color: #212121;
+                    height: 40px;
+            }
+
+    #responsive-menu-container #responsive-menu li.responsive-menu-item a:hover {
+        color: #ffffff;
+        background-color: #3f3f3f;
+        border-color: #212121;
+    }
+
+    #responsive-menu-container #responsive-menu li.responsive-menu-item a:hover .responsive-menu-subarrow {
+        color: #ffffff;
+        border-color: #3f3f3f;
+        background-color: #3f3f3f;
+    }
+
+    #responsive-menu-container #responsive-menu li.responsive-menu-item a:hover .responsive-menu-subarrow.responsive-menu-subarrow-active {
+        color: #ffffff;
+        border-color: #3f3f3f;
+        background-color: #3f3f3f;
+    }
+
+    #responsive-menu-container #responsive-menu li.responsive-menu-item a .responsive-menu-subarrow {
+        right: 0;
+        height: 39px;
+        line-height: 39px;
+        width: 40px;
+        color: #ffffff;
+                        border-left: 1px solid #212121;
+        
+        background-color: #212121;
+    }
+
+    #responsive-menu-container #responsive-menu li.responsive-menu-item a .responsive-menu-subarrow.responsive-menu-subarrow-active {
+        color: #ffffff;
+        border-color: #212121;
+        background-color: #212121;
+    }
+
+    #responsive-menu-container #responsive-menu li.responsive-menu-item a .responsive-menu-subarrow.responsive-menu-subarrow-active:hover {
+        color: #ffffff;
+        border-color: #3f3f3f;
+        background-color: #3f3f3f;
+    }
+
+    #responsive-menu-container #responsive-menu li.responsive-menu-item a .responsive-menu-subarrow:hover {
+        color: #ffffff;
+        border-color: #3f3f3f;
+        background-color: #3f3f3f;
+    }
+
+    #responsive-menu-container #responsive-menu li.responsive-menu-current-item > .responsive-menu-item-link {
+        background-color: #212121;
+        color: #ffffff;
+        border-color: #212121;
+    }
+
+    #responsive-menu-container #responsive-menu li.responsive-menu-current-item > .responsive-menu-item-link:hover {
+        background-color: #3f3f3f;
+        color: #ffffff;
+        border-color: #3f3f3f;
+    }
+
+            #responsive-menu-container #responsive-menu ul.responsive-menu-submenu li.responsive-menu-item .responsive-menu-item-link {
+                        font-size: 13px;
+            text-align: left;
+        }
+
+        #responsive-menu-container #responsive-menu ul.responsive-menu-submenu li.responsive-menu-item a {
+                            height: 40px;
+                        line-height: 40px;
+            border-bottom: 1px solid   #212121;
+            color: #ffffff;
+            background-color: #212121;
+        }
+
+        #responsive-menu-container #responsive-menu ul.responsive-menu-submenu li.responsive-menu-item a:hover {
+            color: #ffffff;
+            background-color: #3f3f3f;
+            border-color: #212121;
+        }
+
+        #responsive-menu-container #responsive-menu ul.responsive-menu-submenu li.responsive-menu-item a:hover .responsive-menu-subarrow {
+            color: #ffffff;
+            border-color: #3f3f3f;
+            background-color: #3f3f3f;
+        }
+
+        #responsive-menu-container #responsive-menu ul.responsive-menu-submenu li.responsive-menu-item a:hover .responsive-menu-subarrow.responsive-menu-subarrow-active {
+            color: #ffffff;
+            border-color: #3f3f3f;
+            background-color: #3f3f3f;
+        }
+
+        #responsive-menu-container #responsive-menu ul.responsive-menu-submenu li.responsive-menu-item a .responsive-menu-subarrow {
+                                        left:unset;
+                right:0;
+                        height: 39px;
+            line-height: 39px;
+            width: 40px;
+            color: #ffffff;
+                                        border-left: 1px solid   #212121  !important;
+                border-right:unset  !important;
+                        background-color: #212121;
+        }
+
+        #responsive-menu-container #responsive-menu ul.responsive-menu-submenu li.responsive-menu-item a .responsive-menu-subarrow.responsive-menu-subarrow-active {
+            color: #ffffff;
+            border-color: #212121;
+            background-color: #212121;
+        }
+
+        #responsive-menu-container #responsive-menu ul.responsive-menu-submenu li.responsive-menu-item a .responsive-menu-subarrow.responsive-menu-subarrow-active:hover {
+            color: #ffffff;
+            border-color: #3f3f3f;
+            background-color: #3f3f3f;
+        }
+
+        #responsive-menu-container #responsive-menu ul.responsive-menu-submenu li.responsive-menu-item a .responsive-menu-subarrow:hover {
+            color: #ffffff;
+            border-color: #3f3f3f;
+            background-color: #3f3f3f;
+        }
+
+        #responsive-menu-container #responsive-menu ul.responsive-menu-submenu li.responsive-menu-current-item > .responsive-menu-item-link {
+            background-color: #212121;
+            color: #ffffff;
+            border-color: #212121;
+        }
+
+        #responsive-menu-container #responsive-menu ul.responsive-menu-submenu li.responsive-menu-current-item > .responsive-menu-item-link:hover {
+            background-color: #3f3f3f;
+            color: #ffffff;
+            border-color: #3f3f3f;
+        }
+    
+    
+            #navigation {
+            display: none !important;
+        }
+    }</style><script>jQuery(document).ready(function($) {
+
+    var ResponsiveMenu = {
+        trigger: '#responsive-menu-button',
+        animationSpeed: 500,
+        breakpoint: 840,
+        pushButton: 'off',
+        animationType: 'slide',
+        animationSide: 'left',
+        pageWrapper: '',
+        isOpen: false,
+        triggerTypes: 'click',
+        activeClass: 'is-active',
+        container: '#responsive-menu-container',
+        openClass: 'responsive-menu-open',
+        accordion: 'off',
+        activeArrow: '▲',
+        inactiveArrow: '▼',
+        wrapper: '#responsive-menu-wrapper',
+        closeOnBodyClick: 'off',
+        closeOnLinkClick: 'off',
+        itemTriggerSubMenu: 'off',
+        linkElement: '.responsive-menu-item-link',
+        subMenuTransitionTime: 200,
+        openMenu: function() {
+            $(this.trigger).addClass(this.activeClass);
+            $('html').addClass(this.openClass);
+            $('.responsive-menu-button-icon-active').hide();
+            $('.responsive-menu-button-icon-inactive').show();
+            this.setButtonTextOpen();
+            this.setWrapperTranslate();
+            this.isOpen = true;
+        },
+        closeMenu: function() {
+            $(this.trigger).removeClass(this.activeClass);
+            $('html').removeClass(this.openClass);
+            $('.responsive-menu-button-icon-inactive').hide();
+            $('.responsive-menu-button-icon-active').show();
+            this.setButtonText();
+            this.clearWrapperTranslate();
+            this.isOpen = false;
+        },
+        setButtonText: function() {
+            if($('.responsive-menu-button-text-open').length > 0 && $('.responsive-menu-button-text').length > 0) {
+                $('.responsive-menu-button-text-open').hide();
+                $('.responsive-menu-button-text').show();
+            }
+        },
+        setButtonTextOpen: function() {
+            if($('.responsive-menu-button-text').length > 0 && $('.responsive-menu-button-text-open').length > 0) {
+                $('.responsive-menu-button-text').hide();
+                $('.responsive-menu-button-text-open').show();
+            }
+        },
+        triggerMenu: function() {
+            this.isOpen ? this.closeMenu() : this.openMenu();
+        },
+        triggerSubArrow: function(subarrow) {
+            var sub_menu = $(subarrow).parent().siblings('.responsive-menu-submenu');
+            var self = this;
+            if(this.accordion == 'on') {
+                /* Get Top Most Parent and the siblings */
+                var top_siblings = sub_menu.parents('.responsive-menu-item-has-children').last().siblings('.responsive-menu-item-has-children');
+                var first_siblings = sub_menu.parents('.responsive-menu-item-has-children').first().siblings('.responsive-menu-item-has-children');
+                /* Close up just the top level parents to key the rest as it was */
+                top_siblings.children('.responsive-menu-submenu').slideUp(self.subMenuTransitionTime, 'linear').removeClass('responsive-menu-submenu-open');
+                /* Set each parent arrow to inactive */
+                top_siblings.each(function() {
+                    $(this).find('.responsive-menu-subarrow').first().html(self.inactiveArrow);
+                    $(this).find('.responsive-menu-subarrow').first().removeClass('responsive-menu-subarrow-active');
+                });
+                /* Now Repeat for the current item siblings */
+                first_siblings.children('.responsive-menu-submenu').slideUp(self.subMenuTransitionTime, 'linear').removeClass('responsive-menu-submenu-open');
+                first_siblings.each(function() {
+                    $(this).find('.responsive-menu-subarrow').first().html(self.inactiveArrow);
+                    $(this).find('.responsive-menu-subarrow').first().removeClass('responsive-menu-subarrow-active');
+                });
+            }
+            if(sub_menu.hasClass('responsive-menu-submenu-open')) {
+                sub_menu.slideUp(self.subMenuTransitionTime, 'linear').removeClass('responsive-menu-submenu-open');
+                $(subarrow).html(this.inactiveArrow);
+                $(subarrow).removeClass('responsive-menu-subarrow-active');
+            } else {
+                sub_menu.slideDown(self.subMenuTransitionTime, 'linear').addClass('responsive-menu-submenu-open');
+                $(subarrow).html(this.activeArrow);
+                $(subarrow).addClass('responsive-menu-subarrow-active');
+            }
+        },
+        menuHeight: function() {
+            return $(this.container).height();
+        },
+        menuWidth: function() {
+            return $(this.container).width();
+        },
+        wrapperHeight: function() {
+            return $(this.wrapper).height();
+        },
+        setWrapperTranslate: function() {
+            switch(this.animationSide) {
+                case 'left':
+                    translate = 'translateX(' + this.menuWidth() + 'px)'; break;
+                case 'right':
+                    translate = 'translateX(-' + this.menuWidth() + 'px)'; break;
+                case 'top':
+                    translate = 'translateY(' + this.wrapperHeight() + 'px)'; break;
+                case 'bottom':
+                    translate = 'translateY(-' + this.menuHeight() + 'px)'; break;
+            }
+            if(this.animationType == 'push') {
+                $(this.pageWrapper).css({'transform':translate});
+                $('html, body').css('overflow-x', 'hidden');
+            }
+            if(this.pushButton == 'on') {
+                $('#responsive-menu-button').css({'transform':translate});
+            }
+        },
+        clearWrapperTranslate: function() {
+            var self = this;
+            if(this.animationType == 'push') {
+                $(this.pageWrapper).css({'transform':''});
+                setTimeout(function() {
+                    $('html, body').css('overflow-x', '');
+                }, self.animationSpeed);
+            }
+            if(this.pushButton == 'on') {
+                $('#responsive-menu-button').css({'transform':''});
+            }
+        },
+        init: function() {
+            var self = this;
+            $(this.trigger).on(this.triggerTypes, function(e){
+                e.stopPropagation();
+                self.triggerMenu();
+            });
+            $(this.trigger).mouseup(function(){
+                $(self.trigger).blur();
+            });
+            $('.responsive-menu-subarrow').on('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                self.triggerSubArrow(this);
+            });
+            $(window).resize(function() {
+                if($(window).width() > self.breakpoint) {
+                    if(self.isOpen){
+                        self.closeMenu();
+                    }
+                } else {
+                    if($('.responsive-menu-open').length>0){
+                        self.setWrapperTranslate();
+                    }
+                }
+            });
+            if(this.closeOnLinkClick == 'on') {
+                $(this.linkElement).on('click', function(e) {
+                    e.preventDefault();
+                    /* Fix for when close menu on parent clicks is on */
+                    if(self.itemTriggerSubMenu == 'on' && $(this).is('.responsive-menu-item-has-children > ' + self.linkElement)) {
+                        return;
+                    }
+                    old_href = $(this).attr('href');
+                    old_target = typeof $(this).attr('target') == 'undefined' ? '_self' : $(this).attr('target');
+                    if(self.isOpen) {
+                        if($(e.target).closest('.responsive-menu-subarrow').length) {
+                            return;
+                        }
+                        self.closeMenu();
+                        setTimeout(function() {
+                            window.open(old_href, old_target);
+                        }, self.animationSpeed);
+                    }
+                });
+            }
+            if(this.closeOnBodyClick == 'on') {
+                $(document).on('click', 'body', function(e) {
+                    if(self.isOpen) {
+                        if($(e.target).closest('#responsive-menu-container').length || $(e.target).closest('#responsive-menu-button').length) {
+                            return;
+                        }
+                    }
+                    self.closeMenu();
+                });
+            }
+            if(this.itemTriggerSubMenu == 'on') {
+                $('.responsive-menu-item-has-children > ' + this.linkElement).on('click', function(e) {
+                    e.preventDefault();
+                    self.triggerSubArrow($(this).children('.responsive-menu-subarrow').first());
+                });
+            }
+
+                        if (jQuery('#responsive-menu-button').css('display') != 'none') {
+                $('#responsive-menu-button,#responsive-menu a.responsive-menu-item-link, #responsive-menu-wrapper input').focus( function() {
+                    $(this).addClass('is-active');
+                    $('html').addClass('responsive-menu-open');
+                    $('#responsive-menu li').css({"opacity": "1", "margin-left": "0"});
+                });
+
+                $('#responsive-menu-button, a.responsive-menu-item-link,#responsive-menu-wrapper input').focusout( function() {
+                    if ( $(this).last('#responsive-menu-button a.responsive-menu-item-link') ) {
+                        $(this).removeClass('is-active');
+                        $('html').removeClass('responsive-menu-open');
+                    }
+                });
+            }
+
+                        $('#responsive-menu a.responsive-menu-item-link').keydown(function(event) {
+                console.log( event.keyCode );
+                if ( [13,27,32,35,36,37,38,39,40].indexOf( event.keyCode) == -1) {
+                    return;
+                }
+                var link = $(this);
+                switch(event.keyCode) {
+                    case 13:
+                                                link.click();
+                        break;
+                    case 27:
+                                                var dropdown = link.parent('li').parents('.responsive-menu-submenu');
+                        if ( dropdown.length > 0 ) {
+                            dropdown.hide();
+                            dropdown.prev().focus();
+                        }
+                        break;
+
+                    case 32:
+                                                var dropdown = link.parent('li').find('.responsive-menu-submenu');
+                        if ( dropdown.length > 0 ) {
+                            dropdown.show();
+                            dropdown.find('a, input, button, textarea').first().focus();
+                        }
+                        break;
+
+                    case 35:
+                                                var dropdown = link.parent('li').find('.responsive-menu-submenu');
+                        if ( dropdown.length > 0 ) {
+                            dropdown.hide();
+                        }
+                        $(this).parents('#responsive-menu').find('a.responsive-menu-item-link').filter(':visible').last().focus();
+                        break;
+                    case 36:
+                                                var dropdown = link.parent('li').find('.responsive-menu-submenu');
+                        if( dropdown.length > 0 ) {
+                            dropdown.hide();
+                        }
+                        $(this).parents('#responsive-menu').find('a.responsive-menu-item-link').filter(':visible').first().focus();
+                        break;
+                    case 37:
+                    case 38:
+                        event.preventDefault();
+                        event.stopPropagation();
+                                                if ( link.parent('li').prevAll('li').filter(':visible').first().length == 0) {
+                            link.parent('li').nextAll('li').filter(':visible').last().find('a').first().focus();
+                        } else {
+                            link.parent('li').prevAll('li').filter(':visible').first().find('a').first().focus();
+                        }
+                        break;
+                    case 39:
+                    case 40:
+                        event.preventDefault();
+                        event.stopPropagation();
+                                                if( link.parent('li').nextAll('li').filter(':visible').first().length == 0) {
+                            link.parent('li').prevAll('li').filter(':visible').last().find('a').first().focus();
+                        } else {
+                            link.parent('li').nextAll('li').filter(':visible').first().find('a').first().focus();
+                        }
+                        break;
+                }
+            });
+        }
+    };
+    ResponsiveMenu.init();
+});</script></head>
+
+<body class="home page-template page-template-page-templates page-template-front-page page-template-page-templatesfront-page-php page page-id-60 custom-background template-front-page custom-background-white custom-font-enabled responsive-menu-slide-left">
+<div id="page" class="hfeed site">
+	<header id="masthead" class="site-header" role="banner">
+		<div id="topbar">
+		<div class="ccol">
+		<a href="list" title="ARG-tech" rel="home" style="border: 0px;"><img src="https://arg-tech.org/wp-content/themes/arg/images/arg-tech-w-s.png" height="34px" style="margin-top: 18px;" /></a>
+        <!--<a href="http://www.linkedin.com/groups/ARG-dundee-6504151" class="socialicon" id="si-linkedin"></a>
+		<a href="https://plus.google.com/u/0/115663197971885753918/ab" class="socialicon" id="si-gplus"></a>-->
+        <a href="https://www.youtube.com/channel/UCBkvAOqYK1jejT2kbAZ0JEQ" class="socialicon" id="si-yt"></a>
+        <a href="https://www.instagram.com/ARG_tech/" class="socialicon" id="si-ig"></a>
+		<a href="http://www.twitter.com/arg_tech" class="socialicon" id="si-twitter"></a>
+		<a href="https://www.facebook.com/ARGtechORG/" class="socialicon" id="si-facebook"></a>
+
+		</div><!--/ccol-->
+		</div><!--/topbar-->
+
+		<div id="navigation">
+                <div class="ccol">
+		<nav id="site-navigation" class="main-navigation" role="navigation">
+			<div class="menu-main-navigation-container"><ul id="menu-main-navigation" class="nav-menu"><li id="menu-item-30" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-30"><a href="http://www.arg-tech.org/">Home</a></li>
+<li id="menu-item-59" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-59"><a href="https://arg-tech.org/index.php/news/">News</a></li>
+<li id="menu-item-2252" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2252"><a href="https://arg-tech.org/index.php/people/">People</a></li>
+<li id="menu-item-967" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-967"><a href="https://arg-tech.org/index.php/research/">Research</a></li>
+<li id="menu-item-969" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-969"><a href="https://arg-tech.org/index.php/funding/">Funding</a></li>
+<li id="menu-item-34" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-34"><a href="https://arg-tech.org/index.php/events/">Events</a></li>
+<li id="menu-item-41" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-41"><a href="https://arg-tech.org/index.php/publications/">Publications</a></li>
+<li id="menu-item-1009" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-1009"><a href="https://arg-tech.org/index.php/teaching/">Teaching</a></li>
+<li id="menu-item-1674" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-1674"><a href="https://arg-tech.org/index.php/join-us/">Join us</a></li>
+<li id="menu-item-1833" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-1833"><a href="https://arg-tech.org/index.php/contact/">Contact</a></li>
+</ul></div>		</nav><!-- #site-navigation -->
+		</div>
+		</div>
+
+	</header><!-- #masthead -->
+
+	<div id="main" class="wrapper">
+	<div id="homeposts">
+		<div class="ccol">
+																<div class="threecol col1"><img width="280" height="230" src="https://arg-tech.org/wp-content/uploads/2021/09/pindex-fry-280x230.png" class="attachment-home-post-one size-home-post-one wp-post-image" alt="" /></div>
+					<div class="threecol col2">
+	                                        <a href="https://arg-tech.org/index.php/why-argument-technology-stephen-fry-explains/">
+						<h2 class="home-post-one">Why Argument Technology? Stephen Fry explains.</h2>
+                                        	</a>
+						<p>We&#8217;ve been working with Pindex on a new video that explains the context and motivation for a lot of work in argument technology. Stephen Fry narrates, opening with a discussion of some of the big societal challenges including conspiracy theories and fake news. The video then explores the role argument technology could play in tackling [&hellip;]</p>
+						<a href="https://arg-tech.org/index.php/why-argument-technology-stephen-fry-explains/" class="readmore">Read More &raquo;</a>
+					</div>
+                                        <div class="threecol col3">
+																			                                <div class="homepostn">
+                                        <a href="https://arg-tech.org/index.php/congratulations-to-dr-gemechu/">
+					<img width="60" height="60" src="https://arg-tech.org/wp-content/uploads/2021/09/debela-60x60.jpg" class="attachment-60x60 size-60x60 wp-post-image" alt="" srcset="https://arg-tech.org/wp-content/uploads/2021/09/debela-60x60.jpg 60w, https://arg-tech.org/wp-content/uploads/2021/09/debela-150x150.jpg 150w, https://arg-tech.org/wp-content/uploads/2021/09/debela-40x40.jpg 40w" sizes="(max-width: 60px) 100vw, 60px" />					</a>
+                                        <div>
+                                        <a href="https://arg-tech.org/index.php/congratulations-to-dr-gemechu/">
+					<h2 class="homepostn">Congratulations to Dr Gemechu</h2>
+                                        </a>
+                                        </div>
+				</div>
+																			                                <div class="homepostn">
+                                        <a href="https://arg-tech.org/index.php/kamila-gorska-and-alex-marcoci-join-arg-tech/">
+					<img width="60" height="60" src="https://arg-tech.org/wp-content/uploads/2021/07/KamilaAlex-1-60x60.jpg" class="attachment-60x60 size-60x60 wp-post-image" alt="" srcset="https://arg-tech.org/wp-content/uploads/2021/07/KamilaAlex-1-60x60.jpg 60w, https://arg-tech.org/wp-content/uploads/2021/07/KamilaAlex-1-150x150.jpg 150w, https://arg-tech.org/wp-content/uploads/2021/07/KamilaAlex-1-40x40.jpg 40w" sizes="(max-width: 60px) 100vw, 60px" />					</a>
+                                        <div>
+                                        <a href="https://arg-tech.org/index.php/kamila-gorska-and-alex-marcoci-join-arg-tech/">
+					<h2 class="homepostn">Kamila Gorska and Alex Marcoci join ARG-tech</h2>
+                                        </a>
+                                        </div>
+				</div>
+																			                                <div class="homepostn">
+                                        <a href="https://arg-tech.org/index.php/argument-technology-in-nature/">
+					<img width="60" height="60" src="https://arg-tech.org/wp-content/uploads/2021/03/nature-logo-60x60.png" class="attachment-60x60 size-60x60 wp-post-image" alt="" srcset="https://arg-tech.org/wp-content/uploads/2021/03/nature-logo-60x60.png 60w, https://arg-tech.org/wp-content/uploads/2021/03/nature-logo-150x150.png 150w, https://arg-tech.org/wp-content/uploads/2021/03/nature-logo-40x40.png 40w" sizes="(max-width: 60px) 100vw, 60px" />					</a>
+                                        <div>
+                                        <a href="https://arg-tech.org/index.php/argument-technology-in-nature/">
+					<h2 class="homepostn">Argument Technology in Nature</h2>
+                                        </a>
+                                        </div>
+				</div>
+														</div><!--/col3-->
+            <a href="https://arg-tech.org/?page_id=57" style="float: right; border:0px;">More news &raquo;</a>
+		</div><!--/ccol-->
+	</div><!--/homeposts-->
+
+	<div id="features">
+		<div class="ccol">
+						<div class="threecol">
+				                                <a href="https://arg-tech.org/index.php/funding-from-ahrc-to-work-with-the-un-security-council/" class="a_feature">
+				<img width="77" height="65" src="https://arg-tech.org/wp-content/uploads/2020/11/2560px-Emblem_of_the_United_Nations.svg_-77x65.png" class="attachment-feature size-feature wp-post-image" alt="" srcset="https://arg-tech.org/wp-content/uploads/2020/11/2560px-Emblem_of_the_United_Nations.svg_-77x65.png 77w, https://arg-tech.org/wp-content/uploads/2020/11/2560px-Emblem_of_the_United_Nations.svg_-300x255.png 300w, https://arg-tech.org/wp-content/uploads/2020/11/2560px-Emblem_of_the_United_Nations.svg_-1024x870.png 1024w, https://arg-tech.org/wp-content/uploads/2020/11/2560px-Emblem_of_the_United_Nations.svg_-768x653.png 768w, https://arg-tech.org/wp-content/uploads/2020/11/2560px-Emblem_of_the_United_Nations.svg_-1536x1305.png 1536w, https://arg-tech.org/wp-content/uploads/2020/11/2560px-Emblem_of_the_United_Nations.svg_-2048x1740.png 2048w, https://arg-tech.org/wp-content/uploads/2020/11/2560px-Emblem_of_the_United_Nations.svg_-150x127.png 150w" sizes="(max-width: 77px) 100vw, 77px" />				</a>
+				<p>We&#8217;ve just heard that we&#8217;ve won funding under the extremely competitive AHRC-DFG Anglo-German bilateral programme in the Arts &amp; Humanities in collaboration with Manfred Stede&#8216;s team at Potsdam University. We&#8217;re going to be spending the next three years working with the UN and in particular looking at how conflicts evolve in the Security Council. The [&hellip;]</p>
+				<a href="https://arg-tech.org/index.php/funding-from-ahrc-to-work-with-the-un-security-council/" class="readmore">Read More &raquo;</a>
+			</div>
+						<div class="threecol">
+				                                <a href="https://arg-tech.org/index.php/new-argument-mining-survey-in-cl/" class="a_feature">
+				<img width="126" height="65" src="https://arg-tech.org/wp-content/uploads/2019/10/compling-survey.png" class="attachment-feature size-feature wp-post-image" alt="" />				</a>
+				<p>We&#8217;re delighted that our survey of the field of Argument Mining is just out with Computational Linguistics. It provides the most up-to-date review currently accessible and is available now online. Abstract. Argument Mining is the automatic identification and extraction of the structure of inference and reasoning expressed as arguments presented in natural language. Understanding argumentative structure makes it [&hellip;]</p>
+				<a href="https://arg-tech.org/index.php/new-argument-mining-survey-in-cl/" class="readmore">Read More &raquo;</a>
+			</div>
+						<div class="threecol">
+				                                <a href="https://arg-tech.org/index.php/ova/" class="a_feature">
+				<img width="179" height="65" src="https://arg-tech.org/wp-content/uploads/2013/08/ova-w-s.png" class="attachment-feature size-feature wp-post-image" alt="" srcset="https://arg-tech.org/wp-content/uploads/2013/08/ova-w-s.png 179w, https://arg-tech.org/wp-content/uploads/2013/08/ova-w-s-150x54.png 150w" sizes="(max-width: 179px) 100vw, 179px" />				</a>
+				<p>OVA provides a drag-and-drop interface for analysing textual arguments. It is reminiscent of a streamlined Araucaria, except that it is designed to work with web pages, and in a browser rather than requiring local installation. It also natively handles AIF structures, and supports real-time collaborative analysis. The public release of OVA2 is now available, and a user [&hellip;]</p>
+				<a href="https://arg-tech.org/index.php/ova/" class="readmore">Read More &raquo;</a>
+			</div>
+					</div>
+	</div>
+
+	</div><!-- #main .wrapper -->
+	<footer id="colophon" role="contentinfo">
+		<div class="site-info ccol">
+			<p>Copyright &copy; 2021 - ARG-tech is proudly powered by <a href="http://www.wordpress.com/">WordPress</a><br />
+			<a href="http://www.arg.tech/index.php/terms-of-service/">Terms of Service</a> | ARG Theme created by <a href="http://www.johnlawrence.net/">John Lawrence</a><br /></p>
+		</div><!-- .site-info -->
+        <div style="float: right; margin-top: -40px; padding-right: 20px;">
+        <a href="http://www.dundee.ac.uk/"><img src="https://arg-tech.org/wp-content/themes/arg/images/uod-logo.png" height="32px" style="margin-right: 20px" /></a>
+<!--        <a href="http://www.ifispan.pl/"><img src="https://arg-tech.org/wp-content/themes/arg/images/ifis-logo.png" height="40px" style="margin-right: 2px" /></a>-->
+        </div>
+	</footer><!-- #colophon -->
+</div><!-- #page -->
+
+<button id="responsive-menu-button"  tabindex="1"
+        class="responsive-menu-button responsive-menu-boring
+         responsive-menu-accessible"
+        type="button"
+        aria-label="Menu">
+
+    
+    <span class="responsive-menu-box">
+        <span class="responsive-menu-inner"></span>
+    </span>
+
+    </button><div id="responsive-menu-container" class="slide-left">
+    <div id="responsive-menu-wrapper" role="navigation" aria-label="main-navigation">
+                                                                                    <ul id="responsive-menu" role="menubar" "aria-label= main-navigation" ><li id="responsive-menu-item-30" class=" menu-item menu-item-type-custom menu-item-object-custom responsive-menu-item"  role="none"><a href="http://www.arg-tech.org/" class="responsive-menu-item-link" tabindex="1" role="menuitem">Home</a></li><li id="responsive-menu-item-59" class=" menu-item menu-item-type-post_type menu-item-object-page responsive-menu-item"  role="none"><a href="https://arg-tech.org/index.php/news/" class="responsive-menu-item-link" tabindex="1" role="menuitem">News</a></li><li id="responsive-menu-item-2252" class=" menu-item menu-item-type-post_type menu-item-object-page responsive-menu-item"  role="none"><a href="https://arg-tech.org/index.php/people/" class="responsive-menu-item-link" tabindex="1" role="menuitem">People</a></li><li id="responsive-menu-item-967" class=" menu-item menu-item-type-post_type menu-item-object-page responsive-menu-item"  role="none"><a href="https://arg-tech.org/index.php/research/" class="responsive-menu-item-link" tabindex="1" role="menuitem">Research</a></li><li id="responsive-menu-item-969" class=" menu-item menu-item-type-post_type menu-item-object-page responsive-menu-item"  role="none"><a href="https://arg-tech.org/index.php/funding/" class="responsive-menu-item-link" tabindex="1" role="menuitem">Funding</a></li><li id="responsive-menu-item-34" class=" menu-item menu-item-type-post_type menu-item-object-page responsive-menu-item"  role="none"><a href="https://arg-tech.org/index.php/events/" class="responsive-menu-item-link" tabindex="1" role="menuitem">Events</a></li><li id="responsive-menu-item-41" class=" menu-item menu-item-type-post_type menu-item-object-page responsive-menu-item"  role="none"><a href="https://arg-tech.org/index.php/publications/" class="responsive-menu-item-link" tabindex="1" role="menuitem">Publications</a></li><li id="responsive-menu-item-1009" class=" menu-item menu-item-type-post_type menu-item-object-page responsive-menu-item"  role="none"><a href="https://arg-tech.org/index.php/teaching/" class="responsive-menu-item-link" tabindex="1" role="menuitem">Teaching</a></li><li id="responsive-menu-item-1674" class=" menu-item menu-item-type-post_type menu-item-object-page responsive-menu-item"  role="none"><a href="https://arg-tech.org/index.php/join-us/" class="responsive-menu-item-link" tabindex="1" role="menuitem">Join us</a></li><li id="responsive-menu-item-1833" class=" menu-item menu-item-type-post_type menu-item-object-page responsive-menu-item"  role="none"><a href="https://arg-tech.org/index.php/contact/" class="responsive-menu-item-link" tabindex="1" role="menuitem">Contact</a></li></ul>                                                <div id="responsive-menu-search-box">
+    <form action="list" class="responsive-menu-search-form" role="search">
+        <input type="search" name="s" title="Search" tabindex="1"
+               placeholder="Search"
+               class="responsive-menu-search-box">
+    </form>
+</div>                                                <div id="responsive-menu-additional-content"></div>                        </div>
+</div>
+<script type='text/javascript' src='https://arg-tech.org/wp-content/themes/arg/js/navigation.js?ver=1.0'></script>
+<script type='text/javascript' src='https://arg-tech.org/wp-includes/js/wp-embed.min.js?ver=5.4.7'></script>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-57248908-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</body>
+</html>
