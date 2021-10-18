@@ -48,20 +48,33 @@ function panZoomMode(keycode) {
       //   return
       // }
       if (nav.axis == 1) {
-        tg[nav.axis] = VB[nav.axis] + .1 * nav.dir * VB[1 + nav.axis];
+        tg[nav.axis] = parseFloat(VB[nav.axis] + .1 * nav.dir * VB[1 + nav.axis]);
       } else if (nav.axis == 0) {
-        tg[nav.axis] = VB[nav.axis] + .1 * nav.dir * VB[2 + nav.axis];
+        tg[nav.axis] = parseFloat(VB[nav.axis] + .1 * nav.dir * VB[2 + nav.axis]);
       }
-    } else if (nav.act == 'zoom') {
+    } 
+    else if (nav.act == 'zoom') {
+      //If at maximum 'zoomed out' view or 'zoomed in' view
       if ((nav.dir === -1 && VB[2] >= DMAX[0]) ||
         (nav.dir === 1 && VB[2] <= WMIN)) {
         return
       }
 
-
+      //for each direction (horizontal and vertical)
       for (let i = 0; i < 2; i++) {
-        tg[i + 2] = VB[i + 2] / Math.pow(1.3, nav.dir);
-        tg[i] = .00001 * (DMAX[i] - tg[i + 2]);
+        console.log(VB)
+        //setting target size along current axis
+        tg[i + 2] = parseFloat(VB[i + 2] / Math.pow(1.3, nav.dir)).toFixed(5);
+        // console.log("VB " + VB[i+2])
+        // console.log("direction " + nav.dir)
+        // console.log("target " + tg[i+2])
+        // mathvalue = 0;
+        // mathvalue = 0.7692307692
+        // console.log("value " + mathvalue)
+        // console.log((VB[i+2]) / 1.3**nav.dir).toFixed(5);
+        // tg[i] = .00000000001 * (DMAX[i] - tg[i + 2]);
+        tg[i] = VB[i]
+        // console.log(tg)
       }
     }
     updateView();
@@ -69,20 +82,26 @@ function panZoomMode(keycode) {
 }
 
 function updateView() {
-  let k = ++f / NF, j = 1 - k, cvb = VB.slice();
+  //progress k - frame index updated over total number of frames
+  let k = ++f / NF
+  j = 1 - k 
+  //current view box
+  cvb = VB.slice();
+  console.log("VB1 " + VB[1])
+  console.log("VB2 " + VB[2])
 
   if (nav.act === 'zoom') {
     for (let i = 0; i < 4; i++)
-      cvb[i] = j * VB[i] + k * tg[i]
+      cvb[i] = parseFloat(j * VB[i] + k * tg[i]);
   }
 
   if (nav.act === 'move') {
-    cvb[nav.axis] = j * VB[nav.axis] + k * tg[nav.axis];
+    cvb[nav.axis] = parseFloat(j * VB[nav.axis] + k * tg[nav.axis]);
   }
 
   SVGRoot.setAttribute('viewBox', cvb.join(' '));
 
-
+//if f reaches total number of frames - stop animation
   if (!(f % NF)) {
     f = 0;
     VB.splice(0, 4, ...cvb);
@@ -297,11 +316,21 @@ function GetTrueCoords(evt) {
   var newScale = VB[2] / 1000;
   var translationX = VB[0];
   var translationY = VB[1];
-
+  var tempCoords = [0,0];
 
   //Calculating new coordinates after panning and zooming
-  TrueCoords.x = ((evt.clientX - svgleft) * newScale) + translationX;
-  TrueCoords.y = ((evt.clientY - svgtop) * newScale) + translationY;
+  tempCoords.x = (((evt.clientX - svgleft) * newScale) + translationX);
+  tempCoords.y = (((evt.clientY - svgtop) * newScale) + translationY);
+
+  TrueCoords.x = Math.round(tempCoords.x);
+  TrueCoords.y = Math.round(tempCoords.y);
+
+  console.log("clientX " + evt.clientX)
+  console.log("clientY " + evt.clientY)
+  console.log("svgleft " + svgleft)
+  console.log("newScale " + newScale)
+  console.log("translationX " + translationX)
+  console.log("truecoordsX " + TrueCoords.x)
 
 }
 
