@@ -479,13 +479,21 @@ if (isset($_COOKIE['ovauser'])) {
       <iframe src="<?php echo $analysis; ?>" id="extside" name="extsite" style="width:35%;border-right:1px solid #666;"></iframe> <!-- data-step="1" data-intro="<p>Highlight sections of text from the webpage to create a node.</p>" data-position="right" -->
     <?php } ?>
 
-
+    <script>
+        var w = window.innerWidth;
+        var h = window.innerHeight;
+        console.log("width: " + w + " height:" + h)
+      </script>
     <div id="right1">
-
+    <!-- <script>
+    document.getElementById('right1').style.width = w;
+    document.getElementById('right1').style.height = w
+    </script> -->
       <!-- style="width:90%; height:100%; z-index:999; background-color:#fff;" -->
-
-      <svg viewBox='0 0 1000 12775' xmlns="http://www.w3.org/2000/svg" version="1.1" width="1000px" height="12775px" style="z-index:999; background-color:#fff;" onmousedown='Grab(evt);' onmousemove='Drag(evt);' onmouseup='Drop(evt);' onload='Init(evt);' id='inline'>
+      
+      <svg viewBox='0 0 1500 1500' xmlns="http://www.w3.org/2000/svg" version="1.1" width="1500" height="1500" style="z-index:999; background-color:#fff;" onmousedown='Grab(evt);' onmousemove='Drag(evt);' onmouseup='Drop(evt);' onload='Init(evt);' id='inline'>
         <defs>
+          
           <marker id='head' orient="auto" markerWidth='12' markerHeight='10' refX='12' refY='5'>
             <!-- triangle pointing right (+x) -->
             <path d='M0,0 V10 L12,5 Z' fill="black" />

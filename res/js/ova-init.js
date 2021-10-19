@@ -96,6 +96,7 @@ function Init(evt) {
     window.sessionid = $.now().toString() + Math.random().toString().substring(3, 8);
 
     VB = SVGRoot.getAttribute('viewBox').split(' ').map(c => +c);
+    VB_width = VB[2];
     DMAX = [10604, 135472];
     WMIN = 455;
 
