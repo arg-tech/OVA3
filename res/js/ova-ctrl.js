@@ -106,8 +106,9 @@ function stopAni() {
 }
 
 function resetPosition() {
-  VB = [0, 0, 1500, 12775];
-  SVGRoot.setAttribute('viewBox', [0, 0, 1500, 12775]);
+  console.log("VB before reset: " + VB)
+  VB = [0, 0, 1500, 1500];
+  SVGRoot.setAttribute('viewBox', [0, 0, 1500, 1500]);
 }
 
 function edgeMode(status) {
@@ -300,7 +301,9 @@ function GetTrueCoords(evt) {
   tsvg = document.getElementById('inline').getBoundingClientRect();
   svgleft = tsvg.left;
   svgtop = tsvg.top;
-  var newScale = VB[2] / 1000;
+  var newScale = VB[2] / VB_width;
+  console.log("VBwidth: " + VB_width);
+  console.log("new scale: " + newScale);
   var translationX = VB[0];
   var translationY = VB[1];
   var tempCoords = [0,0];
@@ -874,6 +877,8 @@ function deleteNode(node) {
   if (node.visible) {
     document.getElementById(CurrentlyEditing).remove(); //if the node was drawn on the svg remove it
     if (mySel.type == 'L') {
+      remhl(node.nodeID);
+    } else if (!rIATMode && mySel,type == 'I') {
       remhl(node.nodeID);
     }
   }
