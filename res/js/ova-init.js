@@ -459,9 +459,9 @@ function hlcurrent(nodeID) {
     span = document.getElementById("node" + nodeID);
     if (span == null && mySel.type == 'I') {
         span = document.getElementById("node" + (CurrentlyEditing + 1));
-        span.id = "node" + nodeID;
     }
     if (span != null) {
+        span.id = "node" + nodeID;
         span.className = "highlighted";
         //$(".hlcurrent").removeClass("highlighted");
 
