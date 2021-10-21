@@ -59,7 +59,6 @@ function panZoomMode(keycode) {
 
       //for each direction (horizontal and vertical)
       for (let i = 0; i < 2; i++) {
-        console.log(VB)
         //setting target size along current axis
         tg[i + 2] = parseFloat(VB[i + 2] / Math.pow(1.3, nav.dir)).toFixed(5);
 
@@ -86,7 +85,6 @@ function updateView() {
     cvb[nav.axis] = parseFloat(j * VB[nav.axis] + k * tg[nav.axis]);
   }
   SVGRoot.setAttribute('viewBox', cvb.join(' '));
-  console.log(VB)
 
 //if f reaches total number of frames - stop animation
   if (!(f % NF)) {
@@ -106,7 +104,6 @@ function stopAni() {
 }
 
 function resetPosition() {
-  console.log("VB before reset: " + VB)
   VB = [0, 0, 1500, 1500];
   SVGRoot.setAttribute('viewBox', [0, 0, 1500, 1500]);
 }
@@ -302,8 +299,6 @@ function GetTrueCoords(evt) {
   svgleft = tsvg.left;
   svgtop = tsvg.top;
   var newScale = VB[2] / VB_width;
-  console.log("VBwidth: " + VB_width);
-  console.log("new scale: " + newScale);
   var translationX = VB[0];
   var translationY = VB[1];
   var tempCoords = [0,0];
@@ -717,10 +712,7 @@ function AddPt(nx, ny) {
   nbox.setAttribute('y', ny + 1);
   nbox.setAttribute('width', 1);
   nbox.setAttribute('height', 1);
-  console.log("nbox x: " + nx);
-  console.log("nbox y: " + ny);
   g.appendChild(nbox)
-  console.log(g)
   SVGRootG.appendChild(g);
 
   return g;

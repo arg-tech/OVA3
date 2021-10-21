@@ -403,7 +403,11 @@ function getSelText() {
     var iframe = document.getElementById('left1');
     var txt = "";
     count = count + 1;
-    if (iframe.nodeName.toLowerCase() == 'div') {
+    // if (iframe.nodeName.toLowerCase() == 'div') {
+    console.log(document.getElementById('analysis_text'));
+    if (document.getElementById('analysis_text') != null) {
+    // if (iframe.getElementsByTagName('div')) {
+        console.log("in if");
         if (window.getSelection) {
             userSelection = window.getSelection();
         } else if (document.selection) {
@@ -412,8 +416,10 @@ function getSelText() {
         if (userSelection.text) { // IE
             txt = userSelection.text;
         } else if (userSelection != "") {
+            console.log("in else if")
             range = getRangeObject(userSelection);
             txt = userSelection.toString();
+            console.log(txt)
 
             var span = document.createElement("span");
             if (rIATMode == false) {
@@ -434,10 +440,17 @@ function getSelText() {
             }
             range.surroundContents(span);
             postEdit("text", "edit", $('#analysis_text').html());
-        }
+        } 
+    } else if (iframe.getElementsByTagName('iframe')) {
+        console.log("identified iframe");
+        txt = document.getElementById('extside').contentWindow.getSelection().toString();
+        console.log(txt);
     } else {
+        console.log("in else");
         var innerDoc = iframe.contentDocument || iframe.contentWindow.document;
+        console.log(innerDoc);
         txt = iframe.contentWindow.getSelection().toString();
+        console.log(txt);
     }
     return txt;
 }
@@ -591,6 +604,7 @@ function addLocution(node) {
 }
 
 function getRangeObject(selectionObject) {
+    console.log(selectionObject.getRangeAt);
     if (selectionObject.getRangeAt) {
         return selectionObject.getRangeAt(0);
     } else {
