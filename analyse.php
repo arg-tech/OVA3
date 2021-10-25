@@ -173,6 +173,7 @@ if (isset($_COOKIE['ovauser'])) {
     <a onClick="nodeMode('switch'); return false;" class="icon" id="nadd" style="background-position: -0px 50%;"><span class="tooltiptext">Add&nbsp;Node</span></a>
     <div class="divider"></div>
     <a onClick="resetPosition();" class="icon" id="reset" style="background-position: -336px 50%;"><span class="tooltiptext">Reset&nbsp;View</span></a>
+    <a onClick="undo();" class="icon" id="undo" style="background-position: -336px 50%;"><span class="tooltiptext">Undo</span></a> <!-- TODO: change style -->
     <div class="divider"></div>
   </div>
 
@@ -342,6 +343,7 @@ if (isset($_COOKIE['ovauser'])) {
             <strong>Keyboard Shortcuts:</strong>
             <p style="color: #444; font-size: 12px;">
             <pre>
+<strong>ctrl+z</strong> on canvas: undo changes you made to an analysis
 <strong>shift+drag</strong> from one node to another: add edge
 <strong>ctrl+click</strong> on node: edit node menu
 <strong>arrow keys: </strong> move canvas
@@ -464,7 +466,7 @@ if (isset($_COOKIE['ovauser'])) {
       </form>
     </div>
     <ul class="btnlist">
-      <li><a href="#" onClick="this.parentNode.parentNode.parentNode.style.display='none';$('#modal-shade').hide(); FormOpen = false; window.groupID += 1; deleteNode(mySel); return false;" class="bgred">
+      <li><a href="#" onClick="this.parentNode.parentNode.parentNode.style.display='none';$('#modal-shade').hide(); FormOpen = false; window.groupID ++; deleteNode(mySel); return false;" class="bgred">
           <div class="btnicn" style="background-image: url('res/img/icon-delnode.png');">&nbsp;</div> Delete Node
         </a></li>
       <!-- TODO: this if statement isn't working -->

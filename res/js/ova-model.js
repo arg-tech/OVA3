@@ -52,6 +52,7 @@ function newNode(nodeID, type, scheme, participantID, text, x, y, visible) {
     n.y = y;
     n.visible = typeof visible !== 'undefined' ? visible : true;
     nodes.push(n);
+    // console.log("nodeID: " + n.nodeID);
     postEdit("node", "add", n, 0, n.nodeID);
     return n;
 }
@@ -61,13 +62,13 @@ function updateNode(nodeID, x, y, type, scheme, text) {
     n = nodes[index];
     n.x = x;
     n.y = y;
-    
+
     if (type != undefined && scheme != undefined && text != undefined) {
         n.type = type;
         n.scheme = scheme;
         n.text = text;
     }
-    window.groupID += 1;
+    window.groupID ++;
     postEdit("node", "edit", n, 0, n.nodeID);
 }
 

@@ -16,13 +16,14 @@ if ($_POST['type'] == "node") {
         $versionNo = $preVersionNo + 1;
     }
 
-    if ($_POST['action'] == 'add' || $_POST['action'] == 'edit') {
-        $q = $DBH->prepare("INSERT INTO nodes(nodeID, analysisID, versionNo, content) VALUES (:nodeID, :analysisID, :versionNo, :cnt)");
-        $q->execute(array(':nodeID' => $_POST['nodeID'], ':analysisID' => $_POST['analysisID'], ':versionNo' => $versionNo, ':cnt' => $_POST['cnt']));
-    } else {
+    if ($_POST['action'] == 'delete') { //if a delete edit don't add a new version of the node to the table
         $preVersionNo = $previousNode['versionNo']; //previous version is same as current version
         $versionNo = $previousNode['versionNo'];
+    } else {
+        $q = $DBH->prepare("INSERT INTO nodes(nodeID, analysisID, versionNo, content) VALUES (:nodeID, :analysisID, :versionNo, :cnt)");
+        $q->execute(array(':nodeID' => $_POST['nodeID'], ':analysisID' => $_POST['analysisID'], ':versionNo' => $versionNo, ':cnt' => $_POST['cnt']));
     }
+
     $contentID = $_POST['nodeID'];
 } else {
     if ($_POST['type'] == "edge") {
@@ -34,7 +35,6 @@ if ($_POST['type'] == "node") {
     $q->execute(array(':analysisID' => $_POST['analysisID'], ':cnt' => $_POST['cnt']));
     $contentID = $DBH->lastInsertId();
 }
-
 
 $sql = "INSERT INTO edits(analysisID, sessionid, `type`, `action`, contentID, groupID, undone, versionNo, preVersionNo) VALUES (?,?,?,?,?,?,?,?,?)";
 $q = $DBH->prepare($sql);

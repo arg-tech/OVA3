@@ -6,8 +6,9 @@ $sessionid = $_GET['sessionid'];
 $groupID = 1;
 $action = '';
 $type = '';
+$lastID = 1;
 
-//find the groupID and what type of edit the last edit was
+//find the groupID and what type of edit the last edit for this user is
 $q = $DBH->prepare("SELECT * FROM edits WHERE analysisID=:analysisID AND sessionid=:sessionid AND undone=0 ORDER BY groupID DESC LIMIT 1");
 $q->execute(array(':analysisID' => $analysisID, ':sessionid' => $sessionid));
 $lastEditGroup = $q->fetch(PDO::FETCH_ASSOC);
@@ -50,12 +51,16 @@ if ($action == 'edit' && $type == 'node') {
 	}
 } else {
 	while ($row = $STH->fetch()) {
-		if ($row['type'] != 'text') {
+		if ($action == 'delete' || $row['type'] != 'text') {
 			if ($row['type'] == 'node') {
 				$q = "SELECT content FROM nodes WHERE nodeID=" . $row['contentID'] . " AND nodes.analysisID=" . $row['analysisID'] . " AND nodes.versionNo=" . $row['versionNo'] . ";";
 			} else if ($row['type'] == 'edge') {
 				$q = "SELECT content FROM edges WHERE edgeID=" . $row['contentID'] . " AND edges.analysisID=" . $row['analysisID'] . ";";
+			} else if ($row['type'] == 'text') { //find the previous text content
+				$q = "SELECT content FROM texts INNER JOIN edits ON textID = contentID
+				WHERE edits.analysisID=" . $row['analysisID'] . " AND type='text' AND undone=0 ORDER BY textID DESC LIMIT 1, 1;";
 			}
+
 			$sc = $DBH->prepare($q);
 			$sc->execute();
 			$r = $sc->fetch(PDO::FETCH_ASSOC);
@@ -73,6 +78,17 @@ if ($action == 'edit' && $type == 'node') {
 	}
 }
 
+if ($action == 'delete') { //find the last edit ID for this analysis that hasn't been undone yet
+	$q = $DBH->prepare("SELECT editID FROM edits WHERE analysisID=? AND undone=0 ORDER BY editID DESC LIMIT 1");
+	$q->execute([$analysisID]);
+	$l = $q->fetch(PDO::FETCH_ASSOC);
+	if (!$l) {
+		$lastID = 1;
+	} else {
+		$lastID = $l['editID'];
+	}
+}
+
 //update all edits that are to be undone
 foreach ($allEditIDs as $ID) {
 	$sql = "UPDATE edits SET undone=1 WHERE editID=" . $ID;
@@ -81,6 +97,6 @@ foreach ($allEditIDs as $ID) {
 
 $return = '{"edits":[';
 $return = $return . implode(',', $JSON);
-$return = $return . ']}';
+$return = $return . '], "lastID":' . $lastID . '}';
 
 echo $return;

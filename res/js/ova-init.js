@@ -204,10 +204,6 @@ function updateAnalysis() {
             } else if (edits.edits[i].type == 'node' && edits.edits[i].action == 'delete') {
                 node = JSON.parse(edits.edits[i].content);
                 updateDelNode(node);
-                /*} else if (edits.edits[i].type == 'node' && edits.edits[i].action == 'move') {
-                    node = JSON.parse(edits.edits[i].content);
-                    updateMoveNode(node);
-                }*/
             } else if (edits.edits[i].type == 'node' && edits.edits[i].action == 'edit') {
                 node = JSON.parse(edits.edits[i].content);
                 updateEditNode(node);
@@ -221,7 +217,6 @@ function updateAnalysis() {
                 updateEditText(edits.edits[i].content);
             }
             lasteditCollab = edits.edits[i].editID;
-
         }
 
         doretry = eretry;
@@ -253,12 +248,11 @@ function updateConnectedEdges(node) {
 }
 
 function updateAddNode(node) {
-    console.log("updateAddNode called");
-    console.log(node);
-
+    // console.log("updateAddNode called");
+    // console.log(node);
     var found = nodes.find(n => n.nodeID == node.nodeID);
     if (typeof found !== "undefined") { //if a node with the same nodeID already exists
-        node.nodeID += 1;
+        console.log("found duplicate nodeID: " + node.nodeID);
     }
     if (node.nodeID > window.nodeCounter) {
         window.nodeCounter = node.nodeID;
@@ -290,9 +284,9 @@ function updateAddNode(node) {
 
 function updateDelNode(node) {
     //deleteNode(node) is used for updating the original analysis (i.e. contains postEdit() call)
-    console.log("updateDelNode called");
-    console.log("node:");
-    console.log(node);
+    // console.log("updateDelNode called");
+    // console.log("node:");
+    // console.log(node);
     var index = findNodeIndex(node.nodeID);
     if (index > -1) { //if the node exists
         nodes.splice(index, 1); //remove the node
@@ -303,10 +297,10 @@ function updateDelNode(node) {
 }
 
 function updateEditNode(node) {
-    console.log("updateEditNode called");
-    console.log("node edited:");
-    console.log(node);
     //updateNode(nodeID, x, y, type, scheme, text) is used for updating the original analysis (i.e. contains postEdit() call)
+    // console.log("updateEditNode called");
+    // console.log("node edited:");
+    // console.log(node);
     var index = findNodeIndex(node.nodeID);
     if (index > -1) { //if the node exists
         n = nodes[index];
@@ -325,10 +319,10 @@ function updateEditNode(node) {
 }
 
 function updateAddEdge(edge) {
-    /*console.log("updateAddEdge called");
-    console.log("edge to add: ");
-    console.log(edge);*/
     //newEdge(fromID, toID, visible) is used for updating the original analysis (i.e. contains postEdit() call) 
+    // console.log("updateAddEdge called");
+    // console.log("edge to add: ");
+    // console.log(edge);
     if (edge.fromID == '' || edge.toID == '') {
         return false;
     } else {
@@ -348,9 +342,9 @@ function updateAddEdge(edge) {
 
 function updateDelEdge(edge) {
     //deleteEdges(edge) is used for updating the original analysis (i.e. contains postEdit() call)
-    /*console.log("updateDelEdge called");
-    console.log("edge:");
-    console.log(edge);*/
+    // console.log("updateDelEdge called");
+    // console.log("edge:");
+    // console.log(edge);
     var l = edges.length;
     for (var i = l - 1; i >= 0; i--) {
         if (edges[i].toID == edge.toID && edges[i].fromID == edge.fromID) {
@@ -389,24 +383,14 @@ function getSelText() {
             txt = userSelection.toString();
 
             var span = document.createElement("span");
+            span.id = "node" + (window.nodeCounter + 1);
             if (rIATMode == false) {
                 span.className = "highlighted";
-                if (window.nodeCounter == 1) {
-                    span.id = "node" + window.nodeCounter + 1;
-                } else {
-                    span.id = "node" + window.nodeCounter;
-                }
             } else {
                 span.className = "hlcurrent";
-                if (window.nodeCounter == 1) {
-                    span.id = "node" + window.nodeCounter + 3;
-                } else {
-                    span.id = "node" + window.nodeCounter + 2;
-                }
-                span.id = "node" + (window.nodeCounter + 2);
             }
             range.surroundContents(span);
-            window.groupID += 1;
+            window.groupID++;
             postEdit("text", "edit", $('#analysis_text').html());
         }
     } else {
@@ -418,14 +402,14 @@ function getSelText() {
 
 //function to add the highlight to text on LHS
 function hlcurrent(nodeID, undone) {
-    /*console.log('hlcurrent');
-    console.log(mySel);
-    console.log('CurrentlyEditing: ' + CurrentlyEditing);
-    console.log("nodeID: " + nodeID);*/
+    // console.log('hlcurrent called');
+    // console.log(mySel);
+    // console.log('CurrentlyEditing: ' + CurrentlyEditing);
+    // console.log("nodeID: " + nodeID);
 
     span = document.getElementById("node" + nodeID);
-    if (span == null && mySel.type == 'I') {
-        span = document.getElementById("node" + (CurrentlyEditing + 1));
+    if (dialogicalMode && span == null && mySel.type == 'I') {
+        span = document.getElementById("node" + (CurrentlyEditing));
     }
 
     if (span != null) {
@@ -449,6 +433,8 @@ function hlcurrent(nodeID, undone) {
 
 //function to remove the highlight from text on LHS
 function remhl(nodeID, undone) {
+    // console.log('remhl called');
+    // console.log("nodeID: " + nodeID);
     span = document.getElementById("node" + nodeID);
     if (span != null) {
         var text = span.textContent || span.innerText;
@@ -459,22 +445,36 @@ function remhl(nodeID, undone) {
     }
 }
 
+//function to re-add the highlight to text on LHS for a given node
+function hlText(node) {
+    if (userSelection != "") {
+        range = getRangeObject(userSelection);
+        txt = userSelection.toString();
+
+        var span = document.createElement("span");
+        span.className = "highlighted";
+        span.id = "node" + node.nodeID;
+        range.surroundContents(span);
+        postEdit("text", "edit", $('#analysis_text').html(), 1);
+    }
+}
+
 function postEdit(type, action, content, undone, nodeID) {
     //set default values
     var undone = typeof undone !== 'undefined' ? undone : 0;
     var nodeID = typeof nodeID !== 'undefined' ? nodeID : null;
-    /*console.log("==============");
-    console.log("analysisID: " + window.analysisID);
-    console.log("sessionid: " + window.sessionid);
-    console.log("type: " + type);
-    console.log("action: " + action);
-    console.log("cnt: " + JSON.stringify(content));
-    console.log("groupID: " + window.groupID);
-    console.log("undone: " + undone);
-    console.log("nodeID: " + nodeID);*/
+    // console.log("==============");
+    // console.log("analysisID: " + window.analysisID);
+    // console.log("sessionid: " + window.sessionid);
+    // console.log("type: " + type);
+    // console.log("action: " + action);
+    // console.log("cnt: " + JSON.stringify(content));
+    // console.log("groupID: " + window.groupID);
+    // console.log("undone: " + undone);
+    // console.log("nodeID: " + nodeID);
 
     if (type == 'text') {
-        $.post("helpers/edit.php", { analysisID: window.analysisID, sessionid: window.sessionid, type: type, action: action, cnt: content, groupID: window.groupID, undone: undone }).done(function (data) { //, versionNo: null, preVersionNo: null
+        $.post("helpers/edit.php", { analysisID: window.analysisID, sessionid: window.sessionid, type: type, action: action, cnt: content, groupID: window.groupID, undone: undone }).done(function (data) {
             dt = JSON.parse(data);
             lastedit = dt.last;
         });
@@ -482,11 +482,11 @@ function postEdit(type, action, content, undone, nodeID) {
         if (content == null) {
             alert("Error with " + type + " " + action);
         } else {
-            $.post("helpers/edit.php", { analysisID: window.analysisID, sessionid: window.sessionid, type: type, action: action, cnt: JSON.stringify(content), groupID: window.groupID, undone: undone, nodeID: nodeID }).done(function (data) { //, versionNo: versionNo, preVersionNo: preVersionNo 
+            $.post("helpers/edit.php", { analysisID: window.analysisID, sessionid: window.sessionid, type: type, action: action, cnt: JSON.stringify(content), groupID: window.groupID, undone: undone, nodeID: nodeID }).done(function (data) {
                 dt = JSON.parse(data);
                 lastedit = dt.last;
-                console.log("lastedit: " + lastedit);
-                //console.log("lasteditCollab: " + lasteditCollab);
+                // console.log("lastedit: " + lastedit);
+                // console.log("lasteditCollab: " + lasteditCollab);
             });
         }
     }
@@ -494,43 +494,83 @@ function postEdit(type, action, content, undone, nodeID) {
 }
 
 function undo() {
+    console.log("undo called");
     var allEdits = [];
     var action = '';
     var path = 'helpers/undo.php?sessionid=' + window.sessionid + '&analysisID=' + window.analysisID;
 
     $.get(path, function (data) {
         allEdits = JSON.parse(data);
-        action = allEdits.edits[0].action;
-        console.log(allEdits.edits);
+        if (allEdits.edits[0] != undefined) { //if there are edits to undo
+            action = allEdits.edits[0].action;
+            // console.log("==============");
+            // console.log(allEdits.edits);
 
-        if (action == 'add') {
-            undoAdd(allEdits.edits);
-        } else if (action == 'delete') {
-            undoDelete(allEdits.edits);
-        } else if (action == 'edit') {
-            undoEdit(allEdits.edits);
+            if (action == 'add') {
+                undoAdd(allEdits.edits);
+            } else if (action == 'delete') {
+                undoDelete(allEdits.edits, allEdits.lastID);
+            } else if (action == 'edit') {
+                undoEdit(allEdits.edits);
+            }
         }
     });
 }
 
 //readd all of the deleted nodes and edges in toUndo
-function undoDelete(toUndo) {
+function undoDelete(toUndo, lastEditID) {
     console.log("undoDelete called");
-    for (i = 0; i < toUndo.length; i++) {
-        toAdd = JSON.parse(toUndo[i].content);
-        if (toUndo[i].type == 'node') { //if toAdd is a node
-            //if (findNodeIndex(toAdd.nodeID) == -1) { //if the node doesn't exist then add it
-            console.log("adding node: " + toAdd.nodeID);
-            updateAddNode(toAdd); //readd node
-            postEdit("node", "add", toAdd, 1, toAdd.nodeID);
-            if (toAdd.type == 'L' && toAdd.visible) {
-                hlcurrent(toAdd.nodeID, 1); //add highlight to text on LHS when adding locutions
+    var isLastEdit = false;
+    var confirmUndo = true;
+    // console.log("last edit collab: " + lasteditCollab);
+    // console.log("editID: " + toUndo[0].editID);
+    // console.log("last edit ID: " + lastEditID);
+    if (toUndo[0].editID == lastEditID) { //if undoing the last change to an analysis
+        isLastEdit = true;
+    } else {
+        //confirmUndo = confirm("Are you sure you want to undo? \nTo undo you will need to reselect the text as further changes have been made to this analysis. \nIf you select to cancel, this edit will be skipped if you undo again.");
+        confirmUndo = false;
+        alert("Cannot undo as further changes have been made to this analysis by another analyst. This edit will be skipped if you select undo again.");
+    }
+
+    if (confirmUndo) {
+        var highlight = false;
+        var toHighlight = null;
+
+        for (i = 0; i < toUndo.length; i++) {
+            if (toUndo[i].type == 'text') {
+                if (isLastEdit) {
+                    // console.log("____________");
+                    // console.log("overwriting text on LHS");
+                    updateEditText(toUndo[i].content); //overwrite the text on LHS to readd any highlighting that was removed
+                    postEdit("text", "edit", $('#analysis_text').html(), 1);
+                } else {
+                    highlight = true;
+                }
+            } else {
+                toAdd = JSON.parse(toUndo[i].content);
+                if (toUndo[i].type == 'node') { //if toAdd is a node
+                    // console.log("____________");
+                    // console.log("adding node: " + toAdd.nodeID);
+                    updateAddNode(toAdd); //readd node
+                    postEdit("node", "add", toAdd, 1, toAdd.nodeID);
+                    //add highlight to text on LHS when adding locutions in dialogical mode or when adding I nodes when not in dialogical mode
+                    if ((dialogicalMode && toAdd.type == 'L' && toAdd.visible) || (!dialogicalMode && toAdd.type == 'I')) {
+                        toHighlight = toAdd;
+                    }
+                } else if (toUndo[i].type == 'edge') { //if toAdd is an edge
+                    // console.log("____________");
+                    // console.log("adding edge: " + toAdd.fromID + "->" + toAdd.toID);
+                    updateAddEdge(toAdd); //readd edge
+                    postEdit("edge", "add", toAdd, 1);
+                }
             }
-            //}
-        } else if (toUndo[i].type == 'edge') { //if toAdd is an edge
-            console.log("adding edge: " + toAdd.fromID + "->" + toAdd.toID);
-            updateAddEdge(toAdd); //readd edge
-            postEdit("edge", "add", toAdd, 1);
+        }
+
+        if (highlight) {
+            //get user to highlight text on LHS for toHighlight node
+            console.log("need to reselect text");
+            //hlText(toHighlight);
         }
     }
 }
@@ -541,15 +581,18 @@ function undoAdd(toUndo) {
     for (i = 0; i < toUndo.length; i++) {
         toDel = JSON.parse(toUndo[i].content);
         if (toUndo[i].type == 'node') { //if toDel is a node
-            console.log("deleting node: " + toDel.nodeID);
-            if (toDel.type == 'L' && toDel.visible) {
-                remhl(toDel.nodeID, 1); //remove highlight from text on LHS when removing locutions
+            // console.log("____________");
+            // console.log("deleting node: " + toDel.nodeID);
+            //remove highlight from text on LHS when removing locutions in dialogical mode or when removing I nodes when not in rapid IAT mode
+            if ((dialogicalMode && toDel.type == 'L' && toDel.visible) || (!rIATMode && toDel.type == 'I')) {
+                remhl(toDel.nodeID, 1);
             }
             updateDelNode(toDel); //delete node
             postEdit("node", "delete", toDel, 1, toDel.nodeID);
 
         } else if (toUndo[i].type == 'edge') { //if toDel is an edge
-            console.log("deleting edge: " + toDel.fromID + "->" + toDel.toID);
+            // console.log("____________");
+            // console.log("deleting edge: " + toDel.fromID + "->" + toDel.toID);
             updateDelEdge(toDel); //delete edge
             postEdit("edge", "delete", toDel, 1);
 
@@ -563,7 +606,7 @@ function undoEdit(toUndo) {
     for (i = 0; i < toUndo.length; i++) {
         if (toUndo[i].type == 'node') {
             toEdit = JSON.parse(toUndo[i].content);
-            console.log("editing node: " + toEdit.nodeID);
+            // console.log("editing node: " + toEdit.nodeID);
             updateEditNode(toEdit); //edit node
             postEdit("node", "edit", toEdit, 1, toEdit.nodeID);
         }
@@ -623,7 +666,7 @@ function addLocution(node) {
     }
 
 
-    window.groupID += 1;
+    window.groupID++;
     window.nodeCounter = window.nodeCounter + 1;
     var newLNodeID = window.nodeCounter;
 
@@ -657,9 +700,6 @@ function addLocution(node) {
     DrawEdge(newYANodeID, CurrentlyEditing);
     UpdateEdge(edge);
 
-    // span = document.getElementById("node"+newLNodeID);
-    // span.className="highlighted";
-    //console.log(newLNodeID);
     hlcurrent(newLNodeID);
 }
 
@@ -758,10 +798,11 @@ function addlcancel() {
     }
 
     if (toDelete == true) {
-        window.groupID += 1; //todo: unsure if want add I node & hl and cancel, i.e. remove the I node & hl, as separate group ids
+        window.groupID++;
         deleteNode(nodes[index]);
     }
-    remhl(CurrentlyEditing + 1)
+
+    remhl((CurrentlyEditing++));
     return false;
 }
 
@@ -1260,6 +1301,11 @@ function mainTut() {
             //   intro: "<p>An overview of the analysis can be seen here.</p><p>Drag the box to move around the canvas.</p>",
             //   position: 'left',
             // },
+            {
+                element: '#undo',
+                intro: "Click here to undo the last change you made to an analysis.</p>",
+                position: 'bottom-middle-aligned',
+            },
             {
                 element: '#reset',
                 intro: "<p>Move around the canvas using the arrow keys on your keyboard.</p><p>Click here to reset your view.</p>",
