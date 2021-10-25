@@ -61,19 +61,10 @@ function panZoomMode(keycode) {
 
       //for each direction (horizontal and vertical)
       for (let i = 0; i < 2; i++) {
-        //console.log(VB)
         //setting target size along current axis
         tg[i + 2] = parseFloat(VB[i + 2] / Math.pow(1.3, nav.dir)).toFixed(5);
-        // console.log("VB " + VB[i+2])
-        // console.log("direction " + nav.dir)
-        // console.log("target " + tg[i+2])
-        // mathvalue = 0;
-        // mathvalue = 0.7692307692
-        // console.log("value " + mathvalue)
-        // console.log((VB[i+2]) / 1.3**nav.dir).toFixed(5);
-        // tg[i] = .00000000001 * (DMAX[i] - tg[i + 2]);
+
         tg[i] = VB[i]
-        // console.log(tg)
       }
     }
     updateView();
@@ -86,18 +77,14 @@ function updateView() {
   j = 1 - k
   //current view box
   cvb = VB.slice();
-  // console.log("VB1 " + VB[1])
-  // console.log("VB2 " + VB[2])
 
   if (nav.act === 'zoom') {
     for (let i = 0; i < 4; i++)
       cvb[i] = parseFloat(j * VB[i] + k * tg[i]);
   }
-
   if (nav.act === 'move') {
     cvb[nav.axis] = parseFloat(j * VB[nav.axis] + k * tg[nav.axis]);
   }
-
   SVGRoot.setAttribute('viewBox', cvb.join(' '));
 
   //if f reaches total number of frames - stop animation
@@ -118,8 +105,8 @@ function stopAni() {
 }
 
 function resetPosition() {
-  VB = [0, 0, 1000, 12775];
-  SVGRoot.setAttribute('viewBox', [0, 0, 1000, 12775]);
+  VB = [0, 0, 1500, 1500];
+  SVGRoot.setAttribute('viewBox', [0, 0, 1500, 1500]);
 }
 
 function edgeMode(status) {
@@ -312,7 +299,7 @@ function GetTrueCoords(evt) {
   tsvg = document.getElementById('inline').getBoundingClientRect();
   svgleft = tsvg.left;
   svgtop = tsvg.top;
-  var newScale = VB[2] / 1000;
+  var newScale = VB[2] / VB_width;
   var translationX = VB[0];
   var translationY = VB[1];
   var tempCoords = [0, 0];
@@ -323,13 +310,6 @@ function GetTrueCoords(evt) {
 
   TrueCoords.x = Math.round(tempCoords.x);
   TrueCoords.y = Math.round(tempCoords.y);
-
-  // console.log("clientX " + evt.clientX)
-  // console.log("clientY " + evt.clientY)
-  // console.log("svgleft " + svgleft)
-  // console.log("newScale " + newScale)
-  // console.log("translationX " + translationX)
-  // console.log("truecoordsX " + TrueCoords.x)
 
 }
 

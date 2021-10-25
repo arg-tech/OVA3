@@ -9,6 +9,18 @@ if (isset($_GET['af']) && isset($_GET['as'])) {
 $source = $_GET['url'];
 if ($source == "local") {
   $analysis = "localtext.html";
+} elseif(substr($source,-3)=="pdf"){
+  if($source == "pdf"){
+      $analysis = "pdfjs/web/viewer.html";
+  }else{
+      $pdfurl = $source;
+      $parts = pathinfo($pdfurl);
+      $pdfurl = $parts['dirname'] . '/' . rawurlencode($parts['basename']);
+      $fname = hash('md5', $pdfurl);
+      file_put_contents('pdfs/'. $fname . '.pdf', fopen($pdfurl, 'r'));
+      $analysis = "pdfjs/web/viewer.html?file=../../pdfs/" . $fname . ".pdf";
+  }
+  $source = "pdf";
 } elseif (substr($source, 0, 4) != "http") {
   $rtime = time();
   $salt = "ovas@lt22";
@@ -486,23 +498,30 @@ if (isset($_COOKIE['ovauser'])) {
   <!--  <a href="http://www.arg.tech" target="_blank" id="devby"><img src="res/img/arg-tech.svg" /></a> -->
   <div id="mainwrap">
     <div id="spacer"></div>
+    <div id="left1">
     <?php if ($source == "local") { ?>
-      <div id="left1">
         <div id="analysis_text" contenteditable="true" spellcheck="false">Enter your text here...</div>
         <!-- data-step="1" data-intro="<p>Enter the text that you want to analyse here.</p><p>Select sections of text to create a node.</p> -->
-      </div>
-    <?php } else { ?>
-      <!-- if url was added to be loaded into LHS -->
-      <iframe src="<?php echo $analysis; ?>" id="extside" name="extsite" style="width:35%;border-right:1px solid #666;"></iframe> <!-- data-step="1" data-intro="<p>Highlight sections of text from the webpage to create a node.</p>" data-position="right" -->
+    <?php } else { ?>  <!-- if url was added to be loaded into LHS -->
+      <iframe src="<?php echo $analysis; ?>" id="extside" name="extsite" style="width:100%;height:100%;border-right:1px solid #666;"></iframe> <!-- data-step="1" data-intro="<p>Highlight sections of text from the webpage to create a node.</p>" data-position="right" -->
     <?php } ?>
+    </div>
 
-
+    <script>
+        var w = window.innerWidth;
+        var h = window.innerHeight;
+        console.log("width: " + w + " height:" + h)
+      </script>
     <div id="right1">
-
+    <!-- <script>
+    document.getElementById('right1').style.width = w;
+    document.getElementById('right1').style.height = w
+    </script> -->
       <!-- style="width:90%; height:100%; z-index:999; background-color:#fff;" -->
-
-      <svg viewBox='0 0 1000 12775' xmlns="http://www.w3.org/2000/svg" version="1.1" width="1000px" height="12775px" style="z-index:999; background-color:#fff;" onmousedown='Grab(evt);' onmousemove='Drag(evt);' onmouseup='Drop(evt);' onload='Init(evt);' id='inline'>
+      
+      <svg viewBox='0 0 1500 1500' xmlns="http://www.w3.org/2000/svg" version="1.1" width="1500" height="1500" style="z-index:999; background-color:#fff;" onmousedown='Grab(evt);' onmousemove='Drag(evt);' onmouseup='Drop(evt);' onload='Init(evt);' id='inline'>
         <defs>
+          
           <marker id='head' orient="auto" markerWidth='12' markerHeight='10' refX='12' refY='5'>
             <!-- triangle pointing right (+x) -->
             <path d='M0,0 V10 L12,5 Z' fill="black" />
