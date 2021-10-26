@@ -204,9 +204,6 @@ function updateAnalysis() {
             } else if (edits.edits[i].type == 'node' && edits.edits[i].action == 'delete') {
                 node = JSON.parse(edits.edits[i].content);
                 updateDelNode(node);
-            } else if (edits.edits[i].type == 'node' && edits.edits[i].action == 'move') {
-                node = JSON.parse(edits.edits[i].content);
-                updateMoveNode(node);
             } else if (edits.edits[i].type == 'node' && edits.edits[i].action == 'edit') {
                 node = JSON.parse(edits.edits[i].content);
                 updateEditNode(node);
@@ -240,14 +237,20 @@ function updateAnalysis() {
     });
 }
 
-function updateAddNode(node) {
-    console.log("updateAddNode called");
-    console.log(node);
-
-    var found = nodes.find(n => n.nodeID == node.nodeID);
-    if (typeof found !== "undefined") { //if a node with the same nodeID already exists
-        node.nodeID += 1;
+//redraw any edges connected to a given node
+function updateConnectedEdges(node) {
+    var l = edges.length;
+    for (var i = l - 1; i >= 0; i--) {
+        if (edges[i].visible && (edges[i].toID == node.nodeID || edges[i].fromID == node.nodeID)) {
+            edgeID = 'n' + edges[i].fromID + '-n' + edges[i].toID;
+            document.getElementById(edgeID).remove(); //remove the edge previously connected to the moved node
+            DrawEdge(edges[i].fromID, edges[i].toID); //draw the edge to connect the node at its new position
+            UpdateEdge(edges[i]); //update the edge position
+        }
     }
+}
+
+function updateAddNode(node) {
     if (node.nodeID > window.nodeCounter) {
         window.nodeCounter = node.nodeID;
     }
@@ -266,6 +269,7 @@ function updateAddNode(node) {
 
     if (n.visible) {
         DrawNode(n.nodeID, n.type, n.text, n.x, n.y); //if the node is visible then draw the node on the svg
+        updateConnectedEdges(n);
     } else if (n.type == 'L') {  //if the node is an analyst node
         var index = n.text.indexOf(":");
         var username = ' ' + n.text.slice(0, index);
@@ -277,80 +281,38 @@ function updateAddNode(node) {
 
 function updateDelNode(node) {
     //deleteNode(node) is used for updating the original analysis (i.e. contains postEdit() call)
-    console.log("updateDelNode called");
-    console.log("node:");
-    console.log(node);
     //remove the node
     var index = findNodeIndex(node.nodeID);
-    nodes.splice(index, 1);
-    if (node.visible) {
-        document.getElementById(node.nodeID).remove(); //remove the deleted node from svg
-    }
-    /*console.log("all nodes:");
-    console.log(nodes);*/
-}
-
-function updateMoveNode(node) {
-    console.log("updateMoveNode called");
-    console.log("node:");
-    console.log(node);
-    //updateNodePosition(nodeID, x, y) is used for updating the original analysis (i.e. contains postEdit() call)
-    var index = findNodeIndex(node.nodeID);
-    n = nodes[index];
-    n.x = node.x;
-    n.y = node.y;
-
-    if (node.visible) { //update svg if the node has been drawn on it
-        document.getElementById(node.nodeID).remove(); //remove the node from the previous position
-        DrawNode(n.nodeID, n.type, n.text, n.x, n.y); //draw the node at the new position
-
-        //move any connected edges
-        var l = edges.length;
-        for (var i = l - 1; i >= 0; i--) {
-            if (edges[i].visible && (edges[i].toID == n.nodeID || edges[i].fromID == n.nodeID)) {
-                edgeID = 'n' + edges[i].fromID + '-n' + edges[i].toID;
-                document.getElementById(edgeID).remove(); //remove the edge previously connected to the moved node
-                DrawEdge(edges[i].fromID, edges[i].toID); //draw the edge to connect the node at its new position
-                UpdateEdge(edges[i]); //update the edge position
-            }
+    if (index > -1) { //if the node exists
+        nodes.splice(index, 1); //remove the node
+        if (node.visible) {
+            document.getElementById(node.nodeID).remove(); //remove the deleted node from svg
         }
     }
 }
 
 function updateEditNode(node) {
-    console.log("updateEditNode called");
-    console.log("node edited:");
-    console.log(node);
-    //updateNode(nodeID, type, scheme, text, x, y) is used for updating the original analysis (i.e. contains postEdit() call)
+    //updateNode(nodeID, x, y, visible, undone, type, scheme, text) is used for updating the original analysis (i.e. contains postEdit() call)
     var index = findNodeIndex(node.nodeID);
-    n = nodes[index];
-    n.type = node.type;
-    n.scheme = node.scheme;
-    n.text = node.text;
-    /*console.log("all nodes:");
-    console.log(nodes);*/
+    if (index > -1) { //if the node exists
+        n = nodes[index];
+        n.x = node.x;
+        n.y = node.y;
+        n.type = node.type;
+        n.scheme = node.scheme;
+        n.text = node.text;
 
-    if (node.visible) { //update svg if the node has been drawn on it
-        document.getElementById(node.nodeID).remove(); //remove the old version of the node
-        DrawNode(n.nodeID, n.type, n.text, n.x, n.y); //draw the updated version of the node
-
-        //move any connected edges
-        var l = edges.length;
-        for (var i = l - 1; i >= 0; i--) {
-            if (edges[i].visible && (edges[i].toID == n.nodeID || edges[i].fromID == n.nodeID)) {
-                edgeID = 'n' + edges[i].fromID + '-n' + edges[i].toID;
-                document.getElementById(edgeID).remove(); //remove the edge previously connected to the moved node
-                DrawEdge(edges[i].fromID, edges[i].toID); //draw the edge to connect the node at its new position
-                UpdateEdge(edges[i]); //update the edge position
+        if (node.visible) { //update svg if the node has been drawn on it
+            if (document.getElementById(node.nodeID)) {
+                document.getElementById(node.nodeID).remove(); //remove the old version of the node
             }
+            DrawNode(n.nodeID, n.type, n.text, n.x, n.y); //draw the updated version of the node
+            updateConnectedEdges(n);
         }
     }
 }
 
 function updateAddEdge(edge) {
-    /*console.log("updateAddEdge called");
-    console.log("edge to add: ");
-    console.log(edge);*/
     //newEdge(fromID, toID, visible) is used for updating the original analysis (i.e. contains postEdit() call) 
     if (edge.fromID == '' || edge.toID == '') {
         return false;
@@ -365,17 +327,12 @@ function updateAddEdge(edge) {
             DrawEdge(e.fromID, e.toID);
             UpdateEdge(e);
         }
-        /*console.log("added edge:");
-        console.log(e);*/
         return true;
     }
 }
 
 function updateDelEdge(edge) {
     //deleteEdges(edge) is used for updating the original analysis (i.e. contains postEdit() call)
-    /*console.log("updateDelEdge called");
-    console.log("edge:");
-    console.log(edge);*/
     var l = edges.length;
     for (var i = l - 1; i >= 0; i--) {
         if (edges[i].toID == edge.toID && edges[i].fromID == edge.fromID) {
@@ -384,8 +341,6 @@ function updateDelEdge(edge) {
                 document.getElementById(edgeID).remove(); //remove the edge from svg
             }
             edges.splice(i, 1); //remove the edge
-            /*console.log("all edges:");
-            console.log(edges);*/
             break;
         }
     }
@@ -404,10 +359,10 @@ function getSelText() {
     var txt = "";
     count = count + 1;
     // if (iframe.nodeName.toLowerCase() == 'div') {
-    console.log(document.getElementById('analysis_text'));
+    // console.log(document.getElementById('analysis_text'));
     if (document.getElementById('analysis_text') != null) {
-    // if (iframe.getElementsByTagName('div')) {
-        console.log("in if");
+        // if (iframe.getElementsByTagName('div')) {
+        // console.log("in if");
         if (window.getSelection) {
             userSelection = window.getSelection();
         } else if (document.selection) {
@@ -416,49 +371,40 @@ function getSelText() {
         if (userSelection.text) { // IE
             txt = userSelection.text;
         } else if (userSelection != "") {
-            console.log("in else if")
+            // console.log("in else if")
             range = getRangeObject(userSelection);
             txt = userSelection.toString();
-            console.log(txt)
+            // console.log(txt)
 
             var span = document.createElement("span");
+            span.id = "node" + (window.nodeCounter + 1);
             if (rIATMode == false) {
                 span.className = "highlighted";
-                if (window.nodeCounter == 1) {
-                    span.id = "node" + window.nodeCounter + 1;
-                } else {
-                    span.id = "node" + window.nodeCounter;
-                }
             } else {
                 span.className = "hlcurrent";
-                if (window.nodeCounter == 1) {
-                    span.id = "node" + window.nodeCounter + 3;
-                } else {
-                    span.id = "node" + window.nodeCounter + 2;
-                }
-                span.id = "node" + (window.nodeCounter + 2);
             }
             range.surroundContents(span);
+            window.groupID++;
             postEdit("text", "edit", $('#analysis_text').html());
-        } 
+        }
     } else if (iframe.getElementsByTagName('iframe')) {
-        console.log("identified iframe");
+        // console.log("identified iframe");
         txt = document.getElementById('extside').contentWindow.getSelection().toString();
-        console.log(txt);
+        // console.log(txt);
     } else {
-        console.log("in else");
+        // console.log("in else");
         var innerDoc = iframe.contentDocument || iframe.contentWindow.document;
-        console.log(innerDoc);
+        // console.log(innerDoc);
         txt = iframe.contentWindow.getSelection().toString();
-        console.log(txt);
+        // console.log(txt);
     }
     return txt;
 }
 
 function hlcurrent(nodeID) {
     span = document.getElementById("node" + nodeID);
-    if (span == null && mySel.type == 'I') {
-        span = document.getElementById("node" + (CurrentlyEditing + 1));
+    if (dialogicalMode && span == null && mySel.type == 'I') {
+        span = document.getElementById("node" + CurrentlyEditing);
     }
     if (span != null) {
         span.id = "node" + nodeID;
@@ -503,8 +449,8 @@ function postEdit(type, action, content) {
             $.post("helpers/edit.php", { type: type, action: action, cnt: JSON.stringify(content), akey: window.akey, sessionid: window.sessionid }).done(function (data) {
                 dt = JSON.parse(data);
                 lastedit = dt.last;
-                console.log("lastedit: " + lastedit);
-                console.log("lasteditCollab: " + lasteditCollab);
+                // console.log("lastedit: " + lastedit);
+                // console.log("lasteditCollab: " + lasteditCollab);
             });
         }
     }
@@ -597,14 +543,11 @@ function addLocution(node) {
     DrawEdge(newYANodeID, CurrentlyEditing);
     UpdateEdge(edge);
 
-    // span = document.getElementById("node"+newLNodeID);
-    // span.className="highlighted";
-    //console.log(newLNodeID);
     hlcurrent(newLNodeID);
 }
 
 function getRangeObject(selectionObject) {
-    console.log(selectionObject.getRangeAt);
+    // console.log(selectionObject.getRangeAt);
     if (selectionObject.getRangeAt) {
         return selectionObject.getRangeAt(0);
     } else {

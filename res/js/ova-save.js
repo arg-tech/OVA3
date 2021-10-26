@@ -1,10 +1,27 @@
 function genjson() {
     var json = {}
+    var jnodes = [];
     var jschemefulfillments = [];
     var jlocutions = [];
+    var jedges = [];
+    var nodesLayout = [];
+    var edgesLayout = [];
 
     for (var i = 0, l = nodes.length; i < l; i++) {
-        if (nodes[i].scheme != 0) {
+        var jnode = {};
+        jnode['nodeID'] = nodes[i].nodeID;
+        jnode['text'] = nodes[i].text;
+        jnode['type'] = nodes[i].type;
+        jnodes.push(jnode);
+
+        var n = {};
+        n['nodeID'] = nodes[i].nodeID;
+        n['visible'] = nodes[i].visible;
+        n['x'] = nodes[i].x;
+        n['y'] = nodes[i].y;
+        nodesLayout.push(n);
+
+        if (nodes[i].scheme != null) {
             var jschemefulfillment = {};
             jschemefulfillment['nodeID'] = nodes[i].nodeID;
             jschemefulfillment['schemeID'] = nodes[i].scheme;
@@ -19,8 +36,22 @@ function genjson() {
         }
     }
 
-    json['nodes'] = nodes;
-    json['edges'] = edges;
+    for (var i = 0, l = edges.length; i < l; i++) {
+        var jedge = {};
+        jedge['edgeID'] = i + 1;
+        jedge['fromID'] = edges[i].fromID;
+        jedge['toID'] = edges[i].toID;
+        jedges.push(jedge);
+
+        var e = {};
+        e['fromID'] = edges[i].fromID;
+        e['toID'] = edges[i].toID;
+        e['visible'] = edges[i].visible;
+        edgesLayout.push(e);
+    }
+
+    json['nodes'] = jnodes;
+    json['edges'] = jedges;
     json['schemefulfillments'] = jschemefulfillments;
     json['participants'] = participants;
     json['locutions'] = jlocutions;
@@ -50,6 +81,8 @@ function genjson() {
     };
 
     json['analysis'] = analysis;
+    json['nodesLayout'] = nodesLayout;
+    json['edgesLayout'] = edgesLayout;
 
     jstr = JSON.stringify(json);
 
@@ -136,11 +169,67 @@ function loadfile(jstr) {
 
     var jnodes = json['nodes'];
     var nodelist = {};
-    if (jnodes.length > 0 && !(jnodes[0].hasOwnProperty('x'))) {
+
+    if (jnodes.length > 0 && json['nodesLayout']) { //if in ova3 format
+        //create the nodes
+        for (var i = 0, l = jnodes.length; i < l; i++) {
+            if (jnodes[i].nodeID > window.nodeCounter) {
+                window.nodeCounter = jnodes[i].nodeID;
+            }
+            if (oplus) {
+                if (jnodes[i].type == "L") {
+                    pID = findParticipantIDText(jnodes[i].text);
+                    nodelist[jnodes[i].nodeID] = newNode(jnodes[i].nodeID, jnodes[i].type, null, pID, jnodes[i].text, 0, 0, false, 1);
+                } else {
+                    nodelist[jnodes[i].nodeID] = newNode(jnodes[i].nodeID, jnodes[i].type, null, 0, jnodes[i].text, 0, 0, false, 1);
+                }
+            } else if (jnodes[i].type == "I" || jnodes[i].type == "RA" || jnodes[i].type == "CA" || jnodes[i].type == "EN") {
+                nodelist[jnodes[i].nodeID] = newNode(jnodes[i].nodeID, jnodes[i].type, null, 0, jnodes[i].text, 0, 0, false, 1);
+            }
+        }
+        window.nodeCounter++;
+
+        //set any scheme fulfillments
+        var sf = json['schemefulfillments'];
+        if (sf != undefined) {
+            for (var i = 0; i < sf.length; i++) {
+                index = findNodeIndex(sf[i].nodeID);
+                if (index > -1) { //if the node exists
+                    nodes[index].scheme = sf[i].schemeID;
+                }
+            }
+        }
+
+        //set the layout of the nodes and draw them on the svg
+        var nL = json['nodesLayout'];
+        for (var i = 0, l = nL.length; i < l; i++) {
+            if (nodelist[nL[i].nodeID]) {
+                if (nL[i].visible) {
+                    updateNode(nL[i].nodeID, nL[i].x, nL[i].y, nL[i].visible, 1);
+                    // console.log(nodelist[nL[i].nodeID]);
+                    DrawNode(nodelist[nL[i].nodeID].nodeID, nodelist[nL[i].nodeID].type, nodelist[nL[i].nodeID].text, nodelist[nL[i].nodeID].x, nodelist[nL[i].nodeID].y);
+                }
+            }
+        }
+
+        //create and draw any connecting edges
+        edges = [];
+        var e = json['edgesLayout'];
+        for (var i = 0, l = e.length; i < l; i++) {
+            from = e[i].fromID;
+            to = e[i].toID;
+            if (from in nodelist && to in nodelist) { //if both the nodes the edge connects exist
+                var edge = newEdge(from, to, e[i].visible, 1);
+                if (e[i].visible) {
+                    DrawEdge(from, to);
+                    UpdateEdge(edge);
+                }
+            }
+        }
+    } else if (jnodes.length > 0 && !(jnodes[0].hasOwnProperty('x'))) { //if in db format
         loaddbjson(json);
         return;
-    }
-    if (jnodes.length > 0 && jnodes[0].hasOwnProperty('id')) { //if in ova2 format convert to ova3 format
+    } else if (jnodes.length > 0 && jnodes[0].hasOwnProperty('id')) { //if in ova2 format convert to ova3 format
         for (var i = 0, l = jnodes.length; i < l; i++) {
             if (jnodes[i].id > window.nodeCounter) {
                 window.nodeCounter = jnodes[i].id;
@@ -155,7 +244,7 @@ function loadfile(jstr) {
                 } else {
                     nodelist[jnodes[i].id] = AddNode(jnodes[i].text, jnodes[i].type, jnodes[i].scheme, 0, jnodes[i].id, jnodes[i].x, jnodes[i].y, jnodes[i].visible);
                 }
-            } else if (jnodes[i].type == "RA" || jnodes[i].type == "CA" || jnodes[i].type == "I" || jnodes[i].type == "EN") {
+            } else if (jnodes[i].type == "I" || jnodes[i].type == "RA" || jnodes[i].type == "CA" || jnodes[i].type == "EN") {
                 nodelist[jnodes[i].id] = AddNode(jnodes[i].text, jnodes[i].type, jnodes[i].scheme, 0, jnodes[i].id, jnodes[i].x, jnodes[i].y, jnodes[i].visible);
             }
         }
@@ -167,42 +256,8 @@ function loadfile(jstr) {
             from = e[i].from.id;
             to = e[i].to.id;
             if (from in nodelist && to in nodelist) { //if both the nodes the edge connects exist
-                var edge = newEdge(from, to, e[i].visible);
-                if (e[i].visible) {
-                    DrawEdge(from, to);
-                    UpdateEdge(edge);
-                }
-            }
-        }
-    } else {
-        for (var i = 0, l = jnodes.length; i < l; i++) {
-            if (jnodes[i].nodeID > window.nodeCounter) {
-                window.nodeCounter = jnodes[i].nodeID;
-            }
-            if (oplus) {
-                if (jnodes[i].type == "L") {
-                    pID = findParticipantIDText(jnodes[i].text);
-                    nodelist[jnodes[i].nodeID] = newNode(jnodes[i].nodeID, jnodes[i].type, null, pID, jnodes[i].text, jnodes[i].x, jnodes[i].y, jnodes[i].visible);
-                    if (jnodes[i].visible) {
-                        DrawNode(jnodes[i].nodeID, jnodes[i].type, jnodes[i].text, jnodes[i].x, jnodes[i].y);
-                    }
-                } else {
-                    nodelist[jnodes[i].nodeID] = AddNode(jnodes[i].text, jnodes[i].type, jnodes[i].scheme, 0, jnodes[i].nodeID, jnodes[i].x, jnodes[i].y, jnodes[i].visible);
-                }
-            } else if (jnodes[i].type == "RA" || jnodes[i].type == "CA" || jnodes[i].type == "I" || jnodes[i].type == "EN") {
-                nodelist[jnodes[i].nodeID] = AddNode(jnodes[i].text, jnodes[i].type, jnodes[i].scheme, 0, jnodes[i].nodeID, jnodes[i].x, jnodes[i].y, jnodes[i].visible);
-            }
-        }
-        window.nodeCounter++;
-
-        edges = [];
-        var e = json['edges'];
-        for (var i = 0, l = e.length; i < l; i++) {
-            from = e[i].fromID;
-            to = e[i].toID;
-            if (from in nodelist && to in nodelist) { //if both the nodes the edge connects exist
-                var edge = newEdge(from, to, e[i].visible);
-                if (e[i].visible) {
+                var edge = newEdge(from, to, e[i].visible, 1);
+                if (edge.visible) {
                     DrawEdge(from, to);
                     UpdateEdge(edge);
                 }
@@ -212,10 +267,11 @@ function loadfile(jstr) {
 
     setAllText(json['analysis']['txt']);
     postEdit("text", "edit", json['analysis']['txt']);
+    // postEdit("text", "edit", json['analysis']['txt'], 1);
 }
 
 function loaddbjson(json) {
-    //console.log("loaddbjson");
+    // console.log("loaddbjson");
     var oplus = false;
     if ("plus" in getUrlVars()) {
         oplus = true;
@@ -543,7 +599,7 @@ function svg2canvas2image() {
 
     var svg = SVGRoot;
     var str = new XMLSerializer().serializeToString(svg);
-    var svg64 = btoa(str.replace(/[\u00A0-\u2666]/g, function(c) {
+    var svg64 = btoa(str.replace(/[\u00A0-\u2666]/g, function (c) {
         return '&#' + c.charCodeAt(0) + ';';
     }));
     var image = new Image();
