@@ -49,7 +49,7 @@ function panZoomMode(keycode) {
       } else if (nav.axis == 0) {
         tg[nav.axis] = parseFloat(VB[nav.axis] + .1 * nav.dir * VB[2 + nav.axis]);
       }
-    } 
+    }
     else if (nav.act == 'zoom') {
       //If at maximum 'zoomed out' view or 'zoomed in' view
       if ((nav.dir === -1 && VB[2] >= DMAX[0]) ||
@@ -72,7 +72,7 @@ function panZoomMode(keycode) {
 function updateView() {
   //progress k - frame index updated over total number of frames
   let k = ++f / NF
-  j = 1 - k 
+  j = 1 - k
   //current view box
   cvb = VB.slice();
 
@@ -86,7 +86,7 @@ function updateView() {
   }
   SVGRoot.setAttribute('viewBox', cvb.join(' '));
 
-//if f reaches total number of frames - stop animation
+  //if f reaches total number of frames - stop animation
   if (!(f % NF)) {
     f = 0;
     VB.splice(0, 4, ...cvb);
@@ -301,7 +301,7 @@ function GetTrueCoords(evt) {
   var newScale = VB[2] / VB_width;
   var translationX = VB[0];
   var translationY = VB[1];
-  var tempCoords = [0,0];
+  var tempCoords = [0, 0];
 
   //Calculating new coordinates after panning and zooming
   tempCoords.x = (((evt.clientX - svgleft) * newScale) + translationX);
@@ -329,8 +329,7 @@ function AddNode(txt, type, scheme, pid, nid, nx, ny, visible) {
       newEdge(analysisL.nodeID, analysisYA.nodeID, false);
 
       var username = ' ' + window.afirstname;
-      if(users.indexOf(username) == -1)
-      {
+      if (users.indexOf(username) == -1) {
         users.push(username);
       }
     }
@@ -371,7 +370,7 @@ function Drag(evt) {
       var xdiff = newX - oldX;
       var ydiff = newY - oldY;
       if (dragEdges.length > 0) {
-        //updateNodePosition(DragTarget.id, newX, newY);
+        //updateNode(DragTarget.id, newX, newY);
         for (var j = 0; j < dragEdges.length; j++) {
           UpdateEdge(dragEdges[j]);
         }
@@ -402,7 +401,7 @@ function Drag(evt) {
           }
           GetEdges(mSel[i].nodeID);
           if (dragEdges.length > 0) {
-            //updateNodePosition(DragTarget.id, newX, newY);
+            //updateNode(DragTarget.id, newX, newY);
             for (var j = 0; j < dragEdges.length; j++) {
               UpdateEdge(dragEdges[j]);
             }
@@ -433,7 +432,7 @@ function Drag(evt) {
         }
       }
       if (dragEdges.length > 0) {
-        //updateNodePosition(DragTarget.id, newX, newY);
+        //updateNode(DragTarget.id, newX, newY);
         for (var j = 0; j < dragEdges.length; j++) {
           UpdateEdge(dragEdges[j]);
         }
@@ -582,7 +581,7 @@ function Drop(evt) {
       var childElement = children[j];
       xCoord = childElement.getAttributeNS(null, 'x');
       yCoord = childElement.getAttributeNS(null, 'y');
-      updateNodePosition(DragTarget.id, xCoord, yCoord);
+      updateNode(DragTarget.id, xCoord, yCoord);
     }
 
     if (DragTarget.getAttributeNS(null, 'id') == 'edge_to') {
@@ -740,6 +739,8 @@ function myRClick(evt) {
   }
 }
 
+//finds and returns the index of a node with the given nodeID in the nodes array
+//returns -1 if no node with the given nodeID can be found
 function findNodeIndex(nodeID) {
   for (var i = 0; i < nodes.length; i++) {
     if (nodes[i]) {
@@ -748,8 +749,9 @@ function findNodeIndex(nodeID) {
       }
     }
   }
+  return -1;
 }
-//
+
 // function editNode(node) {
 //   FormOpen = true;
 //   console.log(FormOpen);
@@ -771,7 +773,7 @@ function saveNodeEdit() {
     //var edgesToUpdate = findEdges(CurrentlyEditing);
     document.getElementById(CurrentlyEditing).remove();
     DrawNode(CurrentlyEditing, type, ntext, xCoord, yCoord);
-    updateNode(CurrentlyEditing, type, 0, ntext, xCoord, yCoord);
+    updateNode(CurrentlyEditing, xCoord, yCoord, true, 0, type, null, ntext);
     // for (var i = 0; i < edgesToUpdate.length; i++) {
     //   UpdateEdge(edgesToUpdate[i]);
     // }
@@ -836,7 +838,7 @@ function saveNodeEdit() {
     }
     document.getElementById(CurrentlyEditing).remove();
     DrawNode(CurrentlyEditing, mySel.type, mySel.text, xCoord, yCoord);
-    updateNode(CurrentlyEditing, mySel.type, mySel.scheme, mySel.text, xCoord, yCoord);
+    updateNode(CurrentlyEditing, xCoord, yCoord, mySel.visible, 0, mySel.type, mySel.scheme, mySel.text);
 
     $('.dselect').each(function (index) {
       mySel.descriptors[$(this).attr('id')] = $(this).val();
@@ -868,9 +870,7 @@ function deleteNode(node) {
   //remove the node
   if (node.visible) {
     document.getElementById(CurrentlyEditing).remove(); //if the node was drawn on the svg remove it
-    if (mySel.type == 'L') {
-      remhl(node.nodeID);
-    } else if (!rIATMode && mySel,type == 'I') {
+    if (mySel.type == 'L' || (!rIATMode && mySel.type == 'I')) {
       remhl(node.nodeID);
     }
   }
