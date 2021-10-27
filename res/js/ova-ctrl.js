@@ -371,7 +371,7 @@ function Drag(evt) {
       var xdiff = newX - oldX;
       var ydiff = newY - oldY;
       if (dragEdges.length > 0) {
-        //updateNodePosition(DragTarget.id, newX, newY);
+        //updateNode(DragTarget.id, newX, newY);
         for (var j = 0; j < dragEdges.length; j++) {
           UpdateEdge(dragEdges[j]);
         }
@@ -402,7 +402,7 @@ function Drag(evt) {
           }
           GetEdges(mSel[i].nodeID);
           if (dragEdges.length > 0) {
-            //updateNodePosition(DragTarget.id, newX, newY);
+            //updateNode(DragTarget.id, newX, newY);
             for (var j = 0; j < dragEdges.length; j++) {
               UpdateEdge(dragEdges[j]);
             }
@@ -433,7 +433,7 @@ function Drag(evt) {
         }
       }
       if (dragEdges.length > 0) {
-        //updateNodePosition(DragTarget.id, newX, newY);
+        //updateNode(DragTarget.id, newX, newY);
         for (var j = 0; j < dragEdges.length; j++) {
           UpdateEdge(dragEdges[j]);
         }
@@ -582,7 +582,6 @@ function Drop(evt) {
       var childElement = children[j];
       xCoord = childElement.getAttributeNS(null, 'x');
       yCoord = childElement.getAttributeNS(null, 'y');
-      //updateNodePosition(DragTarget.id, xCoord, yCoord);
       updateNode(DragTarget.id, xCoord, yCoord);
     }
 
@@ -765,7 +764,7 @@ function findNodeIndex(nodeID, last) {
   }
   return -1;
 }
-//
+
 // function editNode(node) {
 //   FormOpen = true;
 //   console.log(FormOpen);
@@ -787,7 +786,7 @@ function saveNodeEdit() {
     //var edgesToUpdate = findEdges(CurrentlyEditing);
     document.getElementById(CurrentlyEditing).remove();
     DrawNode(CurrentlyEditing, type, ntext, xCoord, yCoord);
-    updateNode(CurrentlyEditing, xCoord, yCoord, type, null, ntext);
+    updateNode(CurrentlyEditing, xCoord, yCoord, true, 0, type, null, ntext);
     // for (var i = 0; i < edgesToUpdate.length; i++) {
     //   UpdateEdge(edgesToUpdate[i]);
     // }
@@ -852,7 +851,7 @@ function saveNodeEdit() {
     }
     document.getElementById(CurrentlyEditing).remove();
     DrawNode(CurrentlyEditing, mySel.type, mySel.text, xCoord, yCoord);
-    updateNode(CurrentlyEditing, xCoord, yCoord, mySel.type, mySel.scheme, mySel.text);
+    updateNode(CurrentlyEditing, xCoord, yCoord, mySel.visible, 0, mySel.type, mySel.scheme, mySel.text);
 
     $('.dselect').each(function (index) {
       mySel.descriptors[$(this).attr('id')] = $(this).val();
@@ -884,9 +883,7 @@ function deleteNode(node) {
   //remove the node
   if (node.visible) {
     document.getElementById(CurrentlyEditing).remove(); //if the node was drawn on the svg remove it
-    if (mySel.type == 'L') {
-      remhl(node.nodeID);
-    } else if (!rIATMode && mySel.type == 'I') {
+    if (mySel.type == 'L' || (!rIATMode && mySel.type == 'I')) {
       remhl(node.nodeID);
     }
   }

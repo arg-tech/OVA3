@@ -41,7 +41,7 @@ function newParticipant(id, fname, sname) {
     return p;
 }
 
-function newNode(nodeID, type, scheme, participantID, text, x, y, visible) {
+function newNode(nodeID, type, scheme, participantID, text, x, y, visible, undone) {
     var n = new Node;
     n.nodeID = nodeID;
     n.type = type;
@@ -52,24 +52,26 @@ function newNode(nodeID, type, scheme, participantID, text, x, y, visible) {
     n.y = y;
     n.visible = typeof visible !== 'undefined' ? visible : true;
     nodes.push(n);
-    // console.log("nodeID: " + n.nodeID);
-    postEdit("node", "add", n, 0, n.nodeID);
+
+    var undone = typeof undone !== 'undefined' ? undone : 0;
+    postEdit("node", "add", n, undone, n.nodeID);
     return n;
 }
 
-function updateNode(nodeID, x, y, type, scheme, text) {
+function updateNode(nodeID, x, y, visible, undone, type, scheme, text) {
     var index = findNodeIndex(nodeID);
     n = nodes[index];
     n.x = x;
     n.y = y;
+    n.visible = typeof visible !== 'undefined' ? visible : true;
+    
+    if (type != undefined) { n.type = type; }
+    if (scheme != undefined) { n.scheme = scheme; }
+    if (text != undefined) { n.text = text; }
 
-    if (type != undefined && scheme != undefined && text != undefined) {
-        n.type = type;
-        n.scheme = scheme;
-        n.text = text;
-    }
-    window.groupID ++;
-    postEdit("node", "edit", n, 0, n.nodeID);
+    window.groupID++;
+    var undone = typeof undone !== 'undefined' ? undone : 0;
+    postEdit("node", "edit", n, undone, n.nodeID);
 }
 
 function delNode(node) {
@@ -80,13 +82,14 @@ function delNode(node) {
     }
 }
 
-function newEdge(fromID, toID, visible) {
+function newEdge(fromID, toID, visible, undone) {
     var e = new Edge;
     e.fromID = fromID;
     e.toID = toID;
     e.visible = typeof visible !== 'undefined' ? visible : true;
     edges.push(e);
-    postEdit("edge", "add", e);
+    var undone = typeof undone !== 'undefined' ? undone : 0;
+    postEdit("edge", "add", e, undone);
     return e;
 }
 

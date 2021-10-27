@@ -187,6 +187,9 @@ function Init(evt) {
         }, 1);
     });
 
+    $('#analysis_text').focusout(function () {
+        postEdit("text", "edit", $('#analysis_text').html());
+    });
 }
 
 //start of main collaborate feature code//
@@ -251,10 +254,6 @@ function updateConnectedEdges(node) {
 function updateAddNode(node) {
     // console.log("updateAddNode called");
     // console.log(node);
-    var found = nodes.find(n => n.nodeID == node.nodeID);
-    if (typeof found !== "undefined") { //if a node with the same nodeID already exists
-        console.log("found duplicate nodeID: " + node.nodeID);
-    }
     if (node.nodeID > window.nodeCounter) {
         window.nodeCounter = node.nodeID;
     }
@@ -312,7 +311,9 @@ function updateEditNode(node) {
         n.text = node.text;
 
         if (node.visible) { //update svg if the node has been drawn on it
-            document.getElementById(node.nodeID).remove(); //remove the old version of the node
+            if (document.getElementById(node.nodeID)) {
+                document.getElementById(node.nodeID).remove(); //remove the old version of the node
+            }
             DrawNode(n.nodeID, n.type, n.text, n.x, n.y); //draw the updated version of the node
             updateConnectedEdges(n);
         }
@@ -372,10 +373,10 @@ function getSelText() {
     var txt = "";
     count = count + 1;
     // if (iframe.nodeName.toLowerCase() == 'div') {
-    console.log(document.getElementById('analysis_text'));
+    // console.log(document.getElementById('analysis_text'));
     if (document.getElementById('analysis_text') != null) {
-    // if (iframe.getElementsByTagName('div')) {
-        console.log("in if");
+        // if (iframe.getElementsByTagName('div')) {
+        // console.log("in if");
         if (window.getSelection) {
             userSelection = window.getSelection();
         } else if (document.selection) {
@@ -384,10 +385,10 @@ function getSelText() {
         if (userSelection.text) { // IE
             txt = userSelection.text;
         } else if (userSelection != "") {
-            console.log("in else if")
+            // console.log("in else if")
             range = getRangeObject(userSelection);
             txt = userSelection.toString();
-            console.log(txt)
+            // console.log(txt)
 
             var span = document.createElement("span");
             span.id = "node" + (window.nodeCounter + 1);
@@ -399,17 +400,17 @@ function getSelText() {
             range.surroundContents(span);
             window.groupID++;
             postEdit("text", "edit", $('#analysis_text').html());
-        } 
+        }
     } else if (iframe.getElementsByTagName('iframe')) {
-        console.log("identified iframe");
+        // console.log("identified iframe");
         txt = document.getElementById('extside').contentWindow.getSelection().toString();
-        console.log(txt);
+        // console.log(txt);
     } else {
-        console.log("in else");
+        // console.log("in else");
         var innerDoc = iframe.contentDocument || iframe.contentWindow.document;
-        console.log(innerDoc);
+        // console.log(innerDoc);
         txt = iframe.contentWindow.getSelection().toString();
-        console.log(txt);
+        // console.log(txt);
     }
     return txt;
 }
@@ -423,7 +424,7 @@ function hlcurrent(nodeID, undone) {
 
     span = document.getElementById("node" + nodeID);
     if (dialogicalMode && span == null && mySel.type == 'I') {
-        span = document.getElementById("node" + (CurrentlyEditing));
+        span = document.getElementById("node" + CurrentlyEditing);
     }
 
     if (span != null) {
@@ -718,7 +719,7 @@ function addLocution(node) {
 }
 
 function getRangeObject(selectionObject) {
-    console.log(selectionObject.getRangeAt);
+    // console.log(selectionObject.getRangeAt);
     if (selectionObject.getRangeAt) {
         return selectionObject.getRangeAt(0);
     } else {
