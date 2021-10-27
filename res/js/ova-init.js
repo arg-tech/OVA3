@@ -186,6 +186,9 @@ function Init(evt) {
         }, 1);
     });
 
+    $('#analysis_text').focusout(function () {
+        postEdit("text", "edit", $('#analysis_text').html());
+    });
 }
 
 //start of main collaborate feature code//
