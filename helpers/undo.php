@@ -3,7 +3,7 @@ require_once('mysql_connect.php');
 
 $analysisID = $_GET['analysisID'];
 $sessionid = $_GET['sessionid'];
-$groupID = 1;
+$groupID = 0;
 $action = '';
 $type = '';
 $lastID = 1;
@@ -13,7 +13,7 @@ $q = $DBH->prepare("SELECT * FROM edits WHERE analysisID=:analysisID AND session
 $q->execute(array(':analysisID' => $analysisID, ':sessionid' => $sessionid));
 $lastEditGroup = $q->fetch(PDO::FETCH_ASSOC);
 if (!$lastEditGroup) {
-	$groupID = 1;
+	$groupID = 0;
 } else {
 	$groupID = $lastEditGroup['groupID'];
 	$action = $lastEditGroup['action'];
@@ -21,7 +21,7 @@ if (!$lastEditGroup) {
 }
 
 //find all edits with the given groupID
-$STH = $DBH->prepare("SELECT * FROM edits WHERE analysisID=? AND sessionid=? AND groupID=? ORDER by editID DESC;");
+$STH = $DBH->prepare("SELECT * FROM edits WHERE analysisID=? AND sessionid=? AND groupID=? AND undone=0 ORDER by editID DESC;");
 $STH->execute([$analysisID, $sessionid, $groupID]);
 
 $JSON = array();

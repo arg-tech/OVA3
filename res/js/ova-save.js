@@ -266,8 +266,7 @@ function loadfile(jstr) {
     }
 
     setAllText(json['analysis']['txt']);
-    postEdit("text", "edit", json['analysis']['txt']);
-    // postEdit("text", "edit", json['analysis']['txt'], 1);
+    postEdit("text", "edit", json['analysis']['txt'], 1);
 }
 
 function loaddbjson(json) {
