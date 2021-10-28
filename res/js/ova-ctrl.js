@@ -49,7 +49,7 @@ function panZoomMode(keycode) {
       } else if (nav.axis == 0) {
         tg[nav.axis] = parseFloat(VB[nav.axis] + .1 * nav.dir * VB[2 + nav.axis]);
       }
-    } 
+    }
     else if (nav.act == 'zoom') {
       //If at maximum 'zoomed out' view or 'zoomed in' view
       if ((nav.dir === -1 && VB[2] >= DMAX[0]) ||
@@ -72,7 +72,7 @@ function panZoomMode(keycode) {
 function updateView() {
   //progress k - frame index updated over total number of frames
   let k = ++f / NF
-  j = 1 - k 
+  j = 1 - k
   //current view box
   cvb = VB.slice();
 
@@ -86,7 +86,7 @@ function updateView() {
   }
   SVGRoot.setAttribute('viewBox', cvb.join(' '));
 
-//if f reaches total number of frames - stop animation
+  //if f reaches total number of frames - stop animation
   if (!(f % NF)) {
     f = 0;
     VB.splice(0, 4, ...cvb);
@@ -233,7 +233,7 @@ function Grab(evt) {
     }
   } else {
     if (window.nodeAddBtn == true) {
-      window.nodeCounter = window.nodeCounter + 1;
+      window.nodeCounter++;
       newNodeID = (window.nodeCounter + ";" + window.sessionid);
       console.log("nodeid: " + newNodeID);
       AddNode("", 'EN', null, 0, newNodeID, TrueCoords.x, TrueCoords.y - 10);
@@ -252,7 +252,7 @@ function Grab(evt) {
       t = getSelText();
       if (t != '') {
         if (rIATMode == true) {
-          window.nodeCounter = window.nodeCounter + 1;
+          window.nodeCounter++;
           newNodeID = (window.nodeCounter + ";" + window.sessionid);
           console.log("nodeid: " + newNodeID);
           var xCoord = TrueCoords.x;
@@ -265,7 +265,7 @@ function Grab(evt) {
           $('#modal-shade').show();
           FormOpen = true;
         } else {
-          window.nodeCounter = window.nodeCounter + 1;
+          window.nodeCounter++;
           newNodeID = (window.nodeCounter + ";" + window.sessionid);
           console.log("nodeid: " + newNodeID);
           AddNode(t, 'I', null, 0, newNodeID, TrueCoords.x, TrueCoords.y - 10);
@@ -304,7 +304,7 @@ function GetTrueCoords(evt) {
   var newScale = VB[2] / VB_width;
   var translationX = VB[0];
   var translationY = VB[1];
-  var tempCoords = [0,0];
+  var tempCoords = [0, 0];
 
   //Calculating new coordinates after panning and zooming
   tempCoords.x = (((evt.clientX - svgleft) * newScale) + translationX);
@@ -317,23 +317,28 @@ function GetTrueCoords(evt) {
 
 function AddNode(txt, type, scheme, pid, nid, nx, ny, visible) {
   var isVisible = typeof visible !== 'undefined' ? visible : true;
-  newNode(nid, type, scheme, pid, txt, nx, ny, isVisible);
+  newNode(nid, type, scheme, pid, txt, nx, ny, isVisible); //create the node
   if (isVisible) {
     DrawNode(nid, type, txt, nx, ny); //if the node is visible then draw the node on the svg
 
-    //create analyst nodes if they are needed 
-    if (type == 'L' && txt != "") {
+    if (type == 'L' && txt != "") { //create analyst nodes if they are needed
+      //create YA analyst node
+      window.nodeCounter++;
+      var newNodeID = (window.nodeCounter + ";" + window.sessionid);
+      console.log("nodeid: " + newNodeID);
+      var analysisYA = newNode(newNodeID, 'YA', '75', 0, 'Analysing', 0, 0, false);
+      //create L analyst node
+      window.nodeCounter++;
+      newNodeID = (window.nodeCounter + ";" + window.sessionid);
+      console.log("nodeid: " + newNodeID);
       var analysisLTxt = window.afirstname + ': ' + txt;
-      window.nodeCounter++;
-      var analysisYA = newNode(window.nodeCounter, 'YA', '75', 0, 'Analysing', 0, 0, false);
-      window.nodeCounter++;
-      var analysisL = newNode(window.nodeCounter, 'L', null, 0, analysisLTxt, 0, 0, false);
+      var analysisL = newNode(newNodeID, 'L', null, 0, analysisLTxt, 0, 0, false);
+      //create edges to connect the analyst nodes
       newEdge(analysisYA.nodeID, nid, false);
       newEdge(analysisL.nodeID, analysisYA.nodeID, false);
 
       var username = ' ' + window.afirstname;
-      if(users.indexOf(username) == -1)
-      {
+      if (users.indexOf(username) == -1) {
         users.push(username);
       }
     }
@@ -613,7 +618,7 @@ function Drop(evt) {
         tx = parseInt(tx) + (parseInt(tw) / 2);
         ty = parseInt(ty) + (parseInt(th) / 2);
 
-        window.nodeCounter = window.nodeCounter + 1;
+        window.nodeCounter++;
         newNodeID = (window.nodeCounter + ";" + window.sessionid);
         console.log("nodeid: " + newNodeID);
         nx = ((tx - fx) / 2) + fx;
@@ -871,10 +876,12 @@ function findEdges(nodeID) {
 function deleteNode(node) {
   //remove the node
   if (node.visible) {
-    document.getElementById(CurrentlyEditing).remove(); //if the node was drawn on the svg remove it
+    if (document.getElementById(CurrentlyEditing)) {
+      document.getElementById(CurrentlyEditing).remove(); //if the node was drawn on the svg remove it
+    }
     if (mySel.type == 'L') {
       remhl(node.nodeID);
-    } else if (!rIATMode && mySel,type == 'I') {
+    } else if (!rIATMode && mySel.type == 'I') {
       remhl(node.nodeID);
     }
   }

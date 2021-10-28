@@ -246,7 +246,7 @@ function updateAddNode(node) {
 
     var found = nodes.find(n => n.nodeID == node.nodeID);
     if (typeof found !== "undefined") { //if a node with the same nodeID already exists
-        window.nodeCounter = window.nodeCounter + 1;
+        window.nodeCounter++;
         node.nodeID = window.nodeCounter + ";" + window.sessionid;
     }
     //TODO: does this need redone? Won't work with new node id
@@ -288,8 +288,6 @@ function updateDelNode(node) {
     if (node.visible) {
         document.getElementById(node.nodeID).remove(); //remove the deleted node from svg
     }
-    /*console.log("all nodes:");
-    console.log(nodes);*/
 }
 
 function updateMoveNode(node) {
@@ -329,8 +327,6 @@ function updateEditNode(node) {
     n.type = node.type;
     n.scheme = node.scheme;
     n.text = node.text;
-    /*console.log("all nodes:");
-    console.log(nodes);*/
 
     if (node.visible) { //update svg if the node has been drawn on it
         document.getElementById(node.nodeID).remove(); //remove the old version of the node
@@ -367,8 +363,6 @@ function updateAddEdge(edge) {
             DrawEdge(e.fromID, e.toID);
             UpdateEdge(e);
         }
-        /*console.log("added edge:");
-        console.log(e);*/
         return true;
     }
 }
@@ -386,8 +380,6 @@ function updateDelEdge(edge) {
                 document.getElementById(edgeID).remove(); //remove the edge from svg
             }
             edges.splice(i, 1); //remove the edge
-            /*console.log("all edges:");
-            console.log(edges);*/
             break;
         }
     }
@@ -406,10 +398,10 @@ function getSelText() {
     var txt = "";
     count = count + 1;
     // if (iframe.nodeName.toLowerCase() == 'div') {
-    console.log(document.getElementById('analysis_text'));
+    // console.log(document.getElementById('analysis_text'));
     if (document.getElementById('analysis_text') != null) {
     // if (iframe.getElementsByTagName('div')) {
-        console.log("in if");
+        // console.log("in if");
         if (window.getSelection) {
             userSelection = window.getSelection();
         } else if (document.selection) {
@@ -418,10 +410,10 @@ function getSelText() {
         if (userSelection.text) { // IE
             txt = userSelection.text;
         } else if (userSelection != "") {
-            console.log("in else if")
+            // console.log("in else if")
             range = getRangeObject(userSelection);
             txt = userSelection.toString();
-            console.log(txt)
+            // console.log(txt)
 
             var span = document.createElement("span");
             if (rIATMode == false) {
@@ -444,15 +436,15 @@ function getSelText() {
             postEdit("text", "edit", $('#analysis_text').html());
         } 
     } else if (iframe.getElementsByTagName('iframe')) {
-        console.log("identified iframe");
+        // console.log("identified iframe");
         txt = document.getElementById('extside').contentWindow.getSelection().toString();
-        console.log(txt);
+        // console.log(txt);
     } else {
-        console.log("in else");
+        // console.log("in else");
         var innerDoc = iframe.contentDocument || iframe.contentWindow.document;
-        console.log(innerDoc);
+        // console.log(innerDoc);
         txt = iframe.contentWindow.getSelection().toString();
-        console.log(txt);
+        // console.log(txt);
     }
     return txt;
 }
@@ -505,8 +497,8 @@ function postEdit(type, action, content) {
             $.post("helpers/edit.php", { type: type, action: action, cnt: JSON.stringify(content), akey: window.akey, sessionid: window.sessionid }).done(function (data) {
                 dt = JSON.parse(data);
                 lastedit = dt.last;
-                console.log("lastedit: " + lastedit);
-                console.log("lasteditCollab: " + lasteditCollab);
+                // console.log("lastedit: " + lastedit);
+                // console.log("lasteditCollab: " + lasteditCollab);
             });
         }
     }
@@ -566,7 +558,7 @@ function addLocution(node) {
     }
 
 
-    window.nodeCounter = window.nodeCounter + 1;
+    window.nodeCounter++;
     var newLNodeID = (window.nodeCounter + ";" + window.sessionid);
     console.log("nodeid: " + newLNodeID);
 
@@ -587,7 +579,7 @@ function addLocution(node) {
     //var index = findNodeIndex(newLNodeID);
 
 
-    window.nodeCounter = window.nodeCounter + 1;
+    window.nodeCounter++;
     var newYANodeID = (window.nodeCounter + ";" + window.sessionid);
     console.log("nodeid: " + newYANodeID);
     // AddNode('Asserting', 'YA', '74', 0, newYANodeID, (n.x + 225), yCoord);
@@ -608,7 +600,7 @@ function addLocution(node) {
 }
 
 function getRangeObject(selectionObject) {
-    console.log(selectionObject.getRangeAt);
+    // console.log(selectionObject.getRangeAt);
     if (selectionObject.getRangeAt) {
         return selectionObject.getRangeAt(0);
     } else {
