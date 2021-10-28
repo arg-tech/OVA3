@@ -1,14 +1,39 @@
 function genjson() {
     var json = {}
-    var jschemefulfillments = [];
+    var jnodes = [];
+    var jschemeFulfillments = [];
+    var jdescriptorFulfillments = [];
     var jlocutions = [];
+    var jedges = [];
+    var nodesLayout = [];
+    var edgesLayout = [];
 
     for (var i = 0, l = nodes.length; i < l; i++) {
-        if (nodes[i].scheme != 0) {
-            var jschemefulfillment = {};
-            jschemefulfillment['nodeID'] = nodes[i].nodeID;
-            jschemefulfillment['schemeID'] = nodes[i].scheme;
-            jschemefulfillments.push(jschemefulfillment);
+        var jnode = {};
+        jnode['nodeID'] = nodes[i].nodeID;
+        jnode['text'] = nodes[i].text;
+        jnode['type'] = nodes[i].type;
+        jnodes.push(jnode);
+
+        var n = {};
+        n['nodeID'] = nodes[i].nodeID;
+        n['visible'] = nodes[i].visible;
+        n['x'] = nodes[i].x;
+        n['y'] = nodes[i].y;
+        nodesLayout.push(n);
+
+        if (nodes[i].scheme != null) {
+            var jschemeFulfillment = {};
+            jschemeFulfillment['nodeID'] = nodes[i].nodeID;
+            jschemeFulfillment['schemeID'] = nodes[i].scheme;
+            jschemeFulfillments.push(jschemeFulfillment);
+        }
+
+        if (nodes[i].descriptor != null) {
+            var jdescriptorFulfillment = {};
+            jdescriptorFulfillment['nodeID'] = nodes[i].nodeID;
+            jdescriptorFulfillment['descriptorID'] = nodes[i].descriptor;
+            jdescriptorFulfillments.push(jdescriptorFulfillment);
         }
 
         if (nodes[i].participantID != 0) {
@@ -19,11 +44,37 @@ function genjson() {
         }
     }
 
-    json['nodes'] = nodes;
-    json['edges'] = edges;
-    json['schemefulfillments'] = jschemefulfillments;
-    json['participants'] = participants;
-    json['locutions'] = jlocutions;
+    for (var i = 0, l = edges.length; i < l; i++) {
+        var jedge = {};
+        jedge['edgeID'] = i + 1;
+        jedge['fromID'] = edges[i].fromID;
+        jedge['toID'] = edges[i].toID;
+        jedges.push(jedge);
+
+        var e = {};
+        e['fromID'] = edges[i].fromID;
+        e['toID'] = edges[i].toID;
+        e['visible'] = edges[i].visible;
+        edgesLayout.push(e);
+    }
+
+    var aif = {
+        "nodes": jnodes,
+        "edges": jedges,
+        "schemefulfillments": jschemeFulfillments,
+        "descriptorfulfillments": jdescriptorFulfillments,
+        "participants": participants,
+        "locutions": jlocutions
+    };
+    json['AIF'] = aif;
+
+    var ova = {
+        "firstname": window.afirstname,
+        "surname": window.asurname,
+        "nodes": nodesLayout,
+        "edges": edgesLayout
+    };
+    json['OVA'] = ova;
 
     var url = getUrlVars()["url"];
     var txt = '';
@@ -32,24 +83,10 @@ function genjson() {
         txt = getAllText();
     }
 
-    a_firstname = '';
-    if ($('#a_firstname').val() != '') {
-        a_firstname = $('#a_firstname').val();
-    }
-
-    a_surname = '';
-    if ($('#a_surname').val() != '') {
-        a_surname = $('#a_surname').val();
-    }
-
-
-    var analysis = {
-        "txt": txt,
-        "a_firstname": a_firstname,
-        "a_surname": a_surname
+    var text = {
+        "txt": txt
     };
-
-    json['analysis'] = analysis;
+    json['text'] = text;
 
     jstr = JSON.stringify(json);
 
@@ -123,6 +160,96 @@ function loadfile(jstr) {
         oplus = true;
     }
 
+    if (json['OVA']) { //if in ova3 format
+        loadOva3Json(json, oplus);
+    } else if (json['nodes']) {
+        var jnodes = json['nodes'];
+        if (jnodes.length > 0 && !(jnodes[0].hasOwnProperty('x'))) { //if in db format
+            loaddbjson(json, oplus);
+        } else if (jnodes.length > 0 && jnodes[0].hasOwnProperty('id')) { //if in ova2 format
+            loadOva2Json(json, oplus);
+        }
+    }
+}
+
+function loadOva3Json(json, oplus) {
+    // console.log("loading OVA3 json");
+    //load participants
+    var p = json['AIF']['participants'];
+    var pID = 0;
+    if (p != undefined) {
+        for (var i = 0, l = p.length; i < l; i++) {
+            firstname = p[i].firstname;
+            surname = p[i].surname;
+            addParticipant(firstname, surname)
+        }
+    }
+
+    //create the nodes
+    var jnodes = json['AIF']['nodes'];
+    var nodelist = {};
+    for (var i = 0, l = jnodes.length; i < l; i++) {
+        if (jnodes[i].nodeID > window.nodeCounter) {
+            window.nodeCounter = jnodes[i].nodeID;
+        }
+        if (oplus) {
+            if (jnodes[i].type == "L") {
+                pID = findParticipantIDText(jnodes[i].text);
+                nodelist[jnodes[i].nodeID] = newNode(jnodes[i].nodeID, jnodes[i].type, null, pID, jnodes[i].text, 0, 0, false, 1);
+            } else {
+                nodelist[jnodes[i].nodeID] = newNode(jnodes[i].nodeID, jnodes[i].type, null, 0, jnodes[i].text, 0, 0, false, 1);
+            }
+        } else if (jnodes[i].type == "I" || jnodes[i].type == "RA" || jnodes[i].type == "CA" || jnodes[i].type == "EN") {
+            nodelist[jnodes[i].nodeID] = newNode(jnodes[i].nodeID, jnodes[i].type, null, 0, jnodes[i].text, 0, 0, false, 1);
+        }
+    }
+    window.nodeCounter++;
+
+    //set any scheme fulfillments
+    var sf = json['AIF']['schemefulfillments'];
+    if (sf != undefined) {
+        for (var i = 0; i < sf.length; i++) {
+            index = findNodeIndex(sf[i].nodeID);
+            if (index > -1) { //if the node exists
+                nodes[index].scheme = sf[i].schemeID;
+            }
+        }
+    }
+
+    //set the layout of the nodes and draw them on the svg
+    var n = json['OVA']['nodes'];
+    for (var i = 0, l = n.length; i < l; i++) {
+        if (nodelist[n[i].nodeID]) {
+            if (n[i].visible) {
+                updateNode(n[i].nodeID, n[i].x, n[i].y, n[i].visible, 1);
+                // console.log(nodelist[n[i].nodeID]);
+                DrawNode(nodelist[n[i].nodeID].nodeID, nodelist[n[i].nodeID].type, nodelist[n[i].nodeID].text, nodelist[n[i].nodeID].x, nodelist[n[i].nodeID].y);
+            }
+        }
+    }
+
+    //create and draw any connecting edges
+    edges = [];
+    var e = json['OVA']['edges'];
+    for (var i = 0, l = e.length; i < l; i++) {
+        from = e[i].fromID;
+        to = e[i].toID;
+        if (from in nodelist && to in nodelist) { //if both the nodes the edge connects exist
+            var edge = newEdge(from, to, e[i].visible, 1);
+            if (e[i].visible) {
+                DrawEdge(from, to);
+                UpdateEdge(edge);
+            }
+        }
+    }
+
+    setAllText(json['text']['txt']);
+    postEdit("text", "edit", json['text']['txt']);
+    // postEdit("text", "edit", json['text']['txt'], 1);
+}
+
+function loadOva2Json(json, oplus) {
+    // console.log("loading OVA2 json");
     //load participants
     var p = json['participants'];
     var pID = 0;
@@ -134,99 +261,67 @@ function loadfile(jstr) {
         }
     }
 
-    var jnodes = json['nodes'];
+    //load nodes
     var nodelist = {};
-    if (jnodes.length > 0 && !(jnodes[0].hasOwnProperty('x'))) {
-        loaddbjson(json);
-        return;
-    }
-    if (jnodes.length > 0 && jnodes[0].hasOwnProperty('id')) { //if in ova2 format convert to ova3 format
-        for (var i = 0, l = jnodes.length; i < l; i++) {
-            if (jnodes[i].id > window.nodeCounter) {
-                window.nodeCounter = jnodes[i].id;
-            }
-            if (oplus) {
-                if (jnodes[i].type == "L") {
-                    pID = findParticipantIDText(jnodes[i].text);
-                    nodelist[jnodes[i].id] = newNode(jnodes[i].id, jnodes[i].type, jnodes[i].scheme, pID, jnodes[i].text, jnodes[i].x, jnodes[i].y, jnodes[i].visible);
-                    if (jnodes[i].visible) {
-                        DrawNode(jnodes[i].id, jnodes[i].type, jnodes[i].text, jnodes[i].x, jnodes[i].y);
-                    }
-                } else {
-                    nodelist[jnodes[i].id] = AddNode(jnodes[i].text, jnodes[i].type, jnodes[i].scheme, 0, jnodes[i].id, jnodes[i].x, jnodes[i].y, jnodes[i].visible);
+    var jnodes = json['nodes'];
+    for (var i = 0, l = jnodes.length; i < l; i++) {
+        if (jnodes[i].id > window.nodeCounter) {
+            window.nodeCounter = jnodes[i].id;
+        }
+        if (oplus) {
+            if (jnodes[i].type == "L") {
+                pID = findParticipantIDText(jnodes[i].text);
+                nodelist[jnodes[i].id] = newNode(jnodes[i].id, jnodes[i].type, jnodes[i].scheme, pID, jnodes[i].text, jnodes[i].x, jnodes[i].y, jnodes[i].visible);
+                if (jnodes[i].visible) {
+                    DrawNode(jnodes[i].id, jnodes[i].type, jnodes[i].text, jnodes[i].x, jnodes[i].y);
                 }
-            } else if (jnodes[i].type == "RA" || jnodes[i].type == "CA" || jnodes[i].type == "I" || jnodes[i].type == "EN") {
+            } else {
                 nodelist[jnodes[i].id] = AddNode(jnodes[i].text, jnodes[i].type, jnodes[i].scheme, 0, jnodes[i].id, jnodes[i].x, jnodes[i].y, jnodes[i].visible);
             }
+        } else if (jnodes[i].type == "I" || jnodes[i].type == "RA" || jnodes[i].type == "CA" || jnodes[i].type == "EN") {
+            nodelist[jnodes[i].id] = AddNode(jnodes[i].text, jnodes[i].type, jnodes[i].scheme, 0, jnodes[i].id, jnodes[i].x, jnodes[i].y, jnodes[i].visible);
         }
-        window.nodeCounter++;
+    }
+    window.nodeCounter++;
 
-        edges = [];
-        var e = json['edges'];
-        for (var i = 0, l = e.length; i < l; i++) {
-            from = e[i].from.id;
-            to = e[i].to.id;
-            if (from in nodelist && to in nodelist) { //if both the nodes the edge connects exist
-                var edge = newEdge(from, to, e[i].visible);
-                if (e[i].visible) {
-                    DrawEdge(from, to);
-                    UpdateEdge(edge);
-                }
-            }
-        }
-    } else {
-        for (var i = 0, l = jnodes.length; i < l; i++) {
-            if (jnodes[i].nodeID > window.nodeCounter) {
-                window.nodeCounter = jnodes[i].nodeID;
-            }
-            if (oplus) {
-                if (jnodes[i].type == "L") {
-                    pID = findParticipantIDText(jnodes[i].text);
-                    nodelist[jnodes[i].nodeID] = newNode(jnodes[i].nodeID, jnodes[i].type, null, pID, jnodes[i].text, jnodes[i].x, jnodes[i].y, jnodes[i].visible);
-                    if (jnodes[i].visible) {
-                        DrawNode(jnodes[i].nodeID, jnodes[i].type, jnodes[i].text, jnodes[i].x, jnodes[i].y);
-                    }
-                } else {
-                    nodelist[jnodes[i].nodeID] = AddNode(jnodes[i].text, jnodes[i].type, jnodes[i].scheme, 0, jnodes[i].nodeID, jnodes[i].x, jnodes[i].y, jnodes[i].visible);
-                }
-            } else if (jnodes[i].type == "RA" || jnodes[i].type == "CA" || jnodes[i].type == "I" || jnodes[i].type == "EN") {
-                nodelist[jnodes[i].nodeID] = AddNode(jnodes[i].text, jnodes[i].type, jnodes[i].scheme, 0, jnodes[i].nodeID, jnodes[i].x, jnodes[i].y, jnodes[i].visible);
-            }
-        }
-        window.nodeCounter++;
-
-        edges = [];
-        var e = json['edges'];
-        for (var i = 0, l = e.length; i < l; i++) {
-            from = e[i].fromID;
-            to = e[i].toID;
-            if (from in nodelist && to in nodelist) { //if both the nodes the edge connects exist
-                var edge = newEdge(from, to, e[i].visible);
-                if (e[i].visible) {
-                    DrawEdge(from, to);
-                    UpdateEdge(edge);
-                }
+    //load edges
+    edges = [];
+    var e = json['edges'];
+    for (var i = 0, l = e.length; i < l; i++) {
+        from = e[i].from.id;
+        to = e[i].to.id;
+        if (from in nodelist && to in nodelist) { //if both the nodes the edge connects exist
+            var edge = newEdge(from, to, e[i].visible, 1);
+            if (edge.visible) {
+                DrawEdge(from, to);
+                UpdateEdge(edge);
             }
         }
     }
 
     setAllText(json['analysis']['txt']);
     postEdit("text", "edit", json['analysis']['txt']);
+    // postEdit("text", "edit", json['analysis']['txt'], 1);
 }
 
-function loaddbjson(json) {
-    //console.log("loaddbjson");
-    var oplus = false;
-    if ("plus" in getUrlVars()) {
-        oplus = true;
+function loaddbjson(json, oplus) {
+    // console.log("loading DB json");
+    //load participants
+    var p = json['participants'];
+    var pID = 0;
+    if (p != undefined) {
+        for (var i = 0, l = p.length; i < l; i++) {
+            firstname = p[i].firstname;
+            surname = p[i].surname;
+            addParticipant(firstname, surname)
+        }
     }
 
     //load nodes
     var nodelist = {};
-    var pID = 0;
     var xpos = 0;
     var ypos = 0;
-    jnodes = json['nodes'];
+    var jnodes = json['nodes'];
 
     for (var i = 0, l = jnodes.length; i < l; i++) {
         node = jnodes[i];
@@ -543,7 +638,7 @@ function svg2canvas2image() {
 
     var svg = SVGRoot;
     var str = new XMLSerializer().serializeToString(svg);
-    var svg64 = btoa(str.replace(/[\u00A0-\u2666]/g, function(c) {
+    var svg64 = btoa(str.replace(/[\u00A0-\u2666]/g, function (c) {
         return '&#' + c.charCodeAt(0) + ';';
     }));
     var image = new Image();
