@@ -234,7 +234,8 @@ function Grab(evt) {
   } else {
     if (window.nodeAddBtn == true) {
       window.nodeCounter = window.nodeCounter + 1;
-      newNodeID = window.nodeCounter;
+      newNodeID = (window.nodeCounter + ";" + window.sessionid);
+      console.log("nodeid: " + newNodeID);
       AddNode("", 'EN', null, 0, newNodeID, TrueCoords.x, TrueCoords.y - 10);
       var index = findNodeIndex(newNodeID)
       mySel = nodes[index];
@@ -252,7 +253,8 @@ function Grab(evt) {
       if (t != '') {
         if (rIATMode == true) {
           window.nodeCounter = window.nodeCounter + 1;
-          newNodeID = window.nodeCounter;
+          newNodeID = (window.nodeCounter + ";" + window.sessionid);
+          console.log("nodeid: " + newNodeID);
           var xCoord = TrueCoords.x;
           var yCoord = TrueCoords.y;
           AddNode(t, 'I', null, 0, newNodeID, TrueCoords.x, TrueCoords.y - 10);
@@ -264,7 +266,8 @@ function Grab(evt) {
           FormOpen = true;
         } else {
           window.nodeCounter = window.nodeCounter + 1;
-          newNodeID = window.nodeCounter;
+          newNodeID = (window.nodeCounter + ";" + window.sessionid);
+          console.log("nodeid: " + newNodeID);
           AddNode(t, 'I', null, 0, newNodeID, TrueCoords.x, TrueCoords.y - 10);
           var nIndex = findNodeIndex(newNodeID)
           mySel = nodes[nIndex];
@@ -611,7 +614,8 @@ function Drop(evt) {
         ty = parseInt(ty) + (parseInt(th) / 2);
 
         window.nodeCounter = window.nodeCounter + 1;
-        newNodeID = window.nodeCounter;
+        newNodeID = (window.nodeCounter + ";" + window.sessionid);
+        console.log("nodeid: " + newNodeID);
         nx = ((tx - fx) / 2) + fx;
         ny = ((ty - fy) / 2) + fy;
         //AddNode('Default Inference', 'RA', newNodeID, nx, ny);

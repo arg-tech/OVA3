@@ -246,11 +246,13 @@ function updateAddNode(node) {
 
     var found = nodes.find(n => n.nodeID == node.nodeID);
     if (typeof found !== "undefined") { //if a node with the same nodeID already exists
-        node.nodeID += 1;
+        window.nodeCounter = window.nodeCounter + 1;
+        node.nodeID = window.nodeCounter + ";" + window.sessionid;
     }
-    if (node.nodeID > window.nodeCounter) {
-        window.nodeCounter = node.nodeID;
-    }
+    //TODO: does this need redone? Won't work with new node id
+    // if (node.nodeID > window.nodeCounter) {
+    //     window.nodeCounter = node.nodeID;
+    // }
 
     //create a new node and add to array of all nodes
     var n = new Node;
@@ -565,7 +567,8 @@ function addLocution(node) {
 
 
     window.nodeCounter = window.nodeCounter + 1;
-    var newLNodeID = window.nodeCounter;
+    var newLNodeID = (window.nodeCounter + ";" + window.sessionid);
+    console.log("nodeid: " + newLNodeID);
 
 
     // var ltext = (firstname + ' ' + surname + ': ').concat(t);
@@ -585,7 +588,8 @@ function addLocution(node) {
 
 
     window.nodeCounter = window.nodeCounter + 1;
-    var newYANodeID = window.nodeCounter;
+    var newYANodeID = (window.nodeCounter + ";" + window.sessionid);
+    console.log("nodeid: " + newYANodeID);
     // AddNode('Asserting', 'YA', '74', 0, newYANodeID, (n.x + 225), yCoord);
     AddNode('Asserting', 'YA', '74', 0, newYANodeID, (parseInt(n.x) + 225), parseInt(yCoord));
 
