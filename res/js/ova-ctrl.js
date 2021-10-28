@@ -233,8 +233,9 @@ function Grab(evt) {
     }
   } else {
     if (window.nodeAddBtn == true) {
-      window.nodeCounter = window.nodeCounter + 1;
-      newNodeID = window.nodeCounter;
+      window.nodeCounter++;
+      newNodeID = (window.nodeCounter + "_" + window.sessionid);
+      console.log("nodeid: " + newNodeID);
       AddNode("", 'EN', null, 0, newNodeID, TrueCoords.x, TrueCoords.y - 10);
       var index = findNodeIndex(newNodeID)
       mySel = nodes[index];
@@ -251,8 +252,9 @@ function Grab(evt) {
       t = getSelText();
       if (t != '') {
         if (rIATMode == true) {
-          window.nodeCounter = window.nodeCounter + 1;
-          newNodeID = window.nodeCounter;
+          window.nodeCounter++;
+          newNodeID = (window.nodeCounter + "_" + window.sessionid);
+          console.log("nodeid: " + newNodeID);
           var xCoord = TrueCoords.x;
           var yCoord = TrueCoords.y;
           AddNode(t, 'I', null, 0, newNodeID, TrueCoords.x, TrueCoords.y - 10);
@@ -263,8 +265,9 @@ function Grab(evt) {
           $('#modal-shade').show();
           FormOpen = true;
         } else {
-          window.nodeCounter = window.nodeCounter + 1;
-          newNodeID = window.nodeCounter;
+          window.nodeCounter++;
+          newNodeID = (window.nodeCounter + "_" + window.sessionid);
+          console.log("nodeid: " + newNodeID);
           AddNode(t, 'I', null, 0, newNodeID, TrueCoords.x, TrueCoords.y - 10);
           var nIndex = findNodeIndex(newNodeID)
           mySel = nodes[nIndex];
@@ -314,17 +317,23 @@ function GetTrueCoords(evt) {
 
 function AddNode(txt, type, scheme, pid, nid, nx, ny, visible) {
   var isVisible = typeof visible !== 'undefined' ? visible : true;
-  newNode(nid, type, scheme, pid, txt, nx, ny, isVisible);
+  newNode(nid, type, scheme, pid, txt, nx, ny, isVisible); //create the node
   if (isVisible) {
     DrawNode(nid, type, txt, nx, ny); //if the node is visible then draw the node on the svg
 
-    //create analyst nodes if they are needed 
-    if (type == 'L' && txt != "") {
+    if (type == 'L' && txt != "") { //create analyst nodes if they are needed
+      //create YA analyst node
+      window.nodeCounter++;
+      var newNodeID = (window.nodeCounter + "_" + window.sessionid);
+      console.log("nodeid: " + newNodeID);
+      var analysisYA = newNode(newNodeID, 'YA', '75', 0, 'Analysing', 0, 0, false);
+      //create L analyst node
+      window.nodeCounter++;
+      newNodeID = (window.nodeCounter + "_" + window.sessionid);
+      console.log("nodeid: " + newNodeID);
       var analysisLTxt = window.afirstname + ': ' + txt;
-      window.nodeCounter++;
-      var analysisYA = newNode(window.nodeCounter, 'YA', '75', 0, 'Analysing', 0, 0, false);
-      window.nodeCounter++;
-      var analysisL = newNode(window.nodeCounter, 'L', null, 0, analysisLTxt, 0, 0, false);
+      var analysisL = newNode(newNodeID, 'L', null, 0, analysisLTxt, 0, 0, false);
+      //create edges to connect the analyst nodes
       newEdge(analysisYA.nodeID, nid, false);
       newEdge(analysisL.nodeID, analysisYA.nodeID, false);
 
@@ -609,8 +618,9 @@ function Drop(evt) {
         tx = parseInt(tx) + (parseInt(tw) / 2);
         ty = parseInt(ty) + (parseInt(th) / 2);
 
-        window.nodeCounter = window.nodeCounter + 1;
-        newNodeID = window.nodeCounter;
+        window.nodeCounter++;
+        newNodeID = (window.nodeCounter + "_" + window.sessionid);
+        console.log("nodeid: " + newNodeID);
         nx = ((tx - fx) / 2) + fx;
         ny = ((ty - fy) / 2) + fy;
         //AddNode('Default Inference', 'RA', newNodeID, nx, ny);
@@ -869,7 +879,9 @@ function findEdges(nodeID) {
 function deleteNode(node) {
   //remove the node
   if (node.visible) {
-    document.getElementById(CurrentlyEditing).remove(); //if the node was drawn on the svg remove it
+    if (document.getElementById(CurrentlyEditing)) {
+      document.getElementById(CurrentlyEditing).remove(); //if the node was drawn on the svg remove it
+    }
     if (mySel.type == 'L' || (!rIATMode && mySel.type == 'I')) {
       remhl(node.nodeID);
     }
