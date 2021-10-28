@@ -234,7 +234,7 @@ function Grab(evt) {
   } else {
     if (window.nodeAddBtn == true) {
       window.nodeCounter++;
-      newNodeID = (window.nodeCounter + ";" + window.sessionid);
+      newNodeID = (window.nodeCounter + "_" + window.sessionid);
       console.log("nodeid: " + newNodeID);
       AddNode("", 'EN', null, 0, newNodeID, TrueCoords.x, TrueCoords.y - 10);
       var index = findNodeIndex(newNodeID)
@@ -253,7 +253,7 @@ function Grab(evt) {
       if (t != '') {
         if (rIATMode == true) {
           window.nodeCounter++;
-          newNodeID = (window.nodeCounter + ";" + window.sessionid);
+          newNodeID = (window.nodeCounter + "_" + window.sessionid);
           console.log("nodeid: " + newNodeID);
           var xCoord = TrueCoords.x;
           var yCoord = TrueCoords.y;
@@ -266,7 +266,7 @@ function Grab(evt) {
           FormOpen = true;
         } else {
           window.nodeCounter++;
-          newNodeID = (window.nodeCounter + ";" + window.sessionid);
+          newNodeID = (window.nodeCounter + "_" + window.sessionid);
           console.log("nodeid: " + newNodeID);
           AddNode(t, 'I', null, 0, newNodeID, TrueCoords.x, TrueCoords.y - 10);
           var nIndex = findNodeIndex(newNodeID)
@@ -324,12 +324,12 @@ function AddNode(txt, type, scheme, pid, nid, nx, ny, visible) {
     if (type == 'L' && txt != "") { //create analyst nodes if they are needed
       //create YA analyst node
       window.nodeCounter++;
-      var newNodeID = (window.nodeCounter + ";" + window.sessionid);
+      var newNodeID = (window.nodeCounter + "_" + window.sessionid);
       console.log("nodeid: " + newNodeID);
       var analysisYA = newNode(newNodeID, 'YA', '75', 0, 'Analysing', 0, 0, false);
       //create L analyst node
       window.nodeCounter++;
-      newNodeID = (window.nodeCounter + ";" + window.sessionid);
+      newNodeID = (window.nodeCounter + "_" + window.sessionid);
       console.log("nodeid: " + newNodeID);
       var analysisLTxt = window.afirstname + ': ' + txt;
       var analysisL = newNode(newNodeID, 'L', null, 0, analysisLTxt, 0, 0, false);
@@ -619,7 +619,7 @@ function Drop(evt) {
         ty = parseInt(ty) + (parseInt(th) / 2);
 
         window.nodeCounter++;
-        newNodeID = (window.nodeCounter + ";" + window.sessionid);
+        newNodeID = (window.nodeCounter + "_" + window.sessionid);
         console.log("nodeid: " + newNodeID);
         nx = ((tx - fx) / 2) + fx;
         ny = ((ty - fy) / 2) + fy;

@@ -261,6 +261,7 @@ function updateAddNode(node) {
     if (typeof found !== "undefined") { //if a node with the same nodeID already exists
         window.nodeCounter++;
         node.nodeID = window.nodeCounter + ";" + window.sessionid;
+        console.log("duplicate found, new id: " + node.nodeID);
     }
 
     //create a new node and add to array of all nodes
@@ -289,7 +290,6 @@ function updateAddNode(node) {
 
 function updateDelNode(node) {
     //deleteNode(node) is used for updating the original analysis (i.e. contains postEdit() call)
-    //remove the node
     var index = findNodeIndex(node.nodeID);
     if (index > -1) { //if the node exists
         nodes.splice(index, 1); //remove the node
@@ -369,7 +369,7 @@ function getSelText() {
     // if (iframe.nodeName.toLowerCase() == 'div') {
     // console.log(document.getElementById('analysis_text'));
     if (document.getElementById('analysis_text') != null) {
-    // if (iframe.getElementsByTagName('div')) {
+        // if (iframe.getElementsByTagName('div')) {
         // console.log("in if");
         if (window.getSelection) {
             userSelection = window.getSelection();
@@ -385,7 +385,8 @@ function getSelText() {
             // console.log(txt)
 
             var span = document.createElement("span");
-            span.id = "node" + (window.nodeCounter + 1);
+            var newNodeID = ((window.nodeCounter + 1) + "_" + window.sessionid);
+            span.id = "node" + newNodeID;
             if (rIATMode == false) {
                 span.className = "highlighted";
             } else {
@@ -410,7 +411,7 @@ function getSelText() {
 }
 
 function hlcurrent(nodeID) {
-    span = document.getElementById("node" + nodeID);
+    var span = document.getElementById("node" + nodeID);
     if (dialogicalMode && span == null && mySel.type == 'I') {
         span = document.getElementById("node" + CurrentlyEditing);
     }
@@ -519,7 +520,7 @@ function addLocution(node) {
 
 
     window.nodeCounter++;
-    var newLNodeID = (window.nodeCounter + ";" + window.sessionid);
+    var newLNodeID = (window.nodeCounter + "_" + window.sessionid);
     console.log("nodeid: " + newLNodeID);
 
 
@@ -540,7 +541,7 @@ function addLocution(node) {
 
 
     window.nodeCounter++;
-    var newYANodeID = (window.nodeCounter + ";" + window.sessionid);
+    var newYANodeID = (window.nodeCounter + "_" + window.sessionid);
     console.log("nodeid: " + newYANodeID);
     // AddNode('Asserting', 'YA', '74', 0, newYANodeID, (n.x + 225), yCoord);
     AddNode('Asserting', 'YA', '74', 0, newYANodeID, (parseInt(n.x) + 225), parseInt(yCoord));
