@@ -2,11 +2,12 @@
 require_once('mysql_connect.php');
 $preVersionNo = null;
 $versionNo = null;
+$contentID = $_POST['contentID'];
 
 if ($_POST['type'] == "node") {
     //get and set the previous version number and set the current version number
     $q = $DBH->prepare("SELECT * FROM nodes WHERE analysisID=:analysisID AND nodeID=:nodeID ORDER BY versionNo DESC LIMIT 1");
-    $q->execute(array(':analysisID' => $_POST['analysisID'], ':nodeID' => $_POST['nodeID']));
+    $q->execute(array(':analysisID' => $_POST['analysisID'], ':nodeID' => $contentID));
     $previousNode = $q->fetch(PDO::FETCH_ASSOC);
     if (!$previousNode) {
         $preVersionNo = null;
@@ -21,19 +22,16 @@ if ($_POST['type'] == "node") {
         $versionNo = $previousNode['versionNo'];
     } else {
         $q = $DBH->prepare("INSERT INTO nodes(nodeID, analysisID, versionNo, content) VALUES (:nodeID, :analysisID, :versionNo, :cnt)");
-        $q->execute(array(':nodeID' => $_POST['nodeID'], ':analysisID' => $_POST['analysisID'], ':versionNo' => $versionNo, ':cnt' => $_POST['cnt']));
+        $q->execute(array(':nodeID' => $contentID, ':analysisID' => $_POST['analysisID'], ':versionNo' => $versionNo, ':cnt' => $_POST['cnt']));
     }
-
-    $contentID = $_POST['nodeID'];
-} else {
-    if ($_POST['type'] == "edge") {
-        $sql = "INSERT INTO edges(analysisID, content) VALUES (:analysisID, :cnt)";
-    } elseif ($_POST['type'] == "text") {
-        $sql = "INSERT INTO texts(analysisID, content) VALUES (:analysisID, :cnt)";
-    }
+} else if ($_POST['type'] == "text") {
+    $sql = "INSERT INTO texts(textID, analysisID, content) VALUES (:id, :analysisID, :cnt)";
     $q = $DBH->prepare($sql);
-    $q->execute(array(':analysisID' => $_POST['analysisID'], ':cnt' => $_POST['cnt']));
-    $contentID = $DBH->lastInsertId();
+    $q->execute(array(':id' => $contentID, ':analysisID' => $_POST['analysisID'], ':cnt' => $_POST['cnt']));
+} else if ($_POST['type'] == "edge" && $_POST['action'] == "add" && $_POST['undone'] == 0) {
+    $sql = "INSERT INTO edges(edgeID, analysisID, content) VALUES (:id, :analysisID, :cnt)";
+    $q = $DBH->prepare($sql);
+    $q->execute(array(':id' => $contentID, ':analysisID' => $_POST['analysisID'], ':cnt' => $_POST['cnt']));
 }
 
 $sql = "INSERT INTO edits(analysisID, sessionid, `type`, `action`, contentID, groupID, undone, versionNo, preVersionNo) VALUES (?,?,?,?,?,?,?,?,?)";

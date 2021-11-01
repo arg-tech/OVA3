@@ -237,7 +237,6 @@ function Grab(evt) {
       window.groupID ++;
       window.nodeCounter++;
       newNodeID = (window.nodeCounter + "_" + window.sessionid);
-      console.log("nodeid: " + newNodeID);
       AddNode("", 'EN', null, 0, newNodeID, TrueCoords.x, TrueCoords.y - 10);
       var index = findNodeIndex(newNodeID)
       mySel = nodes[index];
@@ -259,7 +258,6 @@ function Grab(evt) {
         if (rIATMode == true) {
           window.nodeCounter++;
           newNodeID = (window.nodeCounter + "_" + window.sessionid);
-          console.log("nodeid: " + newNodeID);
           var xCoord = TrueCoords.x;
           var yCoord = TrueCoords.y;
           AddNode(t, 'I', null, 0, newNodeID, TrueCoords.x, TrueCoords.y - 10);
@@ -272,7 +270,6 @@ function Grab(evt) {
         } else {
           window.nodeCounter++;
           newNodeID = (window.nodeCounter + "_" + window.sessionid);
-          console.log("nodeid: " + newNodeID);
           AddNode(t, 'I', null, 0, newNodeID, TrueCoords.x, TrueCoords.y - 10);
           var nIndex = findNodeIndex(newNodeID)
           mySel = nodes[nIndex];
@@ -330,12 +327,10 @@ function AddNode(txt, type, scheme, pid, nid, nx, ny, visible) {
       //create YA analyst node
       window.nodeCounter++;
       var newNodeID = (window.nodeCounter + "_" + window.sessionid);
-      console.log("nodeid: " + newNodeID);
       var analysisYA = newNode(newNodeID, 'YA', '75', 0, 'Analysing', 0, 0, false);
       //create L analyst node
       window.nodeCounter++;
       newNodeID = (window.nodeCounter + "_" + window.sessionid);
-      console.log("nodeid: " + newNodeID);
       var analysisLTxt = window.afirstname + ': ' + txt;
       var analysisL = newNode(newNodeID, 'L', null, 0, analysisLTxt, 0, 0, false);
       //create edges to connect the analyst nodes
@@ -626,7 +621,6 @@ function Drop(evt) {
         window.groupID ++;
         window.nodeCounter++;
         newNodeID = (window.nodeCounter + "_" + window.sessionid);
-        console.log("nodeid: " + newNodeID);
         nx = ((tx - fx) / 2) + fx;
         ny = ((ty - fy) / 2) + fy;
         //AddNode('Default Inference', 'RA', newNodeID, nx, ny);

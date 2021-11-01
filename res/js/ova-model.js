@@ -88,6 +88,7 @@ function newEdge(fromID, toID, visible, undone) {
     e.toID = toID;
     e.visible = typeof visible !== 'undefined' ? visible : true;
     edges.push(e);
+
     var undone = typeof undone !== 'undefined' ? undone : 0;
     postEdit("edge", "add", e, undone);
     return e;

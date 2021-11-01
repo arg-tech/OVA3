@@ -12,9 +12,9 @@ $STH->execute();
 $JSON = array();
 while ($row = $STH->fetch()) {
 	if ($row['type'] == 'node') {
-		$q = "SELECT content FROM nodes WHERE nodeID=" . $row['contentID'] . " AND nodes.analysisID=" . $row['analysisID'] . " AND nodes.versionNo=" . $row['versionNo'] . ";";
+		$q = "SELECT content FROM nodes WHERE nodeID='" . $row['contentID'] . "' AND nodes.analysisID=" . $row['analysisID'] . " AND nodes.versionNo=" . $row['versionNo'] . ";";
 	} else {
-		$q = "SELECT content FROM " . $row['type'] . "s WHERE " . $row['type'] . "ID=" . $row['contentID'] . " AND ". $row['type'] . "s.analysisID=" . $row['analysisID'] . ";";
+		$q = "SELECT content FROM " . $row['type'] . "s WHERE " . $row['type'] . "ID='" . $row['contentID'] . "' AND ". $row['type'] . "s.analysisID=" . $row['analysisID'] . ";";
 	}
 	$sc = $DBH->prepare($q);
 	$sc->execute();

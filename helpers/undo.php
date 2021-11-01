@@ -20,7 +20,7 @@ if (!$lastEditGroup) {
 	$type = $lastEditGroup['type'];
 }
 
-//find all edits with the given groupID
+//find all edits with the given groupID for this user
 $STH = $DBH->prepare("SELECT * FROM edits WHERE analysisID=? AND sessionid=? AND groupID=? AND undone=0 ORDER by editID DESC;");
 $STH->execute([$analysisID, $sessionid, $groupID]);
 
@@ -29,7 +29,7 @@ $allEditIDs = array();
 
 if ($action == 'edit' && $type == 'node') {
 	while ($row = $STH->fetch()) {
-		$q = "SELECT content FROM nodes WHERE nodeID=" . $row['contentID'] . " AND nodes.analysisID=" . $row['analysisID'] . " AND nodes.versionNo=" . $row['preVersionNo'] . ";";
+		$q = "SELECT content FROM nodes WHERE nodeID='" . $row['contentID'] . "' AND nodes.analysisID=" . $row['analysisID'] . " AND nodes.versionNo=" . $row['preVersionNo'] . ";";
 		$sc = $DBH->prepare($q);
 		$sc->execute();
 		$r = $sc->fetch(PDO::FETCH_ASSOC);
@@ -53,18 +53,21 @@ if ($action == 'edit' && $type == 'node') {
 	while ($row = $STH->fetch()) {
 		if ($action == 'delete' || $row['type'] != 'text') {
 			if ($row['type'] == 'node') {
-				$q = "SELECT content FROM nodes WHERE nodeID=" . $row['contentID'] . " AND nodes.analysisID=" . $row['analysisID'] . " AND nodes.versionNo=" . $row['versionNo'] . ";";
+				$q = "SELECT content FROM nodes WHERE nodeID='" . $row['contentID'] . "' AND nodes.analysisID=" . $row['analysisID'] . " AND nodes.versionNo=" . $row['versionNo'] . ";";
 			} else if ($row['type'] == 'edge') {
-				$q = "SELECT content FROM edges WHERE edgeID=" . $row['contentID'] . " AND edges.analysisID=" . $row['analysisID'] . ";";
+				$q = "SELECT content FROM edges WHERE edgeID='" . $row['contentID'] . "' AND edges.analysisID=" . $row['analysisID'] . ";";
 			} else if ($row['type'] == 'text') { //find the previous text content
-				$q = "SELECT content FROM texts INNER JOIN edits ON textID = contentID
-				WHERE edits.analysisID=" . $row['analysisID'] . " AND type='text' AND undone=0 ORDER BY textID DESC LIMIT 1, 1;";
+				$q = "SELECT content FROM texts INNER JOIN edits ON textID = contentID AND texts.analysisID=edits.analysisID WHERE texts.analysisID=" . $row['analysisID'] . " AND type='text' AND undone=0 ORDER BY editID DESC LIMIT 1, 1;";
 			}
 
 			$sc = $DBH->prepare($q);
 			$sc->execute();
 			$r = $sc->fetch(PDO::FETCH_ASSOC);
-			$content = $r['content'];
+			if (!$r) {
+				$content = null;
+			} else {
+				$content = $r['content'];
+			}
 
 			$edit = array();
 			$edit['editID'] = $row['editID'];

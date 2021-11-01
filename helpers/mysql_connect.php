@@ -3,7 +3,7 @@
 DEFINE ('DB_USER', 'root');
 DEFINE ('DB_PASSWORD', 'root');
 DEFINE ('DB_HOST', 'localhost');
-DEFINE ('DB_NAME', 'ova3_new');
+DEFINE ('DB_NAME', 'ova3_test');
 
 try {
     # MySQL with PDO_MYSQL
