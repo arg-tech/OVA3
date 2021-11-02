@@ -202,14 +202,8 @@ function Grab(evt) {
       GrabPoint.y = TrueCoords.y;
 
       Focus(evt, targetElement);
-
-      // //deselects the add edge icon button after adding an edge
-      // if (window.eBtn) {
-      //   edgeMode('off');
-      //   window.eBtn = false;
-      // }
     }
-    else if (editMode == true) {
+    else if (editMode) {
       var index = findNodeIndex(targetElement.id)
       mySel = nodes[index];
       CurrentlyEditing = targetElement.id;
@@ -219,7 +213,7 @@ function Grab(evt) {
     }
     else {
       DragTarget = targetElement;
-      // // move this focusElement to the "top" of the display
+      // move this focusElement to the "top" of the display
       DragTarget.parentNode.appendChild(DragTarget);
       DragTarget.setAttributeNS(null, 'pointer-events', 'none');
 
@@ -232,10 +226,9 @@ function Grab(evt) {
       Focus(evt, targetElement);
     }
   } else {
-    if (window.nodeAddBtn == true) {
+    if (window.nodeAddBtn) {
       window.nodeCounter++;
       newNodeID = (window.nodeCounter + "_" + window.sessionid);
-      console.log("nodeid: " + newNodeID);
       AddNode("", 'EN', null, 0, newNodeID, TrueCoords.x, TrueCoords.y - 10);
       var index = findNodeIndex(newNodeID)
       mySel = nodes[index];
@@ -244,20 +237,21 @@ function Grab(evt) {
       nodeMode('off');
       return;
     }
-    else if (multiSel == true) {
+    else if (multiSel) {
       multiSelRect.startX = TrueCoords.x;
       multiSelRect.startY = TrueCoords.y;
     }
     else {
       t = getSelText();
       if (t != '') {
-        if (rIATMode == true) {
-          window.nodeCounter++;
-          newNodeID = (window.nodeCounter + "_" + window.sessionid);
-          console.log("nodeid: " + newNodeID);
-          var xCoord = TrueCoords.x;
-          var yCoord = TrueCoords.y;
-          AddNode(t, 'I', null, 0, newNodeID, TrueCoords.x, TrueCoords.y - 10);
+        window.nodeCounter++;
+        var newNodeID = (window.nodeCounter + "_" + window.sessionid);
+        if (window.rIATMode) {
+          var timestamp = '';
+          if (window.qtMode) {
+            timestamp = qtTimestamp();
+          }
+          AddNode(t, 'I', null, 0, newNodeID, TrueCoords.x, TrueCoords.y - 10, true, timestamp);
           var nIndex = findNodeIndex(newNodeID)
           mySel = nodes[nIndex];
           CurrentlyEditing = mySel.nodeID;
@@ -265,19 +259,82 @@ function Grab(evt) {
           $('#modal-shade').show();
           FormOpen = true;
         } else {
-          window.nodeCounter++;
-          newNodeID = (window.nodeCounter + "_" + window.sessionid);
-          console.log("nodeid: " + newNodeID);
           AddNode(t, 'I', null, 0, newNodeID, TrueCoords.x, TrueCoords.y - 10);
           var nIndex = findNodeIndex(newNodeID)
           mySel = nodes[nIndex];
         }
       }
     }
-
   }
 }
 
+function qtTimestamp() {
+  var iframe = document.getElementById('analysis_text');
+  if (iframe.nodeName.toLowerCase() == 'div') {
+    htmlContent = iframe.innerHTML
+
+    // GET TIMESTAMPS FROM TEXT
+    var r1 = "[0-9]:[0-9][0-9]:[0-9][0-9]";
+    var timestamps = [];
+    var re = new RegExp(r1, "g");
+    while ((match = re.exec(htmlContent)) != null) {
+      timestamps.push([match.index + match[0].length, match[0]]);
+    }
+
+    // GET SPAN POSITION FROM TEXT
+    var r2 = "<[^>]*node" + window.nodeCounter + "[^0-9][^>]*>[^<]*</span>";
+    var re = new RegExp(r2, "g");
+    while ((match = re.exec(htmlContent)) != null) {
+      beforei = 0;
+      beforet = '0:00:00';
+      afteri = htmlContent.length;
+      aftert = '';
+      for (index = 0; index < timestamps.length; ++index) {
+        if (timestamps[index][0] < match.index) {
+          beforei = timestamps[index][0];
+          beforet = timestamps[index][1];
+        } else if (timestamps[index][0] > match.index) {
+          afteri = timestamps[index][0];
+          aftert = timestamps[index][1];
+          break;
+        }
+      }
+      var matchx = match;
+      break;
+    }
+
+    // TEXT BEFORE/AFTER AND PERCENT THROUGH
+    turnbefore = striphtml(htmlContent.substring(beforei, matchx.index));
+    turnafter = striphtml(htmlContent.substring(matchx.index + matchx[0].length, afteri));
+    pcthru = turnbefore.length / (turnbefore.length + turnafter.length);
+
+    // TIMESTAMP CALCULATION
+    charpermillisec = 0.01;
+    if (aftert == '') {
+      startut = Math.round(new Date(window.startdatestmp).getTime());
+      baseut = Math.round(new Date("2000/01/01 00:00:00").getTime());
+      beforeut = Math.round(new Date("2000/01/01 0" + beforet).getTime());
+      timeinprog = beforeut + (turnbefore.length / charpermillisec);
+      timeoffset = timeinprog - baseut;
+      tstamp = startut + timeoffset;
+
+      var tsd = new Date();
+      tsd.setTime(tstamp);
+    } else {
+      startut = Math.round(new Date(startdatestmp).getTime());
+      baseut = Math.round(new Date("2000/01/01 00:00:00").getTime());
+      beforeut = Math.round(new Date("2000/01/01 0" + beforet).getTime());
+      afterut = Math.round(new Date("2000/01/01 0" + aftert).getTime());
+      timeinprog = beforeut + ((afterut - beforeut) * pcthru);
+      timeoffset = timeinprog - baseut;
+      tstamp = startut + timeoffset;
+
+      var tsd = new Date();
+      tsd.setTime(tstamp);
+    }
+  }
+  return tsd.toString();
+}
 
 function GetEdges(dragID) {
   for (var j = 0; j < edges.length; j++) {
@@ -315,9 +372,10 @@ function GetTrueCoords(evt) {
 
 }
 
-function AddNode(txt, type, scheme, pid, nid, nx, ny, visible) {
+function AddNode(txt, type, scheme, pid, nid, nx, ny, visible, timestamp) {
   var isVisible = typeof visible !== 'undefined' ? visible : true;
-  newNode(nid, type, scheme, pid, txt, nx, ny, isVisible); //create the node
+  var timestamp = typeof timestamp !== 'undefined' ? timestamp : '';
+  newNode(nid, type, scheme, pid, txt, nx, ny, isVisible, 0, timestamp); //create the node
   if (isVisible) {
     DrawNode(nid, type, txt, nx, ny); //if the node is visible then draw the node on the svg
 
@@ -325,12 +383,10 @@ function AddNode(txt, type, scheme, pid, nid, nx, ny, visible) {
       //create YA analyst node
       window.nodeCounter++;
       var newNodeID = (window.nodeCounter + "_" + window.sessionid);
-      console.log("nodeid: " + newNodeID);
       var analysisYA = newNode(newNodeID, 'YA', '75', 0, 'Analysing', 0, 0, false);
       //create L analyst node
       window.nodeCounter++;
       newNodeID = (window.nodeCounter + "_" + window.sessionid);
-      console.log("nodeid: " + newNodeID);
       var analysisLTxt = window.afirstname + ': ' + txt;
       var analysisL = newNode(newNodeID, 'L', null, 0, analysisLTxt, 0, 0, false);
       //create edges to connect the analyst nodes
@@ -620,7 +676,6 @@ function Drop(evt) {
 
         window.nodeCounter++;
         newNodeID = (window.nodeCounter + "_" + window.sessionid);
-        console.log("nodeid: " + newNodeID);
         nx = ((tx - fx) / 2) + fx;
         ny = ((ty - fy) / 2) + fy;
         //AddNode('Default Inference', 'RA', newNodeID, nx, ny);

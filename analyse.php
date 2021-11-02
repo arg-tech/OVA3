@@ -85,6 +85,7 @@ if (isset($_COOKIE['ovauser'])) {
   <link rel="stylesheet" href="res/css/introjs.css" />
 
   <script src="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.10.0/jquery-ui.js"></script>
+  <script src="res/js/ova-qtconfig.js"></script> <!-- TODO -->
   <script src="res/js/svg-pan-zoom.js"></script>
   <script src="res/js/ova-analysis.js"></script>
   <script src="res/js/ova-fn.js"></script>

@@ -40,6 +40,7 @@ function genjson() {
             var jlocution = {};
             jlocution['nodeID'] = nodes[i].nodeID;
             jlocution['personID'] = nodes[i].participantID;
+            jlocution['start'] = Math.round(new Date(nodes[i].timestamp).getTime()/1000); //todo: check if 'start' or 'timestamp'
             jlocutions.push(jlocution);
         }
     }
@@ -222,7 +223,6 @@ function loadOva3Json(json, oplus) {
         if (nodelist[n[i].nodeID]) {
             if (n[i].visible) {
                 updateNode(n[i].nodeID, n[i].x, n[i].y, n[i].visible, 1);
-                // console.log(nodelist[n[i].nodeID]);
                 DrawNode(nodelist[n[i].nodeID].nodeID, nodelist[n[i].nodeID].type, nodelist[n[i].nodeID].text, nodelist[n[i].nodeID].x, nodelist[n[i].nodeID].y);
             }
         }

@@ -254,16 +254,8 @@ function updateConnectedEdges(node) {
 }
 
 function updateAddNode(node) {
-    console.log("updateAddNode called");
-    console.log(node);
-
-    var found = nodes.find(n => n.nodeID == node.nodeID);
-    if (typeof found !== "undefined") { //if a node with the same nodeID already exists
-        window.nodeCounter++;
-        node.nodeID = window.nodeCounter + ";" + window.sessionid;
-        console.log("duplicate found, new id: " + node.nodeID);
-    }
-
+    // console.log("updateAddNode called");
+    // console.log(node);
     //create a new node and add to array of all nodes
     var n = new Node;
     n.nodeID = node.nodeID;
@@ -274,10 +266,12 @@ function updateAddNode(node) {
     n.x = node.x;
     n.y = node.y;
     n.visible = node.visible;
+    n.timestamp = node.timestamp;
     nodes.push(n);
 
     if (n.visible) {
         DrawNode(n.nodeID, n.type, n.text, n.x, n.y); //if the node is visible then draw the node on the svg
+        if (window.qtMode && n.type == 'L') { DrawTimestamp(n); }
         updateConnectedEdges(n);
     } else if (n.type == 'L') {  //if the node is an analyst node
         var index = n.text.indexOf(":");
@@ -309,12 +303,14 @@ function updateEditNode(node) {
         n.type = node.type;
         n.scheme = node.scheme;
         n.text = node.text;
+        n.timestamp = node.timestamp;
 
         if (node.visible) { //update svg if the node has been drawn on it
             if (document.getElementById(node.nodeID)) {
                 document.getElementById(node.nodeID).remove(); //remove the old version of the node
             }
             DrawNode(n.nodeID, n.type, n.text, n.x, n.y); //draw the updated version of the node
+            if (window.qtMode && n.type == 'L') { DrawTimestamp(n); }
             updateConnectedEdges(n);
         }
     }
@@ -518,11 +514,8 @@ function addLocution(node) {
         surname = participant.surname;
     }
 
-
     window.nodeCounter++;
     var newLNodeID = (window.nodeCounter + "_" + window.sessionid);
-    console.log("nodeid: " + newLNodeID);
-
 
     // var ltext = (firstname + ' ' + surname + ': ').concat(t);
     var ltext = (firstname + ' ' + surname + ': ').concat(node.text);
@@ -536,13 +529,18 @@ function addLocution(node) {
         }
     }
 
-    AddNode(ltext, 'L', null, participantID, newLNodeID, (parseInt(n.x) + 450), parseInt(yCoord));
-    //var index = findNodeIndex(newLNodeID);
+    if (window.qtMode) {
+        AddNode(ltext, 'L', null, participantID, newLNodeID, (parseInt(n.x) + 450), parseInt(yCoord), true, node.timestamp);
+        var index = findNodeIndex(newLNodeID);
+        DrawTimestamp(nodes[index]); //draw the timestamp on the svg
+        removeTimestamp(node.nodeID); //remove the timestamp from the i node
+    } else {
+        AddNode(ltext, 'L', null, participantID, newLNodeID, (parseInt(n.x) + 450), parseInt(yCoord));
+    }
 
 
     window.nodeCounter++;
     var newYANodeID = (window.nodeCounter + "_" + window.sessionid);
-    console.log("nodeid: " + newYANodeID);
     // AddNode('Asserting', 'YA', '74', 0, newYANodeID, (n.x + 225), yCoord);
     AddNode('Asserting', 'YA', '74', 0, newYANodeID, (parseInt(n.x) + 225), parseInt(yCoord));
 

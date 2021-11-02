@@ -14,6 +14,7 @@ function Node() {
     this.x = 0;
     this.y = 0;
     this.visible = true;
+    this.timestamp = '';
 }
 
 function Edge() {
@@ -41,7 +42,7 @@ function newParticipant(id, fname, sname) {
     return p;
 }
 
-function newNode(nodeID, type, scheme, participantID, text, x, y, visible, undone) {
+function newNode(nodeID, type, scheme, participantID, text, x, y, visible, undone, timestamp) {
     var n = new Node;
     n.nodeID = nodeID;
     n.type = type;
@@ -51,6 +52,7 @@ function newNode(nodeID, type, scheme, participantID, text, x, y, visible, undon
     n.x = x;
     n.y = y;
     n.visible = typeof visible !== 'undefined' ? visible : true;
+    n.timestamp = typeof timestamp !== 'undefined' ? timestamp : '';
     nodes.push(n);
     postEdit("node", "add", n);
 
@@ -59,26 +61,29 @@ function newNode(nodeID, type, scheme, participantID, text, x, y, visible, undon
     return n;
 }
 
-function updateNode(nodeID, x, y, visible, undone, type, scheme, text) {
+function updateNode(nodeID, x, y, visible, undone, type, scheme, text, timestamp) {
     var index = findNodeIndex(nodeID);
-    n = nodes[index];
-    n.x = x;
-    n.y = y;
-    n.visible = typeof visible !== 'undefined' ? visible : true;
-    
-    if (type != undefined) { n.type = type; }
-    if (scheme != undefined) { n.scheme = scheme; }
-    if (text != undefined) { n.text = text; }
-    postEdit("node", "edit", n);
+    if (index > -1) { //if the node exists
+        n = nodes[index];
+        n.x = x;
+        n.y = y;
+        n.visible = typeof visible !== 'undefined' ? visible : true;
 
-    var undone = typeof undone !== 'undefined' ? undone : 0;
-    // window.groupID++;
-    // postEdit("node", "edit", n, undone, n.nodeID);
+        if (type != undefined) { n.type = type; }
+        if (scheme != undefined) { n.scheme = scheme; }
+        if (text != undefined) { n.text = text; }
+        if (timestamp != undefined) { n.timestamp = timestamp; }
+        postEdit("node", "edit", n);
+
+        var undone = typeof undone !== 'undefined' ? undone : 0;
+        // window.groupID++;
+        // postEdit("node", "edit", n, undone, n.nodeID);
+    }
 }
 
 function delNode(node) {
-    var index = nodes.indexOf(node);
-    if (index > -1) {
+    var index = findNodeIndex(node.nodeID);
+    if (index > -1) { //if the node exists
         nodes.splice(index, 1);
         postEdit("node", "delete", node);
     }
@@ -118,4 +123,14 @@ function findParticipantIDText(text) {
     var name = str.split(" ");
     var found = findParticipantID(name[0], name[1]);
     return found;
+}
+
+function removeTimestamp(nodeID) {
+    var index = findNodeIndex(nodeID);
+    if (index > -1) { //if the node exists
+        n = nodes[index];
+        n.timestamp = '';
+        postEdit("node", "edit", n);
+        // postEdit("node", "edit", n, 0, n.nodeID);
+    }
 }
