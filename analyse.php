@@ -185,7 +185,7 @@ if (isset($_COOKIE['ovauser'])) {
     <a onClick="nodeMode('switch'); return false;" class="icon" id="nadd" style="background-position: -0px 50%;"><span class="tooltiptext">Add&nbsp;Node</span></a>
     <div class="divider"></div>
     <a onClick="resetPosition();" class="icon" id="reset" style="background-position: -336px 50%;"><span class="tooltiptext">Reset&nbsp;View</span></a>
-    <a onClick="undo();" class="icon" id="undo" style="background-position: -336px 50%;"><span class="tooltiptext">Undo</span></a> <!-- TODO: change style -->
+    <a onClick="undo();" class="icon" id="undo" style="background-position: -420px 50%;"><span class="tooltiptext">Undo</span></a> <!-- TODO: change style -->
     <div class="divider"></div>
   </div>
 
