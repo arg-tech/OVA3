@@ -1,5 +1,5 @@
 <?php
-require_once('../config.php');
+require_once('./config.php');
 // Set the database access information as constants.
 DEFINE ('DB_USER', $OVA_DB_USER);
 DEFINE ('DB_PASSWORD', $OVA_DB_PASSWORD);
