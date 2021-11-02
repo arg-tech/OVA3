@@ -1,8 +1,9 @@
 <?php
 // Set the database access information as constants.
-DEFINE ('DB_USER', 'root');
-DEFINE ('DB_PASSWORD', 'root');
-DEFINE ('DB_HOST', 'localhost');
+//DEFINE ('DB_USER', 'root');
+DEFINE ('DB_USER', 'ova3_user');
+DEFINE ('DB_PASSWORD', 'ovapa55');
+DEFINE ('DB_HOST', '127.0.0.1');
 DEFINE ('DB_NAME', 'ova3');
 
 try {

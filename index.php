@@ -6,93 +6,100 @@ if (isset($_COOKIE['ovauser'])) {
 }
 ?>
 <!doctype html>
-<html class="no-js" lang="">
-
-<head>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
     <meta charset="utf-8">
-    <title>OVA from ARG-tech</title>
-    <meta name="description" content="">
-    <link rel="stylesheet" href="res/css/analysis.css" />
-    <link rel="stylesheet" href="res/css/reset.css">
-    <link rel="stylesheet" href="res/css/introjs.css">
-    <link rel="stylesheet" href="res/css/splash.css">
-    <script src="res/js/jquery-1.11.2.min.js"></script>
-    <script src="res/js/setup.js"></script>
-    <script src="res/js/intro.min.js"></script>
-</head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400&display=swap" rel="stylesheet">
 
-<body>
-    <div id="wrap" onclick="$('#aboutmodal').hide();">
-        <div style='width:0;height:0'>&nbsp;</div>
-        <div id="content">
-            <img src="res/img/logo-small.svg" onerror="this.onerror=null; this.src='res/img/logo-small.png'" id="ova-logo" height="60" />
-            <div id="source-sel" class="mdlg">
-                <a href="#" class="helpbtn" onclick="javascript:introJs().setOption('showStepNumbers', false).start(); return false;">?</a>
-                <form method="GET" action="./analyse.php" class="fstyle">
-                    <p style="padding: 20px 0px;">
-                        <label>URL of the page to analyse <span style="color:#999;">(leave blank to analyse your own text)</span>:<br />
-                            <input type="text" name="url" id="urlinput" class="input" value="" style="font-size: 22px; padding: 3px; width:96%; color: #666;" /></label>
-                    </p>
-                </form>
+    <link rel="stylesheet" href="res/fonts/icomoon/style.css">
+    <link rel="stylesheet" href="res/css/owl.carousel.min.css">
+    <link rel="stylesheet" href="res/css/bootstrap.min.css">
+    <link rel="stylesheet" href="res/css/landing.css">
 
-                <div class="form-btns">
-                    <a href="#" onClick="$('#source-sel').slideUp(400, function() {$('#analyst-details').slideDown()});return false;" data-step="2" data-intro="Click here to analyse using OVA+.<br />OVA+ allows for full IAT analysis of dialogical texts." data-position="bottom-middle-aligned">Analyse with OVA+</a>
-                    <a href="#" onClick="ovaReg();return false;" data-step="1" data-intro="Click here to analyse using the original version of OVA" data-position="bottom-middle-aligned">Analyse</a>
-                </div>
+    <title>OVA 3</title>
+  </head>
+  <body>
+  
+
+  <div class="d-lg-flex half">
+    <div class="contents order-1 order-md-1" style="background-color: #333;">
+      <div class="container">
+        <div class="row align-items-center justify-content-center">
+          <div class="col-md-7">
+            <div class="mb-4">
+              <img src="res/img/logo.svg" style="width:180px; margin-bottom: 22px;" />
+              <h3>URL of the page to analyse</h3>
+              <p style="color: #777; font-size: 12px; margin-top: -10px; margin-bottom: -18px;">(leave blank to analyse your own text)</p>
             </div>
-            <div id="analyst-details" class="mdlg" style="display:none; position:relative;">
-                <div class="mdlg-title">
-                    <p>Analyst Details</p>
-                </div>
-                <div id="showfs" style="display:none; position: absolute; top: 130px; left: 20px;"><a onClick="resetform('ep');" style="cursor:pointer;padding:2px 3px;background-color:#e6e6e6;">&laquo;</a></div>
-                <form method="GET" action="./analyse.php" id="fs" class="fstyle" style="width:86%; float: left;">
-                    <p style="padding: 20px 0px;">
-                        <label>First Name:<br />
-                            <input type="text" name="af" id="afinput" class="input" value="<?php echo $af; ?>" style="font-size: 22px; padding: 3px; width:90%; color: #666;" /></label>
-                        <label>Surname:<br />
-                            <input type="text" name="as" id="asinput" class="input" value="<?php echo $as; ?>" style="font-size: 22px; padding: 3px; width:90%; color: #666;" /></label>
-                    </p>
-                </form>
-                <!--<div id="adsep" class="vsep" style="float: left;margin-top: 40px; margin-left:50px;"><div>or</div></div>
-                    <form method="GET" action="./analyse.php" id="ep" class="fstyle" style="width:30%; float: left;">
-                        <p style="padding: 20px 0px;"> 
-                        <label>Email:<br /> 
-                        <input type="text" name="af" id="afinput" class="input" value="" style="font-size: 22px; padding: 3px; width:90%; color: #666;" onfocus="expandform('ep')" /></label> 
-                        <label>Password:<br /> 
-                        <input type="password" name="as" id="asinput" class="input" value="" style="font-size: 22px; padding: 3px; width:90%; color: #666;" onfocus="expandform('ep')" /></label>
-                        </p>
-                    </form>
-                    <div id="showep" style="display:none; position: absolute; top: 130px; right: 20px;"><a onClick="resetform('fs');" style="cursor:pointer;padding:2px 3px;background-color:#e6e6e6;">&laquo;</a></div>
-                    -->
-                <div style="clear: both; line-height: 0;">&nbsp;</div>
+            <form action="#" method="post">
+              <div class="form-group first last">
+                <label for="username">URL of the page to analyse</label>
+                <input type="text" class="form-control" id="urlinput">
+              </div>
 
-                <div class="form-btns">
-                    <a href="#" onClick="ovaPlus();return false;">Continue &#x27a1;</a>
-                    <a href="#" onClick="$('#analyst-details').slideUp(400, function() {$('#source-sel').slideDown()});return false;">&#x2b05; Back</a>
-                </div>
-            </div>
+			  <div class="d-flex mb-5 align-items-center" style="margin-top: 22px;">
+                <label class="control control--checkbox mb-0"><span class="caption">Use dialogical mode</span>
+                  <input type="checkbox" checked="checked" id ="dlgmode" />
+                  <div class="control__indicator"></div>
+                </label>
+              </div>
+
+              <input type="submit" value="Analyse" class="btn btn-block btn-primary" style="margin-top: -18px; background-color: #e67e22; border-color: #222;" onClick="ovaReg();return false;">
+            </form>
+          </div>
         </div>
-        <div id="push"></div>
+      </div>
     </div>
 
-    <div id="footer">
-        <div class="container">
-            <div class="row">
-                <p><strong>OVA</strong> by <a href="http://www.arg-tech.org">ARG-tech</a> | <a onclick="$('#aboutmodal').show();return false;" style="text-decoration:underline; cursor: pointer;">About OVA</a></p>
+    <div class="bg order-2 order-md-2" style="background-color: #fff;">
+
+	      <div class="container">
+        <div class="row align-items-center justify-content-center">
+          <div class="col-md-7">
+            <div class="mb-4">
+              <h3>Your Details</h3>
             </div>
+            <form action="#" method="post">
+              <div class="form-group first">
+                <label for="username">Firstname</label>
+                <input type="text" class="form-control" id="afinput">
+              </div>
+
+              <div class="form-group last mb-3">
+                <label for="surname">Surname</label>
+                <input type="surname" class="form-control" id="asinput">
+              </div>
+            <!--
+              <span class="d-block text-center my-4 text-muted" style="color:#999 !important;">&mdash; or &mdash;</span>
+
+              <div class="form-group first">
+                <label for="username">Username</label>
+                <input type="text" class="form-control" id="username">
+              </div>
+
+              <div class="form-group last mb-3">
+                <label for="password">Password</label>
+                <input type="password" class="form-control" id="password">
+              </div>
+
+              <input type="submit" value="Log In" class="btn btn-block btn-primary" style="background-color: #888; border-color: #fff;">
+              -->
+
+            </form>
+          </div>
         </div>
+      </div>	
+
+
     </div>
-    <!--<div id="aboutmodal"> php"include_once('about.html');" </div>
-        <script>
-            (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-            })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  </div>
+    
+  <script src="res/js/jquery-3.3.1.min.js"></script>
+  <script src="res/js/popper.min.js"></script>
+  <script src="res/js/bootstrap.min.js"></script>
+  <script src="res/js/landing.js"></script>
 
-            ga('create', 'UA-57244751-1', 'auto');
-            ga('send', 'pageview');
-        </script> -->
-
-</body>
-
+  </body>
 </html>
