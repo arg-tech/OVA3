@@ -25,8 +25,10 @@ function ovaReg() {
         url = $('#urlinput').val();
     }
 
-	if($('#afinput').val() != "" && $('#asinput').val() != ""){
+    if($('#afinput').val() != "" && $('#asinput').val() != ""){
         extra = "&af=" + $('#afinput').val() + "&as=" + $('#asinput').val();
+    }else{
+        extra = ''
     }
 
     window.location.href = "analyse.php?url=" + url + plus + extra;
