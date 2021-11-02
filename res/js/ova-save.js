@@ -29,12 +29,12 @@ function genjson() {
             jschemeFulfillments.push(jschemeFulfillment);
         }
 
-        if (nodes[i].descriptor != null) {
-            var jdescriptorFulfillment = {};
-            jdescriptorFulfillment['nodeID'] = nodes[i].nodeID;
-            jdescriptorFulfillment['descriptorID'] = nodes[i].descriptor;
-            jdescriptorFulfillments.push(jdescriptorFulfillment);
-        }
+        // if (nodes[i].descriptor != null) {
+        //     var jdescriptorFulfillment = {};
+        //     jdescriptorFulfillment['nodeID'] = nodes[i].nodeID;
+        //     jdescriptorFulfillment['descriptorID'] = nodes[i].descriptor;
+        //     jdescriptorFulfillments.push(jdescriptorFulfillment);
+        // }
 
         if (nodes[i].participantID != 0) {
             var jlocution = {};
@@ -222,7 +222,6 @@ function loadOva3Json(json, oplus) {
         if (nodelist[n[i].nodeID]) {
             if (n[i].visible) {
                 updateNode(n[i].nodeID, n[i].x, n[i].y, n[i].visible, 1);
-                // console.log(nodelist[n[i].nodeID]);
                 DrawNode(nodelist[n[i].nodeID].nodeID, nodelist[n[i].nodeID].type, nodelist[n[i].nodeID].text, nodelist[n[i].nodeID].x, nodelist[n[i].nodeID].y);
             }
         }
@@ -244,8 +243,7 @@ function loadOva3Json(json, oplus) {
     }
 
     setAllText(json['text']['txt']);
-    postEdit("text", "edit", json['text']['txt']);
-    // postEdit("text", "edit", json['text']['txt'], 1);
+    postEdit("text", "edit", json['text']['txt'], 1);
 }
 
 function loadOva2Json(json, oplus) {
@@ -300,8 +298,7 @@ function loadOva2Json(json, oplus) {
     }
 
     setAllText(json['analysis']['txt']);
-    postEdit("text", "edit", json['analysis']['txt']);
-    // postEdit("text", "edit", json['analysis']['txt'], 1);
+    postEdit("text", "edit", json['analysis']['txt'], 1);
 }
 
 function loaddbjson(json, oplus) {

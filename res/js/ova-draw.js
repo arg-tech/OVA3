@@ -123,7 +123,7 @@ function cmenu(node, evt) {
     if (node.type == 'I' && dialogicalMode) {
         $('#contextmenu').append("<a onClick='$(\"#locution_add\").show();$(\"#contextmenu\").hide();'>Add Locution</a>");
     }
-    $('#contextmenu').append("<a onClick='deleteNode(window.contextnode);$(\"#contextmenu\").hide();'>Delete Node</a>");
+    $('#contextmenu').append("<a onClick='window.groupID ++;deleteNode(window.contextnode);$(\"#contextmenu\").hide();'>Delete Node</a>");
     //if(window.msel.length > 0){
     //    $('#contextmenu').append( "<a onClick='dcEdges();$(\"#contextmenu\").hide();'>Delete Edges</a>" );
     //}

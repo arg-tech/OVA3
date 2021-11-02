@@ -16,7 +16,6 @@ function myKeyDown(e) {
   if (keycode == 18) {
     multiSel = true;
   }
-
 }
 
 function myKeyUp(e) {
@@ -32,6 +31,9 @@ function myKeyUp(e) {
   }
   if (keycode == 18) {
     multiSel = false;
+  }
+  if (keycode == 90 && e.ctrlKey) { //ctrl + z for undo shortcut
+    undo();
   }
 }
 
@@ -75,7 +77,6 @@ function updateView() {
   j = 1 - k
   //current view box
   cvb = VB.slice();
-
 
   if (nav.act === 'zoom') {
     for (let i = 0; i < 4; i++)
@@ -219,7 +220,7 @@ function Grab(evt) {
     }
     else {
       DragTarget = targetElement;
-      // // move this focusElement to the "top" of the display
+      // move this focusElement to the "top" of the display
       DragTarget.parentNode.appendChild(DragTarget);
       DragTarget.setAttributeNS(null, 'pointer-events', 'none');
 
@@ -233,9 +234,9 @@ function Grab(evt) {
     }
   } else {
     if (window.nodeAddBtn == true) {
+      window.groupID ++;
       window.nodeCounter++;
       newNodeID = (window.nodeCounter + "_" + window.sessionid);
-      console.log("nodeid: " + newNodeID);
       AddNode("", 'EN', null, 0, newNodeID, TrueCoords.x, TrueCoords.y - 10);
       var index = findNodeIndex(newNodeID)
       mySel = nodes[index];
@@ -251,10 +252,12 @@ function Grab(evt) {
     else {
       t = getSelText();
       if (t != '') {
+        window.nodeCounter = window.nodeCounter + 1;
+        newNodeID = window.nodeCounter;
+
         if (rIATMode == true) {
           window.nodeCounter++;
           newNodeID = (window.nodeCounter + "_" + window.sessionid);
-          console.log("nodeid: " + newNodeID);
           var xCoord = TrueCoords.x;
           var yCoord = TrueCoords.y;
           AddNode(t, 'I', null, 0, newNodeID, TrueCoords.x, TrueCoords.y - 10);
@@ -267,7 +270,6 @@ function Grab(evt) {
         } else {
           window.nodeCounter++;
           newNodeID = (window.nodeCounter + "_" + window.sessionid);
-          console.log("nodeid: " + newNodeID);
           AddNode(t, 'I', null, 0, newNodeID, TrueCoords.x, TrueCoords.y - 10);
           var nIndex = findNodeIndex(newNodeID)
           mySel = nodes[nIndex];
@@ -325,12 +327,10 @@ function AddNode(txt, type, scheme, pid, nid, nx, ny, visible) {
       //create YA analyst node
       window.nodeCounter++;
       var newNodeID = (window.nodeCounter + "_" + window.sessionid);
-      console.log("nodeid: " + newNodeID);
       var analysisYA = newNode(newNodeID, 'YA', '75', 0, 'Analysing', 0, 0, false);
       //create L analyst node
       window.nodeCounter++;
       newNodeID = (window.nodeCounter + "_" + window.sessionid);
-      console.log("nodeid: " + newNodeID);
       var analysisLTxt = window.afirstname + ': ' + txt;
       var analysisL = newNode(newNodeID, 'L', null, 0, analysisLTxt, 0, 0, false);
       //create edges to connect the analyst nodes
@@ -618,9 +618,9 @@ function Drop(evt) {
         tx = parseInt(tx) + (parseInt(tw) / 2);
         ty = parseInt(ty) + (parseInt(th) / 2);
 
+        window.groupID ++;
         window.nodeCounter++;
         newNodeID = (window.nodeCounter + "_" + window.sessionid);
-        console.log("nodeid: " + newNodeID);
         nx = ((tx - fx) / 2) + fx;
         ny = ((ty - fy) / 2) + fy;
         //AddNode('Default Inference', 'RA', newNodeID, nx, ny);
@@ -751,11 +751,22 @@ function myRClick(evt) {
 
 //finds and returns the index of a node with the given nodeID in the nodes array
 //returns -1 if no node with the given nodeID can be found
-function findNodeIndex(nodeID) {
-  for (var i = 0; i < nodes.length; i++) {
-    if (nodes[i]) {
-      if (nodes[i].nodeID == nodeID) {
-        return i;
+function findNodeIndex(nodeID, last) {
+  var last = typeof last !== 'undefined' ? last : false;
+  if (last) {
+    for (var i = nodes.length - 1; i >= 0; i--) {
+      if (nodes[i]) {
+        if (nodes[i].nodeID == nodeID) {
+          return i;
+        }
+      }
+    }
+  } else {
+    for (var i = 0; i < nodes.length; i++) {
+      if (nodes[i]) {
+        if (nodes[i].nodeID == nodeID) {
+          return i;
+        }
       }
     }
   }
