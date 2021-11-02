@@ -1,9 +1,10 @@
 <?php
+require_once('../config.php');
 // Set the database access information as constants.
-DEFINE ('DB_USER', 'root');
-DEFINE ('DB_PASSWORD', 'root');
-DEFINE ('DB_HOST', 'localhost');
-DEFINE ('DB_NAME', 'ova3_test');
+DEFINE ('DB_USER', $OVA_DB_USER);
+DEFINE ('DB_PASSWORD', $OVA_DB_PASSWORD);
+DEFINE ('DB_HOST', $OVA_DB_HOST);
+DEFINE ('DB_NAME', $OVA_DB_NAME);
 
 try {
     # MySQL with PDO_MYSQL
