@@ -1,5 +1,7 @@
 <?php
-require_once('./config.php');
+define('__ROOT__', dirname(dirname(__FILE__)));
+require_once(__ROOT__.'/config.php');
+
 // Set the database access information as constants.
 DEFINE ('DB_USER', $OVA_DB_USER);
 DEFINE ('DB_PASSWORD', $OVA_DB_PASSWORD);
