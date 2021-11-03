@@ -271,7 +271,7 @@ function updateAddNode(node) {
 
     if (n.visible) {
         DrawNode(n.nodeID, n.type, n.text, n.x, n.y); //if the node is visible then draw the node on the svg
-        if (window.qtMode && n.type == 'L') { DrawTimestamp(n); }
+        if (window.qtMode && n.type == 'L') { DrawTimestamp(n.nodeID, n.timestamp, n.x, n.y); }
         updateConnectedEdges(n);
     } else if (n.type == 'L') {  //if the node is an analyst node
         var index = n.text.indexOf(":");
@@ -310,7 +310,7 @@ function updateEditNode(node) {
                 document.getElementById(node.nodeID).remove(); //remove the old version of the node
             }
             DrawNode(n.nodeID, n.type, n.text, n.x, n.y); //draw the updated version of the node
-            if (window.qtMode && n.type == 'L') { DrawTimestamp(n); }
+            if (window.qtMode && n.type == 'L') { DrawTimestamp(n.nodeID, n.timestamp, n.x, n.y); }
             updateConnectedEdges(n);
         }
     }
@@ -532,7 +532,7 @@ function addLocution(node) {
     if (window.qtMode) {
         AddNode(ltext, 'L', null, participantID, newLNodeID, (parseInt(n.x) + 450), parseInt(yCoord), true, node.timestamp);
         var index = findNodeIndex(newLNodeID);
-        DrawTimestamp(nodes[index]); //draw the timestamp on the svg
+        DrawTimestamp(nodes[index].nodeID, nodes[index].timestamp, nodes[index].x, nodes[index].y); //draw the timestamp on the svg
         removeTimestamp(node.nodeID); //remove the timestamp from the i node
     } else {
         AddNode(ltext, 'L', null, participantID, newLNodeID, (parseInt(n.x) + 450), parseInt(yCoord));

@@ -338,19 +338,19 @@ function bwModeOnOff() {
     }
 }
 
-function DrawTimestamp(node) {
-    var g = document.getElementById(node.nodeID);
+function DrawTimestamp(nodeID, timestamp, xpos, ypos) {
+    var g = document.getElementById(nodeID);
     if (g) {
         var ntext = document.createElementNS("http://www.w3.org/2000/svg", "text");
         ntext.setAttribute('class', 'timestamp');
-        ntext.setAttribute('x', node.x);
-        ntext.setAttribute('y', node.y);
+        ntext.setAttribute('x', xpos);
+        ntext.setAttribute('y', ypos);
         ntext.setAttribute('style', 'font-family: sans-serif; font-weight: normal; font-style: normal;font-size: 8px;');
         var tspan = document.createElementNS("http://www.w3.org/2000/svg", "tspan");
         tspan.setAttribute('text-anchor', 'middle');
-        tspan.setAttribute('x', node.x);
+        tspan.setAttribute('x', xpos);
         tspan.setAttribute('dy', -5);
-        var myText = document.createTextNode(node.timestamp);
+        var myText = document.createTextNode(timestamp);
         tspan.appendChild(myText);
         ntext.appendChild(tspan);
         g.appendChild(ntext);

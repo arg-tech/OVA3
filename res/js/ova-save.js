@@ -20,6 +20,7 @@ function genjson() {
         n['visible'] = nodes[i].visible;
         n['x'] = nodes[i].x;
         n['y'] = nodes[i].y;
+        if (window.qtMode) { n['timestamp'] = nodes[i].timestamp; }
         nodesLayout.push(n);
 
         if (nodes[i].scheme != null) {
@@ -29,18 +30,18 @@ function genjson() {
             jschemeFulfillments.push(jschemeFulfillment);
         }
 
-        if (nodes[i].descriptor != null) {
-            var jdescriptorFulfillment = {};
-            jdescriptorFulfillment['nodeID'] = nodes[i].nodeID;
-            jdescriptorFulfillment['descriptorID'] = nodes[i].descriptor;
-            jdescriptorFulfillments.push(jdescriptorFulfillment);
-        }
+        // if (nodes[i].descriptor != null) {
+        //     var jdescriptorFulfillment = {};
+        //     jdescriptorFulfillment['nodeID'] = nodes[i].nodeID;
+        //     jdescriptorFulfillment['descriptorID'] = nodes[i].descriptor;
+        //     jdescriptorFulfillments.push(jdescriptorFulfillment);
+        // }
 
         if (nodes[i].participantID != 0) {
             var jlocution = {};
             jlocution['nodeID'] = nodes[i].nodeID;
             jlocution['personID'] = nodes[i].participantID;
-            jlocution['start'] = Math.round(new Date(nodes[i].timestamp).getTime()/1000); //todo: check if 'start' or 'timestamp'
+            if (window.qtMode) { jlocution['start'] = Math.round(new Date(nodes[i].timestamp).getTime() / 1000); } //todo: check if 'start' or 'timestamp'
             jlocutions.push(jlocution);
         }
     }
@@ -224,6 +225,10 @@ function loadOva3Json(json, oplus) {
             if (n[i].visible) {
                 updateNode(n[i].nodeID, n[i].x, n[i].y, n[i].visible, 1);
                 DrawNode(nodelist[n[i].nodeID].nodeID, nodelist[n[i].nodeID].type, nodelist[n[i].nodeID].text, nodelist[n[i].nodeID].x, nodelist[n[i].nodeID].y);
+                if (window.qtMode && n[i].timestamp) { //if in qtMode load timestamps
+                    addTimestamp(n[i].nodeID, n[i].timestamp);
+                    DrawTimestamp(n[i].nodeID, n[i].timestamp, n[i].x, n[i].y);
+                }
             }
         }
     }
@@ -274,6 +279,10 @@ function loadOva2Json(json, oplus) {
                 nodelist[jnodes[i].id] = newNode(jnodes[i].id, jnodes[i].type, jnodes[i].scheme, pID, jnodes[i].text, jnodes[i].x, jnodes[i].y, jnodes[i].visible);
                 if (jnodes[i].visible) {
                     DrawNode(jnodes[i].id, jnodes[i].type, jnodes[i].text, jnodes[i].x, jnodes[i].y);
+                    if (window.qtMode && jnodes[i].timestamp) { //if in qtMode load timestamps
+                        addTimestamp(jnodes[i].id, jnodes[i].timestamp); // TODO
+                        DrawTimestamp(jnodes[i].id, jnodes[i].timestamp, jnodes[i].x, jnodes[i].y);
+                    }
                 }
             } else {
                 nodelist[jnodes[i].id] = AddNode(jnodes[i].text, jnodes[i].type, jnodes[i].scheme, 0, jnodes[i].id, jnodes[i].x, jnodes[i].y, jnodes[i].visible);
@@ -510,6 +519,7 @@ function save2db() {
             var jlocution = {};
             jlocution['nodeID'] = nodes[i].nodeID;
             jlocution['personID'] = nodes[i].participantID;
+            if (window.qtMode) { jlocution['start'] = Math.round(new Date(nodes[i].timestamp).getTime() / 1000); } //todo: check if 'start' or 'timestamp'
             jlocutions.push(jlocution);
         }
     }

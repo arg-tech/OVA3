@@ -134,3 +134,13 @@ function removeTimestamp(nodeID) {
         // postEdit("node", "edit", n, 0, n.nodeID);
     }
 }
+
+function addTimestamp(nodeID, timestamp) {
+    var index = findNodeIndex(nodeID);
+    if (index > -1) { //if the node exists
+        n = nodes[index];
+        n.timestamp = timestamp;
+        postEdit("node", "edit", n);
+        // postEdit("node", "edit", n, 0, n.nodeID);
+    }
+}
