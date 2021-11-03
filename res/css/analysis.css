@@ -327,6 +327,11 @@ a.xmodal:hover img {
   opacity: 1.0;
 }
 
+div.modal-btns {
+  height: 40px;
+  border-top: 1px solid #bbb;
+  background-color: #eee;
+}
 
 div.modal-btns a {
   font-size: 11px;
@@ -610,6 +615,11 @@ div#extsite div#ova_arg_area_div {
 }
 
 /* ==== Text Settings ==== */
+
+div#analysis_text {
+  border: 0px;
+  outline: 0px solid transparent;
+}
 
 div#left1.ts div#analysis_text {
   font-size: 11px;

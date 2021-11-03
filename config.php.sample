@@ -1,4 +1,9 @@
 <?php
+    $OVA_DB_USER = '';
+    $OVA_DB_PASSWORD = '';
+    $OVA_DB_HOST = '';
+    $OVA_DB_NAME = '';
+
     $DBurl = 'http://www.aifdb.org';
     $SSurl = 'http://www.arg-tech.org/~john/schemesets/list';
     $CPurl = 'http://corpora.aifdb.org';

@@ -16,7 +16,6 @@ function myKeyDown(e) {
   if (keycode == 18) {
     multiSel = true;
   }
-
 }
 
 function myKeyUp(e) {
@@ -32,6 +31,9 @@ function myKeyUp(e) {
   }
   if (keycode == 18) {
     multiSel = false;
+  }
+  if (keycode == 90 && e.ctrlKey) { //ctrl + z for undo shortcut
+    undo();
   }
 }
 
@@ -75,7 +77,6 @@ function updateView() {
   j = 1 - k
   //current view box
   cvb = VB.slice();
-
 
   if (nav.act === 'zoom') {
     for (let i = 0; i < 4; i++)
@@ -227,6 +228,7 @@ function Grab(evt) {
     }
   } else {
     if (window.nodeAddBtn) {
+      window.groupID ++;
       window.nodeCounter++;
       newNodeID = (window.nodeCounter + "_" + window.sessionid);
       AddNode("", 'EN', null, 0, newNodeID, TrueCoords.x, TrueCoords.y - 10);
@@ -674,6 +676,7 @@ function Drop(evt) {
         tx = parseInt(tx) + (parseInt(tw) / 2);
         ty = parseInt(ty) + (parseInt(th) / 2);
 
+        window.groupID ++;
         window.nodeCounter++;
         newNodeID = (window.nodeCounter + "_" + window.sessionid);
         nx = ((tx - fx) / 2) + fx;
@@ -806,11 +809,22 @@ function myRClick(evt) {
 
 //finds and returns the index of a node with the given nodeID in the nodes array
 //returns -1 if no node with the given nodeID can be found
-function findNodeIndex(nodeID) {
-  for (var i = 0; i < nodes.length; i++) {
-    if (nodes[i]) {
-      if (nodes[i].nodeID == nodeID) {
-        return i;
+function findNodeIndex(nodeID, last) {
+  var last = typeof last !== 'undefined' ? last : false;
+  if (last) {
+    for (var i = nodes.length - 1; i >= 0; i--) {
+      if (nodes[i]) {
+        if (nodes[i].nodeID == nodeID) {
+          return i;
+        }
+      }
+    }
+  } else {
+    for (var i = 0; i < nodes.length; i++) {
+      if (nodes[i]) {
+        if (nodes[i].nodeID == nodeID) {
+          return i;
+        }
       }
     }
   }

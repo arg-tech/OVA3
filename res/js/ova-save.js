@@ -249,8 +249,7 @@ function loadOva3Json(json, oplus) {
     }
 
     setAllText(json['text']['txt']);
-    postEdit("text", "edit", json['text']['txt']);
-    // postEdit("text", "edit", json['text']['txt'], 1);
+    postEdit("text", "edit", json['text']['txt'], 1);
 }
 
 function loadOva2Json(json, oplus) {
@@ -309,8 +308,7 @@ function loadOva2Json(json, oplus) {
     }
 
     setAllText(json['analysis']['txt']);
-    postEdit("text", "edit", json['analysis']['txt']);
-    // postEdit("text", "edit", json['analysis']['txt'], 1);
+    postEdit("text", "edit", json['analysis']['txt'], 1);
 }
 
 function loaddbjson(json, oplus) {

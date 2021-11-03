@@ -54,10 +54,9 @@ function newNode(nodeID, type, scheme, participantID, text, x, y, visible, undon
     n.visible = typeof visible !== 'undefined' ? visible : true;
     n.timestamp = typeof timestamp !== 'undefined' ? timestamp : '';
     nodes.push(n);
-    postEdit("node", "add", n);
 
     var undone = typeof undone !== 'undefined' ? undone : 0;
-    // postEdit("node", "add", n, undone, n.nodeID);
+    postEdit("node", "add", n, undone, n.nodeID);
     return n;
 }
 
@@ -73,11 +72,10 @@ function updateNode(nodeID, x, y, visible, undone, type, scheme, text, timestamp
         if (scheme != undefined) { n.scheme = scheme; }
         if (text != undefined) { n.text = text; }
         if (timestamp != undefined) { n.timestamp = timestamp; }
-        postEdit("node", "edit", n);
 
+        window.groupID++;
         var undone = typeof undone !== 'undefined' ? undone : 0;
-        // window.groupID++;
-        // postEdit("node", "edit", n, undone, n.nodeID);
+        postEdit("node", "edit", n, undone, n.nodeID);
     }
 }
 
@@ -85,7 +83,7 @@ function delNode(node) {
     var index = findNodeIndex(node.nodeID);
     if (index > -1) { //if the node exists
         nodes.splice(index, 1);
-        postEdit("node", "delete", node);
+        postEdit("node", "delete", node, 0, node.nodeID);
     }
 }
 
@@ -95,9 +93,9 @@ function newEdge(fromID, toID, visible, undone) {
     e.toID = toID;
     e.visible = typeof visible !== 'undefined' ? visible : true;
     edges.push(e);
-    postEdit("edge", "add", e);
+
     var undone = typeof undone !== 'undefined' ? undone : 0;
-    // postEdit("edge", "add", e, undone);
+    postEdit("edge", "add", e, undone);
     return e;
 }
 
