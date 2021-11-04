@@ -128,8 +128,7 @@ function removeTimestamp(nodeID) {
     if (index > -1) { //if the node exists
         n = nodes[index];
         n.timestamp = '';
-        postEdit("node", "edit", n);
-        // postEdit("node", "edit", n, 0, n.nodeID);
+        postEdit("node", "edit", n, 0, n.nodeID);
     }
 }
 
@@ -138,7 +137,6 @@ function addTimestamp(nodeID, timestamp) {
     if (index > -1) { //if the node exists
         n = nodes[index];
         n.timestamp = timestamp;
-        postEdit("node", "edit", n);
-        // postEdit("node", "edit", n, 0, n.nodeID);
+        postEdit("node", "edit", n, 0, n.nodeID);
     }
 }

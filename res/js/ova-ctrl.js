@@ -228,7 +228,7 @@ function Grab(evt) {
     }
   } else {
     if (window.nodeAddBtn) {
-      window.groupID ++;
+      window.groupID++;
       window.nodeCounter++;
       newNodeID = (window.nodeCounter + "_" + window.sessionid);
       AddNode("", 'EN', null, 0, newNodeID, TrueCoords.x, TrueCoords.y - 10);
@@ -251,7 +251,9 @@ function Grab(evt) {
         if (window.rIATMode) {
           var timestamp = '';
           if (window.qtMode) {
-            timestamp = qtTimestamp();
+            timestamp = getTimestamp();
+            timestamp = !timestamp ? '' : timestamp;
+            console.log("timestamp: " + timestamp)
           }
           AddNode(t, 'I', null, 0, newNodeID, TrueCoords.x, TrueCoords.y - 10, true, timestamp);
           var nIndex = findNodeIndex(newNodeID)
@@ -270,7 +272,7 @@ function Grab(evt) {
   }
 }
 
-function qtTimestamp() {
+function getTimestamp() {
   var iframe = document.getElementById('analysis_text');
   if (iframe.nodeName.toLowerCase() == 'div') {
     htmlContent = iframe.innerHTML
@@ -287,7 +289,7 @@ function qtTimestamp() {
     var r2 = "<[^>]*node" + window.nodeCounter + "[^0-9][^>]*>[^<]*</span>";
     var re = new RegExp(r2, "g");
     while ((match = re.exec(htmlContent)) != null) {
-      beforei = 0;
+      var beforei = 0;
       beforet = '0:00:00';
       afteri = htmlContent.length;
       aftert = '';
@@ -322,6 +324,7 @@ function qtTimestamp() {
 
       var tsd = new Date();
       tsd.setTime(tstamp);
+      return tsd.toString();
     } else {
       startut = Math.round(new Date(startdatestmp).getTime());
       baseut = Math.round(new Date("2000/01/01 00:00:00").getTime());
@@ -333,9 +336,10 @@ function qtTimestamp() {
 
       var tsd = new Date();
       tsd.setTime(tstamp);
+      return tsd.toString();
     }
   }
-  return tsd.toString();
+  return false;
 }
 
 function GetEdges(dragID) {
@@ -676,7 +680,7 @@ function Drop(evt) {
         tx = parseInt(tx) + (parseInt(tw) / 2);
         ty = parseInt(ty) + (parseInt(th) / 2);
 
-        window.groupID ++;
+        window.groupID++;
         window.nodeCounter++;
         newNodeID = (window.nodeCounter + "_" + window.sessionid);
         nx = ((tx - fx) / 2) + fx;
@@ -991,7 +995,7 @@ function deleteEdges(edge) {
 
   if (edge.visible) { //if the edge was drawn on the svg remove it
     tempEdge = document.getElementById(edgeID);
-    tempEdge.remove();
+    if (tempEdge != null) { tempEdge.remove(); }
   }
   delEdge(edge);
 

@@ -19,7 +19,11 @@ while ($row = $STH->fetch()) {
 	$sc = $DBH->prepare($q);
 	$sc->execute();
 	$r = $sc->fetch(PDO::FETCH_ASSOC);
-	$content = $r['content'];
+	if (!$r) {
+		$content = null;
+	} else {
+		$content = $r['content'];
+	}
 
 	$edit = array();
 	$edit['editID'] = $row['editID'];
