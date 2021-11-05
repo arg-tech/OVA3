@@ -174,6 +174,10 @@ function loadfile(jstr) {
 
 function loadOva3Json(json, oplus) {
     // console.log("loading OVA3 json");
+    //load text on LHS
+    setAllText(json['text']['txt']);
+    postEdit("text", "edit", json['text']['txt'], 1);
+
     //load participants
     var p = json['AIF']['participants'];
     var pID = 0;
@@ -201,9 +205,13 @@ function loadOva3Json(json, oplus) {
             }
         } else if (jnodes[i].type == "I" || jnodes[i].type == "RA" || jnodes[i].type == "CA" || jnodes[i].type == "EN") {
             nodelist[jnodes[i].nodeID] = newNode(jnodes[i].nodeID, jnodes[i].type, null, 0, jnodes[i].text, 0, 0, false, 1);
+            if (jnodes[i].type == "I") { hlUpdate(jnodes[i].nodeID, jnodes[i].type, jnodes[i].nodeID, 1); }
         }
     }
-    window.nodeCounter++;
+    //update the node counter
+    var last = jnodes.length - 1;
+    var id = jnodes[last].nodeID.split("_", 2);
+    window.nodeCounter = (parseInt(id[0]) + 1);
 
     //set any scheme fulfillments
     var sf = json['AIF']['schemefulfillments'];
@@ -234,20 +242,21 @@ function loadOva3Json(json, oplus) {
         from = e[i].fromID;
         to = e[i].toID;
         if (from in nodelist && to in nodelist) { //if both the nodes the edge connects exist
-            var edge = newEdge(from, to, e[i].visible, 1);
+            var edge = newEdge(from, to, e[i].visible);
             if (e[i].visible) {
                 DrawEdge(from, to);
                 UpdateEdge(edge);
             }
         }
     }
-
-    setAllText(json['text']['txt']);
-    postEdit("text", "edit", json['text']['txt'], 1);
 }
 
 function loadOva2Json(json, oplus) {
     // console.log("loading OVA2 json");
+    //load text on LHS
+    setAllText(json['analysis']['txt']);
+    postEdit("text", "edit", json['analysis']['txt']);
+
     //load participants
     var p = json['participants'];
     var pID = 0;
@@ -262,22 +271,27 @@ function loadOva2Json(json, oplus) {
     //load nodes
     var nodelist = {};
     var jnodes = json['nodes'];
+    var nID = '';
+    var count = window.nodeCounter;
     for (var i = 0, l = jnodes.length; i < l; i++) {
-        if (jnodes[i].id > window.nodeCounter) {
-            window.nodeCounter = jnodes[i].id;
+        if ((count + jnodes[i].id) > window.nodeCounter) {
+            window.nodeCounter = (count + jnodes[i].id);
         }
+        nID = ((count + jnodes[i].id) + "_" + window.sessionid);
         if (oplus) {
             if (jnodes[i].type == "L") {
                 pID = findParticipantIDText(jnodes[i].text);
-                nodelist[jnodes[i].id] = newNode(jnodes[i].id, jnodes[i].type, jnodes[i].scheme, pID, jnodes[i].text, jnodes[i].x, jnodes[i].y, jnodes[i].visible);
+                nodelist[nID] = newNode(nID, jnodes[i].type, jnodes[i].scheme, pID, jnodes[i].text, jnodes[i].x, jnodes[i].y, jnodes[i].visible);
                 if (jnodes[i].visible) {
-                    DrawNode(jnodes[i].id, jnodes[i].type, jnodes[i].text, jnodes[i].x, jnodes[i].y);
+                    DrawNode(nID, jnodes[i].type, jnodes[i].text, jnodes[i].x, jnodes[i].y);
+                    hlUpdate(jnodes[i].id, jnodes[i].type, nID, 1);
                 }
             } else {
-                nodelist[jnodes[i].id] = AddNode(jnodes[i].text, jnodes[i].type, jnodes[i].scheme, 0, jnodes[i].id, jnodes[i].x, jnodes[i].y, jnodes[i].visible);
+                nodelist[nID] = AddNode(jnodes[i].text, jnodes[i].type, jnodes[i].scheme, 0, nID, jnodes[i].x, jnodes[i].y, jnodes[i].visible);
             }
         } else if (jnodes[i].type == "I" || jnodes[i].type == "RA" || jnodes[i].type == "CA" || jnodes[i].type == "EN") {
-            nodelist[jnodes[i].id] = AddNode(jnodes[i].text, jnodes[i].type, jnodes[i].scheme, 0, jnodes[i].id, jnodes[i].x, jnodes[i].y, jnodes[i].visible);
+            nodelist[nID] = AddNode(jnodes[i].text, jnodes[i].type, jnodes[i].scheme, 0, nID, jnodes[i].x, jnodes[i].y, jnodes[i].visible);
+            if (jnodes[i].type == "I") { hlUpdate((jnodes[i].id - 2), jnodes[i].type, nID, 1); }
         }
     }
     window.nodeCounter++;
@@ -285,20 +299,20 @@ function loadOva2Json(json, oplus) {
     //load edges
     edges = [];
     var e = json['edges'];
+    var edgelist = {};
+    var id = '';
     for (var i = 0, l = e.length; i < l; i++) {
-        from = e[i].from.id;
-        to = e[i].to.id;
-        if (from in nodelist && to in nodelist) { //if both the nodes the edge connects exist
-            var edge = newEdge(from, to, e[i].visible, 1);
-            if (edge.visible) {
+        from = ((count + e[i].from.id) + "_" + window.sessionid);
+        to = ((count + e[i].to.id) + "_" + window.sessionid);
+        id = (count + e[i].from.id) + "_" + (count + e[i].to.id);
+        if (from in nodelist && to in nodelist && !(id in edgelist)) { //if both the nodes the edge connects exist and the edge hasn't already been loaded
+            edgelist[id] = newEdge(from, to, e[i].visible);
+            if (edgelist[id].visible) {
                 DrawEdge(from, to);
-                UpdateEdge(edge);
+                UpdateEdge(edgelist[id]);
             }
         }
     }
-
-    setAllText(json['analysis']['txt']);
-    postEdit("text", "edit", json['analysis']['txt'], 1);
 }
 
 function loaddbjson(json, oplus) {

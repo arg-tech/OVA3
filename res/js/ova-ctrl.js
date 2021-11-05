@@ -234,7 +234,7 @@ function Grab(evt) {
     }
   } else {
     if (window.nodeAddBtn == true) {
-      window.groupID ++;
+      window.groupID++;
       window.nodeCounter++;
       newNodeID = (window.nodeCounter + "_" + window.sessionid);
       AddNode("", 'EN', null, 0, newNodeID, TrueCoords.x, TrueCoords.y - 10);
@@ -252,14 +252,10 @@ function Grab(evt) {
     else {
       t = getSelText();
       if (t != '') {
-        window.nodeCounter = window.nodeCounter + 1;
-        newNodeID = window.nodeCounter;
+        window.nodeCounter++;
+        var newNodeID = (window.nodeCounter + "_" + window.sessionid);
 
-        if (rIATMode == true) {
-          window.nodeCounter++;
-          newNodeID = (window.nodeCounter + "_" + window.sessionid);
-          var xCoord = TrueCoords.x;
-          var yCoord = TrueCoords.y;
+        if (window.rIATMode) {
           AddNode(t, 'I', null, 0, newNodeID, TrueCoords.x, TrueCoords.y - 10);
           var nIndex = findNodeIndex(newNodeID)
           mySel = nodes[nIndex];
@@ -268,8 +264,6 @@ function Grab(evt) {
           $('#modal-shade').show();
           FormOpen = true;
         } else {
-          window.nodeCounter++;
-          newNodeID = (window.nodeCounter + "_" + window.sessionid);
           AddNode(t, 'I', null, 0, newNodeID, TrueCoords.x, TrueCoords.y - 10);
           var nIndex = findNodeIndex(newNodeID)
           mySel = nodes[nIndex];
@@ -618,7 +612,7 @@ function Drop(evt) {
         tx = parseInt(tx) + (parseInt(tw) / 2);
         ty = parseInt(ty) + (parseInt(th) / 2);
 
-        window.groupID ++;
+        window.groupID++;
         window.nodeCounter++;
         newNodeID = (window.nodeCounter + "_" + window.sessionid);
         nx = ((tx - fx) / 2) + fx;
@@ -933,7 +927,7 @@ function deleteEdges(edge) {
 
   if (edge.visible) { //if the edge was drawn on the svg remove it
     tempEdge = document.getElementById(edgeID);
-    tempEdge.remove();
+    if (tempEdge != null) { tempEdge.remove(); }
   }
   delEdge(edge);
 

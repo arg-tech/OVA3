@@ -315,7 +315,7 @@ function updateEditNode(node) {
 function updateAddEdge(edge) {
     // console.log("updateAddEdge called");
     // console.log("adding edge: " + edge.fromID + "->" + edge.toID);
-    if (edge.fromID == '' || edge.toID == '') {
+    if (edge == null || edge.fromID == '' || edge.toID == '') {
         return false;
     } else {
         var e = new Edge;
@@ -379,8 +379,7 @@ function getSelText() {
             // console.log(txt)
 
             var span = document.createElement("span");
-            var nC = window.nodeCounter + 2;
-            var newNodeID = (nC + "_" + window.sessionid);
+            var newNodeID = ((window.nodeCounter + 1) + "_" + window.sessionid);
             span.id = "node" + newNodeID;
             if (rIATMode == false) {
                 span.className = "highlighted";
@@ -420,16 +419,12 @@ function hlcurrent(nodeID, undone) {
     if (span != null) {
         span.id = "node" + nodeID;
         span.className = "highlighted";
-        //$(".hlcurrent").removeClass("highlighted");
 
         if (nodeID != 'none') {
-            //$("#node"+nodeID).addClass("hlcurrent");
             span.className = "highlighted";
-            //if($("#node"+nodeID).length != 0) {
             $('#analysis_text').animate({
                 scrollTop: $('#analysis_text').scrollTop() + $("#node" + nodeID).offset().top - 200
             }, 1000);
-            //}
             var undone = typeof undone !== 'undefined' ? undone : 0;
             postEdit("text", "edit", $('#analysis_text').html(), undone);
         }
@@ -459,6 +454,20 @@ function hlText(node) {
         span.id = "node" + node.nodeID;
         range.surroundContents(span);
         postEdit("text", "edit", $('#analysis_text').html(), 1);
+    }
+}
+
+//function to find and update a span id of highlighted text on LHS
+function hlUpdate(nodeID, type, newID, undone) {
+    var span = document.getElementById("node" + nodeID);
+    if (span == null && !dialogicalMode && type == 'I') {
+        var id = nodeID.split("_", 2);
+        var lNodeID = (parseInt(id[0]) + 1) + "_" + id[1];
+        span = document.getElementById("node" + lNodeID);
+    }
+    if (span != null) {
+        span.id = "node" + newID;
+        postEdit("text", "edit", $('#analysis_text').html(), undone);
     }
 }
 
