@@ -21,8 +21,14 @@ if ($_POST['type'] == "node") {
         $preVersionNo = $previousNode['versionNo']; //previous version is same as current version
         $versionNo = $previousNode['versionNo'];
     } else {
-        $q = $DBH->prepare("INSERT INTO nodes(nodeID, analysisID, versionNo, content) VALUES (:nodeID, :analysisID, :versionNo, :cnt)");
-        $q->execute(array(':nodeID' => $contentID, ':analysisID' => $_POST['analysisID'], ':versionNo' => $versionNo, ':cnt' => $_POST['cnt']));
+        try {
+            $q = $DBH->prepare("INSERT INTO nodes(nodeID, analysisID, versionNo, content) VALUES (:nodeID, :analysisID, :versionNo, :cnt)");
+            $q->execute(array(':nodeID' => $contentID, ':analysisID' => $_POST['analysisID'], ':versionNo' => $versionNo, ':cnt' => $_POST['cnt']));
+        } catch (Exception $e) {
+            $versionNo++;
+            $q = $DBH->prepare("INSERT INTO nodes(nodeID, analysisID, versionNo, content) VALUES (:nodeID, :analysisID, :versionNo, :cnt)");
+            $q->execute(array(':nodeID' => $contentID, ':analysisID' => $_POST['analysisID'], ':versionNo' => $versionNo, ':cnt' => $_POST['cnt']));
+        }
     }
 } else if ($_POST['type'] == "text") {
     $sql = "INSERT INTO texts(textID, analysisID, content) VALUES (:id, :analysisID, :cnt)";
