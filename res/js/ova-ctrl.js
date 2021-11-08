@@ -105,6 +105,8 @@ function stopAni() {
 }
 
 function resetPosition() {
+  var mw = $("#mainwrap").width();
+  $("#right1").width(mw - $("#left1").width() - 41);
   VB = [0, 0, 1500, 1500];
   SVGRoot.setAttribute('viewBox', [0, 0, 1500, 1500]);
 }
