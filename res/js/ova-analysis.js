@@ -58,7 +58,15 @@ $(function () {
   // window.panZoom.center();
 });
 
-
+$(window).on('resize', function () {
+  mw = $("#mainwrap").width();
+  $("#right1").width(mw - $("#left1").width() - 41);
+  $("#left1").height($(window).height() - $("#toolbar").height() - 41);
+  $("#right1").height($(window).height() - $("#toolbar").height() - 1);
+  $("#spacer").height($(window).height() - $("#toolbar").height() - 1);
+  $("#xmenu").height($(window).height() - $("#toolbar").height() - 1);
+  $("#modal-shade").height($(window).height() - $("#toolbar").height() - 1);
+});
 
 function openModal(ident) {
   $(".modal-dialog").hide();
