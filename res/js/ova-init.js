@@ -72,6 +72,7 @@ const zoom = (event) => {
 window.shiftPress = false;
 window.nodeCounter = 1;
 window.textCounter = 1;
+window.edgeCounter = 1;
 window.unsaved = false;
 
 document.addEventListener('contextmenu', event => event.preventDefault());
@@ -319,7 +320,7 @@ function updateEditNode(node) {
 function updateAddEdge(edge) {
     // console.log("updateAddEdge called");
     // console.log("adding edge: " + edge.fromID + "->" + edge.toID);
-    if (edge.fromID == '' || edge.toID == '') {
+    if (edge == null || edge.fromID == '' || edge.toID == '') {
         return false;
     } else {
         var e = new Edge;
@@ -428,7 +429,6 @@ function hlcurrent(nodeID, undone) {
             $('#analysis_text').animate({
                 scrollTop: $('#analysis_text').scrollTop() + $("#node" + nodeID).offset().top - 200
             }, 1000);
-
             var undone = typeof undone !== 'undefined' ? undone : 0;
             postEdit("text", "edit", $('#analysis_text').html(), undone);
         }
@@ -484,9 +484,8 @@ function postEdit(type, action, content, undone, contentID) {
             window.textCounter++;
             contentID = window.textCounter + "_" + window.sessionid;
         } else if (type == 'edge') {
-            var from = content.fromID.split("_", 1);
-            var to = content.toID.split("_", 1);
-            contentID = from + "_" + to + "_" + window.sessionid;
+            window.edgeCounter++;
+            contentID = window.edgeCounter + "_" + window.sessionid;
         }
     }
     // console.log("==============");

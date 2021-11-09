@@ -210,7 +210,10 @@ function loadOva3Json(json, oplus) {
             if (jnodes[i].type == "I") { hlUpdate(jnodes[i].nodeID, jnodes[i].type, jnodes[i].nodeID, 1); }
         }
     }
-    window.nodeCounter++;
+    //update the node counter
+    var last = jnodes.length - 1;
+    var id = jnodes[last].nodeID.split("_", 2);
+    window.nodeCounter = (parseInt(id[0]) + 1);
 
     //set any scheme fulfillments
     var sf = json['AIF']['schemefulfillments'];
@@ -284,20 +287,20 @@ function loadOva2Json(json, oplus) {
         if (oplus) {
             if (jnodes[i].type == "L") {
                 pID = findParticipantIDText(jnodes[i].text);
-                nodelist[nID] = newNode(nID, jnodes[i].type, jnodes[i].scheme, pID, jnodes[i].text, jnodes[i].x, jnodes[i].y, jnodes[i].visible);
+                nodelist[nID] = newNode(nID, jnodes[i].type, jnodes[i].scheme, pID, jnodes[i].text, jnodes[i].x, jnodes[i].y, jnodes[i].visible, 1);
                 if (jnodes[i].visible) {
                     DrawNode(nID, jnodes[i].type, jnodes[i].text, jnodes[i].x, jnodes[i].y);
                     hlUpdate(jnodes[i].id, jnodes[i].type, nID, 1);
-                    if (window.qtMode && jnodes[i].timestamp) { //if in qtMode load timestamps
+                    if (window.qtMode && jnodes[i].timestamp) {
                         addTimestamp(nID, jnodes[i].timestamp); // TODO
                         DrawTimestamp(nID, jnodes[i].timestamp, jnodes[i].x, jnodes[i].y);
                     }
                 }
             } else {
-                nodelist[nID] = AddNode(jnodes[i].text, jnodes[i].type, jnodes[i].scheme, 0, nID, jnodes[i].x, jnodes[i].y, jnodes[i].visible);
+                nodelist[nID] = AddNode(jnodes[i].text, jnodes[i].type, jnodes[i].scheme, 0, nID, jnodes[i].x, jnodes[i].y, jnodes[i].visible, 1);
             }
         } else if (jnodes[i].type == "I" || jnodes[i].type == "RA" || jnodes[i].type == "CA" || jnodes[i].type == "EN") {
-            nodelist[nID] = AddNode(jnodes[i].text, jnodes[i].type, jnodes[i].scheme, 0, nID, jnodes[i].x, jnodes[i].y, jnodes[i].visible);
+            nodelist[nID] = AddNode(jnodes[i].text, jnodes[i].type, jnodes[i].scheme, 0, nID, jnodes[i].x, jnodes[i].y, jnodes[i].visible, 1);
             if (jnodes[i].type == "I") { hlUpdate((jnodes[i].id - 2), jnodes[i].type, nID, 1); }
         }
     }
@@ -306,14 +309,17 @@ function loadOva2Json(json, oplus) {
     //load edges
     edges = [];
     var e = json['edges'];
+    var edgelist = {};
+    var id = '';
     for (var i = 0, l = e.length; i < l; i++) {
         from = ((count + e[i].from.id) + "_" + window.sessionid);
         to = ((count + e[i].to.id) + "_" + window.sessionid);
-        if (from in nodelist && to in nodelist) { //if both the nodes the edge connects exist
-            var edge = newEdge(from, to, e[i].visible, 1);
-            if (edge.visible) {
+        id = (count + e[i].from.id) + "_" + (count + e[i].to.id);
+        if (from in nodelist && to in nodelist && !(id in edgelist)) { //if both the nodes the edge connects exist and the edge hasn't already been loaded
+            edgelist[id] = newEdge(from, to, e[i].visible, 1);
+            if (edgelist[id].visible) {
                 DrawEdge(from, to);
-                UpdateEdge(edge);
+                UpdateEdge(edgelist[id]);
             }
         }
     }

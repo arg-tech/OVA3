@@ -105,6 +105,8 @@ function stopAni() {
 }
 
 function resetPosition() {
+  var mw = $("#mainwrap").width();
+  $("#right1").width(mw - $("#left1").width() - 41);
   VB = [0, 0, 1500, 1500];
   SVGRoot.setAttribute('viewBox', [0, 0, 1500, 1500]);
 }
@@ -378,10 +380,11 @@ function GetTrueCoords(evt) {
 
 }
 
-function AddNode(txt, type, scheme, pid, nid, nx, ny, visible, timestamp) {
+function AddNode(txt, type, scheme, pid, nid, nx, ny, visible, undone, timestamp) {
   var isVisible = typeof visible !== 'undefined' ? visible : true;
+  var undone = typeof undone !== 'undefined' ? undone : 0;
   var timestamp = typeof timestamp !== 'undefined' ? timestamp : '';
-  newNode(nid, type, scheme, pid, txt, nx, ny, isVisible, 0, timestamp); //create the node
+  newNode(nid, type, scheme, pid, txt, nx, ny, isVisible, undone, timestamp); //create the node
   if (isVisible) {
     DrawNode(nid, type, txt, nx, ny); //if the node is visible then draw the node on the svg
 

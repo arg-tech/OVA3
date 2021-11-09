@@ -34,7 +34,7 @@ if ($_POST['type'] == "node") {
     $sql = "INSERT INTO texts(textID, analysisID, content) VALUES (:id, :analysisID, :cnt)";
     $q = $DBH->prepare($sql);
     $q->execute(array(':id' => $contentID, ':analysisID' => $_POST['analysisID'], ':cnt' => $_POST['cnt']));
-} else if ($_POST['type'] == "edge" && $_POST['action'] == "add" && $_POST['undone'] == 0) {
+} else if ($_POST['type'] == "edge") {
     $sql = "INSERT INTO edges(edgeID, analysisID, content) VALUES (:id, :analysisID, :cnt)";
     $q = $DBH->prepare($sql);
     $q->execute(array(':id' => $contentID, ':analysisID' => $_POST['analysisID'], ':cnt' => $_POST['cnt']));
