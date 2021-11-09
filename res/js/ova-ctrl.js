@@ -313,9 +313,10 @@ function GetTrueCoords(evt) {
 
 }
 
-function AddNode(txt, type, scheme, pid, nid, nx, ny, visible) {
+function AddNode(txt, type, scheme, pid, nid, nx, ny, visible, undone) {
   var isVisible = typeof visible !== 'undefined' ? visible : true;
-  newNode(nid, type, scheme, pid, txt, nx, ny, isVisible); //create the node
+  var undone = typeof undone !== 'undefined' ? undone : 0;
+  newNode(nid, type, scheme, pid, txt, nx, ny, isVisible, undone); //create the node
   if (isVisible) {
     DrawNode(nid, type, txt, nx, ny); //if the node is visible then draw the node on the svg
 

@@ -242,7 +242,7 @@ function loadOva3Json(json, oplus) {
         from = e[i].fromID;
         to = e[i].toID;
         if (from in nodelist && to in nodelist) { //if both the nodes the edge connects exist
-            var edge = newEdge(from, to, e[i].visible);
+            var edge = newEdge(from, to, e[i].visible, 1);
             if (e[i].visible) {
                 DrawEdge(from, to);
                 UpdateEdge(edge);
@@ -255,7 +255,7 @@ function loadOva2Json(json, oplus) {
     // console.log("loading OVA2 json");
     //load text on LHS
     setAllText(json['analysis']['txt']);
-    postEdit("text", "edit", json['analysis']['txt']);
+    postEdit("text", "edit", json['analysis']['txt'], 1);
 
     //load participants
     var p = json['participants'];
@@ -281,16 +281,16 @@ function loadOva2Json(json, oplus) {
         if (oplus) {
             if (jnodes[i].type == "L") {
                 pID = findParticipantIDText(jnodes[i].text);
-                nodelist[nID] = newNode(nID, jnodes[i].type, jnodes[i].scheme, pID, jnodes[i].text, jnodes[i].x, jnodes[i].y, jnodes[i].visible);
+                nodelist[nID] = newNode(nID, jnodes[i].type, jnodes[i].scheme, pID, jnodes[i].text, jnodes[i].x, jnodes[i].y, jnodes[i].visible, 1);
                 if (jnodes[i].visible) {
                     DrawNode(nID, jnodes[i].type, jnodes[i].text, jnodes[i].x, jnodes[i].y);
                     hlUpdate(jnodes[i].id, jnodes[i].type, nID, 1);
                 }
             } else {
-                nodelist[nID] = AddNode(jnodes[i].text, jnodes[i].type, jnodes[i].scheme, 0, nID, jnodes[i].x, jnodes[i].y, jnodes[i].visible);
+                nodelist[nID] = AddNode(jnodes[i].text, jnodes[i].type, jnodes[i].scheme, 0, nID, jnodes[i].x, jnodes[i].y, jnodes[i].visible, 1);
             }
         } else if (jnodes[i].type == "I" || jnodes[i].type == "RA" || jnodes[i].type == "CA" || jnodes[i].type == "EN") {
-            nodelist[nID] = AddNode(jnodes[i].text, jnodes[i].type, jnodes[i].scheme, 0, nID, jnodes[i].x, jnodes[i].y, jnodes[i].visible);
+            nodelist[nID] = AddNode(jnodes[i].text, jnodes[i].type, jnodes[i].scheme, 0, nID, jnodes[i].x, jnodes[i].y, jnodes[i].visible, 1);
             if (jnodes[i].type == "I") { hlUpdate((jnodes[i].id - 2), jnodes[i].type, nID, 1); }
         }
     }
@@ -306,7 +306,7 @@ function loadOva2Json(json, oplus) {
         to = ((count + e[i].to.id) + "_" + window.sessionid);
         id = (count + e[i].from.id) + "_" + (count + e[i].to.id);
         if (from in nodelist && to in nodelist && !(id in edgelist)) { //if both the nodes the edge connects exist and the edge hasn't already been loaded
-            edgelist[id] = newEdge(from, to, e[i].visible);
+            edgelist[id] = newEdge(from, to, e[i].visible, 1);
             if (edgelist[id].visible) {
                 DrawEdge(from, to);
                 UpdateEdge(edgelist[id]);
