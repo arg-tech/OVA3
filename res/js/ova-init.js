@@ -72,6 +72,7 @@ const zoom = (event) => {
 window.shiftPress = false;
 window.nodeCounter = 1;
 window.textCounter = 1;
+window.edgeCounter = 1;
 window.unsaved = false;
 
 document.addEventListener('contextmenu', event => event.preventDefault());
@@ -480,9 +481,8 @@ function postEdit(type, action, content, undone, contentID) {
             window.textCounter++;
             contentID = window.textCounter + "_" + window.sessionid;
         } else if (type == 'edge') {
-            var from = content.fromID.split("_", 1);
-            var to = content.toID.split("_", 1);
-            contentID = from + "_" + to + "_" + window.sessionid;
+            window.edgeCounter++;
+            contentID = window.edgeCounter + "_" + window.sessionid;
         }
     }
     // console.log("==============");
