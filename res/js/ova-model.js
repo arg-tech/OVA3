@@ -123,12 +123,14 @@ function findParticipantIDText(text) {
     return found;
 }
 
-function removeTimestamp(nodeID) {
+function delTimestamp(nodeID) {
     var index = findNodeIndex(nodeID);
     if (index > -1) { //if the node exists
         n = nodes[index];
         n.timestamp = '';
-        postEdit("node", "edit", n, 0, n.nodeID);
+        window.groupID++;
+        postEdit("node", "edit", n, 1, n.nodeID);
+        window.groupID++;
     }
 }
 
@@ -137,6 +139,8 @@ function addTimestamp(nodeID, timestamp) {
     if (index > -1) { //if the node exists
         n = nodes[index];
         n.timestamp = timestamp;
-        postEdit("node", "edit", n, 0, n.nodeID);
+        window.groupID++;
+        postEdit("node", "edit", n, 1, n.nodeID);
+        window.groupID++;
     }
 }

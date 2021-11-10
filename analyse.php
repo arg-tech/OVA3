@@ -93,7 +93,6 @@ if (isset($_COOKIE['ovauser'])) {
   <link rel="stylesheet" href="res/css/introjs.css" />
 
   <script src="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.10.0/jquery-ui.js"></script>
-  <script src="res/js/ova-qtconfig.js"></script> <!-- TODO -->
   <script src="res/js/svg-pan-zoom.js"></script>
   <script src="res/js/ova-analysis.js"></script>
   <script src="res/js/ova-fn.js"></script>
@@ -101,15 +100,15 @@ if (isset($_COOKIE['ovauser'])) {
   <script src="res/js/ova-draw.js"></script>
   <script src="res/js/ova-ctrl.js"></script>
   <script src="res/js/ova-save.js"></script>
-  <script src="res/js/ova-init.js"></script>
-  <script src="res/js/intro.min.js"></script>
   <script>
     window.DBurl = '<?php echo $DBurl; ?>';
     window.SSurl = '<?php echo $SSurl; ?>';
-    window.akey = '<?php echo $akey; ?>';
     window.analysisID = '<?php echo $analysisID; ?>';
+    window.defaultSettings = '<?php echo json_encode($defaultSettings); ?>';
     <?php echo $anamejs; ?>
   </script>
+  <script src="res/js/ova-init.js"></script>
+  <script src="res/js/intro.min.js"></script>
 </head>
 
 <body>
@@ -258,10 +257,11 @@ if (isset($_COOKIE['ovauser'])) {
       </div>
       <div class="modal-body">
         <form id="settings_form" class="fstyle">
+        <div id="displaystg">
+            <strong>Display Settings</strong>
           <?php if ($source == "local") { ?>
             <!-- Text Settings  -->
             <div id="txtstg">
-              <strong>Text Settings</strong>
               <p style="color: #444; line-height: 36px;">Font Size
                 <a href="#" class="itl" style="background-image: url('res/img/txt-lrg.png');" onClick='$("#left1").removeClass("ts tm");$("#left1").addClass("tl"); return false;'></a>
                 <a href="#" class="itm" style="background-image: url('res/img/txt-med.png');" onClick='$("#left1").removeClass("ts tl");$("#left1").addClass("tm"); return false;'></a>
@@ -269,40 +269,59 @@ if (isset($_COOKIE['ovauser'])) {
               </p>
             </div>
           <?php } ?>
-          <div id="anastg">
-            <strong>Analysis Settings</strong>
-            <!-- Critical Questions Toggle  -->
-            <p style="color: #444; line-height: 22px;">Critical Questions
-              <?php if (isset($_GET['cq']) && $_GET['cq'] == 'true') { ?>
-                <a href="#" id="cqtoggle" class="togglesw on" onClick='$("#cqtoggle").toggleClass("on off"); window.cqmode=!window.cqmode; return false;'><span class="tson">On</span><span class="tsoff">Off</span></a>
-              <?php } else { ?>
-                <a href="#" id="cqtoggle" class="togglesw off" onClick='$("#cqtoggle").toggleClass("on off"); window.cqmode=!window.cqmode; return false;'><span class="tson">On</span><span class="tsoff">Off</span></a>
-              <?php } ?>
-            </p>
-            <!-- Black & White Toggle  -->
-            <p style="color: #444; line-height: 22px;">Black &amp; White Diagram
-              <?php if (isset($_GET['bw']) && $_GET['bw'] == 'true') { ?>
+          <!-- Black & White Toggle  -->
+          <p style="color: #444; line-height: 22px;">Black &amp; White Diagram
+            <?php if ($defaultSettings["display"]["black_white"]) { ?>
                 <a href="#" id="bwtoggle" class="togglesw on" onClick='$(this).toggleClass("on off"); window.bwmode=!window.bwmode; bwModeOnOff();'><span class="tson">On</span><span class="tsoff">Off</span></a>
               <?php } else { ?>
                 <a href="#" id="bwtoggle" class="togglesw off" onClick='$(this).toggleClass("on off"); window.bwmode=!window.bwmode; bwModeOnOff();'><span class="tson">On</span><span class="tsoff">Off</span></a>
               <?php } ?>
             </p>
+            </div>
+          <div id="anastg">
+            <strong>Analysis Settings</strong>
+            <!-- Critical Questions Toggle  -->
+            <p style="color: #444; line-height: 22px;">Critical Questions
+            <?php if ($defaultSettings["analysis"]["cq"]) { ?>
+                <a href="#" id="cqtoggle" class="togglesw on" onClick='$("#cqtoggle").toggleClass("on off"); window.cqmode=!window.cqmode; return false;'><span class="tson">On</span><span class="tsoff">Off</span></a>
+              <?php } else { ?>
+                <a href="#" id="cqtoggle" class="togglesw off" onClick='$("#cqtoggle").toggleClass("on off"); window.cqmode=!window.cqmode; return false;'><span class="tson">On</span><span class="tsoff">Off</span></a>
+              <?php } ?>
+            </p>
             <!-- Dialogical Mode Toggle  -->
             <p style="color: #444; line-height: 22px;">Dialogical Mode
-              <?php if ($pro) { ?>
+            <?php if ($pro) { ?>
                 <a href="#" id="dialogicaltoggle" class="togglesw on" onClick='$(this).toggleClass("on off"); window.dialogicalMode=!window.dialogicalMode; dialogicalModeOnOff();'><span class="tson">On</span><span class="tsoff">Off</span></a>
               <?php } else { ?>
                 <a href="#" id="dialogicaltoggle" class="togglesw off" onClick='$(this).toggleClass("on off"); window.dialogicalMode=!window.dialogicalMode; dialogicalModeOnOff();'><span class="tson">On</span><span class="tsoff">Off</span></a>
               <?php } ?>
             </p>
-            <!-- Rapid IAT Mode Toggle  -->
-            <?php if ($pro) { ?>
-              <!-- only if Dialogical Mode is on then show the option for Rapid IAT Mode -->
+            <?php if ($pro) { ?> <!-- only if Dialogical Mode is on then show the options for Rapid IAT Mode and timestamps-->
+              <!-- Rapid IAT Mode Toggle  -->
               <p style="color: #444; line-height: 22px;">Rapid IAT Mode
-                <?php if (isset($_GET['plus']) && $_GET['plus'] == 'true') { ?>
+              <?php if (isset($_GET['plus']) && $_GET['plus'] == 'true') { ?>
                   <a href="#" id="riattoggle" class="togglesw on" onClick='$(this).toggleClass("on off"); window.rIATMode=!window.rIATMode; return false;'><span class="tson">On</span><span class="tsoff">Off</span></a>
                 <?php } else { ?>
                   <a href="#" id="riattoggle" class="togglesw off" onClick='$(this).toggleClass("on off"); window.rIATMode=!window.rIATMode; return false;'><span class="tson">On</span><span class="tsoff">Off</span></a>
+                <?php } ?>
+              </p>
+              </div>
+              <div id="tsstg">
+            <strong>Timestamp Settings</strong>
+              <!-- Add Timestamps Toggle  -->
+              <p style="color: #444; line-height: 22px;">Add Timestamps
+                <?php if ($defaultSettings["timestamp"]["addTimestamps"]) { ?>
+                  <a href="#" id="timestamptoggle" class="togglesw on" onClick='$(this).toggleClass("on off");'><span class="tson">On</span><span class="tsoff">Off</span></a> <!-- window.addTimestamps=!window.addTimestamps; addTimestampsOnOff(); -->
+                <?php } else { ?>
+                  <a href="#" id="timestamptoggle" class="togglesw off" onClick='$(this).toggleClass("on off");'><span class="tson">On</span><span class="tsoff">Off</span></a> <!-- window.addTimestamps=!window.addTimestamps; addTimestampsOnOff(); -->
+                <?php } ?>
+              </p>
+              <!-- Show Timestamps Toggle  -->
+              <p style="color: #444; line-height: 22px;">Show Timestamps
+              <?php if ($defaultSettings["timestamp"]["showTimestamps"]) { ?>
+                  <a href="#" id="showTimestamptoggle" class="togglesw on" onClick='$(this).toggleClass("on off"); window.showTimestamps=!window.showTimestamps; showTimestampsOnOff();'><span class="tson">On</span><span class="tsoff">Off</span></a>
+                <?php } else { ?>
+                  <a href="#" id="showTimestamptoggle" class="togglesw off" onClick='$(this).toggleClass("on off"); window.showTimestamps=!window.showTimestamps; showTimestampsOnOff();'><span class="tson">On</span><span class="tsoff">Off</span></a>
                 <?php } ?>
               </p>
             <?php } ?>
@@ -336,6 +355,32 @@ if (isset($_COOKIE['ovauser'])) {
     </div>
   </div>
   <!-- Share analysis form ends here -->
+
+  <!-- Timestamp modal starts here -->
+  <div id="modal-shade"></div>
+  <div class="modal-dialog" id="modal-timestamps">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Timestamp Details</h4>
+      </div>
+      <div class="modal-body">
+      <form id="timestamps_form" class="fstyle">
+      <?php $timestamp = explode(" ",$startdatestmp); ?>
+          <label> Transcript start date: </label>
+          <input type="date" id="dateinput" value="<?php echo $timestamp[0] ?>" style="font-size: 16px; padding: 3px; width:90%;" required pattern="\d{4}/\d{2}/\d{2}" />
+          <label> Transcript start time: </label>
+          <input type="time" id="timeinput" value="<?php echo $timestamp[1] ?>" style="font-size: 16px; padding: 3px; width:90%;" step="1" min="00:00:01" max="23:59:59" required />
+          <label> Transcript timezone: </label>
+          <input type="text" id="timezoneinput" value="<?php echo $timestamp[2] ?>" style="font-size: 16px; padding: 3px; width:90%;" required/>
+        </form>
+      </div>
+      <div class="modal-btns">
+        <a class="save" href="#" onClick="closeModal('#modal-timestamps'); return false;">Continue</a>
+        <a class="cancel" href="#" onClick="closeModal('#modal-timestamps'); return false;">&#10008; Cancel</a>
+      </div>
+    </div>
+  </div>
+  <!-- Timestamp modal ends here -->
 
   <!-- Helpsheet modal starts here -->
   <div id="modal-shade"></div>

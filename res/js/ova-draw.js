@@ -356,3 +356,39 @@ function DrawTimestamp(nodeID, timestamp, xpos, ypos) {
         g.appendChild(ntext);
     }
 }
+
+function addTimestampsOnOff() {
+    if (window.addTimestamps) {
+        openModal('#modal-timestamps');
+        console.log("add timestamps turned on");
+    } else {
+        console.log("add timestamps turned off");
+    }
+}
+
+function showTimestampsOnOff() {
+    if (window.showTimestamps) {
+        // console.log("drawing timestamps");
+        var count = 0;
+        for (var i = 0; i < nodes.length; i++) {
+            if (nodes[i].timestamp != '' && nodes[i].type == 'L' && nodes[i].visible) {
+                DrawTimestamp(nodes[i].nodeID, nodes[i].timestamp, nodes[i].x, nodes[i].y);
+                count++;
+            }
+        }
+        if (count == 0) {
+            alert("No timestamps were found.");
+        }
+    } else {
+        // console.log("hiding timestamps");
+        removeTimestamps();
+    }
+}
+
+//removes all timestamps drawn on the svg with class name 'timestamp'
+function removeTimestamps() {
+    var allTimestamps = document.getElementsByClassName('timestamp');
+    for (var i = allTimestamps.length - 1; i >= 0; i--) {
+        allTimestamps[i].remove();
+    }
+}

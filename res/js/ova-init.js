@@ -80,15 +80,19 @@ window.addEventListener('keydown', myKeyDown, true);
 window.addEventListener('keyup', myKeyUp, true);
 document.onwheel = zoom;
 
-window.bwmode = false;
-if ("bw" in getUrlVars()) {
-    window.bwmode = true;
-}
+//set default settings
+window.defaultSettings = JSON.parse(window.defaultSettings);
+window.bwmode = window.defaultSettings["display"]["black_white"]; //set display settings
 
-window.cqmode = false;
-if ("cq" in getUrlVars()) {
-    window.cqmode = true;
-}
+//set analysis settings
+// window.dialogicalMode = window.defaultSettings["analysis"]["dialogical"];
+// window.rIATMode = window.defaultSettings["analysis"]["rIAT"];
+window.cqmode = window.defaultSettings["analysis"]["cq"];
+
+//set timestamp settings
+window.startdatestmp = window.defaultSettings["timestamp"]["startdatestmp"];
+window.addTimestamps = window.defaultSettings["timestamp"]["addTimestamps"];
+window.showTimestamps = window.defaultSettings["timestamp"]["showTimestamps"];
 
 function Init(evt) {
     SVGRoot = document.getElementById('inline');
@@ -272,7 +276,7 @@ function updateAddNode(node) {
 
     if (n.visible) {
         DrawNode(n.nodeID, n.type, n.text, n.x, n.y); //if the node is visible then draw the node on the svg
-        if (window.qtMode && n.type == 'L') { DrawTimestamp(n.nodeID, n.timestamp, n.x, n.y); }
+        if (window.showTimestamps && n.type == 'L') { DrawTimestamp(n.nodeID, n.timestamp, n.x, n.y); }
         updateConnectedEdges(n);
     } else if (n.type == 'L') {  //if the node is an analyst node
         var index = n.text.indexOf(":");
@@ -311,7 +315,7 @@ function updateEditNode(node) {
                 document.getElementById(node.nodeID).remove(); //remove the old version of the node
             }
             DrawNode(n.nodeID, n.type, n.text, n.x, n.y); //draw the updated version of the node
-            if (window.qtMode && n.type == 'L') { DrawTimestamp(n.nodeID, n.timestamp, n.x, n.y); }
+            if (window.showTimestamps && n.type == 'L') { DrawTimestamp(n.nodeID, n.timestamp, n.x, n.y); }
             updateConnectedEdges(n);
         }
     }
@@ -703,11 +707,13 @@ function addLocution(node) {
         }
     }
 
-    if (window.qtMode) {
-        AddNode(ltext, 'L', null, participantID, newLNodeID, (parseInt(n.x) + 450), parseInt(yCoord), true, node.timestamp);
+    if (window.addTimestamps) {
+        AddNode(ltext, 'L', null, participantID, newLNodeID, (parseInt(n.x) + 450), parseInt(yCoord), true, 0, node.timestamp);
         var index = findNodeIndex(newLNodeID);
-        DrawTimestamp(nodes[index].nodeID, nodes[index].timestamp, nodes[index].x, nodes[index].y); //draw the timestamp on the svg
-        removeTimestamp(node.nodeID); //remove the timestamp from the i node
+        delTimestamp(node.nodeID); //delete the timestamp from the i node
+        if (window.showTimestamps) {
+            DrawTimestamp(nodes[index].nodeID, nodes[index].timestamp, nodes[index].x, nodes[index].y); //draw the timestamp on the svg
+        }
     } else {
         AddNode(ltext, 'L', null, participantID, newLNodeID, (parseInt(n.x) + 450), parseInt(yCoord));
     }

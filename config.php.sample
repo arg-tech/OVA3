@@ -8,4 +8,11 @@
     $SSurl = 'http://www.arg-tech.org/~john/schemesets/list';
     $CPurl = 'http://corpora.aifdb.org';
     $TXurl = 'http://www.arg-tech.org/TXTdb';
+
+    $defaultSettings = array(
+        "timestamp" => array("addTimestamps" => false, "showTimestamps" => false, "startdatestmp" => "2020/10/15 22:50:00 GMT+0100"), 
+        "schemeset"=> array("YA" => "", "RA" => "", "CA" => "", "TA" => "", "MA" => "", "PA" => ""), 
+        "analysis"=> array("dialogical" => true, "rIAT" => true, "cq" => false), 
+        "display"=> array("black_white" => false, "font_size" => "medium")
+    );
 ?>

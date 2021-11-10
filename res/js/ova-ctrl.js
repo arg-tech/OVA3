@@ -250,14 +250,14 @@ function Grab(evt) {
       if (t != '') {
         window.nodeCounter++;
         var newNodeID = (window.nodeCounter + "_" + window.sessionid);
+        var timestamp = '';
+        if (window.addTimestamps) {
+          timestamp = getTimestamp();
+          timestamp = !timestamp ? '' : timestamp;
+          // console.log("timestamp: " + timestamp)
+        }
         if (window.rIATMode) {
-          var timestamp = '';
-          if (window.qtMode) {
-            timestamp = getTimestamp();
-            timestamp = !timestamp ? '' : timestamp;
-            console.log("timestamp: " + timestamp)
-          }
-          AddNode(t, 'I', null, 0, newNodeID, TrueCoords.x, TrueCoords.y - 10, true, timestamp);
+          AddNode(t, 'I', null, 0, newNodeID, TrueCoords.x, TrueCoords.y - 10, true, 0, timestamp);
           var nIndex = findNodeIndex(newNodeID)
           mySel = nodes[nIndex];
           CurrentlyEditing = mySel.nodeID;
@@ -265,7 +265,7 @@ function Grab(evt) {
           $('#modal-shade').show();
           FormOpen = true;
         } else {
-          AddNode(t, 'I', null, 0, newNodeID, TrueCoords.x, TrueCoords.y - 10);
+          AddNode(t, 'I', null, 0, newNodeID, TrueCoords.x, TrueCoords.y - 10, true, 0, timestamp);
           var nIndex = findNodeIndex(newNodeID)
           mySel = nodes[nIndex];
         }
