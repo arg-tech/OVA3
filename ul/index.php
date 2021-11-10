@@ -1,7 +1,9 @@
 <?php
 require_once('../helpers/mysql_connect.php');
+require_once('../config.php');
 
-$host = 'www.aifdb.org';
+
+$host = $DBurl;
 $db = '/';
 
 $target_path = "tmp/";
@@ -15,7 +17,7 @@ curl_setopt($ch, CURLOPT_HEADER, FALSE);
 curl_setopt($ch, CURLOPT_VERBOSE, TRUE);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/4.0 (compatible;)");
-curl_setopt($ch, CURLOPT_URL, "http://$host$db"."json/");
+curl_setopt($ch, CURLOPT_URL, "$host$db"."json/");
 curl_setopt($ch, CURLOPT_USERPWD,"test:pass"); 
 curl_setopt($ch, CURLOPT_POST, true);
 $post = array(
