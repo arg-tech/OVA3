@@ -1,5 +1,4 @@
 
-
 function DrawNode(nid, type, txt, nx, ny) {
     var phraseArray = [];
     if (txt.length > 36) {
@@ -336,5 +335,60 @@ function bwModeOnOff() {
         for (rect of allRects) {
             rect.classList.remove('bw');
         }
+    }
+}
+
+function DrawTimestamp(nodeID, timestamp, xpos, ypos) {
+    var g = document.getElementById(nodeID);
+    if (g) {
+        var ntext = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        ntext.setAttribute('class', 'timestamp');
+        ntext.setAttribute('x', xpos);
+        ntext.setAttribute('y', ypos);
+        ntext.setAttribute('style', 'font-family: sans-serif; font-weight: normal; font-style: normal;font-size: 8px;');
+        var tspan = document.createElementNS("http://www.w3.org/2000/svg", "tspan");
+        tspan.setAttribute('text-anchor', 'middle');
+        tspan.setAttribute('x', xpos);
+        tspan.setAttribute('dy', -5);
+        var myText = document.createTextNode(timestamp);
+        tspan.appendChild(myText);
+        ntext.appendChild(tspan);
+        g.appendChild(ntext);
+    }
+}
+
+function addTimestampsOnOff() {
+    if (window.addTimestamps) {
+        openModal('#modal-timestamps');
+        console.log("add timestamps turned on");
+    } else {
+        console.log("add timestamps turned off");
+    }
+}
+
+function showTimestampsOnOff() {
+    if (window.showTimestamps) {
+        // console.log("drawing timestamps");
+        var count = 0;
+        for (var i = 0; i < nodes.length; i++) {
+            if (nodes[i].timestamp != '' && nodes[i].type == 'L' && nodes[i].visible) {
+                DrawTimestamp(nodes[i].nodeID, nodes[i].timestamp, nodes[i].x, nodes[i].y);
+                count++;
+            }
+        }
+        if (count == 0) {
+            alert("No timestamps were found.");
+        }
+    } else {
+        // console.log("hiding timestamps");
+        removeTimestamps();
+    }
+}
+
+//removes all timestamps drawn on the svg with class name 'timestamp'
+function removeTimestamps() {
+    var allTimestamps = document.getElementsByClassName('timestamp');
+    for (var i = allTimestamps.length - 1; i >= 0; i--) {
+        allTimestamps[i].remove();
     }
 }

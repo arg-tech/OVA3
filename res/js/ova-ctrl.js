@@ -205,14 +205,8 @@ function Grab(evt) {
       GrabPoint.y = TrueCoords.y;
 
       Focus(evt, targetElement);
-
-      // //deselects the add edge icon button after adding an edge
-      // if (window.eBtn) {
-      //   edgeMode('off');
-      //   window.eBtn = false;
-      // }
     }
-    else if (editMode == true) {
+    else if (editMode) {
       var index = findNodeIndex(targetElement.id)
       mySel = nodes[index];
       CurrentlyEditing = targetElement.id;
@@ -235,7 +229,7 @@ function Grab(evt) {
       Focus(evt, targetElement);
     }
   } else {
-    if (window.nodeAddBtn == true) {
+    if (window.nodeAddBtn) {
       window.groupID++;
       window.nodeCounter++;
       newNodeID = (window.nodeCounter + "_" + window.sessionid);
@@ -247,7 +241,7 @@ function Grab(evt) {
       nodeMode('off');
       return;
     }
-    else if (multiSel == true) {
+    else if (multiSel) {
       multiSelRect.startX = TrueCoords.x;
       multiSelRect.startY = TrueCoords.y;
     }
@@ -256,9 +250,14 @@ function Grab(evt) {
       if (t != '') {
         window.nodeCounter++;
         var newNodeID = (window.nodeCounter + "_" + window.sessionid);
-
+        var timestamp = '';
+        if (window.addTimestamps) {
+          timestamp = getTimestamp();
+          timestamp = !timestamp ? '' : timestamp;
+          // console.log("timestamp: " + timestamp)
+        }
         if (window.rIATMode) {
-          AddNode(t, 'I', null, 0, newNodeID, TrueCoords.x, TrueCoords.y - 10);
+          AddNode(t, 'I', null, 0, newNodeID, TrueCoords.x, TrueCoords.y - 10, true, 0, timestamp);
           var nIndex = findNodeIndex(newNodeID)
           mySel = nodes[nIndex];
           CurrentlyEditing = mySel.nodeID;
@@ -266,16 +265,84 @@ function Grab(evt) {
           $('#modal-shade').show();
           FormOpen = true;
         } else {
-          AddNode(t, 'I', null, 0, newNodeID, TrueCoords.x, TrueCoords.y - 10);
+          AddNode(t, 'I', null, 0, newNodeID, TrueCoords.x, TrueCoords.y - 10, true, 0, timestamp);
           var nIndex = findNodeIndex(newNodeID)
           mySel = nodes[nIndex];
         }
       }
     }
-
   }
 }
 
+function getTimestamp() {
+  var iframe = document.getElementById('analysis_text');
+  if (iframe.nodeName.toLowerCase() == 'div') {
+    htmlContent = iframe.innerHTML
+
+    // GET TIMESTAMPS FROM TEXT
+    var r1 = "[0-9]:[0-9][0-9]:[0-9][0-9]";
+    var timestamps = [];
+    var re = new RegExp(r1, "g");
+    while ((match = re.exec(htmlContent)) != null) {
+      timestamps.push([match.index + match[0].length, match[0]]);
+    }
+
+    // GET SPAN POSITION FROM TEXT
+    var r2 = "<[^>]*node" + window.nodeCounter + "[^0-9][^>]*>[^<]*</span>";
+    var re = new RegExp(r2, "g");
+    while ((match = re.exec(htmlContent)) != null) {
+      var beforei = 0;
+      beforet = '0:00:00';
+      afteri = htmlContent.length;
+      aftert = '';
+      for (index = 0; index < timestamps.length; ++index) {
+        if (timestamps[index][0] < match.index) {
+          beforei = timestamps[index][0];
+          beforet = timestamps[index][1];
+        } else if (timestamps[index][0] > match.index) {
+          afteri = timestamps[index][0];
+          aftert = timestamps[index][1];
+          break;
+        }
+      }
+      var matchx = match;
+      break;
+    }
+
+    // TEXT BEFORE/AFTER AND PERCENT THROUGH
+    turnbefore = striphtml(htmlContent.substring(beforei, matchx.index));
+    turnafter = striphtml(htmlContent.substring(matchx.index + matchx[0].length, afteri));
+    pcthru = turnbefore.length / (turnbefore.length + turnafter.length);
+
+    // TIMESTAMP CALCULATION
+    charpermillisec = 0.01;
+    if (aftert == '') {
+      startut = Math.round(new Date(window.startdatestmp).getTime());
+      baseut = Math.round(new Date("2000/01/01 00:00:00").getTime());
+      beforeut = Math.round(new Date("2000/01/01 0" + beforet).getTime());
+      timeinprog = beforeut + (turnbefore.length / charpermillisec);
+      timeoffset = timeinprog - baseut;
+      tstamp = startut + timeoffset;
+
+      var tsd = new Date();
+      tsd.setTime(tstamp);
+      return tsd.toString();
+    } else {
+      startut = Math.round(new Date(startdatestmp).getTime());
+      baseut = Math.round(new Date("2000/01/01 00:00:00").getTime());
+      beforeut = Math.round(new Date("2000/01/01 0" + beforet).getTime());
+      afterut = Math.round(new Date("2000/01/01 0" + aftert).getTime());
+      timeinprog = beforeut + ((afterut - beforeut) * pcthru);
+      timeoffset = timeinprog - baseut;
+      tstamp = startut + timeoffset;
+
+      var tsd = new Date();
+      tsd.setTime(tstamp);
+      return tsd.toString();
+    }
+  }
+  return false;
+}
 
 function GetEdges(dragID) {
   for (var j = 0; j < edges.length; j++) {
@@ -313,10 +380,11 @@ function GetTrueCoords(evt) {
 
 }
 
-function AddNode(txt, type, scheme, pid, nid, nx, ny, visible, undone) {
+function AddNode(txt, type, scheme, pid, nid, nx, ny, visible, undone, timestamp) {
   var isVisible = typeof visible !== 'undefined' ? visible : true;
   var undone = typeof undone !== 'undefined' ? undone : 0;
-  newNode(nid, type, scheme, pid, txt, nx, ny, isVisible, undone); //create the node
+  var timestamp = typeof timestamp !== 'undefined' ? timestamp : '';
+  newNode(nid, type, scheme, pid, txt, nx, ny, isVisible, undone, timestamp); //create the node
   if (isVisible) {
     DrawNode(nid, type, txt, nx, ny); //if the node is visible then draw the node on the svg
 

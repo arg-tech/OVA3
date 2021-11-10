@@ -5,3 +5,8 @@ function getUrlVars() {
     });
     return vars;
 }
+
+function striphtml(html){
+    var doc = new DOMParser().parseFromString(html, 'text/html');
+    return doc.body.textContent || "";
+ }
