@@ -33,7 +33,7 @@ print_r($result);
 $r = json_decode($result, true);
 $return = "Imported as nodeset " . $r['nodeSetID'];
 
-$sql = "INSERT INTO dbsave (nodeSetID, mappings) VALUES (:nsid, :maps)";
+$sql = "INSERT INTO dbsave (nodeSetID, mappings, text) VALUES (:nsid, :maps, '')";
 $q = $DBH->prepare($sql);
 $q->execute(array(':nsid'=>$r['nodeSetID'], ':maps'=>$result));
 
