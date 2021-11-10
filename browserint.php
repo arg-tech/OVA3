@@ -14,7 +14,7 @@ $b = new Browser(urldecode($_GET['url']));
 echo $b->display();
 
 class Browser {
-    private $wgetPath = "/usr/local/bin/";
+    private $wgetPath = "/usr/bin/";
     private $wgetExec = "wget";
     private $toReturn;
 

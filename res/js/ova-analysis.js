@@ -20,7 +20,6 @@ $(function () {
     }
   });
 
-
   // var beforePan
   //
   // beforePan = function(oldPan, newPan){
