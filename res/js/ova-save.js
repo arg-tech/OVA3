@@ -20,7 +20,7 @@ function genjson() {
         n['visible'] = nodes[i].visible;
         n['x'] = nodes[i].x;
         n['y'] = nodes[i].y;
-        if (window.addTimestamps) { n['timestamp'] = nodes[i].timestamp; }
+        n['timestamp'] = nodes[i].timestamp;
         nodesLayout.push(n);
 
         if (nodes[i].scheme != null) {
@@ -41,7 +41,14 @@ function genjson() {
             var jlocution = {};
             jlocution['nodeID'] = nodes[i].nodeID;
             jlocution['personID'] = nodes[i].participantID;
-            if (window.addTimestamps) { jlocution['start'] = Math.round(new Date(nodes[i].timestamp).getTime() / 1000); } //todo
+            // jlocution['start'] = Math.round(new Date(nodes[i].timestamp).getTime() / 1000);
+            if (nodes[i].timestamp !== "") {
+                var timestamp = new Date(nodes[i].timestamp);
+                var date = timestamp.toISOString().split("T", 2);
+                var time = date[1].split(".", 1);
+                jlocution['start'] = date[0] + " " + time;
+                jlocution['end'] = null;
+            }
             jlocutions.push(jlocution);
         }
     }
@@ -490,10 +497,6 @@ function loadfromdb(nodeSetID) {
                 }
             });
 
-            /*if(mwidth > WIDTH || mheight > HEIGHT){
-                resize_canvas(mwidth, mheight);
-            }*/
-
             //var currenturl = window.location;
             //var newurl = currenturl.replace(/aifdb=[0-9]+/i, ""); 
             //history.pushState(null, null, newurl);
@@ -530,7 +533,7 @@ function save2db() {
             var jlocution = {};
             jlocution['nodeID'] = nodes[i].nodeID;
             jlocution['personID'] = nodes[i].participantID;
-            if (window.addTimestamps) { jlocution['start'] = Math.round(new Date(nodes[i].timestamp).getTime() / 1000); } //todo
+            if (nodes[i].timestamp !== "") { jlocution['start'] = Math.round(new Date(nodes[i].timestamp).getTime() / 1000); }
             jlocutions.push(jlocution);
         }
     }

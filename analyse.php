@@ -263,9 +263,9 @@ if (isset($_COOKIE['ovauser'])) {
             <!-- Text Settings  -->
             <div id="txtstg">
               <p style="color: #444; line-height: 36px;">Font Size
-                <a href="#" class="itl" style="background-image: url('res/img/txt-lrg.png');" onClick='$("#left1").removeClass("ts tm");$("#left1").addClass("tl"); return false;'></a>
-                <a href="#" class="itm" style="background-image: url('res/img/txt-med.png');" onClick='$("#left1").removeClass("ts tl");$("#left1").addClass("tm"); return false;'></a>
-                <a href="#" class="its" style="background-image: url('res/img/txt-sml.png');" onClick='$("#left1").removeClass("tm tl");$("#left1").addClass("ts"); return false;'></a>
+                <a href="#" class="itl" style="background-image: url('res/img/txt-lrg.png');" onClick='setFontSize("tl");'></a>
+                <a href="#" class="itm" style="background-image: url('res/img/txt-med.png');" onClick='setFontSize("tm");'></a>
+                <a href="#" class="its" style="background-image: url('res/img/txt-sml.png');" onClick='setFontSize("ts");'></a>
               </p>
             </div>
           <?php } ?>
@@ -311,9 +311,9 @@ if (isset($_COOKIE['ovauser'])) {
               <!-- Add Timestamps Toggle  -->
               <p style="color: #444; line-height: 22px;">Add Timestamps
                 <?php if ($defaultSettings["timestamp"]["addTimestamps"]) { ?>
-                  <a href="#" id="timestamptoggle" class="togglesw on" onClick='$(this).toggleClass("on off");'><span class="tson">On</span><span class="tsoff">Off</span></a> <!-- window.addTimestamps=!window.addTimestamps; addTimestampsOnOff(); -->
+                  <a href="#" id="timestamptoggle" class="togglesw on" onClick='$(this).toggleClass("on off"); addTimestampsOnOff();'><span class="tson">On</span><span class="tsoff">Off</span></a> <!-- window.addTimestamps=!window.addTimestamps; -->
                 <?php } else { ?>
-                  <a href="#" id="timestamptoggle" class="togglesw off" onClick='$(this).toggleClass("on off");'><span class="tson">On</span><span class="tsoff">Off</span></a> <!-- window.addTimestamps=!window.addTimestamps; addTimestampsOnOff(); -->
+                  <a href="#" id="timestamptoggle" class="togglesw off" onClick='$(this).toggleClass("on off"); addTimestampsOnOff();'><span class="tson">On</span><span class="tsoff">Off</span></a> <!-- window.addTimestamps=!window.addTimestamps; -->
                 <?php } ?>
               </p>
               <!-- Show Timestamps Toggle  -->
@@ -365,7 +365,7 @@ if (isset($_COOKIE['ovauser'])) {
       </div>
       <div class="modal-body">
       <form id="timestamps_form" class="fstyle">
-      <?php $timestamp = explode(" ",$startdatestmp); ?>
+      <?php $timestamp = explode(" ",$defaultSettings["timestamp"]["startdatestmp"]); ?>
           <label> Transcript start date: </label>
           <input type="date" id="dateinput" value="<?php echo $timestamp[0] ?>" style="font-size: 16px; padding: 3px; width:90%;" required pattern="\d{4}/\d{2}/\d{2}" />
           <label> Transcript start time: </label>

@@ -18,8 +18,7 @@ if ($_POST['type'] == "node") {
     }
 
     if ($_POST['action'] == 'delete') { //if a delete edit don't add a new version of the node to the table
-        $preVersionNo = $previousNode['versionNo']; //previous version is same as current version
-        $versionNo = $previousNode['versionNo'];
+        $versionNo = $preVersionNo; //current version is same as previous version
     } else {
         try {
             $q = $DBH->prepare("INSERT INTO nodes(nodeID, analysisID, versionNo, content) VALUES (:nodeID, :analysisID, :versionNo, :cnt)");

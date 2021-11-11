@@ -958,7 +958,7 @@ function deleteNode(node) {
     if (document.getElementById(CurrentlyEditing)) {
       document.getElementById(CurrentlyEditing).remove(); //if the node was drawn on the svg remove it
     }
-    if (mySel.type == 'L' || (!rIATMode && mySel.type == 'I')) {
+    if (mySel.type == 'L' || mySel.type == 'I') {
       remhl(node.nodeID);
     }
   }

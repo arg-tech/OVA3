@@ -82,7 +82,9 @@ document.onwheel = zoom;
 
 //set default settings
 window.defaultSettings = JSON.parse(window.defaultSettings);
-window.bwmode = window.defaultSettings["display"]["black_white"]; //set display settings
+
+//set display settings
+window.bwmode = window.defaultSettings["display"]["black_white"];
 
 //set analysis settings
 // window.dialogicalMode = window.defaultSettings["analysis"]["dialogical"];
@@ -93,6 +95,10 @@ window.cqmode = window.defaultSettings["analysis"]["cq"];
 window.startdatestmp = window.defaultSettings["timestamp"]["startdatestmp"];
 window.addTimestamps = window.defaultSettings["timestamp"]["addTimestamps"];
 window.showTimestamps = window.defaultSettings["timestamp"]["showTimestamps"];
+
+// //set scheme default settings
+// window.defaultSchemesets = window.defaultSettings["schemeset"];
+// console.log(defaultSchemesets)
 
 function Init(evt) {
     SVGRoot = document.getElementById('inline');
@@ -161,6 +167,7 @@ function Init(evt) {
             window.ssets[schemeset.id] = schemeset.schemes;
         }
     });
+
     getSocial();
 
     $('#analysis_text').on('paste', function () {
@@ -196,6 +203,7 @@ function Init(evt) {
     $('#analysis_text').focusout(function () {
         postEdit("text", "edit", $('#analysis_text').html());
     });
+    setFontSize(window.defaultSettings["display"]["font_size"]);
 }
 
 //start of main collaborate feature code//
@@ -566,7 +574,7 @@ function undoDelete(toUndo, lastEditID) {
 
         for (i = 0; i < toUndo.length; i++) {
             if (toUndo[i].type == 'text') {
-                if (isLastEdit) {
+                if (isLastEdit && toUndo[i].content) {
                     // console.log("____________");
                     // console.log("overwriting text on LHS");
                     updateEditText(toUndo[i].content); //overwrite the text on LHS to readd any highlighting that was removed
@@ -653,6 +661,11 @@ function getSocial() {
             addParticipant(user.firstname, user.surname);
         }
         $('<a href="#" style="padding-left: 56px;" onClick="newprt();return false;">+ Add new</a>').appendTo('#socialusers');
+
+        //set default start date timestamp
+        if (json_data.hasOwnProperty("startdatestmp")) {
+            window.startdatestmp = json_data.startdatestmp;
+        }
     });
 }
 
@@ -1418,4 +1431,13 @@ function mainTut() {
     });
 
     intro.start();
+}
+
+//change the font size of the text on the LHS
+function setFontSize(size) {
+    if (size == "ts" || size == "tm" || size == "tl") {
+        $("#left1").removeClass("ts tm tl");
+        $("#left1").addClass(size);
+    }
+    return false;
 }
