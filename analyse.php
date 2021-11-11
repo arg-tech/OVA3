@@ -311,9 +311,9 @@ if (isset($_COOKIE['ovauser'])) {
               <!-- Add Timestamps Toggle  -->
               <p style="color: #444; line-height: 22px;">Add Timestamps
                 <?php if ($defaultSettings["timestamp"]["addTimestamps"]) { ?>
-                  <a href="#" id="timestamptoggle" class="togglesw on" onClick='$(this).toggleClass("on off");'><span class="tson">On</span><span class="tsoff">Off</span></a> <!-- window.addTimestamps=!window.addTimestamps; addTimestampsOnOff(); -->
+                  <a href="#" id="timestamptoggle" class="togglesw on" onClick='$(this).toggleClass("on off"); addTimestampsOnOff();'><span class="tson">On</span><span class="tsoff">Off</span></a> <!-- window.addTimestamps=!window.addTimestamps; -->
                 <?php } else { ?>
-                  <a href="#" id="timestamptoggle" class="togglesw off" onClick='$(this).toggleClass("on off");'><span class="tson">On</span><span class="tsoff">Off</span></a> <!-- window.addTimestamps=!window.addTimestamps; addTimestampsOnOff(); -->
+                  <a href="#" id="timestamptoggle" class="togglesw off" onClick='$(this).toggleClass("on off"); addTimestampsOnOff();'><span class="tson">On</span><span class="tsoff">Off</span></a> <!-- window.addTimestamps=!window.addTimestamps; -->
                 <?php } ?>
               </p>
               <!-- Show Timestamps Toggle  -->
@@ -365,7 +365,7 @@ if (isset($_COOKIE['ovauser'])) {
       </div>
       <div class="modal-body">
       <form id="timestamps_form" class="fstyle">
-      <?php $timestamp = explode(" ",$startdatestmp); ?>
+      <?php $timestamp = explode(" ",$defaultSettings["timestamp"]["startdatestmp"]); ?>
           <label> Transcript start date: </label>
           <input type="date" id="dateinput" value="<?php echo $timestamp[0] ?>" style="font-size: 16px; padding: 3px; width:90%;" required pattern="\d{4}/\d{2}/\d{2}" />
           <label> Transcript start time: </label>

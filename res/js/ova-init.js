@@ -94,6 +94,10 @@ window.startdatestmp = window.defaultSettings["timestamp"]["startdatestmp"];
 window.addTimestamps = window.defaultSettings["timestamp"]["addTimestamps"];
 window.showTimestamps = window.defaultSettings["timestamp"]["showTimestamps"];
 
+// //set scheme default settings
+// window.defaultSchemesets = window.defaultSettings["schemeset"];
+// console.log(defaultSchemesets)
+
 function Init(evt) {
     SVGRoot = document.getElementById('inline');
     SVGRootG = document.createElementNS("http://www.w3.org/2000/svg", 'g');
@@ -161,6 +165,7 @@ function Init(evt) {
             window.ssets[schemeset.id] = schemeset.schemes;
         }
     });
+
     getSocial();
 
     $('#analysis_text').on('paste', function () {
@@ -653,6 +658,11 @@ function getSocial() {
             addParticipant(user.firstname, user.surname);
         }
         $('<a href="#" style="padding-left: 56px;" onClick="newprt();return false;">+ Add new</a>').appendTo('#socialusers');
+
+        //set default start date timestamp
+        if (json_data.hasOwnProperty("startdatestmp")) {
+            window.startdatestmp = json_data.startdatestmp;
+        }
     });
 }
 
