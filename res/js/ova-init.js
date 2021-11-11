@@ -82,7 +82,9 @@ document.onwheel = zoom;
 
 //set default settings
 window.defaultSettings = JSON.parse(window.defaultSettings);
-window.bwmode = window.defaultSettings["display"]["black_white"]; //set display settings
+
+//set display settings
+window.bwmode = window.defaultSettings["display"]["black_white"];
 
 //set analysis settings
 // window.dialogicalMode = window.defaultSettings["analysis"]["dialogical"];
@@ -201,6 +203,7 @@ function Init(evt) {
     $('#analysis_text').focusout(function () {
         postEdit("text", "edit", $('#analysis_text').html());
     });
+    setFontSize(window.defaultSettings["display"]["font_size"]);
 }
 
 //start of main collaborate feature code//
@@ -571,7 +574,7 @@ function undoDelete(toUndo, lastEditID) {
 
         for (i = 0; i < toUndo.length; i++) {
             if (toUndo[i].type == 'text') {
-                if (isLastEdit) {
+                if (isLastEdit && toUndo[i].content) {
                     // console.log("____________");
                     // console.log("overwriting text on LHS");
                     updateEditText(toUndo[i].content); //overwrite the text on LHS to readd any highlighting that was removed
@@ -1428,4 +1431,13 @@ function mainTut() {
     });
 
     intro.start();
+}
+
+//change the font size of the text on the LHS
+function setFontSize(size) {
+    if (size == "ts" || size == "tm" || size == "tl") {
+        $("#left1").removeClass("ts tm tl");
+        $("#left1").addClass(size);
+    }
+    return false;
 }

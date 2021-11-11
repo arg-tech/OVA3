@@ -263,9 +263,9 @@ if (isset($_COOKIE['ovauser'])) {
             <!-- Text Settings  -->
             <div id="txtstg">
               <p style="color: #444; line-height: 36px;">Font Size
-                <a href="#" class="itl" style="background-image: url('res/img/txt-lrg.png');" onClick='$("#left1").removeClass("ts tm");$("#left1").addClass("tl"); return false;'></a>
-                <a href="#" class="itm" style="background-image: url('res/img/txt-med.png');" onClick='$("#left1").removeClass("ts tl");$("#left1").addClass("tm"); return false;'></a>
-                <a href="#" class="its" style="background-image: url('res/img/txt-sml.png');" onClick='$("#left1").removeClass("tm tl");$("#left1").addClass("ts"); return false;'></a>
+                <a href="#" class="itl" style="background-image: url('res/img/txt-lrg.png');" onClick='setFontSize("tl");'></a>
+                <a href="#" class="itm" style="background-image: url('res/img/txt-med.png');" onClick='setFontSize("tm");'></a>
+                <a href="#" class="its" style="background-image: url('res/img/txt-sml.png');" onClick='setFontSize("ts");'></a>
               </p>
             </div>
           <?php } ?>
