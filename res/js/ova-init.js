@@ -7,8 +7,8 @@ var TrueCoords = null;
 var GrabPoint = null;
 var DragTarget = null;
 
-var rIATMode = ("plus" in getUrlVars());
-var dialogicalMode = rIATMode;
+var dialogicalMode = ("plus" in getUrlVars());
+var rIATMode = false;
 var CurrentFocus = null;
 var multiSel = false;
 var multiSelRect = {};
@@ -82,14 +82,8 @@ document.onwheel = zoom;
 
 //set default settings
 window.defaultSettings = JSON.parse(window.defaultSettings);
-
-//set display settings
-window.bwmode = window.defaultSettings["display"]["black_white"];
-
-//set analysis settings
-// window.dialogicalMode = window.defaultSettings["analysis"]["dialogical"];
-// window.rIATMode = window.defaultSettings["analysis"]["rIAT"];
-window.cqmode = window.defaultSettings["analysis"]["cq"];
+window.bwmode = window.defaultSettings["display"]["black_white"]; //set display settings
+window.cqmode = window.defaultSettings["analysis"]["cq"]; //set analysis settings
 
 //set timestamp settings
 window.startdatestmp = window.defaultSettings["timestamp"]["startdatestmp"];
@@ -203,7 +197,10 @@ function Init(evt) {
     $('#analysis_text').focusout(function () {
         postEdit("text", "edit", $('#analysis_text').html());
     });
+
+    //set defaults
     setFontSize(window.defaultSettings["display"]["font_size"]);
+    setRIATMode();
 }
 
 //start of main collaborate feature code//
@@ -1440,4 +1437,13 @@ function setFontSize(size) {
         $("#left1").addClass(size);
     }
     return false;
+}
+
+//change rIAT mode based on default settings
+function setRIATMode() {
+    if (dialogicalMode && window.defaultSettings["analysis"]["rIAT"]) {
+        window.rIATMode = true;
+    } else {
+        $("#riattoggle").toggleClass("on off");
+    }
 }
