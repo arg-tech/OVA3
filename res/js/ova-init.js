@@ -159,9 +159,16 @@ function Init(evt) {
             schemeset = schemesets[index];
             $('#s_sset').append('<option value="' + schemeset.id + '">' + schemeset.name + '</option>');
             window.ssets[schemeset.id] = schemeset.schemes;
+
+            // TODO: set default scheme sets through settings
+            $('#ra_sset').append('<option value="' + schemeset.id + '">' + schemeset.name + '</option>');
+            $('#ca_sset').append('<option value="' + schemeset.id + '">' + schemeset.name + '</option>');
+            $('#ya_sset').append('<option value="' + schemeset.id + '">' + schemeset.name + '</option>');
+            $('#ma_sset').append('<option value="' + schemeset.id + '">' + schemeset.name + '</option>');
+            $('#ta_sset').append('<option value="' + schemeset.id + '">' + schemeset.name + '</option>');
+            $('#pa_sset').append('<option value="' + schemeset.id + '">' + schemeset.name + '</option>');
         }
     });
-
     getSocial();
 
     $('#analysis_text').on('paste', function () {
@@ -661,7 +668,7 @@ function getSocial() {
 
         //set default start date timestamp
         if (json_data.hasOwnProperty("startdatestmp")) {
-            window.startdatestmp = json_data.startdatestmp;
+            setTimestampStart(json_data.startdatestmp);
         }
     });
 }
@@ -1288,6 +1295,7 @@ function nodeTut() {
     intro.start();
 }
 
+// TODO
 function setTut() {
     var intro = introJs();
     intro.setOptions({
@@ -1420,7 +1428,7 @@ function mainTut() {
             },
             {
                 element: '#xmenutoggle',
-                intro: "<p>Click here to access your account, analysis settings, or to share your analysis for collborative working.</p>",
+                intro: "<p>Click here to access your analysis settings or to share your analysis for collborative working.</p>",
                 position: 'left',
             }
         ].filter(function (obj) { return $(obj.element).length && $(obj.element).is(':visible'); }),
@@ -1446,4 +1454,44 @@ function setRIATMode() {
     } else {
         $("#riattoggle").toggleClass("on off");
     }
+}
+
+//change tab on settings modal
+function settingsTab(evt, tab) {
+    var tabs = document.getElementsByClassName("tab");
+    for (var i = 0; i < tabs.length; i++) {
+        tabs[i].classList.remove("selected");
+    }
+    evt.currentTarget.classList.add("selected");
+    $('#displaystg').hide();
+    $('#anastg').hide();
+    $('#timestg').hide();
+    $('#schemestg').hide();
+    $('#' + tab).show();
+    return false;
+}
+
+//change the start date and time for the timestamps
+function setTimestampStart(startdatestmp) {
+    if (typeof startdatestmp !== 'undefined') {
+        window.startdatestmp = startdatestmp;
+        document.getElementById("startTimestamp").innerHTML = window.startdatestmp;
+    } else {
+        var date = document.getElementById("dateInput").value;
+        var time = document.getElementById("timeInput").value;
+        var timezoneTime = document.getElementById("timezoneInput").value;
+        var timezoneSelect = document.getElementById("timezoneSelect").value;
+        if (date != "" && time != "" && timezoneTime != "") {
+            var d = date.split("-", 3);
+            var t = timezoneTime.split(":", 2);
+            var timezone = "GMT" + timezoneSelect + t[0] + t[1];
+            var start = d[0] + "/" + d[1] + "/" + d[2] + " " + time + " " + timezone;
+            console.log(start);
+            window.startdatestmp = start;
+            document.getElementById("startTimestamp").innerHTML = window.startdatestmp;
+            closeModal('#modal-timestamps'); FormOpen = false;
+            openModal('#modal-settings');
+        }
+    }
+    return false;
 }
