@@ -1295,18 +1295,29 @@ function nodeTut() {
     intro.start();
 }
 
-// TODO
 function setTut() {
     var intro = introJs();
     intro.setOptions({
         steps: [
             {
-                element: '#txtstgs',
-                intro: "Set text size."
+                element: '#tab-display',
+                intro: "<p>Display Settings</p> <p>Click here to view display settings.</p>",
             },
             {
-                element: '#cqtoggle',
-                intro: "Toggle Critical Question Mode"
+                element: '#tab-analysis',
+                intro: "<p>Analysis Settings</p> <p>Click here to view analysis settings.</p>",
+            },
+            {
+                element: '#tab-timestamps',
+                intro: "<p>Timestamp Settings</p> <p>Click here to view timestamp settings.</p>",
+            },
+            {
+                element: '#tab-schemes',
+                intro: "<p>Scheme Set Settings</p> <p>Click here to view scheme set settings.</p>",
+            },
+            {
+                element: '#font-size',
+                intro: "Set text size."
             },
             {
                 element: '#bwtoggle',
@@ -1319,7 +1330,31 @@ function setTut() {
             {
                 element: '#riattoggle',
                 intro: "<p>Toggle Rapid IAT Mode</p> <p>Turning off Rapid IAT mode will stop the dialogical aspect from being automatically added.</p>",
-            }
+            },
+            {
+                element: '#cqtoggle',
+                intro: "Toggle Critical Question Mode"
+            },
+            {
+                element: '#timestampRegExp',
+                intro: "<p>Timestamp Format</p> <p>When adding timestamps, this format can be used to offset the start date and time by a number of hours, minutes or seconds. It should be included within the text being analysed wherever the offset should start.</p>"
+            },
+            {
+                element: '#startTimestampLabel',
+                intro: "<p>Start Date and Time</p> <p>When adding timestamps, this date and time should be changed to when the text being analsyed began. All timestamps are calculated based off of it.</p>"
+            },
+            {
+                element: '#startTimestampBtn',
+                intro: "<p>Change Start Date and Time</p> <p>Click here to change the start date and time.</p>"
+            },
+            {
+                element: '#timestamptoggle',
+                intro: "<p>Toggle Add Timestamps</p><p>Turning on add timestamps will add a timestamp to a locution node when it is added. .</p>"
+            },
+            {
+                element: '#showTimestamptoggle',
+                intro: "<p>Toggle Show Timestamps</p> <p>Turning on show timestamps will display above locution nodes any timestamps that have been added to them, while turning it off will hide all timestamps on locution nodes.</p>"
+            },
         ].filter(function (obj) { return $(obj.element).length && $(obj.element).is(':visible'); }),
         showStepNumbers: false
     });
@@ -1475,7 +1510,7 @@ function settingsTab(evt, tab) {
 function setTimestampStart(startdatestmp) {
     if (typeof startdatestmp !== 'undefined') {
         window.startdatestmp = startdatestmp;
-        document.getElementById("startTimestamp").innerHTML = window.startdatestmp;
+        document.getElementById("startTimestampLabel").innerHTML = window.startdatestmp;
     } else {
         var date = document.getElementById("dateInput").value;
         var time = document.getElementById("timeInput").value;
@@ -1488,7 +1523,7 @@ function setTimestampStart(startdatestmp) {
             var start = d[0] + "/" + d[1] + "/" + d[2] + " " + time + " " + timezone;
             console.log(start);
             window.startdatestmp = start;
-            document.getElementById("startTimestamp").innerHTML = window.startdatestmp;
+            document.getElementById("startTimestampLabel").innerHTML = window.startdatestmp;
             closeModal('#modal-timestamps'); FormOpen = false;
             openModal('#modal-settings');
         }

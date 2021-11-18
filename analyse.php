@@ -258,17 +258,17 @@ if (isset($_COOKIE['ovauser'])) {
       <div class="modal-body">
         <form id="settings_form" class="fstyle">
           <div id="tab-bar">
-            <a href="#" class="btn tab select" onclick="settingsTab(event, 'displaystg')">Display</a>
-            <a href="#" class="btn tab" onclick="settingsTab(event, 'anastg')">Analysis</a>
-            <a href="#" class="btn tab" onclick="settingsTab(event, 'timestg')">Timestamps</a>
-            <a href="#" class="btn tab" onclick="settingsTab(event, 'schemestg')" style="display:none;">Schemes</a>
+            <a href="#" id="tab-display" class="btn tab selected" onclick="settingsTab(event, 'displaystg')">Display</a>
+            <a href="#" id="tab-analysis" class="btn tab" onclick="settingsTab(event, 'anastg')">Analysis</a>
+            <a href="#" id="tab-timestamps" class="btn tab" onclick="settingsTab(event, 'timestg')">Timestamps</a>
+            <a href="#" id="tab-schemes" class="btn tab" onclick="settingsTab(event, 'schemestg')" style="display:none;">Scheme Sets</a>
           </div>
           <br>
           <div id="displaystg" class="stg">
             <?php if ($source == "local") { ?>
               <!-- Text Settings  -->
               <div id="txtstg">
-                <p style="color: #444; line-height: 36px;">Font Size
+                <p id="font-size" style="color: #444; line-height: 36px;">Font Size
                   <a href="#" class="itl" style="background-image: url('res/img/txt-lrg.png');" onClick='setFontSize("tl");'></a>
                   <a href="#" class="itm" style="background-image: url('res/img/txt-med.png');" onClick='setFontSize("tm");'></a>
                   <a href="#" class="its" style="background-image: url('res/img/txt-sml.png');" onClick='setFontSize("ts");'></a>
@@ -319,9 +319,9 @@ if (isset($_COOKIE['ovauser'])) {
                 <!-- <a href="#" class="btn" onClick="console.log('change timestamp RegExp'); return false;">Change</a> -->
               </label>
             </p>
-            <p style="color: #444; line-height: 22px;"> Start Date:
-              <label id="startTimestamp"> <?php echo $defaultSettings["timestamp"]["startdatestmp"] ?></label>
-              <a href="#" class="btn" onClick="console.log('change start timestamp'); openModal('#modal-timestamps'); return false;">Change Start Date</a>
+            <p id="startTimestamp" style="color: #444; line-height: 22px;"> Start Date and Time:
+              <label for="startTimestampBtn" id="startTimestampLabel"> <?php echo $defaultSettings["timestamp"]["startdatestmp"] ?></label>
+              <a href="#" id="startTimestampBtn" class="btn" onClick="openModal('#modal-timestamps'); return false;">Change Start Date and Time</a>
             </p>
             <!-- Add Timestamps Toggle -->
             <p style="color: #444; line-height: 22px;">Add Timestamps
@@ -342,31 +342,32 @@ if (isset($_COOKIE['ovauser'])) {
           </div>
           <!-- TODO -->
           <div id="schemestg" class="stg" style="display:none;">
-            <strong>Select Default Scheme Sets:</strong>
-            <label for="ya_sset" id="ya_sset_label">YA:
+            <p style="color: #444; line-height: 22px;">Select Default Scheme Sets:
+              <label for="ya_sset" id="ya_sset_label">YA:</label>
               <select id="ya_sset" onChange="filterschemes(this.value);">
                 <option value="0">All Schemes</option>
-              </select></label>
-            <label for="ra_sset" id="ra_sset_label">RA:
+              </select>
+              <label for="ra_sset" id="ra_sset_label">RA:</label>
               <select id="ra_sset" onChange="filterschemes(this.value);">
                 <option value="0">All Schemes</option>
-              </select></label>
-            <label for="ca_sset" id="ca_sset_label">CA:
+              </select>
+              <label for="ca_sset" id="ca_sset_label">CA:</label>
               <select id="ca_sset" onChange="filterschemes(this.value);">
                 <option value="0">All Schemes</option>
-              </select></label>
-            <label for="ta_sset" id="ta_sset_label">TA:
+              </select>
+              <label for="ta_sset" id="ta_sset_label">TA:</label>
               <select id="ta_sset" onChange="filterschemes(this.value);">
                 <option value="0">All Schemes</option>
-              </select></label>
-            <label for="ma_sset" id="ma_sset_label">MA:
+              </select>
+              <label for="ma_sset" id="ma_sset_label">MA:</label>
               <select id="ma_sset" onChange="filterschemes(this.value);">
                 <option value="0">All Schemes</option>
-              </select></label>
-            <label for="pa_sset" id="pa_sset_label">PA:
+              </select>
+              <label for="pa_sset" id="pa_sset_label">PA:</label>
               <select id="pa_sset" onChange="filterschemes(this.value);">
                 <option value="0">All Schemes</option>
-              </select></label>
+              </select>
+            </p>
           </div>
         </form>
       </div>
