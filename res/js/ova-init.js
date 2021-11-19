@@ -414,12 +414,14 @@ function getSelText() {
     } else if (iframe.getElementsByTagName('iframe')) {
         // console.log("identified iframe");
         txt = document.getElementById('extside').contentWindow.getSelection().toString();
+        window.groupID++;
         // console.log(txt);
     } else {
         // console.log("in else");
         var innerDoc = iframe.contentDocument || iframe.contentWindow.document;
         // console.log(innerDoc);
         txt = iframe.contentWindow.getSelection().toString();
+        window.groupID++;
         // console.log(txt);
     }
     return txt;

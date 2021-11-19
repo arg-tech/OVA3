@@ -253,8 +253,9 @@ function Grab(evt) {
         var timestamp = '';
         if (window.addTimestamps) {
           timestamp = getTimestamp();
+          // console.log("timestamp: " + timestamp);
           timestamp = !timestamp ? '' : timestamp;
-          // console.log("timestamp: " + timestamp)
+          // console.log("timestamp: " + timestamp);
         }
         if (window.rIATMode) {
           AddNode(t, 'I', null, 0, newNodeID, TrueCoords.x, TrueCoords.y - 10, true, 0, timestamp);
@@ -276,7 +277,9 @@ function Grab(evt) {
 
 function getTimestamp() {
   var iframe = document.getElementById('analysis_text');
-  if (iframe.nodeName.toLowerCase() == 'div') {
+  if (iframe == null) { //if url loaded into LHS
+    iframe = document.getElementById('extside');
+  } else if (iframe.nodeName.toLowerCase() == 'div') {
     htmlContent = iframe.innerHTML
 
     // GET TIMESTAMPS FROM TEXT
