@@ -142,7 +142,7 @@ if (isset($_COOKIE['ovauser'])) {
     <div id="m_load">Processing<br /><img src="res/img/loading_modal.gif" /></div>
     <div id="m_content" style="text-align: left; font-size: 0.8em; padding: 0px 20px;"></div>
     <div class="modal-btns">
-      <a class="cancel" href="#" onClick="$('#modal-save2db').hide();$('#modal-shade').hide(); return false;">&#10008; Close</a>
+      <a class="cancel" href="#" onClick="closeModal('#modal-save2db'); return false;">&#10008; Close</a>
     </div>
   </div>
 
@@ -256,15 +256,14 @@ if (isset($_COOKIE['ovauser'])) {
         <a href="javascript:void(0);" class="helpbtn" onclick="setTut(); return false;">?</a>
       </div>
       <div class="modal-body">
+        <div id="tab-bar-stg" class="tab-bar">
+          <a href="#" id="tab-display" class="btn tab stg selected" onclick="settingsTab(event, 'displaystg')">Display</a>
+          <a href="#" id="tab-analysis" class="btn tab stg" onclick="settingsTab(event, 'anastg')">Analysis</a>
+          <a href="#" id="tab-timestamps" class="btn tab stg" onclick="settingsTab(event, 'timestg')">Timestamps</a>
+          <a href="#" id="tab-schemes" class="btn tab stg" onclick="settingsTab(event, 'schemestg')" style="display:none;">Scheme Sets</a>
+        </div>
         <form id="settings_form" class="fstyle">
-          <div id="tab-bar">
-            <a href="#" id="tab-display" class="btn tab selected" onclick="settingsTab(event, 'displaystg')">Display</a>
-            <a href="#" id="tab-analysis" class="btn tab" onclick="settingsTab(event, 'anastg')">Analysis</a>
-            <a href="#" id="tab-timestamps" class="btn tab" onclick="settingsTab(event, 'timestg')">Timestamps</a>
-            <a href="#" id="tab-schemes" class="btn tab" onclick="settingsTab(event, 'schemestg')" style="display:none;">Scheme Sets</a>
-          </div>
-          <br>
-          <div id="displaystg" class="stg">
+          <div id="displaystg">
             <?php if ($source == "local") { ?>
               <!-- Text Settings  -->
               <div id="txtstg">
@@ -284,7 +283,7 @@ if (isset($_COOKIE['ovauser'])) {
               <?php } ?>
             </p>
           </div>
-          <div id="anastg" class="stg" style="display:none;">
+          <div id="anastg" style="display:none;">
             <!-- Dialogical Mode Toggle  -->
             <p style="color: #444; line-height: 22px;">Dialogical Mode
               <?php if ($pro) { ?>
@@ -313,7 +312,7 @@ if (isset($_COOKIE['ovauser'])) {
               <?php } ?>
             </p>
           </div>
-          <div id="timestg" class="stg" style="display:none;">
+          <div id="timestg" style="display:none;">
             <p style="color: #444; line-height: 22px;"> Timestamp Format:
               <label id="timestampRegExp"> [hh:mm:ss]
                 <!-- <a href="#" class="btn" onClick="console.log('change timestamp RegExp'); return false;">Change</a> -->
@@ -341,7 +340,7 @@ if (isset($_COOKIE['ovauser'])) {
             </p>
           </div>
           <!-- TODO -->
-          <div id="schemestg" class="stg" style="display:none;">
+          <div id="schemestg" style="display:none;">
             <p style="color: #444; line-height: 22px;">Select Default Scheme Sets:
               <label for="ya_sset" id="ya_sset_label">YA:</label>
               <select id="ya_sset" onChange="filterschemes(this.value);">
@@ -404,27 +403,25 @@ if (isset($_COOKIE['ovauser'])) {
   <div class="modal-dialog" id="modal-timestamps">
     <div class="modal-content">
       <div class="modal-header">
-        <h4 class="modal-title">Timestamp Start Date</h4>
+        <h4 class="modal-title">Timestamp Start Date and Time</h4>
       </div>
-      <div class="modal-body">
+      <div class="modal-body" style="margin:0 20%;">
         <form id="timestamps_form" class="fstyle">
           <?php $timestamp = explode(" ", $defaultSettings["timestamp"]["startdatestmp"]); ?>
-          <label for="dateInput"> Transcript start date (dd/mm/yyyy): </label>
-          <input type="date" id="dateInput" value="<?php echo $timestamp[0] ?>" style="font-size: 16px; padding: 3px; width:50%;" required pattern="\d{4}/\d{2}/\d{2}" />
+          <label for="dateInput"> Start Date: (dd/mm/yyyy) </label>
+          <input type="date" id="dateInput" style="font-size: 16px; padding: 3px; width:70%; text-align:center;" required pattern="\d{4}/\d{2}/\d{2}" />
           <span class="validity"></span>
 
-          <label for="timeInput"> Transcript start time (hh:mm:ss): </label>
-          <input type="time" id="timeInput" value="<?php echo $timestamp[1] ?>" style="font-size: 16px; padding: 3px; width:50%;" step="1" min="00:00:01" max="23:59:59" required />
+          <label for="timeInput"> Start Time: (hh:mm:ss) </label>
+          <input type="time" id="timeInput" value="<?php echo $timestamp[1] ?>" style="font-size: 16px; padding: 3px; width:70%; text-align:center;" step="1" min="00:00:01" max="23:59:59" required />
           <span class="validity"></span>
 
-          <label for="timezoneInput"> Transcript timezone (+/- hh:mm): <br> GMT
-            <!-- <input type="number" id="timezoneHInput" value="00" style="font-size: 16px; padding: 3px; width:20%;" required min="-12" max="14" /> : 
-            <input type="number" id="timezoneMInput" value="00" style="font-size: 16px; padding: 3px; width:20%;" required step="15" min="0" max="59" /> -->
-            <select id="timezoneSelect" style="font-size: 16px; padding: 3px; width:10%;">
+          <label for="timezoneInput"> Timezone: (+/- hh:mm) <br> GMT
+            <select id="timezoneSelect" style="font-size: 16px; padding: 3px; width:auto;">
               <option value="-">-</option>
               <option value="+" selected>+</option>
             </select>
-            <input type="time" id="timezoneInput" value="00:00" style="font-size: 16px; padding: 3px; width:30%;" required min="00:00" max="14:00" />
+            <input type="time" id="timezoneInput" value="00:00" style="font-size: 16px; padding: 3px; width:40%; text-align:center;" required min="00:00" max="14:00" />
             <span class="validity"></span>
           </label>
         </form>
@@ -446,14 +443,14 @@ if (isset($_COOKIE['ovauser'])) {
         <!-- <a href="javascript:void(0);" class="helpbtn" onclick="setTut(); return false;">?</a> -->
       </div>
       <div class="modal-body">
+        <div id="tab-bar-help" class="tab-bar">
+          <a href="#" id="tab-shortcuts" class="btn tab helpsheet selected" onclick="helpTab(event, 'shortcuts-help')">Keyboard Shortcuts</a>
+          <a href="#" id="tab-nodes" class="btn tab helpsheet" onclick="helpTab(event, 'node-help')">Nodes</a>
+          <a href="#" id="tab-edges" class="btn tab helpsheet" onclick="helpTab(event, 'edge-help')">Edges</a>
+          <a href="#" id="tab-timestamps-help" class="btn tab helpsheet" onclick="helpTab(event, 'timestamp-help')">Timestamps</a>
+        </div>
         <form id="help-form" class="fstyle">
-          <div id="anastg">
-            <strong>Adding Nodes to the Canvas</strong>
-            <p style="color: #444; font-size: 12px;">To add a node, enter the text you would like to use into the left hand side panel. Then, highlight the text and click on the canvas, the highlighted text will be added to a node.</p>
-            <strong>Adding Edges Between Nodes</strong>
-            <p style="color: #444; font-size: 12px;">To add an edge, either click on the add edge button in the top menu and then click and drag between the two nodes you would like to connect. Or click and drag from one node to another while pressing shift for an infrence relation or the 'A' key for a conflict.</p>
-            <strong>Editing Nodes</strong>
-            <p style="color: #444; font-size: 12px;">To access the edit node menu, either right click on a node and select 'Edit Node' from the menu or ctrl+click on the node you would like to edit.</p>
+          <div id="shortcuts-help">
             <strong>Keyboard Shortcuts:</strong>
             <p style="color: #444; font-size: 12px;">
             <pre>
@@ -464,14 +461,34 @@ if (isset($_COOKIE['ovauser'])) {
 <strong>+/- : </strong> zoom in/out
 </pre>
             </p>
-
           </div>
-        </form>
+          <div id="node-help" style="display:none;">
+            <strong>Adding Nodes to the Canvas</strong>
+            <p style="color: #444; font-size: 12px;">To add a node, enter the text you would like to use into the left hand side panel. Then, highlight the text and click on the canvas, the highlighted text will be added to a node.</p>
+            <strong>Editing Nodes</strong>
+            <p style="color: #444; font-size: 12px;">To access the edit node menu, either right click on a node and select 'Edit Node' from the menu or ctrl+click on the node you would like to edit.</p>
+          </div>
+          <div id="edge-help" style="display:none;">
+            <strong>Adding Edges Between Nodes</strong>
+            <p style="color: #444; font-size: 12px;">To add an edge, either click on the add edge button in the top menu and then click and drag between the two nodes you would like to connect. Or click and drag from one node to another while pressing shift for an inference relation or the 'A' key for a conflict.</p>
+          </div>
+          <div id="timestamp-help" style="display:none;">
+            <strong>Timestamp Format</strong>
+            <p style="color: #444; font-size: 12px;">The format of '[hh:mm:ss]' can be used to offset the start date and time by a number of hours, minutes or seconds when adding timestamps. It should be included within the text being analysed wherever the offset should start, e.g. including '[00:30:15]' at the start of the text being analysed would offset the first timestamp by 30 minutes and 15 seconds from the start time.</p>
+            <strong>Start Date and Time</strong>
+            <p style="color: #444; font-size: 12px;">The start date and time is when the text being analsyed began. All timestamps are calculated based off of it. It should be updated before adding any timestamps to an analysis by clicking the 'Change Start Date and Time' button in the timestamp settings.</p>
+            <strong>Adding Timestamps</strong>
+            <p style="color: #444; font-size: 12px;">Timestamps can be added to locution nodes when using dialogical mode. They can be added automatically when analysing text by turning on the 'Add Timestamps' toggle in the timestamp settings or manually added by editing a locution node if analysing a url page.</p>
+            <strong>Viewing Timestamps</strong>
+            <p style="color: #444; font-size: 12px;">Turning on the 'Show Timestamps' toggle in timestamp settings will display above locution nodes any timestamps that have been added to them, while turning it off will hide all timestamps on locution nodes.</p>
+          </div>
       </div>
-      <div class="modal-btns">
-        <a class="cancel" href="#" onClick="closeModal('#modal-help'); return false;">&#10008; Close</a>
-      </div>
+      </form>
     </div>
+    <div class="modal-btns">
+      <a class="cancel" href="#" onClick="closeModal('#modal-help'); return false;">&#10008; Close</a>
+    </div>
+  </div>
   </div>
   <!-- Helpsheet Modal ends here -->
 

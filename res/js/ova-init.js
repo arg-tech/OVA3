@@ -1351,7 +1351,7 @@ function setTut() {
             },
             {
                 element: '#timestamptoggle',
-                intro: "<p>Toggle Add Timestamps</p><p>Turning on add timestamps will add a timestamp to a locution node when it is added. .</p>"
+                intro: "<p>Toggle Add Timestamps</p><p>Turning on add timestamps will add a timestamp to a locution node when it is added.</p>"
             },
             {
                 element: '#showTimestamptoggle',
@@ -1495,7 +1495,7 @@ function setRIATMode() {
 
 //change tab on settings modal
 function settingsTab(evt, tab) {
-    var tabs = document.getElementsByClassName("tab");
+    var tabs = document.getElementsByClassName("stg");
     for (var i = 0; i < tabs.length; i++) {
         tabs[i].classList.remove("selected");
     }
@@ -1504,6 +1504,21 @@ function settingsTab(evt, tab) {
     $('#anastg').hide();
     $('#timestg').hide();
     $('#schemestg').hide();
+    $('#' + tab).show();
+    return false;
+}
+
+//change tab on helpsheet modal
+function helpTab(evt, tab) {
+    var tabs = document.getElementsByClassName("helpsheet");
+    for (var i = 0; i < tabs.length; i++) {
+        tabs[i].classList.remove("selected");
+    }
+    evt.currentTarget.classList.add("selected");
+    $('#shortcuts-help').hide();
+    $('#node-help').hide();
+    $('#edge-help').hide();
+    $('#timestamp-help').hide();
     $('#' + tab).show();
     return false;
 }

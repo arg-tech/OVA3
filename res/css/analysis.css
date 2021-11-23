@@ -734,38 +734,42 @@ a.togglesw.off span.tson {
   color: #ccc;
 }
 
-div#tab-bar {
+div.tab-bar {
   font-size: 14px;
-  font-weight: bold;
-  display: inline;
+  display: block;
   height: 40px;
   line-height: 40px;
   position: relative;
-  float: top;
-  width: 100%;
+  width: 90%;
   text-align: left;
-  padding-bottom: 10px;
+  color: #fff;
   background-color: #333;
+  padding: 5px 5%;
+  margin: 0px;
 }
 
 a.tab {
   cursor: pointer;
   font-size: 14px !important;
-  line-height: 40px !important;
+  line-height: 30px !important;
   float: none !important;
-  width: 25% !important;
+  border: none !important;
 }
 
 a.btn.selected {
-  /* background-color: rgba(224, 46, 66, 1); */
+  /* background-color: rgba(224, 46, 66, 1);
+  color: #fff; */
   background-color: #2ECC71;
-  color: #ccc;
+  color: #333;
+  font-weight: bold;
 }
 
 a.btn:hover {
-  /* background-color: rgba(224, 46, 66, 1); */
+  /* background-color: rgba(224, 46, 66, 1);
+  color: #fff; */
   background-color: #2ECC71;
-  color: #ccc;
+  color: #333;
+  font-weight: bold;
 }
 
 a.btn {
@@ -776,9 +780,8 @@ a.btn {
   text-decoration: none;
   text-align: center;
   font-size: 11px;
-  font-weight: bold;
   background-color: #333;
-  color: #ccc;
+  color: #fff;
   line-height: 18px;
   float: right;
 }
