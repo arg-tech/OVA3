@@ -9,16 +9,16 @@ if (isset($_GET['af']) && isset($_GET['as'])) {
 $source = $_GET['url'];
 if ($source == "local") {
   $analysis = "localtext.html";
-} elseif(substr($source,-3)=="pdf"){
-  if($source == "pdf"){
-      $analysis = "pdfjs/web/viewer.html";
-  }else{
-      $pdfurl = $source;
-      $parts = pathinfo($pdfurl);
-      $pdfurl = $parts['dirname'] . '/' . rawurlencode($parts['basename']);
-      $fname = hash('md5', $pdfurl);
-      file_put_contents('pdfs/'. $fname . '.pdf', fopen($pdfurl, 'r'));
-      $analysis = "pdfjs/web/viewer.html?file=../../pdfs/" . $fname . ".pdf";
+} elseif (substr($source, -3) == "pdf") {
+  if ($source == "pdf") {
+    $analysis = "pdfjs/web/viewer.html";
+  } else {
+    $pdfurl = $source;
+    $parts = pathinfo($pdfurl);
+    $pdfurl = $parts['dirname'] . '/' . rawurlencode($parts['basename']);
+    $fname = hash('md5', $pdfurl);
+    file_put_contents('pdfs/' . $fname . '.pdf', fopen($pdfurl, 'r'));
+    $analysis = "pdfjs/web/viewer.html?file=../../pdfs/" . $fname . ".pdf";
   }
   $source = "pdf";
 } elseif (substr($source, 0, 4) != "http") {
@@ -142,7 +142,7 @@ if (isset($_COOKIE['ovauser'])) {
     <div id="m_load">Processing<br /><img src="res/img/loading_modal.gif" /></div>
     <div id="m_content" style="text-align: left; font-size: 0.8em; padding: 0px 20px;"></div>
     <div class="modal-btns">
-      <a class="cancel" href="#" onClick="$('#modal-save2db').hide();$('#modal-shade').hide(); return false;">&#10008; Close</a>
+      <a class="cancel" href="#" onClick="closeModal('#modal-save2db'); return false;">&#10008; Close</a>
     </div>
   </div>
 
@@ -256,75 +256,117 @@ if (isset($_COOKIE['ovauser'])) {
         <a href="javascript:void(0);" class="helpbtn" onclick="setTut(); return false;">?</a>
       </div>
       <div class="modal-body">
+        <div id="tab-bar-stg" class="tab-bar">
+          <a href="#" id="tab-display" class="btn tab stg selected" onclick="settingsTab(event, 'displaystg')">Display</a>
+          <a href="#" id="tab-analysis" class="btn tab stg" onclick="settingsTab(event, 'anastg')">Analysis</a>
+          <a href="#" id="tab-timestamps" class="btn tab stg" onclick="settingsTab(event, 'timestg')">Timestamps</a>
+          <a href="#" id="tab-schemes" class="btn tab stg" onclick="settingsTab(event, 'schemestg')" style="display:none;">Scheme Sets</a>
+        </div>
         <form id="settings_form" class="fstyle">
-        <div id="displaystg">
-            <strong>Display Settings</strong>
-          <?php if ($source == "local") { ?>
-            <!-- Text Settings  -->
-            <div id="txtstg">
-              <p style="color: #444; line-height: 36px;">Font Size
-                <a href="#" class="itl" style="background-image: url('res/img/txt-lrg.png');" onClick='setFontSize("tl");'></a>
-                <a href="#" class="itm" style="background-image: url('res/img/txt-med.png');" onClick='setFontSize("tm");'></a>
-                <a href="#" class="its" style="background-image: url('res/img/txt-sml.png');" onClick='setFontSize("ts");'></a>
-              </p>
-            </div>
-          <?php } ?>
-          <!-- Black & White Toggle  -->
-          <p style="color: #444; line-height: 22px;">Black &amp; White Diagram
-            <?php if ($defaultSettings["display"]["black_white"]) { ?>
+          <div id="displaystg">
+            <?php if ($source == "local") { ?>
+              <!-- Text Settings  -->
+              <div id="txtstg">
+                <p id="font-size" style="color: #444; line-height: 36px;">Font Size
+                  <a href="#" class="itl" style="background-image: url('res/img/txt-lrg.png');" onClick='setFontSize("tl");'></a>
+                  <a href="#" class="itm" style="background-image: url('res/img/txt-med.png');" onClick='setFontSize("tm");'></a>
+                  <a href="#" class="its" style="background-image: url('res/img/txt-sml.png');" onClick='setFontSize("ts");'></a>
+                </p>
+              </div>
+            <?php } ?>
+            <!-- Black & White Toggle  -->
+            <p style="color: #444; line-height: 22px;">Black &amp; White Diagram
+              <?php if ($defaultSettings["display"]["black_white"]) { ?>
                 <a href="#" id="bwtoggle" class="togglesw on" onClick='$(this).toggleClass("on off"); window.bwmode=!window.bwmode; bwModeOnOff();'><span class="tson">On</span><span class="tsoff">Off</span></a>
               <?php } else { ?>
                 <a href="#" id="bwtoggle" class="togglesw off" onClick='$(this).toggleClass("on off"); window.bwmode=!window.bwmode; bwModeOnOff();'><span class="tson">On</span><span class="tsoff">Off</span></a>
               <?php } ?>
             </p>
-            </div>
-          <div id="anastg">
-            <strong>Analysis Settings</strong>
-            <!-- Critical Questions Toggle  -->
-            <p style="color: #444; line-height: 22px;">Critical Questions
-            <?php if ($defaultSettings["analysis"]["cq"]) { ?>
-                <a href="#" id="cqtoggle" class="togglesw on" onClick='$("#cqtoggle").toggleClass("on off"); window.cqmode=!window.cqmode; return false;'><span class="tson">On</span><span class="tsoff">Off</span></a>
-              <?php } else { ?>
-                <a href="#" id="cqtoggle" class="togglesw off" onClick='$("#cqtoggle").toggleClass("on off"); window.cqmode=!window.cqmode; return false;'><span class="tson">On</span><span class="tsoff">Off</span></a>
-              <?php } ?>
-            </p>
+          </div>
+          <div id="anastg" style="display:none;">
             <!-- Dialogical Mode Toggle  -->
             <p style="color: #444; line-height: 22px;">Dialogical Mode
-            <?php if ($pro) { ?>
+              <?php if ($pro) { ?>
                 <a href="#" id="dialogicaltoggle" class="togglesw on" onClick='$(this).toggleClass("on off"); window.dialogicalMode=!window.dialogicalMode; dialogicalModeOnOff();'><span class="tson">On</span><span class="tsoff">Off</span></a>
               <?php } else { ?>
                 <a href="#" id="dialogicaltoggle" class="togglesw off" onClick='$(this).toggleClass("on off"); window.dialogicalMode=!window.dialogicalMode; dialogicalModeOnOff();'><span class="tson">On</span><span class="tsoff">Off</span></a>
               <?php } ?>
             </p>
-            <?php if ($pro) { ?> <!-- only if Dialogical Mode is on then show the options for Rapid IAT Mode and timestamps-->
-              <!-- Rapid IAT Mode Toggle  -->
+            <?php if ($pro) { ?>
+              <!-- only if Dialogical Mode is on then show the options for Rapid IAT Mode -->
+              <!-- Rapid IAT Mode Toggle -->
               <p style="color: #444; line-height: 22px;">Rapid IAT Mode
-              <?php if (isset($_GET['plus']) && $_GET['plus'] == 'true') { ?>
+                <?php if (isset($_GET['plus']) && $_GET['plus'] == 'true') { ?>
                   <a href="#" id="riattoggle" class="togglesw on" onClick='$(this).toggleClass("on off"); window.rIATMode=!window.rIATMode; return false;'><span class="tson">On</span><span class="tsoff">Off</span></a>
                 <?php } else { ?>
                   <a href="#" id="riattoggle" class="togglesw off" onClick='$(this).toggleClass("on off"); window.rIATMode=!window.rIATMode; return false;'><span class="tson">On</span><span class="tsoff">Off</span></a>
                 <?php } ?>
               </p>
-              </div>
-              <div id="tsstg">
-            <strong>Timestamp Settings</strong>
-              <!-- Add Timestamps Toggle  -->
-              <p style="color: #444; line-height: 22px;">Add Timestamps
-                <?php if ($defaultSettings["timestamp"]["addTimestamps"]) { ?>
-                  <a href="#" id="timestamptoggle" class="togglesw on" onClick='$(this).toggleClass("on off"); addTimestampsOnOff();'><span class="tson">On</span><span class="tsoff">Off</span></a> <!-- window.addTimestamps=!window.addTimestamps; -->
-                <?php } else { ?>
-                  <a href="#" id="timestamptoggle" class="togglesw off" onClick='$(this).toggleClass("on off"); addTimestampsOnOff();'><span class="tson">On</span><span class="tsoff">Off</span></a> <!-- window.addTimestamps=!window.addTimestamps; -->
-                <?php } ?>
-              </p>
-              <!-- Show Timestamps Toggle  -->
-              <p style="color: #444; line-height: 22px;">Show Timestamps
-              <?php if ($defaultSettings["timestamp"]["showTimestamps"]) { ?>
-                  <a href="#" id="showTimestamptoggle" class="togglesw on" onClick='$(this).toggleClass("on off"); window.showTimestamps=!window.showTimestamps; showTimestampsOnOff();'><span class="tson">On</span><span class="tsoff">Off</span></a>
-                <?php } else { ?>
-                  <a href="#" id="showTimestamptoggle" class="togglesw off" onClick='$(this).toggleClass("on off"); window.showTimestamps=!window.showTimestamps; showTimestampsOnOff();'><span class="tson">On</span><span class="tsoff">Off</span></a>
-                <?php } ?>
-              </p>
             <?php } ?>
+            <!-- Critical Questions Toggle -->
+            <p style="color: #444; line-height: 22px;">Critical Questions
+              <?php if ($defaultSettings["analysis"]["cq"]) { ?>
+                <a href="#" id="cqtoggle" class="togglesw on" onClick='$("#cqtoggle").toggleClass("on off"); window.cqmode=!window.cqmode; return false;'><span class="tson">On</span><span class="tsoff">Off</span></a>
+              <?php } else { ?>
+                <a href="#" id="cqtoggle" class="togglesw off" onClick='$("#cqtoggle").toggleClass("on off"); window.cqmode=!window.cqmode; return false;'><span class="tson">On</span><span class="tsoff">Off</span></a>
+              <?php } ?>
+            </p>
+          </div>
+          <div id="timestg" style="display:none;">
+            <p style="color: #444; line-height: 22px;"> Timestamp Format:
+              <label id="timestampRegExp"> [hh:mm:ss]
+                <!-- <a href="#" class="btn" onClick="console.log('change timestamp RegExp'); return false;">Change</a> -->
+              </label>
+            </p>
+            <p id="startTimestamp" style="color: #444; line-height: 22px;"> Start Date and Time:
+              <label for="startTimestampBtn" id="startTimestampLabel"> <?php echo $defaultSettings["timestamp"]["startdatestmp"] ?></label>
+              <a href="#" id="startTimestampBtn" class="btn" onClick="openModal('#modal-timestamps'); return false;">Change Start Date and Time</a>
+            </p>
+            <!-- Add Timestamps Toggle -->
+            <p style="color: #444; line-height: 22px;">Add Timestamps
+              <?php if ($defaultSettings["timestamp"]["addTimestamps"]) { ?>
+                <a href="#" id="timestamptoggle" class="togglesw on" onClick='$(this).toggleClass("on off"); window.addTimestamps=!window.addTimestamps; addTimestampsOnOff();'><span class="tson">On</span><span class="tsoff">Off</span></a>
+              <?php } else { ?>
+                <a href="#" id="timestamptoggle" class="togglesw off" onClick='$(this).toggleClass("on off"); window.addTimestamps=!window.addTimestamps; addTimestampsOnOff();'><span class="tson">On</span><span class="tsoff">Off</span></a>
+              <?php } ?>
+            </p>
+            <!-- Show Timestamps Toggle  -->
+            <p style="color: #444; line-height: 22px;">Show Timestamps
+              <?php if ($defaultSettings["timestamp"]["showTimestamps"]) { ?>
+                <a href="#" id="showTimestamptoggle" class="togglesw on" onClick='$(this).toggleClass("on off"); window.showTimestamps=!window.showTimestamps; showTimestampsOnOff();'><span class="tson">On</span><span class="tsoff">Off</span></a>
+              <?php } else { ?>
+                <a href="#" id="showTimestamptoggle" class="togglesw off" onClick='$(this).toggleClass("on off"); window.showTimestamps=!window.showTimestamps; showTimestampsOnOff();'><span class="tson">On</span><span class="tsoff">Off</span></a>
+              <?php } ?>
+            </p>
+          </div>
+          <!-- TODO -->
+          <div id="schemestg" style="display:none;">
+            <p style="color: #444; line-height: 22px;">Select Default Scheme Sets:
+              <label for="ya_sset" id="ya_sset_label">YA:</label>
+              <select id="ya_sset" onChange="filterschemes(this.value);">
+                <option value="0">All Schemes</option>
+              </select>
+              <label for="ra_sset" id="ra_sset_label">RA:</label>
+              <select id="ra_sset" onChange="filterschemes(this.value);">
+                <option value="0">All Schemes</option>
+              </select>
+              <label for="ca_sset" id="ca_sset_label">CA:</label>
+              <select id="ca_sset" onChange="filterschemes(this.value);">
+                <option value="0">All Schemes</option>
+              </select>
+              <label for="ta_sset" id="ta_sset_label">TA:</label>
+              <select id="ta_sset" onChange="filterschemes(this.value);">
+                <option value="0">All Schemes</option>
+              </select>
+              <label for="ma_sset" id="ma_sset_label">MA:</label>
+              <select id="ma_sset" onChange="filterschemes(this.value);">
+                <option value="0">All Schemes</option>
+              </select>
+              <label for="pa_sset" id="pa_sset_label">PA:</label>
+              <select id="pa_sset" onChange="filterschemes(this.value);">
+                <option value="0">All Schemes</option>
+              </select>
+            </p>
           </div>
         </form>
       </div>
@@ -350,7 +392,7 @@ if (isset($_COOKIE['ovauser'])) {
         </form>
       </div>
       <div class="modal-btns">
-        <a class="cancel" href="#" onClick="closeModal('#modal-share'); return false;">&#10008; Close</a>
+        <a class="cancel" href="#" onClick="closeModal('#modal-share'); FormOpen = false; return false;">&#10008; Close</a>
       </div>
     </div>
   </div>
@@ -361,22 +403,32 @@ if (isset($_COOKIE['ovauser'])) {
   <div class="modal-dialog" id="modal-timestamps">
     <div class="modal-content">
       <div class="modal-header">
-        <h4 class="modal-title">Timestamp Details</h4>
+        <h4 class="modal-title">Timestamp Start Date and Time</h4>
       </div>
-      <div class="modal-body">
-      <form id="timestamps_form" class="fstyle">
-      <?php $timestamp = explode(" ",$defaultSettings["timestamp"]["startdatestmp"]); ?>
-          <label> Transcript start date: </label>
-          <input type="date" id="dateinput" value="<?php echo $timestamp[0] ?>" style="font-size: 16px; padding: 3px; width:90%;" required pattern="\d{4}/\d{2}/\d{2}" />
-          <label> Transcript start time: </label>
-          <input type="time" id="timeinput" value="<?php echo $timestamp[1] ?>" style="font-size: 16px; padding: 3px; width:90%;" step="1" min="00:00:01" max="23:59:59" required />
-          <label> Transcript timezone: </label>
-          <input type="text" id="timezoneinput" value="<?php echo $timestamp[2] ?>" style="font-size: 16px; padding: 3px; width:90%;" required/>
+      <div class="modal-body" style="margin:0 20%;">
+        <form id="timestamps_form" class="fstyle">
+          <?php $timestamp = explode(" ", $defaultSettings["timestamp"]["startdatestmp"]); ?>
+          <label for="dateInput"> Start Date: (dd/mm/yyyy) </label>
+          <input type="date" id="dateInput" style="font-size: 16px; padding: 3px; width:70%; text-align:center;" required pattern="\d{4}/\d{2}/\d{2}" />
+          <span class="validity"></span>
+
+          <label for="timeInput"> Start Time: (hh:mm:ss) </label>
+          <input type="time" id="timeInput" value="<?php echo $timestamp[1] ?>" style="font-size: 16px; padding: 3px; width:70%; text-align:center;" step="1" min="00:00:01" max="23:59:59" required />
+          <span class="validity"></span>
+
+          <label for="timezoneInput"> Timezone: (+/- hh:mm) <br> GMT
+            <select id="timezoneSelect" style="font-size: 16px; padding: 3px; width:auto;">
+              <option value="-">-</option>
+              <option value="+" selected>+</option>
+            </select>
+            <input type="time" id="timezoneInput" value="00:00" style="font-size: 16px; padding: 3px; width:40%; text-align:center;" required min="00:00" max="14:00" />
+            <span class="validity"></span>
+          </label>
         </form>
       </div>
       <div class="modal-btns">
-        <a class="save" href="#" onClick="closeModal('#modal-timestamps'); return false;">Continue</a>
-        <a class="cancel" href="#" onClick="closeModal('#modal-timestamps'); return false;">&#10008; Cancel</a>
+        <a class="save" href="#" onClick="setTimestampStart(); return false;">Continue</a>
+        <a class="cancel" href="#" onClick="closeModal('#modal-timestamps'); FormOpen = false; openModal('#modal-settings'); return false;">&#10008; Cancel</a>
       </div>
     </div>
   </div>
@@ -391,14 +443,14 @@ if (isset($_COOKIE['ovauser'])) {
         <!-- <a href="javascript:void(0);" class="helpbtn" onclick="setTut(); return false;">?</a> -->
       </div>
       <div class="modal-body">
+        <div id="tab-bar-help" class="tab-bar">
+          <a href="#" id="tab-shortcuts" class="btn tab helpsheet selected" onclick="helpTab(event, 'shortcuts-help')">Keyboard Shortcuts</a>
+          <a href="#" id="tab-nodes" class="btn tab helpsheet" onclick="helpTab(event, 'node-help')">Nodes</a>
+          <a href="#" id="tab-edges" class="btn tab helpsheet" onclick="helpTab(event, 'edge-help')">Edges</a>
+          <a href="#" id="tab-timestamps-help" class="btn tab helpsheet" onclick="helpTab(event, 'timestamp-help')">Timestamps</a>
+        </div>
         <form id="help-form" class="fstyle">
-          <div id="anastg">
-            <strong>Adding Nodes to the Canvas</strong>
-            <p style="color: #444; font-size: 12px;">To add a node, enter the text you would like to use into the left hand side panel. Then, highlight the text and click on the canvas, the highlighted text will be added to a node.</p>
-            <strong>Adding Edges Between Nodes</strong>
-            <p style="color: #444; font-size: 12px;">To add an edge, either click on the add edge button in the top menu and then click and drag between the two nodes you would like to connect. Or click and drag from one node to another while pressing shift for an infrence relation or the 'A' key for a conflict.</p>
-            <strong>Editing Nodes</strong>
-            <p style="color: #444; font-size: 12px;">To access the edit node menu, either right click on a node and select 'Edit Node' from the menu or ctrl+click on the node you would like to edit.</p>
+          <div id="shortcuts-help">
             <strong>Keyboard Shortcuts:</strong>
             <p style="color: #444; font-size: 12px;">
             <pre>
@@ -409,14 +461,34 @@ if (isset($_COOKIE['ovauser'])) {
 <strong>+/- : </strong> zoom in/out
 </pre>
             </p>
-
           </div>
-        </form>
+          <div id="node-help" style="display:none;">
+            <strong>Adding Nodes to the Canvas</strong>
+            <p style="color: #444; font-size: 12px;">To add a node, enter the text you would like to use into the left hand side panel. Then, highlight the text and click on the canvas, the highlighted text will be added to a node.</p>
+            <strong>Editing Nodes</strong>
+            <p style="color: #444; font-size: 12px;">To access the edit node menu, either right click on a node and select 'Edit Node' from the menu or ctrl+click on the node you would like to edit.</p>
+          </div>
+          <div id="edge-help" style="display:none;">
+            <strong>Adding Edges Between Nodes</strong>
+            <p style="color: #444; font-size: 12px;">To add an edge, either click on the add edge button in the top menu and then click and drag between the two nodes you would like to connect. Or click and drag from one node to another while pressing shift for an inference relation or the 'A' key for a conflict.</p>
+          </div>
+          <div id="timestamp-help" style="display:none;">
+            <strong>Timestamp Format</strong>
+            <p style="color: #444; font-size: 12px;">The format of '[hh:mm:ss]' can be used to offset the start date and time by a number of hours, minutes or seconds when adding timestamps. It should be included within the text being analysed wherever the offset should start, e.g. including '[00:30:15]' at the start of the text being analysed would offset the first timestamp by 30 minutes and 15 seconds from the start time.</p>
+            <strong>Start Date and Time</strong>
+            <p style="color: #444; font-size: 12px;">The start date and time is when the text being analsyed began. All timestamps are calculated based off of it. It should be updated before adding any timestamps to an analysis by clicking the 'Change Start Date and Time' button in the timestamp settings.</p>
+            <strong>Adding Timestamps</strong>
+            <p style="color: #444; font-size: 12px;">Timestamps can be added to locution nodes when using dialogical mode. They can be added automatically when analysing text by turning on the 'Add Timestamps' toggle in the timestamp settings or manually added by editing a locution node if analysing a url page.</p>
+            <strong>Viewing Timestamps</strong>
+            <p style="color: #444; font-size: 12px;">Turning on the 'Show Timestamps' toggle in timestamp settings will display above locution nodes any timestamps that have been added to them, while turning it off will hide all timestamps on locution nodes.</p>
+          </div>
       </div>
-      <div class="modal-btns">
-        <a class="cancel" href="#" onClick="closeModal('#modal-help'); return false;">&#10008; Close</a>
-      </div>
+      </form>
     </div>
+    <div class="modal-btns">
+      <a class="cancel" href="#" onClick="closeModal('#modal-help'); return false;">&#10008; Close</a>
+    </div>
+  </div>
   </div>
   <!-- Helpsheet Modal ends here -->
 
@@ -546,29 +618,30 @@ if (isset($_COOKIE['ovauser'])) {
   <div id="mainwrap">
     <div id="spacer"></div>
     <div id="left1">
-    <?php if ($source == "local") { ?>
+      <?php if ($source == "local") { ?>
         <div id="analysis_text" contenteditable="true" spellcheck="false">Enter your text here...</div>
         <!-- data-step="1" data-intro="<p>Enter the text that you want to analyse here.</p><p>Select sections of text to create a node.</p> -->
-    <?php } else { ?>  <!-- if url was added to be loaded into LHS -->
-      <iframe src="<?php echo $analysis; ?>" id="extside" name="extsite" style="width:100%;height:100%;border-right:1px solid #666;"></iframe> <!-- data-step="1" data-intro="<p>Highlight sections of text from the webpage to create a node.</p>" data-position="right" -->
-    <?php } ?>
+      <?php } else { ?>
+        <!-- if url was added to be loaded into LHS -->
+        <iframe src="<?php echo $analysis; ?>" id="extside" name="extsite" style="width:100%;height:100%;border-right:1px solid #666;"></iframe> <!-- data-step="1" data-intro="<p>Highlight sections of text from the webpage to create a node.</p>" data-position="right" -->
+      <?php } ?>
     </div>
 
     <script>
-        var w = window.innerWidth;
-        var h = window.innerHeight;
-        console.log("width: " + w + " height:" + h)
-      </script>
+      var w = window.innerWidth;
+      var h = window.innerHeight;
+      console.log("width: " + w + " height:" + h)
+    </script>
     <div id="right1">
-    <!-- <script>
+      <!-- <script>
     document.getElementById('right1').style.width = w;
     document.getElementById('right1').style.height = w
     </script> -->
       <!-- style="width:90%; height:100%; z-index:999; background-color:#fff;" -->
-      
+
       <svg viewBox='0 0 1500 1500' xmlns="http://www.w3.org/2000/svg" version="1.1" width="1500" height="1500" style="z-index:999; background-color:#fff;" onmousedown='Grab(evt);' onmousemove='Drag(evt);' onmouseup='Drop(evt);' onload='Init(evt);' id='inline'>
         <defs>
-          
+
           <marker id='head' orient="auto" markerWidth='12' markerHeight='10' refX='12' refY='5'>
             <!-- triangle pointing right (+x) -->
             <path d='M0,0 V10 L12,5 Z' fill="black" />

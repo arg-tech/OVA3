@@ -359,12 +359,11 @@ function DrawTimestamp(nodeID, timestamp, xpos, ypos) {
 
 function addTimestampsOnOff() {
     if (window.addTimestamps) {
-        // openModal('#modal-timestamps');
-        // console.log("add timestamps turned on");
-        alert("Turning off adding timestamps is currently disabled in OVA3qt.");
-    } else {
-        // console.log("add timestamps turned off");
-        alert("Adding timestamps is currently disabled in OVA3.");
+        if (!window.dialogicalMode) {
+            window.addTimestamps = false;
+            $("#timestamptoggle").toggleClass("on off");
+            alert("Timestamps can only be added in dialogical mode.");
+        }
     }
 }
 

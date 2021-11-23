@@ -7,8 +7,8 @@ var TrueCoords = null;
 var GrabPoint = null;
 var DragTarget = null;
 
-var rIATMode = ("plus" in getUrlVars());
-var dialogicalMode = rIATMode;
+var dialogicalMode = ("plus" in getUrlVars());
+var rIATMode = false;
 var CurrentFocus = null;
 var multiSel = false;
 var multiSelRect = {};
@@ -82,14 +82,8 @@ document.onwheel = zoom;
 
 //set default settings
 window.defaultSettings = JSON.parse(window.defaultSettings);
-
-//set display settings
-window.bwmode = window.defaultSettings["display"]["black_white"];
-
-//set analysis settings
-// window.dialogicalMode = window.defaultSettings["analysis"]["dialogical"];
-// window.rIATMode = window.defaultSettings["analysis"]["rIAT"];
-window.cqmode = window.defaultSettings["analysis"]["cq"];
+window.bwmode = window.defaultSettings["display"]["black_white"]; //set display settings
+window.cqmode = window.defaultSettings["analysis"]["cq"]; //set analysis settings
 
 //set timestamp settings
 window.startdatestmp = window.defaultSettings["timestamp"]["startdatestmp"];
@@ -165,9 +159,16 @@ function Init(evt) {
             schemeset = schemesets[index];
             $('#s_sset').append('<option value="' + schemeset.id + '">' + schemeset.name + '</option>');
             window.ssets[schemeset.id] = schemeset.schemes;
+
+            // TODO: set default scheme sets through settings
+            $('#ra_sset').append('<option value="' + schemeset.id + '">' + schemeset.name + '</option>');
+            $('#ca_sset').append('<option value="' + schemeset.id + '">' + schemeset.name + '</option>');
+            $('#ya_sset').append('<option value="' + schemeset.id + '">' + schemeset.name + '</option>');
+            $('#ma_sset').append('<option value="' + schemeset.id + '">' + schemeset.name + '</option>');
+            $('#ta_sset').append('<option value="' + schemeset.id + '">' + schemeset.name + '</option>');
+            $('#pa_sset').append('<option value="' + schemeset.id + '">' + schemeset.name + '</option>');
         }
     });
-
     getSocial();
 
     $('#analysis_text').on('paste', function () {
@@ -203,7 +204,10 @@ function Init(evt) {
     $('#analysis_text').focusout(function () {
         postEdit("text", "edit", $('#analysis_text').html());
     });
+
+    //set defaults
     setFontSize(window.defaultSettings["display"]["font_size"]);
+    setRIATMode();
 }
 
 //start of main collaborate feature code//
@@ -410,12 +414,14 @@ function getSelText() {
     } else if (iframe.getElementsByTagName('iframe')) {
         // console.log("identified iframe");
         txt = document.getElementById('extside').contentWindow.getSelection().toString();
+        window.groupID++;
         // console.log(txt);
     } else {
         // console.log("in else");
         var innerDoc = iframe.contentDocument || iframe.contentWindow.document;
         // console.log(innerDoc);
         txt = iframe.contentWindow.getSelection().toString();
+        window.groupID++;
         // console.log(txt);
     }
     return txt;
@@ -664,7 +670,7 @@ function getSocial() {
 
         //set default start date timestamp
         if (json_data.hasOwnProperty("startdatestmp")) {
-            window.startdatestmp = json_data.startdatestmp;
+            setTimestampStart(json_data.startdatestmp);
         }
     });
 }
@@ -1296,12 +1302,24 @@ function setTut() {
     intro.setOptions({
         steps: [
             {
-                element: '#txtstgs',
-                intro: "Set text size."
+                element: '#tab-display',
+                intro: "<p>Display Settings</p> <p>Click here to view display settings.</p>",
             },
             {
-                element: '#cqtoggle',
-                intro: "Toggle Critical Question Mode"
+                element: '#tab-analysis',
+                intro: "<p>Analysis Settings</p> <p>Click here to view analysis settings.</p>",
+            },
+            {
+                element: '#tab-timestamps',
+                intro: "<p>Timestamp Settings</p> <p>Click here to view timestamp settings.</p>",
+            },
+            {
+                element: '#tab-schemes',
+                intro: "<p>Scheme Set Settings</p> <p>Click here to view scheme set settings.</p>",
+            },
+            {
+                element: '#font-size',
+                intro: "Set text size."
             },
             {
                 element: '#bwtoggle',
@@ -1314,7 +1332,31 @@ function setTut() {
             {
                 element: '#riattoggle',
                 intro: "<p>Toggle Rapid IAT Mode</p> <p>Turning off Rapid IAT mode will stop the dialogical aspect from being automatically added.</p>",
-            }
+            },
+            {
+                element: '#cqtoggle',
+                intro: "Toggle Critical Question Mode"
+            },
+            {
+                element: '#timestampRegExp',
+                intro: "<p>Timestamp Format</p> <p>When adding timestamps, this format can be used to offset the start date and time by a number of hours, minutes or seconds. It should be included within the text being analysed wherever the offset should start.</p>"
+            },
+            {
+                element: '#startTimestampLabel',
+                intro: "<p>Start Date and Time</p> <p>When adding timestamps, this date and time should be changed to when the text being analsyed began. All timestamps are calculated based off of it.</p>"
+            },
+            {
+                element: '#startTimestampBtn',
+                intro: "<p>Change Start Date and Time</p> <p>Click here to change the start date and time.</p>"
+            },
+            {
+                element: '#timestamptoggle',
+                intro: "<p>Toggle Add Timestamps</p><p>Turning on add timestamps will add a timestamp to a locution node when it is added.</p>"
+            },
+            {
+                element: '#showTimestamptoggle',
+                intro: "<p>Toggle Show Timestamps</p> <p>Turning on show timestamps will display above locution nodes any timestamps that have been added to them, while turning it off will hide all timestamps on locution nodes.</p>"
+            },
         ].filter(function (obj) { return $(obj.element).length && $(obj.element).is(':visible'); }),
         showStepNumbers: false
     });
@@ -1423,7 +1465,7 @@ function mainTut() {
             },
             {
                 element: '#xmenutoggle',
-                intro: "<p>Click here to access your account, analysis settings, or to share your analysis for collborative working.</p>",
+                intro: "<p>Click here to access your analysis settings or to share your analysis for collborative working.</p>",
                 position: 'left',
             }
         ].filter(function (obj) { return $(obj.element).length && $(obj.element).is(':visible'); }),
@@ -1438,6 +1480,70 @@ function setFontSize(size) {
     if (size == "ts" || size == "tm" || size == "tl") {
         $("#left1").removeClass("ts tm tl");
         $("#left1").addClass(size);
+    }
+    return false;
+}
+
+//change rIAT mode based on default settings
+function setRIATMode() {
+    if (dialogicalMode && window.defaultSettings["analysis"]["rIAT"]) {
+        window.rIATMode = true;
+    } else {
+        $("#riattoggle").toggleClass("on off");
+    }
+}
+
+//change tab on settings modal
+function settingsTab(evt, tab) {
+    var tabs = document.getElementsByClassName("stg");
+    for (var i = 0; i < tabs.length; i++) {
+        tabs[i].classList.remove("selected");
+    }
+    evt.currentTarget.classList.add("selected");
+    $('#displaystg').hide();
+    $('#anastg').hide();
+    $('#timestg').hide();
+    $('#schemestg').hide();
+    $('#' + tab).show();
+    return false;
+}
+
+//change tab on helpsheet modal
+function helpTab(evt, tab) {
+    var tabs = document.getElementsByClassName("helpsheet");
+    for (var i = 0; i < tabs.length; i++) {
+        tabs[i].classList.remove("selected");
+    }
+    evt.currentTarget.classList.add("selected");
+    $('#shortcuts-help').hide();
+    $('#node-help').hide();
+    $('#edge-help').hide();
+    $('#timestamp-help').hide();
+    $('#' + tab).show();
+    return false;
+}
+
+//change the start date and time for the timestamps
+function setTimestampStart(startdatestmp) {
+    if (typeof startdatestmp !== 'undefined') {
+        window.startdatestmp = startdatestmp;
+        document.getElementById("startTimestampLabel").innerHTML = window.startdatestmp;
+    } else {
+        var date = document.getElementById("dateInput").value;
+        var time = document.getElementById("timeInput").value;
+        var timezoneTime = document.getElementById("timezoneInput").value;
+        var timezoneSelect = document.getElementById("timezoneSelect").value;
+        if (date != "" && time != "" && timezoneTime != "") {
+            var d = date.split("-", 3);
+            var t = timezoneTime.split(":", 2);
+            var timezone = "GMT" + timezoneSelect + t[0] + t[1];
+            var start = d[0] + "/" + d[1] + "/" + d[2] + " " + time + " " + timezone;
+            console.log(start);
+            window.startdatestmp = start;
+            document.getElementById("startTimestampLabel").innerHTML = window.startdatestmp;
+            closeModal('#modal-timestamps'); FormOpen = false;
+            openModal('#modal-settings');
+        }
     }
     return false;
 }
