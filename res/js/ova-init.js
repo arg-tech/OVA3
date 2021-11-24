@@ -29,8 +29,10 @@ var groupID = 1;
 const NAV_MAP = {
     187: { dir: 1, act: 'zoom', name: 'in' } /* + */,
     61: { dir: 1, act: 'zoom', name: 'in' } /* + WTF, FF? */,
+    107: { dir: 1, act: 'zoom', name: 'in' } /* numpad + */,
     189: { dir: -1, act: 'zoom', name: 'out' } /* - */,
     173: { dir: -1, act: 'zoom', name: 'out' } /* - WTF, FF? */,
+    109: { dir: -1, act: 'zoom', name: 'out' } /* numpad - */,
     37: { dir: -1, act: 'move', name: 'left', axis: 0 } /* ? */,
     38: { dir: -1, act: 'move', name: 'up', axis: 1 } /* ? */,
     39: { dir: 1, act: 'move', name: 'right', axis: 0 } /* ? */,
