@@ -259,8 +259,8 @@ if (isset($_COOKIE['ovauser'])) {
         <div id="tab-bar-stg" class="tab-bar">
           <a href="#" id="tab-display" class="btn tab stg selected" onclick="settingsTab(event, 'displaystg')">Display</a>
           <a href="#" id="tab-analysis" class="btn tab stg" onclick="settingsTab(event, 'anastg')">Analysis</a>
+          <a href="#" id="tab-schemes" class="btn tab stg" onclick="settingsTab(event, 'schemestg')">Scheme Sets</a>
           <a href="#" id="tab-timestamps" class="btn tab stg" onclick="settingsTab(event, 'timestg')">Timestamps</a>
-          <a href="#" id="tab-schemes" class="btn tab stg" onclick="settingsTab(event, 'schemestg')" style="display:none;">Scheme Sets</a>
         </div>
         <form id="settings_form" class="fstyle">
           <div id="displaystg">
@@ -339,33 +339,35 @@ if (isset($_COOKIE['ovauser'])) {
               <?php } ?>
             </p>
           </div>
-          <!-- TODO -->
           <div id="schemestg" style="display:none;">
             <p style="color: #444; line-height: 22px;">Select Default Scheme Sets:
-              <label for="ya_sset" id="ya_sset_label">YA:</label>
-              <select id="ya_sset" onChange="filterschemes(this.value);">
-                <option value="0">All Schemes</option>
-              </select>
               <label for="ra_sset" id="ra_sset_label">RA:</label>
-              <select id="ra_sset" onChange="filterschemes(this.value);">
+              <select id="ra_sset" onChange="setDefaultSchemeset('RA', this.value);">
                 <option value="0">All Schemes</option>
               </select>
               <label for="ca_sset" id="ca_sset_label">CA:</label>
-              <select id="ca_sset" onChange="filterschemes(this.value);">
+              <select id="ca_sset" onChange="setDefaultSchemeset('CA', this.value);">
                 <option value="0">All Schemes</option>
               </select>
-              <label for="ta_sset" id="ta_sset_label">TA:</label>
-              <select id="ta_sset" onChange="filterschemes(this.value);">
-                <option value="0">All Schemes</option>
-              </select>
-              <label for="ma_sset" id="ma_sset_label">MA:</label>
-              <select id="ma_sset" onChange="filterschemes(this.value);">
-                <option value="0">All Schemes</option>
-              </select>
-              <label for="pa_sset" id="pa_sset_label">PA:</label>
-              <select id="pa_sset" onChange="filterschemes(this.value);">
-                <option value="0">All Schemes</option>
-              </select>
+              <?php if ($pro) { ?>
+                <!-- only if Dialogical Mode is on then show the options for YAs, TAs, MAs and PAs -->
+                <label for="ya_sset" id="ya_sset_label">YA:</label>
+                <select id="ya_sset" onChange="setDefaultSchemeset('YA', this.value);">
+                  <option value="0">All Schemes</option>
+                </select>
+                <label for="ta_sset" id="ta_sset_label">TA:</label>
+                <select id="ta_sset" onChange="setDefaultSchemeset('TA', this.value);">
+                  <option value="0">All Schemes</option>
+                </select>
+                <label for="ma_sset" id="ma_sset_label">MA:</label>
+                <select id="ma_sset" onChange="setDefaultSchemeset('MA', this.value);">
+                  <option value="0">All Schemes</option>
+                </select>
+                <label for="pa_sset" id="pa_sset_label">PA:</label>
+                <select id="pa_sset" onChange="setDefaultSchemeset('PA', this.value);">
+                  <option value="0">All Schemes</option>
+                </select>
+              <?php } ?>
             </p>
           </div>
         </form>
@@ -600,7 +602,6 @@ if (isset($_COOKIE['ovauser'])) {
       <li><a href="#" onClick="this.parentNode.parentNode.parentNode.style.display='none';$('#modal-shade').hide(); FormOpen = false; window.groupID ++; deleteNode(mySel); return false;" class="bgred">
           <div class="btnicn" style="background-image: url('res/img/icon-delnode.png');">&nbsp;</div> Delete Node
         </a></li>
-      <!-- TODO: this if statement isn't working -->
       <?php if ($pro) { ?>
         <li><a href="#" onClick="this.parentNode.parentNode.parentNode.style.display='none';$('#modal-shade').hide(); FormOpen = false;$('#locution_add').show();return false;">
             <div class="btnicn" style="background-image: url('res/img/icon_ladd.png');">&nbsp;</div> Add Locution

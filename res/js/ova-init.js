@@ -84,15 +84,12 @@ document.onwheel = zoom;
 window.defaultSettings = JSON.parse(window.defaultSettings);
 window.bwmode = window.defaultSettings["display"]["black_white"]; //set display settings
 window.cqmode = window.defaultSettings["analysis"]["cq"]; //set analysis settings
+window.defaultSchemesets = [["YA", 0], ["RA", 0], ["CA", 0], ["MA", 0], ["TA", 0], ["PA", 0]]; //set scheme set settings
 
 //set timestamp settings
 window.startdatestmp = window.defaultSettings["timestamp"]["startdatestmp"];
 window.addTimestamps = window.defaultSettings["timestamp"]["addTimestamps"];
 window.showTimestamps = window.defaultSettings["timestamp"]["showTimestamps"];
-
-// //set scheme default settings
-// window.defaultSchemesets = window.defaultSettings["schemeset"];
-// console.log(defaultSchemesets)
 
 function Init(evt) {
     SVGRoot = document.getElementById('inline');
@@ -149,8 +146,8 @@ function Init(evt) {
             }
         }
     });
-
     updateAnalysis();
+
     $.getJSON("browserint.php?x=ipxx&url=" + window.SSurl, function (json_data) {
         window.ssets = {};
         schemesets = json_data.schemesets;
@@ -160,7 +157,6 @@ function Init(evt) {
             $('#s_sset').append('<option value="' + schemeset.id + '">' + schemeset.name + '</option>');
             window.ssets[schemeset.id] = schemeset.schemes;
 
-            // TODO: set default scheme sets through settings
             $('#ra_sset').append('<option value="' + schemeset.id + '">' + schemeset.name + '</option>');
             $('#ca_sset').append('<option value="' + schemeset.id + '">' + schemeset.name + '</option>');
             $('#ya_sset').append('<option value="' + schemeset.id + '">' + schemeset.name + '</option>');
@@ -168,7 +164,23 @@ function Init(evt) {
             $('#ta_sset').append('<option value="' + schemeset.id + '">' + schemeset.name + '</option>');
             $('#pa_sset').append('<option value="' + schemeset.id + '">' + schemeset.name + '</option>');
         }
+
+        // TODO: set default scheme sets through config file
+        var stgs = window.defaultSettings["schemeset"];
+        var keys = Object.getOwnPropertyNames(stgs);
+        for (var i = 0; i < keys.length; i++) {
+            if (stgs[keys[i]] != "") {
+                var found = schemesets.find(s => s.name == stgs[keys[i]]);
+                if (typeof found !== "undefined") {
+                    var selSet = document.getElementById(keys[i].toLowerCase() + '_sset');
+                    selSet.value = found.id;
+                    setDefaultSchemeset(keys[i], found.id);
+                }
+            }
+        }
+        // console.log(window.defaultSchemesets);
     });
+
     getSocial();
 
     $('#analysis_text').on('paste', function () {
@@ -1039,6 +1051,8 @@ function setdescriptors(schemeID, node) {
 }
 
 function filterschemes(schemesetID) {
+    // console.log("filter schemes called");
+    //show every scheme option in the scheme selects
     $("#s_cscheme option").each(function () {
         $(this).show();
     });
@@ -1063,7 +1077,7 @@ function filterschemes(schemesetID) {
         $(this).show();
     });
 
-    if (schemesetID != "0") {
+    if (schemesetID != "0") { //if not 'all schemes' selected then hide any scheme options that are not in the schemeset selected
         setschemes = window.ssets[schemesetID]
 
         $("#s_cscheme option").each(function () {
@@ -1101,6 +1115,86 @@ function filterschemes(schemesetID) {
                 $(this).hide();
             }
         });
+    }
+}
+
+//change the default scheme set
+function setDefaultSchemeset(type, schemesetID) {
+    // console.log("set default schemeset called");
+    var index = window.defaultSchemesets.findIndex(x => x.includes(type));
+    // console.log("index: " + index);
+    if (index == -1) { //if no default was set for that type
+        window.defaultSchemesets.push([type, schemesetID]);
+    } else { //if there already was a default set for that type
+        window.defaultSchemesets[index][1] = schemesetID;
+    }
+
+    if (schemesetID !== "0") { //if not all schemes then only show scheme options that are in the scheme set for that type
+        setschemes = window.ssets[schemesetID];
+        switch (type) {
+            case "RA":
+                $("#s_ischeme option").each(function () {
+                    $(this).hide();
+                });
+                $("#s_ischeme option").each(function () {
+                    if (setschemes.indexOf($(this).val()) != -1) {
+                        $(this).show();
+                    }
+                });
+                break;
+            case "CA":
+                $("#s_cscheme option").each(function () {
+                    $(this).hide();
+                });
+                $("#s_cscheme option").each(function () {
+                    if (setschemes.indexOf($(this).val()) != -1) {
+                        $(this).show();
+                    }
+                });
+                break;
+            case "YA":
+                $("#s_lscheme option").each(function () {
+                    $(this).hide();
+                });
+                $("#s_lscheme option").each(function () {
+                    if (setschemes.indexOf($(this).val()) != -1) {
+                        $(this).show();
+                    }
+                });
+                break;
+            case "TA":
+                $("#s_tscheme option").each(function () {
+                    $(this).hide();
+                });
+                $("#s_tscheme option").each(function () {
+                    if (setschemes.indexOf($(this).val()) != -1) {
+                        $(this).show();
+                    }
+                });
+                break;
+            case "MA":
+                $("#s_mscheme option").each(function () {
+                    $(this).hide();
+                });
+                $("#s_mscheme option").each(function () {
+                    if (setschemes.indexOf($(this).val()) != -1) {
+                        $(this).show();
+                    }
+                });
+                break;
+            case "PA":
+                $("#s_pscheme option").each(function () {
+                    $(this).hide();
+                });
+                $("#s_pscheme option").each(function () {
+                    if (setschemes.indexOf($(this).val()) != -1) {
+                        $(this).show();
+                    }
+                });
+                break;
+            default:
+                return false;
+        }
     }
 }
 
