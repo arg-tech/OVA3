@@ -39,7 +39,8 @@ function myKeyUp(e) {
 
 
 function panZoomMode(keycode) {
-  if (FormOpen == false) {
+  var textArea = document.getElementById('analysis_text');
+  if (FormOpen == false && textArea !== document.activeElement) {
     nav = NAV_MAP[keycode];
     if (nav.act === 'move') {
       // if((nav.dir === -1 && VB[nav.axis] <= 0) ||
