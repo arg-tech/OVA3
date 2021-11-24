@@ -201,32 +201,32 @@ function editpopup(node) {
         }
 
         if (node.type == 'RA') {
-            $('#s_sset').show(); $('#s_sset_label').show();
+            setSelSchemeset('RA'); $('#s_sset').show(); $('#s_sset_label').show();
             $('#s_ischeme').show();
             $('#s_ischeme_label').show();
             $('#s_ischeme').val(node.scheme);
         } else if (node.type == 'CA') {
-            $('#s_sset').show(); $('#s_sset_label').show();
+            setSelSchemeset('CA'); $('#s_sset').show(); $('#s_sset_label').show();
             $('#s_cscheme').show();
             $('#s_cscheme_label').show();
             $('#s_cscheme').val(node.scheme);
         } else if (node.type == 'YA') {
-            $('#s_sset').show(); $('#s_sset_label').show();
+            setSelSchemeset('YA'); $('#s_sset').show(); $('#s_sset_label').show();
             $('#s_lscheme').show();
             $('#s_lscheme_label').show();
             $('#s_lscheme').val(node.scheme);
         } else if (node.type == 'MA') {
-            $('#s_sset').show(); $('#s_sset_label').show();
+            setSelSchemeset('MA'); $('#s_sset').show(); $('#s_sset_label').show();
             $('#s_mscheme').show();
             $('#s_mscheme_label').show();
             $('#s_mscheme').val(node.scheme);
         } else if (node.type == 'PA') {
-            $('#s_sset').show(); $('#s_sset_label').show();
+            setSelSchemeset('PA'); $('#s_sset').show(); $('#s_sset_label').show();
             $('#s_pscheme').show();
             $('#s_pscheme_label').show();
             $('#s_pscheme').val(node.scheme);
         } else if (node.type == 'TA') {
-            $('#s_sset').show(); $('#s_sset_label').show();
+            setSelSchemeset('TA'); $('#s_sset').show(); $('#s_sset_label').show();
             $('#s_tscheme').show();
             $('#s_tscheme_label').show();
             $('#s_tscheme').val(node.scheme);
@@ -255,6 +255,7 @@ function showschemes(type) {
         $('#s_pscheme_label').hide();
         $('#s_tscheme').hide();
         $('#s_tscheme_label').hide();
+        setSelSchemeset('RA');
     } else if (type == 'CA') {
         $('#s_ischeme').hide();
         $('#s_ischeme_label').hide();
@@ -268,6 +269,7 @@ function showschemes(type) {
         $('#s_pscheme_label').hide();
         $('#s_tscheme').hide();
         $('#s_tscheme_label').hide();
+        setSelSchemeset('CA');
     } else if (type == 'YA') {
         $('#s_ischeme').hide();
         $('#s_ischeme_label').hide();
@@ -281,6 +283,7 @@ function showschemes(type) {
         $('#s_pscheme_label').hide();
         $('#s_tscheme').hide();
         $('#s_tscheme_label').hide();
+        setSelSchemeset('YA');
     } else if (type == 'MA') {
         $('#s_ischeme').hide();
         $('#s_ischeme_label').hide();
@@ -294,6 +297,7 @@ function showschemes(type) {
         $('#s_pscheme_label').hide();
         $('#s_tscheme').hide();
         $('#s_tscheme_label').hide();
+        setSelSchemeset('MA');
     } else if (type == 'PA') {
         $('#s_ischeme').hide();
         $('#s_ischeme_label').hide();
@@ -307,6 +311,7 @@ function showschemes(type) {
         $('#s_pscheme_label').show();
         $('#s_tscheme').hide();
         $('#s_tscheme_label').hide();
+        setSelSchemeset('PA');
     } else if (type == 'TA') {
         $('#s_ischeme').hide();
         $('#s_ischeme_label').hide();
@@ -320,8 +325,17 @@ function showschemes(type) {
         $('#s_pscheme_label').hide();
         $('#s_tscheme').show();
         $('#s_tscheme_label').show();
+        setSelSchemeset('TA');
     }
+}
 
+function setSelSchemeset(type) {
+    // console.log("setSelSchemeset called");
+    var index = window.defaultSchemesets.findIndex(s => s.includes(type));
+    // console.log("s index: " + index);
+    if (index > -1) {
+        document.getElementById('s_sset').value = window.defaultSchemesets[index][1];
+    }
 }
 
 function bwModeOnOff() {
