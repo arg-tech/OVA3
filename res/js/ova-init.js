@@ -131,7 +131,7 @@ function Init(evt) {
         for (index in schemes) {
             scheme = schemes[index];
             scheme_name = scheme.name.replace(/([a-z])([A-Z])/g, "$1 $2");
-            scheme_type = scheme.schemeTypeID
+            scheme_type = scheme.schemeTypeID;
 
             if (scheme_type == 1 || scheme_type == 2 || scheme_type == 3 || scheme_type == 9) {
                 $('#s_ischeme').append('<option value="' + scheme.schemeID + '">' + scheme_name + '</option>');
@@ -1054,69 +1054,83 @@ function setdescriptors(schemeID, node) {
 
 function filterschemes(schemesetID) {
     // console.log("filter schemes called");
-    //show every scheme option in the scheme selects
-    $("#s_cscheme option").each(function () {
-        $(this).show();
-    });
-
-    $("#s_ischeme option").each(function () {
-        $(this).show();
-    });
-
-    $("#s_lscheme option").each(function () {
-        $(this).show();
-    });
-
-    $("#s_mscheme option").each(function () {
-        $(this).show();
-    });
-
-    $("#s_pscheme option").each(function () {
-        $(this).show();
-    });
-
-    $("#s_tscheme option").each(function () {
-        $(this).show();
-    });
-
-    if (schemesetID != "0") { //if not 'all schemes' selected then hide any scheme options that are not in the schemeset selected
-        setschemes = window.ssets[schemesetID]
-
-        $("#s_cscheme option").each(function () {
-            if (setschemes.indexOf($(this).val()) == -1) {
-                $(this).hide();
+    var setschemes = window.ssets[schemesetID];
+    var type = document.getElementById("s_type").value;
+    switch (type) {
+        case "RA":
+            $("#s_ischeme option").each(function () {
+                $(this).show();
+            });
+            if (schemesetID !== "0") {
+                $("#s_ischeme option").each(function () {
+                    if (setschemes.indexOf($(this).val()) == -1) {
+                        $(this).hide();
+                    }
+                });
             }
-        });
-
-        $("#s_ischeme option").each(function () {
-            if (setschemes.indexOf($(this).val()) == -1) {
-                $(this).hide();
+            break;
+        case "CA":
+            $("#s_cscheme option").each(function () {
+                $(this).show();
+            });
+            if (schemesetID !== "0") {
+                $("#s_cscheme option").each(function () {
+                    if (setschemes.indexOf($(this).val()) == -1) {
+                        $(this).hide();
+                    }
+                });
             }
-        });
-
-        $("#s_lscheme option").each(function () {
-            if (setschemes.indexOf($(this).val()) == -1) {
-                $(this).hide();
+            break;
+        case "YA":
+            $("#s_lscheme option").each(function () {
+                $(this).show();
+            });
+            if (schemesetID !== "0") {
+                $("#s_lscheme option").each(function () {
+                    if (setschemes.indexOf($(this).val()) == -1) {
+                        $(this).hide();
+                    }
+                });
             }
-        });
-
-        $("#s_mscheme option").each(function () {
-            if (setschemes.indexOf($(this).val()) == -1) {
-                $(this).hide();
+            break;
+        case "TA":
+            $("#s_tscheme option").each(function () {
+                $(this).show();
+            });
+            if (schemesetID !== "0") {
+                $("#s_tscheme option").each(function () {
+                    if (setschemes.indexOf($(this).val()) == -1) {
+                        $(this).hide();
+                    }
+                });
             }
-        });
-
-        $("#s_pscheme option").each(function () {
-            if (setschemes.indexOf($(this).val()) == -1) {
-                $(this).hide();
+            break;
+        case "MA":
+            $("#s_mscheme option").each(function () {
+                $(this).show();
+            });
+            if (schemesetID !== "0") {
+                $("#s_mscheme option").each(function () {
+                    if (setschemes.indexOf($(this).val()) == -1) {
+                        $(this).hide();
+                    }
+                });
             }
-        });
-
-        $("#s_tscheme option").each(function () {
-            if (setschemes.indexOf($(this).val()) == -1) {
-                $(this).hide();
+            break;
+        case "PA":
+            $("#s_pscheme option").each(function () {
+                $(this).show();
+            });
+            if (schemesetID !== "0") {
+                $("#s_pscheme option").each(function () {
+                    if (setschemes.indexOf($(this).val()) == -1) {
+                        $(this).hide();
+                    }
+                });
             }
-        });
+            break;
+        default:
+            return false;
     }
 }
 
@@ -1124,80 +1138,13 @@ function filterschemes(schemesetID) {
 function setDefaultSchemeset(type, schemesetID) {
     // console.log("set default schemeset called");
     var index = window.defaultSchemesets.findIndex(x => x.includes(type));
-    // console.log("index: " + index);
+    // console.log(window.defaultSchemesets[index]);
     if (index == -1) { //if no default was set for that type
         window.defaultSchemesets.push([type, schemesetID]);
     } else { //if there already was a default set for that type
         window.defaultSchemesets[index][1] = schemesetID;
     }
-
-    if (schemesetID !== "0") { //if not all schemes then only show scheme options that are in the scheme set for that type
-        setschemes = window.ssets[schemesetID];
-        switch (type) {
-            case "RA":
-                $("#s_ischeme option").each(function () {
-                    $(this).hide();
-                });
-                $("#s_ischeme option").each(function () {
-                    if (setschemes.indexOf($(this).val()) != -1) {
-                        $(this).show();
-                    }
-                });
-                break;
-            case "CA":
-                $("#s_cscheme option").each(function () {
-                    $(this).hide();
-                });
-                $("#s_cscheme option").each(function () {
-                    if (setschemes.indexOf($(this).val()) != -1) {
-                        $(this).show();
-                    }
-                });
-                break;
-            case "YA":
-                $("#s_lscheme option").each(function () {
-                    $(this).hide();
-                });
-                $("#s_lscheme option").each(function () {
-                    if (setschemes.indexOf($(this).val()) != -1) {
-                        $(this).show();
-                    }
-                });
-                break;
-            case "TA":
-                $("#s_tscheme option").each(function () {
-                    $(this).hide();
-                });
-                $("#s_tscheme option").each(function () {
-                    if (setschemes.indexOf($(this).val()) != -1) {
-                        $(this).show();
-                    }
-                });
-                break;
-            case "MA":
-                $("#s_mscheme option").each(function () {
-                    $(this).hide();
-                });
-                $("#s_mscheme option").each(function () {
-                    if (setschemes.indexOf($(this).val()) != -1) {
-                        $(this).show();
-                    }
-                });
-                break;
-            case "PA":
-                $("#s_pscheme option").each(function () {
-                    $(this).hide();
-                });
-                $("#s_pscheme option").each(function () {
-                    if (setschemes.indexOf($(this).val()) != -1) {
-                        $(this).show();
-                    }
-                });
-                break;
-            default:
-                return false;
-        }
-    }
+    filterschemes(schemesetID);
 }
 
 var sort_by = function (field, reverse, primer) {
@@ -1406,12 +1353,12 @@ function setTut() {
                 intro: "<p>Analysis Settings</p> <p>Click here to view analysis settings.</p>",
             },
             {
-                element: '#tab-timestamps',
-                intro: "<p>Timestamp Settings</p> <p>Click here to view timestamp settings.</p>",
-            },
-            {
                 element: '#tab-schemes',
                 intro: "<p>Scheme Set Settings</p> <p>Click here to view scheme set settings.</p>",
+            },
+            {
+                element: '#tab-timestamps',
+                intro: "<p>Timestamp Settings</p> <p>Click here to view timestamp settings.</p>",
             },
             {
                 element: '#font-size',
