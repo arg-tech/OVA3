@@ -1381,6 +1381,30 @@ function setTut() {
                 intro: "Toggle Critical Question Mode"
             },
             {
+                element: '#ra_sset',
+                intro: "<p>Filter the list of available argumentation schemes for RA nodes by selecting a particular scheme set to be used as the default.</p>",
+            },
+            {
+                element: '#ca_sset',
+                intro: "<p>Filter the list of available argumentation schemes for CA nodes by selecting a particular scheme set to be used as the default.</p>",
+            },
+            {
+                element: '#ya_sset',
+                intro: "<p>Filter the list of available argumentation schemes for YA nodes by selecting a particular scheme set to be used as the default.</p>",
+            },
+            {
+                element: '#ta_sset',
+                intro: "<p>Filter the list of available argumentation schemes for TA nodes by selecting a particular scheme set to be used as the default.</p>",
+            },
+            {
+                element: '#ma_sset',
+                intro: "<p>Filter the list of available argumentation schemes for MA nodes by selecting a particular scheme set to be used as the default.</p>",
+            },
+            {
+                element: '#pa_sset',
+                intro: "<p>Filter the list of available argumentation schemes for PA nodes by selecting a particular scheme set to be used as the default.</p>",
+            },
+            {
                 element: '#timestampRegExp',
                 intro: "<p>Timestamp Format</p> <p>When adding timestamps, this format can be used to offset the start date and time by a number of hours, minutes or seconds. It should be included within the text being analysed wherever the offset should start.</p>"
             },
