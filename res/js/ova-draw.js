@@ -232,6 +232,7 @@ function editpopup(node) {
             $('#s_tscheme').val(node.scheme);
         }
     }
+    filterschemes(document.getElementById('s_sset').value)
 
     $('#n_text').val(node.text);
     FormOpen = true;
