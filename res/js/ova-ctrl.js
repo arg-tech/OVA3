@@ -279,7 +279,10 @@ function Grab(evt) {
 function getTimestamp() {
   var iframe = document.getElementById('analysis_text');
   if (iframe == null) { //if url loaded into LHS
-    iframe = document.getElementById('extside');
+    tstamp = Math.round(new Date(window.startdatestmp).getTime());
+    var tsd = new Date();
+    tsd.setTime(tstamp);
+    return tsd.toString();
   } else if (iframe.nodeName.toLowerCase() == 'div') {
     htmlContent = iframe.innerHTML
 
