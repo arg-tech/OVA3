@@ -545,7 +545,7 @@ function updateBox(g) {
 }
 
 function UpdateEdge(e) {
-  if (!e.visible) { return false; } //if the edge is invisible, i.e. it isn't drawn on the svg, do nothing
+  if (!e.visible || e == null) { return false; } //if the edge is null or invisible, i.e. it isn't drawn on the svg, do nothing
   edgeID = 'n' + e.fromID + '-n' + e.toID;
   ee = document.getElementById(edgeID);
   nodeFrom = document.getElementById(e.fromID);
@@ -673,6 +673,16 @@ function Drop(evt) {
       if (evt.target.nodeName != 'svg') {
         from = document.getElementById(FromID).getElementsByTagName('rect')[0];
         to = targetElement.getElementsByTagName('rect')[0];
+
+        if (from == to) { //if the same node 
+          tempedge = document.getElementById('n' + FromID + '-nedge_to');
+          tempnode = document.getElementById("edge_to");
+          SVGRootG.removeChild(tempedge);
+          SVGRootG.removeChild(tempnode);
+          DragTarget.setAttributeNS(null, 'pointer-events', 'all');
+          DragTarget = null;
+          return false;
+        }
 
         fx = from.getAttributeNS(null, 'x');
         fy = from.getAttributeNS(null, 'y');
