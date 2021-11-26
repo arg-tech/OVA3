@@ -228,7 +228,7 @@ function loadOva3Json(json, oplus) {
         for (var i = 0; i < sf.length; i++) {
             index = findNodeIndex(sf[i].nodeID);
             if (index > -1) { //if the node exists
-                nodes[index].scheme = sf[i].schemeID;
+                updateNode(nodes[index].nodeID, nodes[index].x, nodes[index].y, nodes[index].visible, 1, nodes[index].type, sf[i].schemeID);
             }
         }
     }
