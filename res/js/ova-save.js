@@ -623,7 +623,6 @@ function save2db() {
     );
 
     window.unsaved = false;
-
     return false;
 }
 
@@ -631,7 +630,7 @@ function add2corpus(addnsID) {
     var cID = $("#s_corpus").val();
     $.get("helpers/corporapost.php?nsID=" + addnsID + "&cID=" + cID, function (data) {
         $('#modal-save2db').hide();
-        $('#modal-bg').hide();
+        $('#modal-shade').hide();
     }).fail(function () {
         alert("Unable to add to corpus");
     });
@@ -650,7 +649,7 @@ function rpl2corpus(addnsID, rplnsID) {
     });
 
     $('#modal-save2db').hide();
-    $('#modal-bg').hide();
+    $('#modal-shade').hide();
 }
 
 function svg2canvas2image() {
