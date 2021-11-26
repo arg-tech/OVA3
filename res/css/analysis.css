@@ -366,9 +366,9 @@ div.modal-btns a.cancel:hover {
   background-color: #e74c3c;
 }
 
-#modal-save2db {
+/* #modal-save2db {
   text-align: center;
-}
+} */
 
 #m_load {
   font-size: 0.8em;
@@ -376,6 +376,7 @@ div.modal-btns a.cancel:hover {
   display: none;
   height: 100px;
   margin-top: 70px;
+  text-align: center;
 }
 
 #m_content {

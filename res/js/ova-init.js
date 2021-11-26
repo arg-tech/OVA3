@@ -167,7 +167,7 @@ function Init(evt) {
             $('#pa_sset').append('<option value="' + schemeset.id + '">' + schemeset.name + '</option>');
         }
 
-        // TODO: set default scheme sets through config file
+        //set default scheme sets through config file
         var stgs = window.defaultSettings["schemeset"];
         var keys = Object.getOwnPropertyNames(stgs);
         for (var i = 0; i < keys.length; i++) {
@@ -180,7 +180,6 @@ function Init(evt) {
                 }
             }
         }
-        // console.log(window.defaultSchemesets);
     });
 
     getSocial();
@@ -810,7 +809,6 @@ function addlclick(skipcheck) {
     $('#prt_name').show();
     $('#locution_add').hide();
     $('#socialusers').hide();
-    $('#modal-bg').hide();
 
     return false;
 }
@@ -850,7 +848,6 @@ function addlcancel() {
     $('#prt_name').show();
     $('#socialusers').hide();
     $('#locution_add').hide();
-    $('#modal-bg').hide();
 
 
     var index = findNodeIndex(CurrentlyEditing);

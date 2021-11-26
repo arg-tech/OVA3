@@ -707,8 +707,12 @@ function Drop(evt) {
           AddNode('Asserting', 'YA', '74', 0, newNodeID, nx, ny);
         } else if (nodeFrom == "L" && nodeTo == "L") {
           AddNode('Default Transition', 'TA', '82', 0, newNodeID, nx, ny);
-        } else if ((nodeFrom == "TA" && nodeTo == "RA") || (nodeFrom == "TA" && nodeTo == "CA") || (nodeFrom == "TA" && nodeTo == "MA")) {
+        } else if (nodeFrom == "TA" && nodeTo == "MA") {
           AddNode('Default Illocuting', 'YA', '168', 0, newNodeID, nx, ny);
+        } else if (nodeFrom == "TA" && nodeTo == "RA") {
+          AddNode('Arguing', 'YA', '80', 0, newNodeID, nx, ny);
+        } else if (nodeFrom == "TA" && nodeTo == "CA") {
+          AddNode('Disagreeing', 'YA', '78', 0, newNodeID, nx, ny);
         } else if (nodeFrom == "RA" && nodeTo == "I") {
 
         } else if (nodeFrom == "I" && nodeTo == "RA") {
