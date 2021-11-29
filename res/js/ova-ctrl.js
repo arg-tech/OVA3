@@ -548,7 +548,7 @@ function updateBox(g) {
 }
 
 function UpdateEdge(e) {
-  if (!e.visible) { return false; } //if the edge is invisible, i.e. it isn't drawn on the svg, do nothing
+  if (!e.visible || e == null) { return false; } //if the edge is null or invisible, i.e. it isn't drawn on the svg, do nothing
   edgeID = 'n' + e.fromID + '-n' + e.toID;
   ee = document.getElementById(edgeID);
   nodeFrom = document.getElementById(e.fromID);
@@ -656,12 +656,13 @@ function UnFocus(evt, unfocusElement) {
 
 
 function Drop(evt) {
-  if (DragTarget) {
+  if (DragTarget && mSel.length == 0) {
     children = DragTarget.children;
     for (var j = 0; j < children.length - 1; j++) {
       var childElement = children[j];
       xCoord = childElement.getAttributeNS(null, 'x');
       yCoord = childElement.getAttributeNS(null, 'y');
+      window.groupID++;
       updateNode(DragTarget.id, xCoord, yCoord);
     }
 
@@ -676,6 +677,16 @@ function Drop(evt) {
       if (evt.target.nodeName != 'svg') {
         from = document.getElementById(FromID).getElementsByTagName('rect')[0];
         to = targetElement.getElementsByTagName('rect')[0];
+
+        if (from == to) { //if the same node 
+          tempedge = document.getElementById('n' + FromID + '-nedge_to');
+          tempnode = document.getElementById("edge_to");
+          SVGRootG.removeChild(tempedge);
+          SVGRootG.removeChild(tempnode);
+          DragTarget.setAttributeNS(null, 'pointer-events', 'all');
+          DragTarget = null;
+          return false;
+        }
 
         fx = from.getAttributeNS(null, 'x');
         fy = from.getAttributeNS(null, 'y');
@@ -710,8 +721,12 @@ function Drop(evt) {
           AddNode('Asserting', 'YA', '74', 0, newNodeID, nx, ny);
         } else if (nodeFrom == "L" && nodeTo == "L") {
           AddNode('Default Transition', 'TA', '82', 0, newNodeID, nx, ny);
-        } else if ((nodeFrom == "TA" && nodeTo == "RA") || (nodeFrom == "TA" && nodeTo == "CA") || (nodeFrom == "TA" && nodeTo == "MA")) {
+        } else if (nodeFrom == "TA" && nodeTo == "MA") {
           AddNode('Default Illocuting', 'YA', '168', 0, newNodeID, nx, ny);
+        } else if (nodeFrom == "TA" && nodeTo == "RA") {
+          AddNode('Arguing', 'YA', '80', 0, newNodeID, nx, ny);
+        } else if (nodeFrom == "TA" && nodeTo == "CA") {
+          AddNode('Disagreeing', 'YA', '78', 0, newNodeID, nx, ny);
         } else if (nodeFrom == "RA" && nodeTo == "I") {
 
         } else if (nodeFrom == "I" && nodeTo == "RA") {
@@ -758,8 +773,8 @@ function Drop(evt) {
     }
     DragTarget.setAttributeNS(null, 'pointer-events', 'all');
     DragTarget = null;
-    //deselects the add edge icon button after adding an edge
-    if (window.eBtn) {
+    
+    if (window.eBtn) { //deselects the add edge icon button after adding an edge
       edgeMode('off');
       window.eBtn = false;
     }
@@ -772,13 +787,33 @@ function Drop(evt) {
       if (nodes[i].x > multiSelRect.startX && nodes[i].x < parseInt(multiSelRect.startX) + boxWidth
         && nodes[i].y > multiSelRect.startY && nodes[i].y < parseInt(multiSelRect.startY) + boxHeight) {
         mSel.push(nodes[i]);
+        rect = document.getElementById(nodes[i].nodeID).getElementsByTagName('rect')[0];
+        rect.style.setProperty('stroke-width', 2);
       }
     }
     document.getElementById('multiSelBoxG').remove();
-  } else {
+  }
+  else if (mSel.length > 0) { //if moving multiple nodes using the multi select
+    if (DragTarget) {
+      window.groupID++;
+      for (var i = 0; i < mSel.length; i++) {
+        var childElement = document.getElementById(mSel[i].nodeID);
+        var rect = childElement.getElementsByTagName('rect')[0];
+        rect.style.setProperty('stroke-width', 1);
+        xCoord = rect.getAttribute('x');
+        yCoord = rect.getAttribute('y');
+        updateNode(mSel[i].nodeID, xCoord, yCoord);
+      }
+      DragTarget.setAttributeNS(null, 'pointer-events', 'all');
+      DragTarget = null;
+    } else {
+      for (var i = 0; i < mSel.length; i++) {
+        var rect = document.getElementById(mSel[i].nodeID).getElementsByTagName('rect')[0];
+        rect.style.setProperty('stroke-width', 1);
+      }
+    }
     mSel = [];
     multiSel = false;
-
   }
   dragEdges = [];
 }
@@ -866,6 +901,7 @@ function saveNodeEdit() {
     //var edgesToUpdate = findEdges(CurrentlyEditing);
     document.getElementById(CurrentlyEditing).remove();
     DrawNode(CurrentlyEditing, type, ntext, xCoord, yCoord);
+    window.groupID++;
     updateNode(CurrentlyEditing, xCoord, yCoord, true, 0, type, null, ntext);
     // for (var i = 0; i < edgesToUpdate.length; i++) {
     //   UpdateEdge(edgesToUpdate[i]);
@@ -931,6 +967,7 @@ function saveNodeEdit() {
     }
     document.getElementById(CurrentlyEditing).remove();
     DrawNode(CurrentlyEditing, mySel.type, mySel.text, xCoord, yCoord);
+    window.groupID++;
     updateNode(CurrentlyEditing, xCoord, yCoord, mySel.visible, 0, mySel.type, mySel.scheme, mySel.text);
 
     $('.dselect').each(function (index) {

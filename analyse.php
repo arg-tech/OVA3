@@ -138,11 +138,19 @@ if (isset($_COOKIE['ovauser'])) {
     </div>
   </div>
 
-  <div id="modal-save2db" class="modal-box">
-    <div id="m_load">Processing<br /><img src="res/img/loading_modal.gif" /></div>
-    <div id="m_content" style="text-align: left; font-size: 0.8em; padding: 0px 20px;"></div>
-    <div class="modal-btns">
+  <div id="modal-shade"></div>
+  <div class="modal-dialog" id="modal-save2db">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Save to AIFdb</h4>
+      </div>
+      <div class="modal-body">
+        <div id="m_load">Processing<br /><img src="res/img/loading_modal.gif" /></div>
+        <div id="m_content" style="text-align: left; font-size: 0.8em; padding: 0px 20px;"></div>
+      </div>
+      <div class="modal-btns">
       <a class="cancel" href="#" onClick="closeModal('#modal-save2db'); return false;">&#10008; Close</a>
+      </div>
     </div>
   </div>
 

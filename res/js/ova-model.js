@@ -73,7 +73,6 @@ function updateNode(nodeID, x, y, visible, undone, type, scheme, text, timestamp
         if (text != undefined) { n.text = text; }
         if (timestamp != undefined) { n.timestamp = timestamp; }
 
-        window.groupID++;
         var undone = typeof undone !== 'undefined' ? undone : 0;
         postEdit("node", "edit", n, undone, n.nodeID);
     }
