@@ -154,14 +154,6 @@ if (isset($_COOKIE['ovauser'])) {
     </div>
   </div>
 
-  <!-- <div id="modal-save2db" class="modal-box">
-    <div id="m_load">Processing<br /><img src="res/img/loading_modal.gif" /></div>
-    <div id="m_content" style="text-align: left; font-size: 0.8em; padding: 0px 20px;"></div>
-    <div class="modal-btns">
-      <a class="cancel" href="#" onClick="closeModal('#modal-save2db'); return false;">&#10008; Close</a>
-    </div>
-  </div> -->
-
   <div id="modal-shade"></div>
   <div class="modal-dialog" id="modal-load">
     <div class="modal-content">
