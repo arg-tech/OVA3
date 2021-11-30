@@ -37,6 +37,7 @@ function DrawNode(nid, type, txt, nx, ny) {
         var tspan = document.createElementNS("http://www.w3.org/2000/svg", "tspan");
         tspan.setAttribute('text-anchor', 'middle');
         tspan.setAttribute('x', nx);
+        tspan.setAttribute('y', ny);
         tspan.setAttribute('dy', 14);
         var myText = document.createTextNode(phraseArray[i]);
         tspan.appendChild(myText);
@@ -364,6 +365,7 @@ function DrawTimestamp(nodeID, timestamp, xpos, ypos) {
         var tspan = document.createElementNS("http://www.w3.org/2000/svg", "tspan");
         tspan.setAttribute('text-anchor', 'middle');
         tspan.setAttribute('x', xpos);
+        tspan.setAttribute('y', ypos);
         tspan.setAttribute('dy', -5);
         var myText = document.createTextNode(timestamp);
         tspan.appendChild(myText);
