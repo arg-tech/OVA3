@@ -90,10 +90,12 @@ function genjson() {
 
     if (url == 'local') {
         txt = getAllText();
+        url = '';
     }
 
     var text = {
-        "txt": txt
+        "txt": txt,
+        "url": url
     };
     json['text'] = text;
 
@@ -183,13 +185,16 @@ function loadfile(jstr) {
 
 function loadOva3Json(json, oplus) {
     // console.log("loading OVA3 json");
-    //load text on LHS
-    setAllText(json['text']['txt']);
-    postEdit("text", "edit", json['text']['txt'], 1);
+    var text = false;
+    if (json['text']['txt'] != "") {
+        text = loadText(json['text']['txt']);
+    }
+    if (!text && json['text'].hasOwnProperty("url")) {
+        loadUrl(json['text']['url']);
+    }
 
     //load participants
     var p = json['AIF']['participants'];
-    var pID = 0;
     if (p != undefined) {
         for (var i = 0, l = p.length; i < l; i++) {
             firstname = p[i].firstname;
@@ -201,10 +206,8 @@ function loadOva3Json(json, oplus) {
     //create the nodes
     var jnodes = json['AIF']['nodes'];
     var nodelist = {};
+    var pID = 0;
     for (var i = 0, l = jnodes.length; i < l; i++) {
-        if (jnodes[i].nodeID > window.nodeCounter) {
-            window.nodeCounter = jnodes[i].nodeID;
-        }
         if (oplus) {
             if (jnodes[i].type == "L") {
                 pID = findParticipantIDText(jnodes[i].text);
@@ -214,22 +217,17 @@ function loadOva3Json(json, oplus) {
             }
         } else if (jnodes[i].type == "I" || jnodes[i].type == "RA" || jnodes[i].type == "CA" || jnodes[i].type == "EN") {
             nodelist[jnodes[i].nodeID] = newNode(jnodes[i].nodeID, jnodes[i].type, null, 0, jnodes[i].text, 0, 0, false, 1);
-            if (jnodes[i].type == "I") { hlUpdate(jnodes[i].nodeID, jnodes[i].type, jnodes[i].nodeID, 1); }
+            if (jnodes[i].type == "I" && text) { hlUpdate(jnodes[i].nodeID, jnodes[i].type, jnodes[i].nodeID, 1); }
         }
     }
-    //update the node counter
-    var last = jnodes.length - 1;
-    var id = jnodes[last].nodeID.split("_", 2);
-    window.nodeCounter = (parseInt(id[0]) + 1);
+
+    window.nodeCounter += jnodes.length; //update the node counter
 
     //set any scheme fulfillments
     var sf = json['AIF']['schemefulfillments'];
     if (sf != undefined) {
         for (var i = 0; i < sf.length; i++) {
-            index = findNodeIndex(sf[i].nodeID);
-            if (index > -1) { //if the node exists
-                updateNode(nodes[index].nodeID, nodes[index].x, nodes[index].y, nodes[index].visible, 1, nodes[index].type, sf[i].schemeID);
-            }
+            updateNodeScheme(sf[i].nodeID, sf[i].schemeID, 1);
         }
     }
 
@@ -241,7 +239,7 @@ function loadOva3Json(json, oplus) {
                 updateNode(n[i].nodeID, n[i].x, n[i].y, n[i].visible, 1);
                 DrawNode(nodelist[n[i].nodeID].nodeID, nodelist[n[i].nodeID].type, nodelist[n[i].nodeID].text, nodelist[n[i].nodeID].x, nodelist[n[i].nodeID].y);
                 if (n[i].timestamp) {
-                    addTimestamp(n[i].nodeID, n[i].timestamp);
+                    updateTimestamp(n[i].nodeID, n[i].timestamp);
                     if (window.showTimestamps) { DrawTimestamp(n[i].nodeID, n[i].timestamp, n[i].x, n[i].y); }
                 }
             }
@@ -249,13 +247,13 @@ function loadOva3Json(json, oplus) {
     }
 
     //create and draw any connecting edges
-    edges = [];
     var e = json['OVA']['edges'];
+    var from, to, edge;
     for (var i = 0, l = e.length; i < l; i++) {
         from = e[i].fromID;
         to = e[i].toID;
         if (from in nodelist && to in nodelist) { //if both the nodes the edge connects exist
-            var edge = newEdge(from, to, e[i].visible, 1);
+            edge = newEdge(from, to, e[i].visible, 1);
             if (e[i].visible) {
                 DrawEdge(from, to);
                 UpdateEdge(edge);
@@ -266,9 +264,7 @@ function loadOva3Json(json, oplus) {
 
 function loadOva2Json(json, oplus) {
     // console.log("loading OVA2 json");
-    //load text on LHS
-    setAllText(json['analysis']['txt']);
-    postEdit("text", "edit", json['analysis']['txt'], 1);
+    var text = loadText(json['analysis']['txt']); //load text on LHS
 
     //load participants
     var p = json['participants'];
@@ -288,7 +284,7 @@ function loadOva2Json(json, oplus) {
     var count = window.nodeCounter;
     for (var i = 0, l = jnodes.length; i < l; i++) {
         if ((count + jnodes[i].id) > window.nodeCounter) {
-            window.nodeCounter = (count + jnodes[i].id);
+            window.nodeCounter = (count + jnodes[i].id); //update the node counter
         }
         nID = ((count + jnodes[i].id) + "_" + window.sessionid);
         if (oplus) {
@@ -297,38 +293,87 @@ function loadOva2Json(json, oplus) {
                 nodelist[nID] = newNode(nID, jnodes[i].type, jnodes[i].scheme, pID, jnodes[i].text, jnodes[i].x, jnodes[i].y, jnodes[i].visible, 1, jnodes[i].timestamp);
                 if (jnodes[i].visible) {
                     DrawNode(nID, jnodes[i].type, jnodes[i].text, jnodes[i].x, jnodes[i].y);
-                    hlUpdate(jnodes[i].id, jnodes[i].type, nID, 1);
-                    if (window.showTimestamps) {
-                        DrawTimestamp(nID, jnodes[i].timestamp, jnodes[i].x, jnodes[i].y);
-                    }
+                    if (text) { hlUpdate(jnodes[i].id, jnodes[i].type, nID, 1); }
+                    if (window.showTimestamps) { DrawTimestamp(nID, jnodes[i].timestamp, jnodes[i].x, jnodes[i].y); }
                 }
             } else {
                 nodelist[nID] = AddNode(jnodes[i].text, jnodes[i].type, jnodes[i].scheme, 0, nID, jnodes[i].x, jnodes[i].y, jnodes[i].visible, 1);
             }
         } else if (jnodes[i].type == "I" || jnodes[i].type == "RA" || jnodes[i].type == "CA" || jnodes[i].type == "EN") {
             nodelist[nID] = AddNode(jnodes[i].text, jnodes[i].type, jnodes[i].scheme, 0, nID, jnodes[i].x, jnodes[i].y, jnodes[i].visible, 1);
-            if (jnodes[i].type == "I") { hlUpdate((jnodes[i].id - 2), jnodes[i].type, nID, 1); }
+            if (jnodes[i].type == "I" && text) { hlUpdate((jnodes[i].id - 2), jnodes[i].type, nID, 1); }
         }
     }
-    window.nodeCounter++;
+    window.nodeCounter++; //update the node counter
 
     //load edges
-    edges = [];
     var e = json['edges'];
-    var edgelist = {};
-    var id = '';
+    var edgeList = {};
+    var from, to, id;
     for (var i = 0, l = e.length; i < l; i++) {
         from = ((count + e[i].from.id) + "_" + window.sessionid);
         to = ((count + e[i].to.id) + "_" + window.sessionid);
         id = (count + e[i].from.id) + "_" + (count + e[i].to.id);
-        if (from in nodelist && to in nodelist && !(id in edgelist)) { //if both the nodes the edge connects exist and the edge hasn't already been loaded
-            edgelist[id] = newEdge(from, to, e[i].visible, 1);
-            if (edgelist[id].visible) {
+        if (from in nodelist && to in nodelist && !(id in edgeList)) { //if both the nodes the edge connects exist and the edge hasn't already been loaded
+            edgeList[id] = newEdge(from, to, e[i].visible, 1);
+            if (edgeList[id].visible) {
                 DrawEdge(from, to);
-                UpdateEdge(edgelist[id]);
+                UpdateEdge(edgeList[id]);
             }
         }
     }
+}
+
+//function to load and display the text passed as a parameter
+//returns true if the text was successfully loaded and false if not
+function loadText(text) {
+    if (text != "") {
+        var url = getUrlVars()["url"];
+        if (url != 'local') {
+            //update the url variable to be local without reloading
+            var currentUrl = new URL(window.location);
+            currentUrl.searchParams.set('url', 'local');
+            history.pushState(null, null, currentUrl);
+
+            var iframe = document.getElementById('extside');
+            iframe.setAttribute("style", "display:none;"); //hide the iframe
+            var textArea = document.getElementById('analysis_text');
+            textArea.setAttribute("style", "display:block;"); //show the text area on the left
+        }
+
+        //display the text in the analysis text div on the left
+        setAllText(text);
+        postEdit("text", "edit", text, 1);
+        return true;
+    }
+    return false;
+}
+
+//function to load and display the pdf or website at the url passed as a parameter
+//returns true if the url was successfully loaded and false if not
+function loadUrl(url) {
+    if (url != "") {
+        var textArea = document.getElementById('analysis_text');
+        textArea.innerHTML = "Loading URL, please wait.";
+
+        //update the url variable to the loaded url value without reloading
+        var currentUrl = new URL(window.location);
+        currentUrl.searchParams.set('url', url);
+        history.pushState(null, null, currentUrl);
+
+        //display the pdf or website in the iframe on the left
+        $.get("helpers/getsource.php?url=" + url + "&returnAnalysis=" + true, function (data) {
+            dt = JSON.parse(data);
+            var analysis = dt.analysis;
+
+            textArea.setAttribute("style", "display:none;"); //hide the text area on the left
+            var iframe = document.getElementById('extside');
+            iframe.setAttribute("style", "display:flex;width:100%;height:100%;border-right:1px solid #666;"); //show the iframe
+            iframe.setAttribute("src", analysis); //load the pdf or website
+        });
+        return true;
+    }
+    return false;
 }
 
 function loaddbjson(json, oplus) {
@@ -388,7 +433,7 @@ function loaddbjson(json, oplus) {
     }
 
     //load edges
-    jedges = json['edges'];
+    var jedges = json['edges'];
     var visible = true;
     var index = 0;
     for (var i = 0, l = jedges.length; i < l; i++) {
@@ -407,8 +452,7 @@ function loaddbjson(json, oplus) {
     var sf = json['schemefulfillments'];
     if (sf != undefined) {
         for (var i = 0; i < sf.length; i++) {
-            index = findNodeIndex(sf[i].nodeID);
-            nodes[index].scheme = sf[i].schemeID;
+            updateNodeScheme(sf[i].nodeID, sf[i].schemeID, 1);
         }
     }
 }
@@ -497,9 +541,9 @@ function loadfromdb(nodeSetID) {
                 }
             });
 
-            //var currenturl = window.location;
-            //var newurl = currenturl.replace(/aifdb=[0-9]+/i, ""); 
-            //history.pushState(null, null, newurl);
+            var currenturl = window.location;
+            var newurl = currenturl.replace(/aifdb=[0-9]+/i, "");
+            history.pushState(null, null, newurl);
         });
     });
 }
