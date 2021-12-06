@@ -1,36 +1,10 @@
 <?php
 require_once('config.php');
+require_once('helpers/getsource.php');
 
 if (isset($_GET['af']) && isset($_GET['as'])) {
   $cookie_value = $_GET['af'] . ";" . $_GET['as'];
   setcookie("ovauser", $cookie_value, time() + (86400 * 180), "/");
-}
-
-$source = $_GET['url'];
-if ($source == "local") {
-  $analysis = "localtext.html";
-} elseif (substr($source, -3) == "pdf") {
-  if ($source == "pdf") {
-    $analysis = "pdfjs/web/viewer.html";
-  } else {
-    $pdfurl = $source;
-    $parts = pathinfo($pdfurl);
-    $pdfurl = $parts['dirname'] . '/' . rawurlencode($parts['basename']);
-    $fname = hash('md5', $pdfurl);
-    file_put_contents('pdfs/' . $fname . '.pdf', fopen($pdfurl, 'r'));
-    $analysis = "pdfjs/web/viewer.html?file=../../pdfs/" . $fname . ".pdf";
-  }
-  $source = "pdf";
-} elseif (substr($source, 0, 4) != "http") {
-  $rtime = time();
-  $salt = "ovas@lt22";
-  $hash = md5($rtime . $salt);
-  $analysis = "browser.php?r=" . $rtime . "&h=" . $hash . "&url=http://" . $_GET['url'];
-} else {
-  $rtime = time();
-  $salt = "ovas@lt22";
-  $hash = md5($rtime . $salt);
-  $analysis = "browser.php?r=" . $rtime . "&h=" . $hash . "&url=" . $_GET['url'];
 }
 
 $pro = false;
@@ -149,7 +123,7 @@ if (isset($_COOKIE['ovauser'])) {
         <div id="m_content" style="text-align: left; font-size: 0.8em; padding: 0px 20px;"></div>
       </div>
       <div class="modal-btns">
-      <a class="cancel" href="#" onClick="closeModal('#modal-save2db'); return false;">&#10008; Close</a>
+        <a class="cancel" href="#" onClick="closeModal('#modal-save2db'); return false;">&#10008; Close</a>
       </div>
     </div>
   </div>
@@ -630,9 +604,11 @@ if (isset($_COOKIE['ovauser'])) {
       <?php if ($source == "local") { ?>
         <div id="analysis_text" contenteditable="true" spellcheck="false">Enter your text here...</div>
         <!-- data-step="1" data-intro="<p>Enter the text that you want to analyse here.</p><p>Select sections of text to create a node.</p> -->
+        <iframe id="extside" name="extsite" style="display:none;"></iframe>
       <?php } else { ?>
         <!-- if url was added to be loaded into LHS -->
         <iframe src="<?php echo $analysis; ?>" id="extside" name="extsite" style="width:100%;height:100%;border-right:1px solid #666;"></iframe> <!-- data-step="1" data-intro="<p>Highlight sections of text from the webpage to create a node.</p>" data-position="right" -->
+        <div id="analysis_text" contenteditable="true" spellcheck="false" style="display:none;"></div>
       <?php } ?>
     </div>
 
