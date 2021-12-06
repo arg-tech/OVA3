@@ -441,11 +441,11 @@ function Drag(evt) {
         for (var k = 0; k < tchildren.length; k++) {
           var cE = tchildren[k];
           coldX = parseInt(cE.getAttributeNS(null, 'x'));
-          coldY = parseInt(cE.getAttributeNS(null, 'y'));
           cnewX = (coldX + dx);
-          cnewY = (coldY + dy);
           cE.setAttributeNS(null, 'x', cnewX);
-          cE.setAttributeNS(null, 'y', cnewY);
+          // coldY = parseInt(cE.getAttributeNS(null, 'y'));
+          // cnewY = (coldY + dy);
+          // cE.setAttributeNS(null, 'y', cnewY);
         }
       }
       var xdiff = (newX - oldX);
@@ -472,11 +472,11 @@ function Drag(evt) {
             for (var k = 0; k < tchildren.length; k++) {
               var cE = tchildren[k];
               coldX = parseInt(cE.getAttributeNS(null, 'x'));
-              coldY = parseInt(cE.getAttributeNS(null, 'y'));
               cnewX = (coldX + xdiff);
-              cnewY = (coldY + ydiff);
               cE.setAttributeNS(null, 'x', cnewX);
-              cE.setAttributeNS(null, 'y', cnewY);
+              // coldY = parseInt(cE.getAttributeNS(null, 'y'));
+              // cnewY = (coldY + ydiff);
+              // cE.setAttributeNS(null, 'y', cnewY);
             }
           }
           GetEdges(mSel[i].nodeID);
@@ -503,15 +503,14 @@ function Drag(evt) {
         for (var k = 0; k < tchildren.length; k++) {
           var cE = tchildren[k];
           coldX = cE.getAttributeNS(null, 'x');
-          coldY = cE.getAttributeNS(null, 'y');
           cnewX = parseInt(coldX) + dx;
-          cnewY = parseInt(coldY) + dy;
           cE.setAttributeNS(null, 'x', cnewX);
-          cE.setAttributeNS(null, 'y', cnewY);
+          // coldY = cE.getAttributeNS(null, 'y');
+          // cnewY = parseInt(coldY) + dy;
+          // cE.setAttributeNS(null, 'y', cnewY);
         }
       }
       if (dragEdges.length > 0) {
-        //updateNode(DragTarget.id, newX, newY);
         for (var j = 0; j < dragEdges.length; j++) {
           UpdateEdge(dragEdges[j]);
         }
