@@ -37,7 +37,7 @@ if (isset($_COOKIE['ovauser'])) {
             </div>
             <form action="#" method="post">
               <div class="form-group first last">
-                <label for="username">URL of the page to analyse</label>
+                <label for="urlinput">URL of the page to analyse</label>
                 <input type="text" class="form-control" id="urlinput">
               </div>
 
