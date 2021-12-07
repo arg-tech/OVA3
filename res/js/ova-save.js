@@ -159,7 +159,7 @@ function loadbutton(evt) {
 }
 
 function loadfile(jstr) {
-    clearAnalysis(); //remove the previous analysis before loading the new analysis
+    // clearAnalysis(); //remove the previous analysis before loading the new analysis
     if (typeof jstr !== 'object') {
         var json = JSON.parse(jstr);
     } else {
@@ -203,6 +203,9 @@ function loadOva3Json(json, oplus) {
         }
     }
 
+    var yOffset = calOffset('y');
+    console.log("yOffset: " + yOffset);
+
     //create the nodes
     var jnodes = json['AIF']['nodes'];
     var nodelist = {};
@@ -233,14 +236,16 @@ function loadOva3Json(json, oplus) {
 
     //set the layout of the nodes and draw them on the svg
     var n = json['OVA']['nodes'];
+    var newY = 0;
     for (var i = 0, l = n.length; i < l; i++) {
         if (nodelist[n[i].nodeID]) {
             if (n[i].visible) {
-                updateNode(n[i].nodeID, n[i].x, n[i].y, n[i].visible, 1);
+                newY = parseInt(n[i].y) + yOffset;
+                updateNode(n[i].nodeID, n[i].x, newY, n[i].visible, 1);
                 DrawNode(nodelist[n[i].nodeID].nodeID, nodelist[n[i].nodeID].type, nodelist[n[i].nodeID].text, nodelist[n[i].nodeID].x, nodelist[n[i].nodeID].y);
                 if (n[i].timestamp) {
                     updateTimestamp(n[i].nodeID, n[i].timestamp);
-                    if (window.showTimestamps) { DrawTimestamp(n[i].nodeID, n[i].timestamp, n[i].x, n[i].y); }
+                    if (window.showTimestamps) { DrawTimestamp(n[i].nodeID, n[i].timestamp, nodelist[n[i].nodeID].x, nodelist[n[i].nodeID].y); }
                 }
             }
         }
@@ -277,30 +282,35 @@ function loadOva2Json(json, oplus) {
         }
     }
 
+    var yOffset = calOffset('y');
+    console.log("yOffset: " + yOffset);
+
     //load nodes
     var nodelist = {};
     var jnodes = json['nodes'];
     var nID = '';
     var count = window.nodeCounter;
+    var newY = 0;
     for (var i = 0, l = jnodes.length; i < l; i++) {
         if ((count + jnodes[i].id) > window.nodeCounter) {
             window.nodeCounter = (count + jnodes[i].id); //update the node counter
         }
         nID = ((count + jnodes[i].id) + "_" + window.sessionid);
+        newY = parseInt(jnodes[i].y) + yOffset;
         if (oplus) {
             if (jnodes[i].type == "L") {
                 pID = findParticipantIDText(jnodes[i].text);
-                nodelist[nID] = newNode(nID, jnodes[i].type, jnodes[i].scheme, pID, jnodes[i].text, jnodes[i].x, jnodes[i].y, jnodes[i].visible, 1, jnodes[i].timestamp);
+                nodelist[nID] = newNode(nID, jnodes[i].type, jnodes[i].scheme, pID, jnodes[i].text, jnodes[i].x, newY, jnodes[i].visible, 1, jnodes[i].timestamp);
                 if (jnodes[i].visible) {
-                    DrawNode(nID, jnodes[i].type, jnodes[i].text, jnodes[i].x, jnodes[i].y);
+                    DrawNode(nID, jnodes[i].type, jnodes[i].text, jnodes[i].x, newY);
                     if (text) { hlUpdate(jnodes[i].id, jnodes[i].type, nID, 1); }
-                    if (window.showTimestamps) { DrawTimestamp(nID, jnodes[i].timestamp, jnodes[i].x, jnodes[i].y); }
+                    if (window.showTimestamps) { DrawTimestamp(nID, jnodes[i].timestamp, jnodes[i].x, newY); }
                 }
             } else {
-                nodelist[nID] = AddNode(jnodes[i].text, jnodes[i].type, jnodes[i].scheme, 0, nID, jnodes[i].x, jnodes[i].y, jnodes[i].visible, 1);
+                nodelist[nID] = AddNode(jnodes[i].text, jnodes[i].type, jnodes[i].scheme, 0, nID, jnodes[i].x, newY, jnodes[i].visible, 1);
             }
         } else if (jnodes[i].type == "I" || jnodes[i].type == "RA" || jnodes[i].type == "CA" || jnodes[i].type == "EN") {
-            nodelist[nID] = AddNode(jnodes[i].text, jnodes[i].type, jnodes[i].scheme, 0, nID, jnodes[i].x, jnodes[i].y, jnodes[i].visible, 1);
+            nodelist[nID] = AddNode(jnodes[i].text, jnodes[i].type, jnodes[i].scheme, 0, nID, jnodes[i].x, newY, jnodes[i].visible, 1);
             if (jnodes[i].type == "I" && text) { hlUpdate((jnodes[i].id - 2), jnodes[i].type, nID, 1); }
         }
     }
@@ -324,6 +334,19 @@ function loadOva2Json(json, oplus) {
     }
 }
 
+//function to calculate the offset from the top left of the svg box required to place another analysis map to the right (x offset)
+//or under (y offset) the current analysis map drawn on the svg
+//it takes one parameter called type which should be either 'x' or 'y' to represent offsetting from the x or y coordinates
+//it returns the calculated offset or zero if an offset can't be calculated
+function calOffset(type) {
+    var offset = 0;
+    if (nodes.length >= 1 && (type == 'x' || type == 'y')) { //if the current analysis contains any nodes and the type is x or y
+        nodes.sort((a, b) => type == 'x' ? b.x - a.x : b.y - a.y); //sort the nodes from largest to smallest x or y coordinates
+        offset = (type == 'x' ? parseInt(nodes[0].x) : parseInt(nodes[0].y)) + 40; //offset by the largest x or y coordinate plus 40
+    }
+    return offset;
+}
+
 //function to load and display the text passed as a parameter
 //returns true if the text was successfully loaded and false if not
 function loadText(text) {
@@ -341,9 +364,15 @@ function loadText(text) {
             textArea.setAttribute("style", "display:block;"); //show the text area on the left
         }
 
+        //check if the current text displayed should be replaced or kept
+        var currentTxt = getAllText();
+        var exampleTxt = "Enter your text here...";
+        var waitTxt = "Loading URL, please wait.";
+        var allTxt = currentTxt !== exampleTxt && currentTxt !== waitTxt ? currentTxt + "<div><br></div>" + text : text;
+
         //display the text in the analysis text div on the left
-        setAllText(text);
-        postEdit("text", "edit", text, 1);
+        setAllText(allTxt);
+        postEdit("text", "edit", allTxt, 1);
         return true;
     }
     return false;
