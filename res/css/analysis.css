@@ -382,6 +382,17 @@ div.modal-btns a.cancel:hover {
 #m_content {
   display: none;
   margin-top: 30px;
+  font-size: 0.9em;
+  text-align: left;
+  padding: 0px 15% 20px 10%;
+}
+
+#m_confirm {
+  display: none;
+  margin-top: 30px;
+  font-size: 1em;
+  text-align: left;
+  padding: 0px 10% 10px;
 }
 
 #m_content a {

@@ -793,9 +793,13 @@ function save2db() {
  */
 function add2corpus(addnsID) {
     var cID = $("#s_corpus").val();
+    var cName = $("#s_corpus option:selected").text();
     $.get("helpers/corporapost.php?nsID=" + addnsID + "&cID=" + cID, function (data) {
-        $('#modal-save2db').hide();
-        $('#modal-shade').hide();
+        // $('#modal-save2db').hide();
+        // $('#modal-shade').hide();
+        $('#m_content').hide();
+        $('#m_confirm').html("<p style='font-weight:700'>Added to " + cName + " corpus.</p>" + "<p style='font-weight:700'>Node Set ID: " + addnsID + "</p>");
+        $('#m_confirm').show();
     }).fail(function () {
         alert("Unable to add to corpus");
     });
