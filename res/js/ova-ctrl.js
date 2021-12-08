@@ -676,7 +676,7 @@ function Drop(evt) {
       window.groupID++;
       updateNode(DragTarget.id, xCoord, yCoord);
     }
-
+    //If drawing edge to node
     if (DragTarget.getAttributeNS(null, 'id') == 'edge_to') {
       if (evt.target.nodeName == 'rect') {
         var targetElement = evt.target.parentNode;
@@ -740,14 +740,14 @@ function Drop(evt) {
           AddNode('Disagreeing', 'YA', '78', 0, newNodeID, nx, ny);
         } else if (nodeFrom == "RA" && nodeTo == "I") {
 
-        } else if (nodeFrom == "I" && nodeTo == "RA") {
+        } else if (nodeFrom == "I" && nodeTo == "RA" || nodeFrom == "I" && nodeTo == "RA" || nodeFrom == "EN" && nodeTo == "RA" || nodeFrom == "RA" && nodeTo == "EN") {
 
         }
         else {
           AddNode('Default Inference', 'RA', '72', 0, newNodeID, nx, ny);
         }
         //If linked argument
-        if ((nodeFrom == "RA" && nodeTo == "I") || (nodeFrom == "I" && nodeTo == "RA")) {
+        if ((nodeFrom == "RA" && nodeTo == "I") || (nodeFrom == "I" && nodeTo == "RA") || (nodeFrom == "EN" && nodeTo == "RA")) {
           //only draw edge
           DrawEdge(FromID, targetElement.getAttributeNS(null, 'id'));
           var edge = newEdge(FromID, targetElement.getAttributeNS(null, 'id'));
