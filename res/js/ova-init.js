@@ -150,6 +150,7 @@ function Init(evt) {
     });
     updateAnalysis();
 
+
     $.getJSON("browserint.php?x=ipxx&url=" + window.SSurl, function (json_data) {
         window.ssets = {};
         schemesets = json_data.schemesets;

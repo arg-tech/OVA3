@@ -740,7 +740,7 @@ function Drop(evt) {
           AddNode('Disagreeing', 'YA', '78', 0, newNodeID, nx, ny);
         } else if (nodeFrom == "RA" && nodeTo == "I") {
 
-        } else if (nodeFrom == "I" && nodeTo == "RA" || nodeFrom == "I" && nodeTo == "RA") {
+        } else if (nodeFrom == "I" && nodeTo == "RA" || nodeFrom == "I" && nodeTo == "RA" || nodeFrom == "EN" && nodeTo == "RA" || nodeFrom == "RA" && nodeTo == "EN") {
 
         }
         else {
