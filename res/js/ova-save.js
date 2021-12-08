@@ -1,3 +1,7 @@
+/**
+ * Generates a JSON to represent the current analysis
+ * @returns {String} - The generated JSON as a string
+ */
 function genjson() {
     var json = {}
     var jnodes = [];
@@ -104,6 +108,10 @@ function genjson() {
     return jstr;
 }
 
+/**
+ * Generates a link to share the current analysis
+ * @returns {Boolean}
+ */
 function genlink() {
     alink = window.location;
     $('#shareinput').val(alink);
@@ -113,6 +121,10 @@ function genlink() {
     return false;
 }
 
+/**
+ * Saves and downloads the current analysis as a JSON file called 'analysis.json'
+ * @returns {Boolean}
+ */
 function save2file() {
     var jstr = genjson();
 
@@ -127,15 +139,34 @@ function save2file() {
     return false;
 }
 
+/**
+ * Removes the current analysis
+ * @returns {Boolean}
+ */
 function clearAnalysis() {
+    var currentTxt = getAllText();
+    var exampleTxt = "Enter your text here...";
+    if (currentTxt != exampleTxt) {
+        //Clears the text
+        setAllText(exampleTxt);
+        postEdit("text", "edit", exampleTxt, 1);
+    }
+
+    for (var i = edges.length - 1; i >= 0; i--) { delEdge(edges[i]); } //Removes all edges
+    for (var i = nodes.length - 1; i >= 0; i--) { delNode(nodes[i]); } //Removes all nodes
+
+    //Clears the svg
     SVGRoot.removeChild(SVGRootG);
-    nodes = [];
-    edges = [];
     SVGRootG = document.createElementNS("http://www.w3.org/2000/svg", 'g');
     SVGRoot.appendChild(SVGRootG);
     return false;
 }
 
+/**
+ * Handles the load button click event
+ * @param {*} evt - The event to handle
+ * @returns {Boolean}
+ */
 function loadbutton(evt) {
     var files = evt.target.files; // FileList object
 
@@ -158,8 +189,12 @@ function loadbutton(evt) {
     return false;
 }
 
+/**
+ * Loads a JSON file
+ * @param {*} jstr - The JSON file to load
+ * @return {void} Nothing
+ */
 function loadfile(jstr) {
-    // clearAnalysis(); //remove the previous analysis before loading the new analysis
     if (typeof jstr !== 'object') {
         var json = JSON.parse(jstr);
     } else {
@@ -171,26 +206,33 @@ function loadfile(jstr) {
         oplus = true;
     }
 
-    if (json['OVA']) { //if in ova3 format
-        loadOva3Json(json, oplus);
+    if (json['OVA']) { //if in OVA3 format
+        loadOva3Json(json, oplus, false);
     } else if (json['nodes']) {
         var jnodes = json['nodes'];
         if (jnodes.length > 0 && !(jnodes[0].hasOwnProperty('x'))) { //if in db format
-            loaddbjson(json, oplus);
-        } else if (jnodes.length > 0 && jnodes[0].hasOwnProperty('id')) { //if in ova2 format
-            loadOva2Json(json, oplus);
+            loaddbjson(json, oplus, false);
+        } else if (jnodes.length > 0 && jnodes[0].hasOwnProperty('id')) { //if in OVA2 format
+            loadOva2Json(json, oplus, false);
         }
     }
 }
 
-function loadOva3Json(json, oplus) {
+/**
+ * Loads analysis maps from OVA3 formatted JSONs
+ * @param {Object} json - The json to be loaded in
+ * @param {Boolean} oplus - Indicates if the analysis should be loaded in dialogical (true) or non-dialogical (false) mode
+ * @param {Boolean} multi - Indicates if the loaded analysis should replace the current analysis (false) or be added to it (true)
+ * @return {void} Nothing
+ */
+function loadOva3Json(json, oplus, multi) {
     // console.log("loading OVA3 json");
-    var text = false;
-    if (json['text']['txt'] != "") {
-        text = loadText(json['text']['txt']);
-    }
-    if (!text && json['text'].hasOwnProperty("url")) {
-        loadUrl(json['text']['url']);
+    var yOffset = 0;
+    if (multi) {
+        yOffset = calOffset('y');
+        console.log("yOffset: " + yOffset);
+    } else {
+        clearAnalysis(); //remove the previous analysis before loading the new analysis
     }
 
     //load participants
@@ -203,8 +245,13 @@ function loadOva3Json(json, oplus) {
         }
     }
 
-    var yOffset = calOffset('y');
-    console.log("yOffset: " + yOffset);
+    var text = false;
+    if (json['text']['txt'] != "") {
+        text = loadText(json['text']['txt']);
+    }
+    if (!text && json['text'].hasOwnProperty("url")) {
+        loadUrl(json['text']['url']);
+    }
 
     //create the nodes
     var jnodes = json['AIF']['nodes'];
@@ -267,9 +314,22 @@ function loadOva3Json(json, oplus) {
     }
 }
 
-function loadOva2Json(json, oplus) {
+/**
+ * Loads analysis maps from OVA2 formatted JSONs
+ * @param {Object} json - The json to be loaded in
+ * @param {Boolean} oplus - Indicates if the analysis should be loaded in dialogical (true) or non-dialogical (false) mode
+ * @param {Boolean} multi - Indicates if the loaded analysis should replace the current analysis (false) or be added to it (true)
+ * @return {void} Nothing
+ */
+function loadOva2Json(json, oplus, multi) {
     // console.log("loading OVA2 json");
-    var text = loadText(json['analysis']['txt']); //load text on LHS
+    var yOffset = 0;
+    if (multi) {
+        yOffset = calOffset('y');
+        console.log("yOffset: " + yOffset);
+    } else {
+        clearAnalysis(); //remove the previous analysis before loading the new analysis
+    }
 
     //load participants
     var p = json['participants'];
@@ -282,8 +342,7 @@ function loadOva2Json(json, oplus) {
         }
     }
 
-    var yOffset = calOffset('y');
-    console.log("yOffset: " + yOffset);
+    var text = loadText(json['analysis']['txt']); //load text on LHS
 
     //load nodes
     var nodelist = {};
@@ -334,10 +393,12 @@ function loadOva2Json(json, oplus) {
     }
 }
 
-//function to calculate the offset from the top left of the svg box required to place another analysis map to the right (x offset)
-//or under (y offset) the current analysis map drawn on the svg
-//it takes one parameter called type which should be either 'x' or 'y' to represent offsetting from the x or y coordinates
-//it returns the calculated offset or zero if an offset can't be calculated
+/**
+ * Calculates the offset from the top left of the svg box required to place another analysis map to the right (x offset) 
+ * or under (y offset) the current analysis map drawn on the svg
+ * @param {String} type - Represents offsetting from the x or y coordinates, must be either 'x' or 'y'
+ * @returns {number} - The calculated offset or zero if an offset can't be calculated
+ */
 function calOffset(type) {
     var offset = 0;
     if (nodes.length >= 1 && (type == 'x' || type == 'y')) { //if the current analysis contains any nodes and the type is x or y
@@ -347,8 +408,11 @@ function calOffset(type) {
     return offset;
 }
 
-//function to load and display the text passed as a parameter
-//returns true if the text was successfully loaded and false if not
+/**
+ * Loads and displays text
+ * @param {String} text - The text to be loaded in and displayed
+ * @returns {Boolean} - If the text was successfully loaded (true) or not (false)
+ */
 function loadText(text) {
     if (text != "") {
         var url = getUrlVars()["url"];
@@ -378,8 +442,11 @@ function loadText(text) {
     return false;
 }
 
-//function to load and display the pdf or website at the url passed as a parameter
-//returns true if the url was successfully loaded and false if not
+/**
+ * Loads and displays the PDF or website at the given URL
+ * @param {String} url - The URL to be loaded in
+ * @returns  {Boolean} - If the URL was successfully loaded (true) or not (false)
+ */
 function loadUrl(url) {
     if (url != "") {
         var textArea = document.getElementById('analysis_text');
@@ -405,8 +472,19 @@ function loadUrl(url) {
     return false;
 }
 
-function loaddbjson(json, oplus) {
+/**
+ * Loads analysis maps from AIF formatted JSONs
+ * @param {Object} json - The json to be loaded in
+ * @param {Boolean} oplus - Indicates if the analysis should be loaded in dialogical (true) or non-dialogical (false) mode
+ * @param {Boolean} multi - Indicates if the loaded analysis should replace the current analysis (false) or be added to it (true)
+ * @return {void} Nothing
+ */
+function loaddbjson(json, oplus, multi) {
     // console.log("loading DB json");
+    if (!multi) {
+        clearAnalysis(); //remove the previous analysis before loading the new analysis
+    }
+
     //load participants
     var p = json['participants'];
     var pID = 0;
@@ -486,6 +564,11 @@ function loaddbjson(json, oplus) {
     }
 }
 
+/**
+ * Loads an analysis map from the database
+ * @param {*} nodeSetID - The node set ID of the analysis to load
+ * @return {void} Nothing
+ */
 function loadfromdb(nodeSetID) {
     //console.log("loadfromdb");
     var oplus = false;
@@ -577,6 +660,10 @@ function loadfromdb(nodeSetID) {
     });
 }
 
+/**
+ * Saves the current analysis to the database in AIF
+ * @returns {Boolean}
+ */
 function save2db() {
     $('#modal-save2db').show();
     $('#m_load').show();
@@ -699,6 +786,11 @@ function save2db() {
     return false;
 }
 
+/**
+ * Adds an analysis to a corpus
+ * @param {*} addnsID - The node set ID of the analysis to be added
+ * @return {void} Nothing
+ */
 function add2corpus(addnsID) {
     var cID = $("#s_corpus").val();
     $.get("helpers/corporapost.php?nsID=" + addnsID + "&cID=" + cID, function (data) {
@@ -709,6 +801,12 @@ function add2corpus(addnsID) {
     });
 }
 
+/**
+ * Replaces an analysis in corpora
+ * @param {*} addnsID - The node set ID of the analysis to be added
+ * @param {*} rplnsID - The node set ID of the analysis to be replaced
+ * @return {void} Nothing
+ */
 function rpl2corpus(addnsID, rplnsID) {
     $('.rccb:checkbox:checked').each(function () {
         crpID = $(this).val();
@@ -725,6 +823,10 @@ function rpl2corpus(addnsID, rplnsID) {
     $('#modal-shade').hide();
 }
 
+/**
+ * Saves the on screen analysis map as a PNG
+ * @return {void} Nothing
+ */
 function svg2canvas2image() {
     var box = SVGRoot.getBBox();
     var x = box.x;
@@ -757,6 +859,11 @@ function svg2canvas2image() {
     }
 }
 
+/**
+ * Closes a popup if it's open
+ * @param {*} popupName - the name of the popup to close
+ * @return {void} Nothing
+ */
 function closePopupIfOpen(popupName) {
     if (typeof (window[popupName]) != 'undefined' && !window[popupName].closed) {
         window[popupName].close();
