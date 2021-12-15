@@ -217,7 +217,7 @@ function loadFileBtn(evt) {
  * @returns  {Boolean}
  */
 function loadCorpus(corpusName) {
-    console.log("corpus: " + corpusName);
+    // console.log("corpus: " + corpusName);
     var current = "";
     var multi = false;
     var replace = document.getElementById("load_replace");
@@ -229,10 +229,10 @@ function loadCorpus(corpusName) {
         $.each(data.nodeSets, function (idx, nodeSet) {
             var nSetID = parseInt(nodeSet);
             $.get('./db/' + nSetID, function (data) {
-                console.log("loading from ./db");
+                // console.log("loading from ./db");
                 loadFile(data, true);
             }).fail(function () {
-                console.log("loading with node set id: " + nSetID);
+                // console.log("loading with node set id: " + nSetID);
                 loadfromdb(nSetID, multi);
             });
         });
@@ -251,7 +251,7 @@ function loadCorpus(corpusName) {
 function loadNodeSet(nodesetID) {
     var nsetID = parseInt(nodesetID);
     if (Number.isInteger(nsetID) && nsetID > 0) { //if a valid node set ID
-        console.log("nodeset ID: " + nodesetID);
+        // console.log("nodeset ID: " + nodesetID);
         var multi = false;
         var current = "";
         var replace = document.getElementById("load_replace");
@@ -260,7 +260,7 @@ function loadNodeSet(nodesetID) {
 
         var loaded = false;
         $.get('./db/' + nsetID, function (data) {
-            console.log("loading from ./db");
+            // console.log("loading from ./db");
             loaded = loadFile(data, multi);
             if (loaded) {
                 list.innerHTML = '<ul>' + current + '<span style="font-size:0.8em;">Loaded analysis: Node Set ID <strong>' + nsetID + '</strong></span><br>' + '</ul>';
@@ -269,7 +269,7 @@ function loadNodeSet(nodesetID) {
                 list.innerHTML = '<ul>' + current + '<span style="font-size:0.8em;color:rgba(224, 46, 66, 1);">Failed to load analysis: Node Set ID <strong>' + nsetID + '</strong></span><br>' + '</ul>';
             }
         }).fail(function () {
-            console.log("loading with node set id");
+            // console.log("loading with node set id");
             loadfromdb(nsetID, multi);
         });
     }
@@ -292,7 +292,7 @@ function loadFile(jstr, multi) {
     var offset = 0;
     if (multi) {
         offset = calOffset('y');
-        console.log("offset: " + offset);
+        // console.log("offset: " + offset);
     } else {
         clearAnalysis(); //remove the previous analysis before loading the new analysis
     }
@@ -326,7 +326,7 @@ function loadFile(jstr, multi) {
  * @return {void} Nothing
  */
 function loadOva3Json(json, oplus, offset) {
-    console.log("loading OVA3 json");
+    // console.log("loading OVA3 json");
 
     //load participants
     var p = json['AIF']['participants'];
@@ -415,7 +415,7 @@ function loadOva3Json(json, oplus, offset) {
  * @return {void} Nothing
  */
 function loadOva2Json(json, oplus, offset) {
-    console.log("loading OVA2 json");
+    // console.log("loading OVA2 json");
 
     //load participants
     var p = json['participants'];
@@ -566,7 +566,7 @@ function loadUrl(url) {
  * @return {void} Nothing
  */
 function loaddbjson(json, oplus, offset) {
-    console.log("loading DB json");
+    // console.log("loading DB json");
 
     //load participants
     var p = json['participants'];
@@ -693,7 +693,7 @@ function loaddbjson(json, oplus, offset) {
  * @return {void} Nothing
  */
 function loadfromdb(nodeSetID, multi) {
-    console.log("called loadfromdb(" + nodeSetID + ")");
+    // console.log("called loadfromdb(" + nodeSetID + ")");
     var oplus = false;
     var uplus = "&plus=false";
     if ("plus" in getUrlVars()) {
@@ -702,8 +702,8 @@ function loadfromdb(nodeSetID, multi) {
     }
     $.getJSON("helpers/layout.php?id=" + nodeSetID + uplus, function (ldata) {
         $.getJSON("helpers/getdbnodeset.php?id=" + nodeSetID, function (data) {
-            console.log(ldata);
-            console.log(data);
+            // console.log(ldata);
+            // console.log(data);
 
             // //load participants
             // $.each(data.participants, function (idx, p) {
@@ -713,15 +713,15 @@ function loadfromdb(nodeSetID, multi) {
             var offset = 0;
             if (multi) {
                 offset = calOffset('y');
-                console.log("offset: " + offset);
+                // console.log("offset: " + offset);
             } else {
-                console.log("clearing analysis");
+                // console.log("clearing analysis");
                 clearAnalysis(); //remove the previous analysis before loading the new analysis
             }
 
             //load text
             $.get("helpers/gettext.php?id=" + nodeSetID, function (tdata) {
-                console.log(tdata);
+                // console.log(tdata);
                 loadText(tdata);
             });
 
