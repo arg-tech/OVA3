@@ -4,7 +4,11 @@ function myKeyDown(e) {
     edgeMode('on');
   }
   if (keycode == 65) {
-    edgeMode('atk');
+    var textArea = document.getElementById('analysis_text');
+    var nodeText = document.getElementById('n_text');
+    if (textArea !== document.activeElement && nodeText !== document.activeElement) {
+      edgeMode('atk');
+    }
   }
   if (keycode == 17) {
     editMode = true;
@@ -13,7 +17,7 @@ function myKeyDown(e) {
   if (keycode in NAV_MAP) {
     panZoomMode(keycode);
   }
-  if (keycode == 18) {
+  if (keycode == 18 && !(window.shiftPress || window.atkPress) && mSel.length == 0) {
     multiSel = true;
   }
 }
@@ -116,7 +120,7 @@ function edgeMode(status) {
   if (status == 'switch' && window.shiftPress) {
     status = 'atk';
     window.eBtn = true;
-  } else if (status == 'switch' && window.altPress) {
+  } else if (status == 'switch' && window.atkPress) {
     status = 'off';
     window.eBtn = false;
   } else if (status == 'switch') {
@@ -125,19 +129,19 @@ function edgeMode(status) {
   }
 
   if (status == 'on') {
-    window.altPress = false;
+    window.atkPress = false;
     window.shiftPress = true;
     document.getElementById("right1").style.cursor = 'crosshair';
     $('#eadd').removeClass("active attack support");
     $('#eadd').addClass("active support");
   } else if (status == 'off') {
     window.shiftPress = false;
-    window.altPress = false;
+    window.atkPress = false;
     document.getElementById("right1").style.cursor = 'auto';
     $('#eadd').removeClass("active attack support");
   } else if (status == 'atk') {
     window.shiftPress = false;
-    window.altPress = true;
+    window.atkPress = true;
     document.getElementById("right1").style.cursor = 'crosshair';
     $('#eadd').removeClass("active attack support");
     $('#eadd').addClass("active attack");
@@ -181,7 +185,7 @@ function Grab(evt) {
   }
 
   if (targetElement.getAttributeNS(null, 'focusable')) {
-    if (window.shiftPress || window.altPress) {
+    if (window.shiftPress || window.atkPress) {
       FromNode = targetElement;
       FromID = FromNode.getAttributeNS(null, 'id');
       edge_to = AddPt(TrueCoords.x, TrueCoords.y);
@@ -419,10 +423,9 @@ function AddNode(txt, type, scheme, pid, nid, nx, ny, visible, undone, timestamp
 
 function Drag(evt) {
   GetTrueCoords(evt);
-  if (DragTarget) {
-    var dx = TrueCoords.x - GrabPoint.x;
-    var dy = TrueCoords.y - GrabPoint.y;
-
+  if (DragTarget && !multiSel) {
+    var dx = (TrueCoords.x - GrabPoint.x);
+    var dy = (TrueCoords.y - GrabPoint.y);
     GrabPoint.x = TrueCoords.x;
     GrabPoint.y = TrueCoords.y;
 
@@ -431,27 +434,26 @@ function Drag(evt) {
       children = DragTarget.children;
       for (var j = 0; j < children.length; j++) {
         var childElement = children[j];
-        oldX = childElement.getAttributeNS(null, 'x');
-        oldY = childElement.getAttributeNS(null, 'y');
-        newX = parseInt(oldX) + dx;
-        newY = parseInt(oldY) + dy;
+        oldX = parseInt(childElement.getAttributeNS(null, 'x'));
+        oldY = parseInt(childElement.getAttributeNS(null, 'y'));
+        newX = (oldX + dx);
+        newY = (oldY + dy);
         childElement.setAttributeNS(null, 'x', newX);
         childElement.setAttributeNS(null, 'y', newY);
         tchildren = childElement.getElementsByTagName('tspan')
         for (var k = 0; k < tchildren.length; k++) {
           var cE = tchildren[k];
-          coldX = cE.getAttributeNS(null, 'x');
-          coldY = cE.getAttributeNS(null, 'y');
-          cnewX = parseInt(coldX) + dx;
-          cnewY = parseInt(coldY) + dy;
+          coldX = parseInt(cE.getAttributeNS(null, 'x'));
+          cnewX = (coldX + dx);
           cE.setAttributeNS(null, 'x', cnewX);
-          cE.setAttributeNS(null, 'y', cnewY);
+          // coldY = parseInt(cE.getAttributeNS(null, 'y'));
+          // cnewY = (coldY + dy);
+          // cE.setAttributeNS(null, 'y', cnewY);
         }
       }
-      var xdiff = newX - oldX;
-      var ydiff = newY - oldY;
+      var xdiff = (newX - oldX);
+      var ydiff = (newY - oldY);
       if (dragEdges.length > 0) {
-        //updateNode(DragTarget.id, newX, newY);
         for (var j = 0; j < dragEdges.length; j++) {
           UpdateEdge(dragEdges[j]);
         }
@@ -463,26 +465,25 @@ function Drag(evt) {
 
           for (var j = 0; j < children.length; j++) {
             var childElement = children[j];
-            oldX = childElement.getAttributeNS(null, 'x');
-            oldY = childElement.getAttributeNS(null, 'y');
-            newX = parseInt(oldX) + xdiff;
-            newY = parseInt(oldY) + ydiff;
+            oldX = parseInt(childElement.getAttributeNS(null, 'x'));
+            oldY = parseInt(childElement.getAttributeNS(null, 'y'));
+            newX = (oldX + xdiff);
+            newY = (oldY + ydiff);
             childElement.setAttributeNS(null, 'x', newX);
             childElement.setAttributeNS(null, 'y', newY);
             tchildren = childElement.getElementsByTagName('tspan')
             for (var k = 0; k < tchildren.length; k++) {
               var cE = tchildren[k];
-              coldX = cE.getAttributeNS(null, 'x');
-              coldY = cE.getAttributeNS(null, 'y');
-              cnewX = parseInt(coldX) + xdiff;
-              cnewY = parseInt(coldY) + ydiff;
+              coldX = parseInt(cE.getAttributeNS(null, 'x'));
+              cnewX = (coldX + xdiff);
               cE.setAttributeNS(null, 'x', cnewX);
-              cE.setAttributeNS(null, 'y', cnewY);
+              // coldY = parseInt(cE.getAttributeNS(null, 'y'));
+              // cnewY = (coldY + ydiff);
+              // cE.setAttributeNS(null, 'y', cnewY);
             }
           }
           GetEdges(mSel[i].nodeID);
           if (dragEdges.length > 0) {
-            //updateNode(DragTarget.id, newX, newY);
             for (var j = 0; j < dragEdges.length; j++) {
               UpdateEdge(dragEdges[j]);
             }
@@ -505,15 +506,14 @@ function Drag(evt) {
         for (var k = 0; k < tchildren.length; k++) {
           var cE = tchildren[k];
           coldX = cE.getAttributeNS(null, 'x');
-          coldY = cE.getAttributeNS(null, 'y');
           cnewX = parseInt(coldX) + dx;
-          cnewY = parseInt(coldY) + dy;
           cE.setAttributeNS(null, 'x', cnewX);
-          cE.setAttributeNS(null, 'y', cnewY);
+          // coldY = cE.getAttributeNS(null, 'y');
+          // cnewY = parseInt(coldY) + dy;
+          // cE.setAttributeNS(null, 'y', cnewY);
         }
       }
       if (dragEdges.length > 0) {
-        //updateNode(DragTarget.id, newX, newY);
         for (var j = 0; j < dragEdges.length; j++) {
           UpdateEdge(dragEdges[j]);
         }
@@ -522,19 +522,33 @@ function Drag(evt) {
 
   }
   else {
-    if (multiSel == true) {
-      var g = document.createElementNS("http://www.w3.org/2000/svg", "g");
-      var selbox = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-      g.setAttribute('id', 'multiSelBoxG');
-      selbox.setAttribute('id', 'multiSelBox');
-      selbox.setAttribute('x', multiSelRect.startX);
-      selbox.setAttribute('y', multiSelRect.startY);
-      selbox.setAttribute('width', TrueCoords.x - multiSelRect.startX);
-      selbox.setAttribute('height', TrueCoords.y - multiSelRect.startY);
-      selbox.setAttribute('style', 'fill:none;stroke:#a8a8a8;stroke-width:1;')
-      // selbox.setAttribute('style', 'fill:none;stroke:#3498db;stroke-width:1;');
-      g.append(selbox);
-      updateBox(g);
+    if (multiSel) {
+      var x = parseInt(multiSelRect.startX);
+      var y = parseInt(multiSelRect.startY);
+      if (!isNaN(x) && !isNaN(y)) {
+        var g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+        var selbox = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+        g.setAttribute('id', 'multiSelBoxG');
+        selbox.setAttribute('id', 'multiSelBox');
+        if (TrueCoords.x > x) {
+          selbox.setAttribute('x', x);
+          selbox.setAttribute('width', (TrueCoords.x - x));
+        } else {
+          selbox.setAttribute('x', TrueCoords.x);
+          selbox.setAttribute('width', (x - TrueCoords.x));
+        }
+        if (TrueCoords.y > y) {
+          selbox.setAttribute('y', y);
+          selbox.setAttribute('height', (TrueCoords.y - y));
+        } else {
+          selbox.setAttribute('y', TrueCoords.y);
+          selbox.setAttribute('height', (y - TrueCoords.y));
+        }
+        selbox.setAttribute('style', 'fill:none;stroke:#a8a8a8;stroke-width:1;')
+        // selbox.setAttribute('style', 'fill:none;stroke:#3498db;stroke-width:1;');
+        g.append(selbox);
+        updateBox(g);
+      }
     }
   }
 }
@@ -665,7 +679,7 @@ function Drop(evt) {
       window.groupID++;
       updateNode(DragTarget.id, xCoord, yCoord);
     }
-
+    //If drawing edge to node
     if (DragTarget.getAttributeNS(null, 'id') == 'edge_to') {
       if (evt.target.nodeName == 'rect') {
         var targetElement = evt.target.parentNode;
@@ -713,9 +727,9 @@ function Drop(evt) {
         index = findNodeIndex(targetElement.getAttributeNS(null, 'id'));
         var nodeTo = nodes[index].type;
 
-        if (nodeFrom == "I" && nodeTo == "I" && window.altPress == false) {
+        if (nodeFrom == "I" && nodeTo == "I" && window.atkPress == false) {
           AddNode('Default Inference', 'RA', '72', 0, newNodeID, nx, ny);
-        } else if (nodeFrom == "I" && nodeTo == "I" && window.altPress == true) {
+        } else if (nodeFrom == "I" && nodeTo == "I" && window.atkPress == true) {
           AddNode('Default Conflict', 'CA', '71', 0, newNodeID, nx, ny);
         } else if (nodeFrom == "L" && nodeTo == "I") {
           AddNode('Asserting', 'YA', '74', 0, newNodeID, nx, ny);
@@ -729,14 +743,14 @@ function Drop(evt) {
           AddNode('Disagreeing', 'YA', '78', 0, newNodeID, nx, ny);
         } else if (nodeFrom == "RA" && nodeTo == "I") {
 
-        } else if (nodeFrom == "I" && nodeTo == "RA") {
+        } else if (nodeFrom == "I" && nodeTo == "RA" || nodeFrom == "I" && nodeTo == "RA" || nodeFrom == "EN" && nodeTo == "RA" || nodeFrom == "RA" && nodeTo == "EN") {
 
         }
         else {
           AddNode('Default Inference', 'RA', '72', 0, newNodeID, nx, ny);
         }
         //If linked argument
-        if ((nodeFrom == "RA" && nodeTo == "I") || (nodeFrom == "I" && nodeTo == "RA")) {
+        if ((nodeFrom == "RA" && nodeTo == "I") || (nodeFrom == "I" && nodeTo == "RA") || (nodeFrom == "EN" && nodeTo == "RA")) {
           //only draw edge
           DrawEdge(FromID, targetElement.getAttributeNS(null, 'id'));
           var edge = newEdge(FromID, targetElement.getAttributeNS(null, 'id'));
@@ -773,7 +787,7 @@ function Drop(evt) {
     }
     DragTarget.setAttributeNS(null, 'pointer-events', 'all');
     DragTarget = null;
-    
+
     if (window.eBtn) { //deselects the add edge icon button after adding an edge
       edgeMode('off');
       window.eBtn = false;
@@ -783,9 +797,10 @@ function Drop(evt) {
     var box = document.getElementById('multiSelBox');
     var boxWidth = parseInt(box.getAttributeNS(null, 'width'));
     var boxHeight = parseInt(box.getAttributeNS(null, 'height'));
+    var boxX = parseInt(box.getAttributeNS(null, 'x'));
+    var boxY = parseInt(box.getAttributeNS(null, 'y'));
     for (var i = 0; i < nodes.length; i++) {
-      if (nodes[i].x > multiSelRect.startX && nodes[i].x < parseInt(multiSelRect.startX) + boxWidth
-        && nodes[i].y > multiSelRect.startY && nodes[i].y < parseInt(multiSelRect.startY) + boxHeight) {
+      if (nodes[i].x > boxX && nodes[i].x < boxX + boxWidth && nodes[i].y > boxY && nodes[i].y < boxY + boxHeight) {
         mSel.push(nodes[i]);
         rect = document.getElementById(nodes[i].nodeID).getElementsByTagName('rect')[0];
         rect.style.setProperty('stroke-width', 2);

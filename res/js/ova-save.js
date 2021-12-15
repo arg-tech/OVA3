@@ -1,3 +1,7 @@
+/**
+ * Generates a JSON to represent the current analysis
+ * @returns {String} - The generated JSON as a string
+ */
 function genjson() {
     var json = {}
     var jnodes = [];
@@ -90,10 +94,12 @@ function genjson() {
 
     if (url == 'local') {
         txt = getAllText();
+        url = '';
     }
 
     var text = {
-        "txt": txt
+        "txt": txt,
+        "url": url
     };
     json['text'] = text;
 
@@ -102,6 +108,10 @@ function genjson() {
     return jstr;
 }
 
+/**
+ * Generates a link to share the current analysis
+ * @returns {Boolean}
+ */
 function genlink() {
     alink = window.location;
     $('#shareinput').val(alink);
@@ -111,6 +121,10 @@ function genlink() {
     return false;
 }
 
+/**
+ * Saves and downloads the current analysis as a JSON file called 'analysis.json'
+ * @returns {Boolean}
+ */
 function save2file() {
     var jstr = genjson();
 
@@ -125,43 +139,162 @@ function save2file() {
     return false;
 }
 
+/**
+ * Removes the current analysis
+ * @returns {Boolean}
+ */
 function clearAnalysis() {
+    var currentTxt = getAllText();
+    var exampleTxt = "Enter your text here...";
+    if (currentTxt != exampleTxt) {
+        //Clears the text
+        setAllText(exampleTxt);
+        postEdit("text", "edit", exampleTxt, 1);
+    }
+
+    for (var i = edges.length - 1; i >= 0; i--) { delEdge(edges[i]); } //Removes all edges
+    for (var i = nodes.length - 1; i >= 0; i--) { delNode(nodes[i]); } //Removes all nodes
+
+    //Clears the svg
     SVGRoot.removeChild(SVGRootG);
-    nodes = [];
-    edges = [];
     SVGRootG = document.createElementNS("http://www.w3.org/2000/svg", 'g');
     SVGRoot.appendChild(SVGRootG);
     return false;
 }
 
-function loadbutton(evt) {
+/**
+ * Updates the load analysis modal to show the replace current analysis option
+ * @param {Boolean} show - Indicates if the replace option should be shown (true) or not (false), optional
+ * @returns {Boolean}
+ */
+function showReplace(show) {
+    if (nodes.length > 0 || show) {
+        var replace = document.getElementById("load-replace");
+        replace.setAttribute("style", "display:block;");
+    } else if (!show) {
+        var replace = document.getElementById("load-replace");
+        replace.setAttribute("style", "display:none;");
+    }
+    return false;
+}
+
+/**
+ * Handles the selection and loading of files
+ * @param {*} evt - The event
+ * @returns {Boolean}
+ */
+function loadFileBtn(evt) {
     var files = evt.target.files; // FileList object
+    var multi = false;
+    var current = "";
+    var replace = document.getElementById("load_replace");
+    var list = document.getElementById('list');
+    if (files.length > 1 || !replace.checked) { multi = true; current = list.innerHTML.slice(4, -5); }
 
     var output = [];
     for (var i = 0, f; f = files[i]; i++) {
         var reader = new FileReader();
         reader.onload = (function (theFile) {
             return function (e) {
-                loadfile(e.target.result);
+                loadFile(e.target.result, multi);
+                showReplace();
             };
         })(f);
 
         reader.readAsText(f);
 
-        output.push('<span style="font-size:0.8em;">Load file: <strong>', f.name, '</strong> - ',
+        output.push('<span style="font-size:0.8em;">Loaded file: <strong>', f.name, '</strong> - ',
             f.size, ' bytes, last modified: ',
-            f.lastModifiedDate ? f.lastModifiedDate.toLocaleDateString() : 'n/a', '</span>');
+            f.lastModifiedDate ? f.lastModifiedDate.toLocaleDateString() : 'n/a', '</span><br>');
     }
-    document.getElementById('list').innerHTML = '<ul>' + output.join('') + '</ul>';
+    list.innerHTML = '<ul>' + current + output.join('') + '</ul>';
     return false;
 }
 
-function loadfile(jstr) {
-    clearAnalysis(); //remove the previous analysis before loading the new analysis
+/**
+ * Handles the selection and loading of a corpus
+ * @param {Number} corpusName - The short name of the corpus to load
+ * @returns  {Boolean}
+ */
+function loadCorpus(corpusName) {
+    console.log("corpus: " + corpusName);
+    var current = "";
+    var multi = false;
+    var replace = document.getElementById("load_replace");
+    var list = document.getElementById('list');
+    if (!replace.checked) { multi = true; current = list.innerHTML.slice(4, -5); }
+    else { clearAnalysis(); }
+
+    $.getJSON("helpers/corporanodesets.php?shortname=" + corpusName, function (data) {
+        $.each(data.nodeSets, function (idx, nodeSet) {
+            var nSetID = parseInt(nodeSet);
+            $.get('./db/' + nSetID, function (data) {
+                console.log("loading from ./db");
+                loadFile(data, true);
+            }).fail(function () {
+                console.log("loading with node set id: " + nSetID);
+                loadfromdb(nSetID, multi);
+            });
+        });
+        var cName = $("#corpus_sel option:selected").text();
+        list.innerHTML = '<ul>' + current + '<span style="font-size:0.8em;">Loaded corpus: <strong>' + cName + '</strong> - Node set IDs: ' + data.nodeSets.join(', ') + '</span><br>' + '</ul>';
+    });
+    showReplace(true);
+    return false;
+}
+
+/**
+ * Handles the user input for loading an analysis from a node set ID
+ * @param {Number} nodesetID - The node set ID of the analysis to load
+ * @returns  {Boolean}
+ */
+function loadNodeSet(nodesetID) {
+    var nsetID = parseInt(nodesetID);
+    if (Number.isInteger(nsetID) && nsetID > 0) { //if a valid node set ID
+        console.log("nodeset ID: " + nodesetID);
+        var multi = false;
+        var current = "";
+        var replace = document.getElementById("load_replace");
+        var list = document.getElementById('list');
+        if (!replace.checked) { multi = true; current = list.innerHTML.slice(4, -5); }
+
+        var loaded = false;
+        $.get('./db/' + nsetID, function (data) {
+            console.log("loading from ./db");
+            loaded = loadFile(data, multi);
+            if (loaded) {
+                list.innerHTML = '<ul>' + current + '<span style="font-size:0.8em;">Loaded analysis: Node Set ID <strong>' + nsetID + '</strong></span><br>' + '</ul>';
+                showReplace(true);
+            } else {
+                list.innerHTML = '<ul>' + current + '<span style="font-size:0.8em;color:rgba(224, 46, 66, 1);">Failed to load analysis: Node Set ID <strong>' + nsetID + '</strong></span><br>' + '</ul>';
+            }
+        }).fail(function () {
+            console.log("loading with node set id");
+            loadfromdb(nsetID, multi);
+        });
+    }
+    return false;
+}
+
+/**
+ * Loads a JSON file
+ * @param {*} jstr - The JSON file to load
+ * @param {Boolean} multi - Indicates if the loaded analysis should replace the current analysis (false) or be added to it (true)
+ * @return {Boolean} - Indicates if the JSON file was successfully loaded (true) or not (false)
+ */
+function loadFile(jstr, multi) {
     if (typeof jstr !== 'object') {
         var json = JSON.parse(jstr);
     } else {
         var json = jstr;
+    }
+
+    var offset = 0;
+    if (multi) {
+        offset = calOffset('y');
+        console.log("offset: " + offset);
+    } else {
+        clearAnalysis(); //remove the previous analysis before loading the new analysis
     }
 
     var oplus = false;
@@ -169,27 +302,34 @@ function loadfile(jstr) {
         oplus = true;
     }
 
-    if (json['OVA']) { //if in ova3 format
-        loadOva3Json(json, oplus);
+    if (json['OVA']) { //if in OVA3 format
+        loadOva3Json(json, oplus, offset);
+        return true;
     } else if (json['nodes']) {
         var jnodes = json['nodes'];
         if (jnodes.length > 0 && !(jnodes[0].hasOwnProperty('x'))) { //if in db format
-            loaddbjson(json, oplus);
-        } else if (jnodes.length > 0 && jnodes[0].hasOwnProperty('id')) { //if in ova2 format
-            loadOva2Json(json, oplus);
+            loaddbjson(json, oplus, offset);
+            return true;
+        } else if (jnodes.length > 0 && jnodes[0].hasOwnProperty('id')) { //if in OVA2 format
+            loadOva2Json(json, oplus, offset);
+            return true;
         }
     }
+    return false;
 }
 
-function loadOva3Json(json, oplus) {
-    // console.log("loading OVA3 json");
-    //load text on LHS
-    setAllText(json['text']['txt']);
-    postEdit("text", "edit", json['text']['txt'], 1);
+/**
+ * Loads analysis maps from OVA3 formatted JSONs
+ * @param {Object} json - The json to be loaded in
+ * @param {Boolean} oplus - Indicates if the analysis should be loaded in dialogical (true) or non-dialogical (false) mode
+ * @param {Number} offset - The offset to be added to the y coordinates
+ * @return {void} Nothing
+ */
+function loadOva3Json(json, oplus, offset) {
+    console.log("loading OVA3 json");
 
     //load participants
     var p = json['AIF']['participants'];
-    var pID = 0;
     if (p != undefined) {
         for (var i = 0, l = p.length; i < l; i++) {
             firstname = p[i].firstname;
@@ -198,13 +338,19 @@ function loadOva3Json(json, oplus) {
         }
     }
 
+    var text = false;
+    if (json['text']['txt'] != "") {
+        text = loadText(json['text']['txt']);
+    }
+    if (!text && json['text'].hasOwnProperty("url")) {
+        loadUrl(json['text']['url']);
+    }
+
     //create the nodes
     var jnodes = json['AIF']['nodes'];
     var nodelist = {};
+    var pID = 0;
     for (var i = 0, l = jnodes.length; i < l; i++) {
-        if (jnodes[i].nodeID > window.nodeCounter) {
-            window.nodeCounter = jnodes[i].nodeID;
-        }
         if (oplus) {
             if (jnodes[i].type == "L") {
                 pID = findParticipantIDText(jnodes[i].text);
@@ -212,50 +358,47 @@ function loadOva3Json(json, oplus) {
             } else {
                 nodelist[jnodes[i].nodeID] = newNode(jnodes[i].nodeID, jnodes[i].type, null, 0, jnodes[i].text, 0, 0, false, 1);
             }
-        } else if (jnodes[i].type == "I" || jnodes[i].type == "RA" || jnodes[i].type == "CA" || jnodes[i].type == "EN") {
+        } else if (jnodes[i].type == "I" || jnodes[i].type == "RA" || jnodes[i].type == "CA" || jnodes[i].type == "MA" || jnodes[i].type == "EN") {
             nodelist[jnodes[i].nodeID] = newNode(jnodes[i].nodeID, jnodes[i].type, null, 0, jnodes[i].text, 0, 0, false, 1);
-            if (jnodes[i].type == "I") { hlUpdate(jnodes[i].nodeID, jnodes[i].type, jnodes[i].nodeID, 1); }
+            if (jnodes[i].type == "I" && text) { hlUpdate(jnodes[i].nodeID, jnodes[i].type, jnodes[i].nodeID, 1); }
         }
     }
-    //update the node counter
-    var last = jnodes.length - 1;
-    var id = jnodes[last].nodeID.split("_", 2);
-    window.nodeCounter = (parseInt(id[0]) + 1);
+
+    window.nodeCounter += jnodes.length; //update the node counter
 
     //set any scheme fulfillments
     var sf = json['AIF']['schemefulfillments'];
     if (sf != undefined) {
         for (var i = 0; i < sf.length; i++) {
-            index = findNodeIndex(sf[i].nodeID);
-            if (index > -1) { //if the node exists
-                updateNode(nodes[index].nodeID, nodes[index].x, nodes[index].y, nodes[index].visible, 1, nodes[index].type, sf[i].schemeID);
-            }
+            updateNodeScheme(sf[i].nodeID, sf[i].schemeID, 1);
         }
     }
 
     //set the layout of the nodes and draw them on the svg
     var n = json['OVA']['nodes'];
+    var newY = 0;
     for (var i = 0, l = n.length; i < l; i++) {
         if (nodelist[n[i].nodeID]) {
             if (n[i].visible) {
-                updateNode(n[i].nodeID, n[i].x, n[i].y, n[i].visible, 1);
+                newY = parseInt(n[i].y) + offset;
+                updateNode(n[i].nodeID, n[i].x, newY, n[i].visible, 1);
                 DrawNode(nodelist[n[i].nodeID].nodeID, nodelist[n[i].nodeID].type, nodelist[n[i].nodeID].text, nodelist[n[i].nodeID].x, nodelist[n[i].nodeID].y);
                 if (n[i].timestamp) {
-                    addTimestamp(n[i].nodeID, n[i].timestamp);
-                    if (window.showTimestamps) { DrawTimestamp(n[i].nodeID, n[i].timestamp, n[i].x, n[i].y); }
+                    updateTimestamp(n[i].nodeID, n[i].timestamp);
+                    if (window.showTimestamps) { DrawTimestamp(n[i].nodeID, n[i].timestamp, nodelist[n[i].nodeID].x, nodelist[n[i].nodeID].y); }
                 }
             }
         }
     }
 
     //create and draw any connecting edges
-    edges = [];
     var e = json['OVA']['edges'];
+    var from, to, edge;
     for (var i = 0, l = e.length; i < l; i++) {
         from = e[i].fromID;
         to = e[i].toID;
         if (from in nodelist && to in nodelist) { //if both the nodes the edge connects exist
-            var edge = newEdge(from, to, e[i].visible, 1);
+            edge = newEdge(from, to, e[i].visible, 1);
             if (e[i].visible) {
                 DrawEdge(from, to);
                 UpdateEdge(edge);
@@ -264,11 +407,15 @@ function loadOva3Json(json, oplus) {
     }
 }
 
-function loadOva2Json(json, oplus) {
-    // console.log("loading OVA2 json");
-    //load text on LHS
-    setAllText(json['analysis']['txt']);
-    postEdit("text", "edit", json['analysis']['txt'], 1);
+/**
+ * Loads analysis maps from OVA2 formatted JSONs
+ * @param {Object} json - The json to be loaded in
+ * @param {Boolean} oplus - Indicates if the analysis should be loaded in dialogical (true) or non-dialogical (false) mode
+ * @param {Number} offset - The offset to be added to the y coordinates
+ * @return {void} Nothing
+ */
+function loadOva2Json(json, oplus, offset) {
+    console.log("loading OVA2 json");
 
     //load participants
     var p = json['participants'];
@@ -281,61 +428,148 @@ function loadOva2Json(json, oplus) {
         }
     }
 
+    var text = loadText(json['analysis']['txt']); //load text on LHS
+
     //load nodes
     var nodelist = {};
     var jnodes = json['nodes'];
     var nID = '';
     var count = window.nodeCounter;
+    var newY = 0;
     for (var i = 0, l = jnodes.length; i < l; i++) {
         if ((count + jnodes[i].id) > window.nodeCounter) {
-            window.nodeCounter = (count + jnodes[i].id);
+            window.nodeCounter = (count + jnodes[i].id); //update the node counter
         }
         nID = ((count + jnodes[i].id) + "_" + window.sessionid);
+        newY = parseInt(jnodes[i].y) + offset;
         if (oplus) {
             if (jnodes[i].type == "L") {
                 pID = findParticipantIDText(jnodes[i].text);
-                nodelist[nID] = newNode(nID, jnodes[i].type, jnodes[i].scheme, pID, jnodes[i].text, jnodes[i].x, jnodes[i].y, jnodes[i].visible, 1, jnodes[i].timestamp);
+                nodelist[nID] = newNode(nID, jnodes[i].type, jnodes[i].scheme, pID, jnodes[i].text, jnodes[i].x, newY, jnodes[i].visible, 1, jnodes[i].timestamp);
                 if (jnodes[i].visible) {
-                    DrawNode(nID, jnodes[i].type, jnodes[i].text, jnodes[i].x, jnodes[i].y);
-                    hlUpdate(jnodes[i].id, jnodes[i].type, nID, 1);
-                    if (window.showTimestamps) {
-                        DrawTimestamp(nID, jnodes[i].timestamp, jnodes[i].x, jnodes[i].y);
-                    }
+                    DrawNode(nID, jnodes[i].type, jnodes[i].text, jnodes[i].x, newY);
+                    if (text) { hlUpdate(jnodes[i].id, jnodes[i].type, nID, 1); }
+                    if (window.showTimestamps) { DrawTimestamp(nID, jnodes[i].timestamp, jnodes[i].x, newY); }
                 }
             } else {
-                nodelist[nID] = AddNode(jnodes[i].text, jnodes[i].type, jnodes[i].scheme, 0, nID, jnodes[i].x, jnodes[i].y, jnodes[i].visible, 1);
+                nodelist[nID] = AddNode(jnodes[i].text, jnodes[i].type, jnodes[i].scheme, 0, nID, jnodes[i].x, newY, jnodes[i].visible, 1);
             }
-        } else if (jnodes[i].type == "I" || jnodes[i].type == "RA" || jnodes[i].type == "CA" || jnodes[i].type == "EN") {
-            nodelist[nID] = AddNode(jnodes[i].text, jnodes[i].type, jnodes[i].scheme, 0, nID, jnodes[i].x, jnodes[i].y, jnodes[i].visible, 1);
-            if (jnodes[i].type == "I") { hlUpdate((jnodes[i].id - 2), jnodes[i].type, nID, 1); }
+        } else if (jnodes[i].type == "I" || jnodes[i].type == "RA" || jnodes[i].type == "CA" || jnodes[i].type == "MA" || jnodes[i].type == "EN") {
+            nodelist[nID] = AddNode(jnodes[i].text, jnodes[i].type, jnodes[i].scheme, 0, nID, jnodes[i].x, newY, jnodes[i].visible, 1);
+            if (jnodes[i].type == "I" && text) { hlUpdate((jnodes[i].id - 2), jnodes[i].type, nID, 1); }
         }
     }
-    window.nodeCounter++;
+    window.nodeCounter++; //update the node counter
 
     //load edges
-    edges = [];
     var e = json['edges'];
-    var edgelist = {};
-    var id = '';
+    var edgeList = {};
+    var from, to, id;
     for (var i = 0, l = e.length; i < l; i++) {
         from = ((count + e[i].from.id) + "_" + window.sessionid);
         to = ((count + e[i].to.id) + "_" + window.sessionid);
         id = (count + e[i].from.id) + "_" + (count + e[i].to.id);
-        if (from in nodelist && to in nodelist && !(id in edgelist)) { //if both the nodes the edge connects exist and the edge hasn't already been loaded
-            edgelist[id] = newEdge(from, to, e[i].visible, 1);
-            if (edgelist[id].visible) {
+        if (from in nodelist && to in nodelist && !(id in edgeList)) { //if both the nodes the edge connects exist and the edge hasn't already been loaded
+            edgeList[id] = newEdge(from, to, e[i].visible, 1);
+            if (edgeList[id].visible) {
                 DrawEdge(from, to);
-                UpdateEdge(edgelist[id]);
+                UpdateEdge(edgeList[id]);
             }
         }
     }
 }
 
-function loaddbjson(json, oplus) {
-    // console.log("loading DB json");
+/**
+ * Calculates the offset from the top left of the svg box required to place another analysis map to the right (x offset) 
+ * or under (y offset) the current analysis map drawn on the svg
+ * @param {String} type - Represents offsetting from the x or y coordinates, must be either 'x' or 'y'
+ * @returns {number} - The calculated offset or zero if an offset can't be calculated
+ */
+function calOffset(type) {
+    var offset = 0;
+    if (nodes.length >= 1 && (type == 'x' || type == 'y')) { //if the current analysis contains any nodes and the type is x or y
+        nodes.sort((a, b) => type == 'x' ? b.x - a.x : b.y - a.y); //sort the nodes from largest to smallest x or y coordinates
+        offset = (type == 'x' ? parseInt(nodes[0].x) : parseInt(nodes[0].y)) + 40; //offset by the largest x or y coordinate plus 40
+    }
+    return offset;
+}
+
+/**
+ * Loads and displays text
+ * @param {String} text - The text to be loaded in and displayed
+ * @returns {Boolean} - If the text was successfully loaded (true) or not (false)
+ */
+function loadText(text) {
+    if (text != "") {
+        var url = getUrlVars()["url"];
+        if (url != 'local') {
+            //update the url variable to be local without reloading
+            var currentUrl = new URL(window.location);
+            currentUrl.searchParams.set('url', 'local');
+            history.pushState(null, null, currentUrl);
+
+            var iframe = document.getElementById('extside');
+            iframe.setAttribute("style", "display:none;"); //hide the iframe
+            var textArea = document.getElementById('analysis_text');
+            textArea.setAttribute("style", "display:block;"); //show the text area on the left
+        }
+
+        //check if the current text displayed should be replaced or kept
+        var currentTxt = getAllText();
+        var exampleTxt = "Enter your text here...";
+        var waitTxt = "Loading URL, please wait.";
+        var allTxt = currentTxt !== exampleTxt && currentTxt !== waitTxt ? currentTxt + "<div><br></div>" + text : text;
+
+        //display the text in the analysis text div on the left
+        setAllText(allTxt);
+        postEdit("text", "edit", allTxt, 1);
+        return true;
+    }
+    return false;
+}
+
+/**
+ * Loads and displays the PDF or website at the given URL
+ * @param {String} url - The URL to be loaded in
+ * @returns  {Boolean} - If the URL was successfully loaded (true) or not (false)
+ */
+function loadUrl(url) {
+    if (url != "") {
+        var textArea = document.getElementById('analysis_text');
+        textArea.innerHTML = "Loading URL, please wait.";
+
+        //update the url variable to the loaded url value without reloading
+        var currentUrl = new URL(window.location);
+        currentUrl.searchParams.set('url', url);
+        history.pushState(null, null, currentUrl);
+
+        //display the pdf or website in the iframe on the left
+        $.get("helpers/getsource.php?url=" + url + "&returnAnalysis=" + true, function (data) {
+            dt = JSON.parse(data);
+            var analysis = dt.analysis;
+
+            textArea.setAttribute("style", "display:none;"); //hide the text area on the left
+            var iframe = document.getElementById('extside');
+            iframe.setAttribute("style", "display:flex;width:100%;height:100%;border-right:1px solid #666;"); //show the iframe
+            iframe.setAttribute("src", analysis); //load the pdf or website
+        });
+        return true;
+    }
+    return false;
+}
+
+/**
+ * Loads analysis maps from AIF formatted JSONs
+ * @param {Object} json - The json to be loaded in
+ * @param {Boolean} oplus - Indicates if the analysis should be loaded in dialogical (true) or non-dialogical (false) mode
+ * @param {Number} offset - The offset to be added to the y coordinates
+ * @return {void} Nothing
+ */
+function loaddbjson(json, oplus, offset) {
+    console.log("loading DB json");
+
     //load participants
     var p = json['participants'];
-    var pID = 0;
     if (p != undefined) {
         for (var i = 0, l = p.length; i < l; i++) {
             firstname = p[i].firstname;
@@ -349,72 +583,117 @@ function loaddbjson(json, oplus) {
     var xpos = 0;
     var ypos = 0;
     var jnodes = json['nodes'];
+    var r1 = /\b\w+:\s\w+\s\w+:/g;
+    var r2 = /\b\w+:\s\w+\s\w+\s:/g;
+    var participant = null;
+    var pName = [];
+    var nID = "";
+    var count = window.nodeCounter;
 
     for (var i = 0, l = jnodes.length; i < l; i++) {
         node = jnodes[i];
-        xpos = 10 + (i * 10);
-        ypos = 10;
+        xpos = 50 + (i * 10);
+        ypos = 50 + offset;
+
+        if ((count + node.nodeID) > window.nodeCounter) {
+            window.nodeCounter = (count + node.nodeID); //update the node counter
+        }
+        nID = ((count + node.nodeID) + "_" + window.sessionid);
 
         if (node.type == "CA") {
-            nodelist[node.nodeID] = AddNode(node.text, node.type, '71', 0, node.nodeID, xpos, ypos);
+            nodelist[nID] = AddNode(node.text, node.type, '71', 0, nID, xpos, ypos, true, 1);
         } else if (node.type == "RA") {
-            nodelist[node.nodeID] = AddNode(node.text, node.type, '72', 0, node.nodeID, xpos, ypos);
+            nodelist[nID] = AddNode(node.text, node.type, '72', 0, nID, xpos, ypos, true, 1);
         } else if (node.type == "I") {
-            nodelist[node.nodeID] = AddNode(node.text, node.type, null, 0, node.nodeID, xpos, ypos);
-        }
-        else if (oplus) {
+            nodelist[nID] = AddNode(node.text, node.type, null, 0, nID, xpos, ypos, true, 1);
+        } else if (node.type == "MA") {
+            nodelist[nID] = AddNode(node.text, node.type, '144', 0, nID, xpos, ypos, true, 1);
+        } else if (oplus) {
             if (node.type == "TA") {
-                nodelist[node.nodeID] = AddNode(node.text, node.type, '82', 0, node.nodeID, xpos, ypos);
+                nodelist[nID] = AddNode(node.text, node.type, '82', 0, nID, xpos, ypos, true, 1);
             } else if (node.type == "YA") {
                 if (node.text == 'Analysing') { //if an analyst node
-                    nodelist[node.nodeID] = AddNode(node.text, node.type, '75', 0, node.nodeID, 0, 0, false);
+                    nodelist[nID] = AddNode(node.text, node.type, '75', 0, nID, 0, 0, false, 1);
                 } else {
-                    nodelist[node.nodeID] = AddNode(node.text, node.type, '168', 0, node.nodeID, xpos, ypos);
+                    nodelist[nID] = AddNode(node.text, node.type, '168', 0, nID, xpos, ypos, true, 1);
                 }
-            } else if (node.type == "MA") {
-                nodelist[node.nodeID] = AddNode(node.text, node.type, '144', 0, node.nodeID, xpos, ypos);
             } else if (node.type == "PA") {
-                nodelist[node.nodeID] = AddNode(node.text, node.type, '161', 0, node.nodeID, xpos, ypos);
+                nodelist[nID] = AddNode(node.text, node.type, '161', 0, nID, xpos, ypos, true, 1);
             } else if (node.type == "L") {
-                pID = findParticipantIDText(node.text);
-                if (pID == 0) { //if an analyst node
-                    nodelist[node.nodeID] = AddNode(node.text, node.type, null, 0, node.nodeID, 0, 0, false);
+                if (r1.test(node.text) || r2.test(node.text)) { //if an analyst node
+                    nodelist[nID] = AddNode(node.text, node.type, null, 0, nID, 0, 0, false, 1);
                 } else { //to prevent duplicate analyst nodes
-                    nodelist[node.nodeID] = newNode(node.nodeID, node.type, null, pID, node.text, xpos, ypos);
-                    DrawNode(node.nodeID, node.type, node.text, xpos, ypos);
+                    pName = getParticipantName(node.text);
+                    participant = addParticipant(pName[0], pName[1]);
+                    nodelist[nID] = newNode(nID, node.type, null, participant.participantID, node.text, xpos, ypos, true, 1);
+                    DrawNode(nID, node.type, node.text, xpos, ypos);
                 }
             }
         }
     }
 
     //load edges
-    jedges = json['edges'];
-    var visible = true;
-    var index = 0;
-    for (var i = 0, l = jedges.length; i < l; i++) {
-        if (jedges[i].fromID in nodelist && jedges[i].toID in nodelist) { //if both nodes the edge connects exist
-            index = findNodeIndex(jedges[i].fromID);
-            visible = nodes[index].visible; //if the edge connects an invisible node it should also be invisible
-            edge = newEdge(jedges[i].fromID, jedges[i].toID, visible);
-            if (visible) { //if the edge is visible then draw edge on svg
-                DrawEdge(edge.fromID, edge.toID);
-                UpdateEdge(edge);
+    var e = json['edges'];
+    var edgeList = {};
+    var from, to, id, indexF, indexT, visible;
+    for (var i = 0, l = e.length; i < l; i++) {
+        from = ((count + e[i].fromID) + "_" + window.sessionid);
+        to = ((count + e[i].toID) + "_" + window.sessionid);
+        id = (count + e[i].fromID) + "_" + (count + e[i].toID);
+        if (from in nodelist && to in nodelist && !(id in edgeList)) { //if both the nodes the edge connects exist and the edge hasn't already been loaded
+            indexF = findNodeIndex(from);
+            indexT = findNodeIndex(to);
+            visible = nodes[indexF].visible && nodes[indexT].visible ? true : false; //if the edge connects an invisible node it should also be invisible
+            edgeList[id] = newEdge(from, to, visible, 1);
+            if (visible) {
+                DrawEdge(from, to);
+                UpdateEdge(edgeList[id]);
             }
         }
     }
 
     //set any scheme fulfillments
     var sf = json['schemefulfillments'];
+    var newID = "";
     if (sf != undefined) {
         for (var i = 0; i < sf.length; i++) {
-            index = findNodeIndex(sf[i].nodeID);
-            nodes[index].scheme = sf[i].schemeID;
+            newID = ((count + sf[i].nodeID) + "_" + window.sessionid);
+            updateNodeScheme(newID, sf[i].schemeID, 1);
+        }
+    }
+
+    //set any timestamps
+    var l = json['locutions'];
+    var r3 = /\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}/g;
+    var timestamp, start, tstamp, tsd, index;
+    if (l != undefined) {
+        for (var i = 0; i < l.length; i++) {
+            test = r3.test(l[i].start);
+            if (test) { //if a valid date time stamp
+                start = l[i].start.split(" ", 2); //split date and time
+                tstamp = new Date(start[0] + "T" + start[1] + ".000Z"); //ISO string
+                tsd = new Date();
+                tsd.setTime(tstamp);
+                timestamp = tsd.toString();
+                newID = ((count + l[i].nodeID) + "_" + window.sessionid);
+                updateTimestamp(newID, timestamp);
+                if (window.showTimestamps) {
+                    index = findNodeIndex(newID);
+                    DrawTimestamp(nodes[index].nodeID, nodes[index].timestamp, nodes[index].x, nodes[index].y);
+                }
+            }
         }
     }
 }
 
-function loadfromdb(nodeSetID) {
-    //console.log("loadfromdb");
+/**
+ * Loads an analysis map from the database
+ * @param {*} nodeSetID - The node set ID of the analysis to load
+ * @param {Boolean} multi - Indicates if the loaded analysis should replace the current analysis (false) or be added to it (true)
+ * @return {void} Nothing
+ */
+function loadfromdb(nodeSetID, multi) {
+    console.log("called loadfromdb(" + nodeSetID + ")");
     var oplus = false;
     var uplus = "&plus=false";
     if ("plus" in getUrlVars()) {
@@ -423,87 +702,158 @@ function loadfromdb(nodeSetID) {
     }
     $.getJSON("helpers/layout.php?id=" + nodeSetID + uplus, function (ldata) {
         $.getJSON("helpers/getdbnodeset.php?id=" + nodeSetID, function (data) {
+            console.log(ldata);
+            console.log(data);
 
-            $.each(data.participants, function (idx, p) {
-                addParticipant(p.firstname, p.surname);
+            // //load participants
+            // $.each(data.participants, function (idx, p) {
+            //     addParticipant(p.firstname, p.surname);
+            // });
+
+            var offset = 0;
+            if (multi) {
+                offset = calOffset('y');
+                console.log("offset: " + offset);
+            } else {
+                console.log("clearing analysis");
+                clearAnalysis(); //remove the previous analysis before loading the new analysis
+            }
+
+            //load text
+            $.get("helpers/gettext.php?id=" + nodeSetID, function (tdata) {
+                console.log(tdata);
+                loadText(tdata);
             });
 
+            //load nodes
             var nodelist = {};
+            var r1 = /\w+:\s\w+\s\w+:/g;
+            var r2 = /\w+:\s\w+\s\w+\s:/g;
+            var p = null;
+            var pName = [];
+            var nID = "";
+            var count = window.nodeCounter;
+            var id = 0;
             $.each(data.nodes, function (idx, node) {
+                id = parseInt(node.nodeID);
+                if ((count + id) > window.nodeCounter) {
+                    window.nodeCounter = (count + id); //update the node counter
+                }
+                nID = ((count + id) + "_" + window.sessionid); //new node ID
 
                 if (node.nodeID in ldata) {
                     xpos = parseInt(ldata[node.nodeID]["x"]);
                     xpos = xpos * 0.8;
-                    if (xpos > mwidth - 100) { mwidth = xpos + 100; }
-                    ypos = parseInt(ldata[node.nodeID]["y"]);
-                    if (ypos > mheight - 100) { mheight = ypos + 100; }
+                    ypos = parseInt(ldata[node.nodeID]["y"]) + offset;
                 } else {
-                    xpos = 10;
-                    ypos = 10;
+                    xpos = 150;
+                    ypos = 50 + offset;
                 }
 
                 if (node.type == "CA") {
-                    nodelist[node.nodeID] = AddNode(node.text, node.type, '71', 0, node.nodeID, xpos, ypos);
+                    nodelist[nID] = AddNode(node.text, node.type, '71', 0, nID, xpos, ypos, true, 1);
                 } else if (node.type == "RA") {
-                    nodelist[node.nodeID] = AddNode(node.text, node.type, '72', 0, node.nodeID, xpos, ypos);
+                    nodelist[nID] = AddNode(node.text, node.type, '72', 0, nID, xpos, ypos, true, 1);
                 } else if (node.type == "I") {
-                    nodelist[node.nodeID] = AddNode(node.text, node.type, null, 0, node.nodeID, xpos, ypos);
+                    nodelist[nID] = AddNode(node.text, node.type, null, 0, nID, xpos, ypos, true, 1);
+                } else if (node.type == "MA") {
+                    nodelist[nID] = AddNode(node.text, node.type, '144', 0, nID, xpos, ypos, true, 1);
                 }
                 else if (oplus) {
                     if (node.type == "TA") {
-                        nodelist[node.nodeID] = AddNode(node.text, node.type, '82', 0, node.nodeID, xpos, ypos);
+                        nodelist[nID] = AddNode(node.text, node.type, '82', 0, nID, xpos, ypos, true, 1);
                     } else if (node.type == "YA") {
                         if (node.text == 'Analysing') { //if an analyst node
-                            nodelist[node.nodeID] = AddNode(node.text, node.type, '75', 0, node.nodeID, 0, 0, false);
+                            nodelist[nID] = AddNode(node.text, node.type, '75', 0, nID, 0, 0, false, 1);
                         } else {
-                            nodelist[node.nodeID] = AddNode(node.text, node.type, '168', 0, node.nodeID, xpos, ypos);
+                            nodelist[nID] = AddNode(node.text, node.type, '168', 0, nID, xpos, ypos, true, 1);
                         }
-                    } else if (node.type == "MA") {
-                        nodelist[node.nodeID] = AddNode(node.text, node.type, '144', 0, node.nodeID, xpos, ypos);
                     } else if (node.type == "PA") {
-                        nodelist[node.nodeID] = AddNode(node.text, node.type, '161', 0, node.nodeID, xpos, ypos);
+                        nodelist[nID] = AddNode(node.text, node.type, '161', 0, nID, xpos, ypos, true, 1);
                     } else if (node.type == "L") {
-                        pID = findParticipantIDText(node.text);
-                        if (pID == 0) { //if an analyst node
-                            nodelist[node.nodeID] = AddNode(node.text, node.type, null, 0, node.nodeID, 0, 0, false);
+                        if (r1.test(node.text) || r2.test(node.text)) { //if an analyst node
+                            nodelist[nID] = AddNode(node.text, node.type, null, 0, nID, 0, 0, false, 1);
                         } else { //to prevent duplicate analyst nodes
-                            nodelist[node.nodeID] = newNode(node.nodeID, node.type, null, pID, node.text, xpos, ypos);
-                            DrawNode(node.nodeID, node.type, node.text, xpos, ypos);
+                            pName = getParticipantName(node.text);
+                            p = addParticipant(pName[0], pName[1]);
+                            nodelist[nID] = newNode(nID, node.type, null, p.participantID, node.text, xpos, ypos, true, 1);
+                            DrawNode(nID, node.type, node.text, xpos, ypos);
                         }
                     }
                 }
             });
 
+            //load edges
+            var edgeList = {};
+            var from, to, id, indexF, indexT, visible;
             $.each(data.edges, function (idx, edge) {
-                if (edge.fromID in nodelist && edge.toID in nodelist) {
-                    index = findNodeIndex(edge.fromID);
-                    visible = nodes[index].visible; //if the edge connects an invisible node it should also be invisible
-                    var e = newEdge(edge.fromID, edge.toID, visible);
+                from = ((count + parseInt(edge.fromID)) + "_" + window.sessionid);
+                to = ((count + parseInt(edge.toID)) + "_" + window.sessionid);
+                id = (count + parseInt(edge.fromID)) + "_" + (count + parseInt(edge.toID));
+                if (from in nodelist && to in nodelist && !(id in edgeList)) { //if both the nodes the edge connects exist and the edge hasn't already been loaded
+                    indexF = findNodeIndex(from);
+                    indexT = findNodeIndex(to);
+                    visible = nodes[indexF].visible && nodes[indexT].visible ? true : false; //if the edge connects an invisible node it should also be invisible
+                    edgeList[id] = newEdge(from, to, visible, 1);
                     if (visible) { //if the edge is visible then draw edge on svg
-                        DrawEdge(e.fromID, e.toID);
-                        UpdateEdge(e);
+                        DrawEdge(from, to);
+                        UpdateEdge(edgeList[id]);
                     }
                 }
             });
 
-            $.get("helpers/gettext.php?id=" + nodeSetID, function (tdata) {
-                setAllText(tdata);
-            });
+            // //set any scheme fulfillments
+            // $.each(data.schemefulfillments, function (idx, sf) {
+            //     newID = ((count + parseInt(sf.nodeID)) + "_" + window.sessionid);
+            //     if (newID in nodelist) {
+            //         updateNodeScheme(newID, sf.schemeID, 1);
+            //     }
+            // });
 
-            $.each(data.schemefulfillments, function (idx, sf) {
-                if (sf.nodeID in nodelist) {
-                    index = findNodeIndex(sf.nodeID);
-                    nodes[index].scheme = sf.schemeID;
+            //set any timestamps
+            var r3 = /\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}/g;
+            var timestamp, start, tstamp, tsd, index;
+            $.each(data.locutions, function (idx, l) {
+                newID = ((count + parseInt(l.nodeID)) + "_" + window.sessionid);
+                if (newID in nodelist) {
+                    test = r3.test(l.start);
+                    if (test) { //if a valid date time stamp
+                        start = l.start.split(" ", 2); //split date and time
+                        tstamp = new Date(start[0] + "T" + start[1] + ".000Z"); //ISO string
+                        tsd = new Date();
+                        tsd.setTime(tstamp);
+                        timestamp = tsd.toString();
+                        updateTimestamp(newID, timestamp);
+                        if (window.showTimestamps) {
+                            index = findNodeIndex(newID);
+                            DrawTimestamp(nodes[index].nodeID, nodes[index].timestamp, nodes[index].x, nodes[index].y);
+                        }
+                    }
                 }
             });
 
-            //var currenturl = window.location;
-            //var newurl = currenturl.replace(/aifdb=[0-9]+/i, ""); 
-            //history.pushState(null, null, newurl);
+            if ("aifdb" in getUrlVars()) {
+                var currenturl = window.location;
+                var newurl = currenturl.replace(/aifdb=[0-9]+/i, "");
+                history.pushState(null, null, newurl);
+            }
+
+            var list = document.getElementById('list');
+            var current = multi ? list.innerHTML.slice(4, -5) : "";
+            list.innerHTML = '<ul>' + current + '<span style="font-size:0.8em;">Loaded analysis: Node Set ID <strong>' + nodeSetID + '</strong></span><br>' + '</ul>';
+            showReplace(true);
+        }).fail(function () {
+            var list = document.getElementById('list');
+            var current = multi ? list.innerHTML.slice(4, -5) : "";
+            list.innerHTML = '<ul>' + current + '<span style="font-size:0.8em;color:rgba(224, 46, 66, 1);">Failed to load analysis: Node Set ID <strong>' + nodeSetID + '</strong></span><br>' + '</ul>';
         });
     });
 }
 
+/**
+ * Saves the current analysis to the database in AIF
+ * @returns {Boolean}
+ */
 function save2db() {
     $('#modal-save2db').show();
     $('#m_load').show();
@@ -626,16 +976,31 @@ function save2db() {
     return false;
 }
 
+/**
+ * Adds an analysis to a corpus
+ * @param {*} addnsID - The node set ID of the analysis to be added
+ * @return {void} Nothing
+ */
 function add2corpus(addnsID) {
     var cID = $("#s_corpus").val();
+    var cName = $("#s_corpus option:selected").text();
     $.get("helpers/corporapost.php?nsID=" + addnsID + "&cID=" + cID, function (data) {
-        $('#modal-save2db').hide();
-        $('#modal-shade').hide();
+        // $('#modal-save2db').hide();
+        // $('#modal-shade').hide();
+        $('#m_content').hide();
+        $('#m_confirm').html("<p style='font-weight:700'>Added to " + cName + " corpus.</p>" + "<p style='font-weight:700'>Node Set ID: " + addnsID + "</p>");
+        $('#m_confirm').show();
     }).fail(function () {
         alert("Unable to add to corpus");
     });
 }
 
+/**
+ * Replaces an analysis in corpora
+ * @param {*} addnsID - The node set ID of the analysis to be added
+ * @param {*} rplnsID - The node set ID of the analysis to be replaced
+ * @return {void} Nothing
+ */
 function rpl2corpus(addnsID, rplnsID) {
     $('.rccb:checkbox:checked').each(function () {
         crpID = $(this).val();
@@ -652,6 +1017,10 @@ function rpl2corpus(addnsID, rplnsID) {
     $('#modal-shade').hide();
 }
 
+/**
+ * Saves the on screen analysis map as a PNG
+ * @return {void} Nothing
+ */
 function svg2canvas2image() {
     var box = SVGRoot.getBBox();
     var x = box.x;
@@ -684,6 +1053,11 @@ function svg2canvas2image() {
     }
 }
 
+/**
+ * Closes a popup if it's open
+ * @param {*} popupName - the name of the popup to close
+ * @return {void} Nothing
+ */
 function closePopupIfOpen(popupName) {
     if (typeof (window[popupName]) != 'undefined' && !window[popupName].closed) {
         window[popupName].close();

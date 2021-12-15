@@ -1,36 +1,10 @@
 <?php
 require_once('config.php');
+require_once('helpers/getsource.php');
 
 if (isset($_GET['af']) && isset($_GET['as'])) {
   $cookie_value = $_GET['af'] . ";" . $_GET['as'];
   setcookie("ovauser", $cookie_value, time() + (86400 * 180), "/");
-}
-
-$source = $_GET['url'];
-if ($source == "local") {
-  $analysis = "localtext.html";
-} elseif (substr($source, -3) == "pdf") {
-  if ($source == "pdf") {
-    $analysis = "pdfjs/web/viewer.html";
-  } else {
-    $pdfurl = $source;
-    $parts = pathinfo($pdfurl);
-    $pdfurl = $parts['dirname'] . '/' . rawurlencode($parts['basename']);
-    $fname = hash('md5', $pdfurl);
-    file_put_contents('pdfs/' . $fname . '.pdf', fopen($pdfurl, 'r'));
-    $analysis = "pdfjs/web/viewer.html?file=../../pdfs/" . $fname . ".pdf";
-  }
-  $source = "pdf";
-} elseif (substr($source, 0, 4) != "http") {
-  $rtime = time();
-  $salt = "ovas@lt22";
-  $hash = md5($rtime . $salt);
-  $analysis = "browser.php?r=" . $rtime . "&h=" . $hash . "&url=http://" . $_GET['url'];
-} else {
-  $rtime = time();
-  $salt = "ovas@lt22";
-  $hash = md5($rtime . $salt);
-  $analysis = "browser.php?r=" . $rtime . "&h=" . $hash . "&url=" . $_GET['url'];
 }
 
 $pro = false;
@@ -146,10 +120,11 @@ if (isset($_COOKIE['ovauser'])) {
       </div>
       <div class="modal-body">
         <div id="m_load">Processing<br /><img src="res/img/loading_modal.gif" /></div>
-        <div id="m_content" style="text-align: left; font-size: 0.8em; padding: 0px 20px;"></div>
+        <div id="m_content"></div>
+        <div id="m_confirm"></div>
       </div>
       <div class="modal-btns">
-      <a class="cancel" href="#" onClick="closeModal('#modal-save2db'); return false;">&#10008; Close</a>
+        <a class="cancel" href="#" onClick="$('#m_confirm').hide(); closeModal('#modal-save2db'); return false;">&#10008; Close</a>
       </div>
     </div>
   </div>
@@ -162,8 +137,28 @@ if (isset($_COOKIE['ovauser'])) {
       </div>
       <div class="modal-body">
         <form id="f_loadfile" class="fstyle">
-          <label for="n_file" id="n_file_label">Select a file to load</label>
-          <input type="file" id="n_file" name="files[]" multiple />
+          <p id="load-file">
+            <label for="n_file" id="n_file_label">Select a file to load:</label>
+            <input type="file" id="n_file" name="files[]" multiple style="width:70%;" />
+          </p>
+          <p id="load-corpus">
+            <label for="corpus_sel" id="corpus_sel_label">Select a corpus to load:</label>
+            <select id="corpus_sel" onChange="loadCorpus(this.value);" style="width:72%;">
+              <option value="0" selected>--No corpus selected--</option>
+            </select>
+          </p>
+          <p id="load-nodeset">
+            <label for="nsetID" id="nsetID_label">Enter the node set ID of an analysis to load:</label>
+            <input type="number" id="nsetID" style="width:43%;text-align:center;" placeholder="Enter a node set ID, e.g. 12345" min="1" max="999999999" />
+            <span id="nsetID_valid" class="validity"></span>
+            <a href="#" id="loadNodeSetBtn" class="btn" onClick="loadNodeSet(nsetID.value);" style="float:none;padding:0.6em;margin-left:8%;">Load Analysis</a>
+          </p>
+          <div id="load-replace" style="display:none;">
+            <label for="load_replace" id="load_replace_label">
+              <input type="checkbox" id="load_replace" />
+              <span class="caption">Replace the current analysis with the loaded analysis</span>
+            </label>
+          </div>
         </form>
         <output id="list"></output>
       </div>
@@ -185,7 +180,7 @@ if (isset($_COOKIE['ovauser'])) {
     <!-- AUTOLAYOUT - To be added back in when functional -->
     <!-- <a onClick="genldot()" class="icon" id="alay" style="background-position: -420px 50%;"><span class="tooltiptext">AutoLayout</span></a>
     <div class="divider"></div> -->
-    <a onClick="openModal('#modal-load');" class="icon" id="loada" style="background-position: -210px 50%;"><span class="tooltiptext">Load&nbsp;Analysis</span></a>
+    <a onClick="showReplace(); openModal('#modal-load');" class="icon" id="loada" style="background-position: -210px 50%;"><span class="tooltiptext">Load&nbsp;Analysis</span></a>
     <a onClick="svg2canvas2image(); openModal('#modal-save');" class="icon" id="savea" style="background-position: -84px 50%;"><span class="tooltiptext">Save&nbsp;Analysis</span></a>
     <a href="<?php echo $newurl; ?>" class="icon" id="newa" style="background-position: -168px 50%;"><span class="tooltiptext">New&nbsp;Analysis</span></a>
     <div class="divider"></div>
@@ -630,9 +625,11 @@ if (isset($_COOKIE['ovauser'])) {
       <?php if ($source == "local") { ?>
         <div id="analysis_text" contenteditable="true" spellcheck="false">Enter your text here...</div>
         <!-- data-step="1" data-intro="<p>Enter the text that you want to analyse here.</p><p>Select sections of text to create a node.</p> -->
+        <iframe id="extside" name="extsite" style="display:none;"></iframe>
       <?php } else { ?>
         <!-- if url was added to be loaded into LHS -->
         <iframe src="<?php echo $analysis; ?>" id="extside" name="extsite" style="width:100%;height:100%;border-right:1px solid #666;"></iframe> <!-- data-step="1" data-intro="<p>Highlight sections of text from the webpage to create a node.</p>" data-position="right" -->
+        <div id="analysis_text" contenteditable="true" spellcheck="false" style="display:none;"></div>
       <?php } ?>
     </div>
 

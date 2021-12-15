@@ -78,6 +78,15 @@ function updateNode(nodeID, x, y, visible, undone, type, scheme, text, timestamp
     }
 }
 
+function updateNodeScheme(nodeID, scheme, undone) {
+    var index = findNodeIndex(nodeID);
+    if (index > -1) { //if the node exists
+        n = nodes[index];
+        n.scheme = scheme;
+        postEdit("node", "edit", n, undone, n.nodeID);
+    }
+}
+
 function delNode(node) {
     var index = findNodeIndex(node.nodeID);
     if (index > -1) { //if the node exists
@@ -122,6 +131,13 @@ function findParticipantIDText(text) {
     return found;
 }
 
+function getParticipantName(text) {
+    var index = text.indexOf(":");
+    var str = text.slice(0, index);
+    var name = str.split(" ");
+    return name;
+}
+
 function delTimestamp(nodeID) {
     var index = findNodeIndex(nodeID);
     if (index > -1) { //if the node exists
@@ -133,7 +149,7 @@ function delTimestamp(nodeID) {
     }
 }
 
-function addTimestamp(nodeID, timestamp) {
+function updateTimestamp(nodeID, timestamp) {
     var index = findNodeIndex(nodeID);
     if (index > -1) { //if the node exists
         n = nodes[index];
