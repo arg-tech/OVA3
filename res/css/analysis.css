@@ -521,6 +521,19 @@ form.fstyle select {
   font-family: "Lucida Grande", Verdana, Arial, "Bitstream Vera Sans", sans-serif;
 }
 
+.caption {
+  color: #6c757d;
+  text-align: left;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+#load_replace {
+  cursor: pointer;
+  background: #6c757d;
+}
+
+
 /* ==== Social Users ==== */
 
 div#socialusers {
@@ -802,14 +815,14 @@ div#schemestg select{
   width: auto;
 }
 
-input:invalid+span:after {
+input:invalid+span.validity:after {
   position: absolute;
   content: '\2718';
   padding-left: 5px;
   color: rgba(224, 46, 66, 1);
 }
 
-input:valid+span:after {
+input:valid+span.validity:after {
   position: absolute;
   content: '\2714';
   padding-left: 5px;

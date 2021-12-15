@@ -106,7 +106,7 @@ function Init(evt) {
     DMAX = [10604, 135472];
     WMIN = 455;
 
-    document.getElementById('n_file').addEventListener('change', loadbutton, false);
+    document.getElementById('n_file').addEventListener('change', loadFileBtn, false);
 
     $(window).bind('beforeunload', function () {
         if (window.unsaved) {
@@ -118,10 +118,10 @@ function Init(evt) {
         aifdbid = getUrlVars()["aifdb"];
         $.get('./db/' + aifdbid, function (data) {
             if (lastedit == 0) {
-                loadfile(data);
+                loadFile(data, false);
             }
         }).fail(function () {
-            loadfromdb(aifdbid);
+            loadfromdb(aifdbid, false);
         });
     }
 
@@ -219,6 +219,15 @@ function Init(evt) {
         postEdit("text", "edit", $('#analysis_text').html());
     });
 
+    //set up the load analysis modal select with a list of the corpora
+    $.getJSON("helpers/corporalist.php", function (data) {
+        var sel = document.getElementById("corpus_sel");
+        $.each(data.corpora, function (idx, c) {
+            title = c.title.replace(/&amp;#/g, "&#");
+            $("<option />", { value: c.shortname, html: title }).appendTo(sel);
+        });
+    });
+
     //set defaults
     setFontSize(window.defaultSettings["display"]["font_size"]);
     setRIATMode();
@@ -304,11 +313,15 @@ function updateAddNode(node) {
         DrawNode(n.nodeID, n.type, n.text, n.x, n.y); //if the node is visible then draw the node on the svg
         if (window.showTimestamps && n.type == 'L') { DrawTimestamp(n.nodeID, n.timestamp, n.x, n.y); }
         updateConnectedEdges(n);
-    } else if (n.type == 'L') {  //if the node is an analyst node
-        var index = n.text.indexOf(":");
-        var username = ' ' + n.text.slice(0, index);
-        if (users.indexOf(username) == -1) {
-            users.push(username);
+    } else if (n.type == 'L') {
+        var r1 = /\b\w+:\s\w+\s\w+:/g;
+        var r2 = /\b\w+:\s\w+\s\w+\s:/g;
+        if (r1.test(n.text) || r2.test(n.text)) { //if the node is an analyst node
+            var index = n.text.indexOf(":");
+            var username = ' ' + n.text.slice(0, index);
+            if (users.indexOf(username) == -1) {
+                users.push(username);
+            }
         }
     }
 }

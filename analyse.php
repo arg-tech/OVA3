@@ -137,8 +137,28 @@ if (isset($_COOKIE['ovauser'])) {
       </div>
       <div class="modal-body">
         <form id="f_loadfile" class="fstyle">
-          <label for="n_file" id="n_file_label">Select a file to load</label>
-          <input type="file" id="n_file" name="files[]" multiple />
+          <p id="load-file">
+            <label for="n_file" id="n_file_label">Select a file to load:</label>
+            <input type="file" id="n_file" name="files[]" multiple style="width:70%;" />
+          </p>
+          <p id="load-corpus">
+            <label for="corpus_sel" id="corpus_sel_label">Select a corpus to load:</label>
+            <select id="corpus_sel" onChange="loadCorpus(this.value);" style="width:72%;">
+              <option value="0" selected>--No corpus selected--</option>
+            </select>
+          </p>
+          <p id="load-nodeset">
+            <label for="nsetID" id="nsetID_label">Enter the node set ID of an analysis to load:</label>
+            <input type="number" id="nsetID" style="width:43%;text-align:center;" placeholder="Enter a node set ID, e.g. 12345" min="1" max="999999999" />
+            <span id="nsetID_valid" class="validity"></span>
+            <a href="#" id="loadNodeSetBtn" class="btn" onClick="loadNodeSet(nsetID.value);" style="float:none;padding:0.6em;margin-left:8%;">Load Analysis</a>
+          </p>
+          <div id="load-replace" style="display:none;">
+            <label for="load_replace" id="load_replace_label">
+              <input type="checkbox" id="load_replace" />
+              <span class="caption">Replace the current analysis with the loaded analysis</span>
+            </label>
+          </div>
         </form>
         <output id="list"></output>
       </div>
@@ -160,7 +180,7 @@ if (isset($_COOKIE['ovauser'])) {
     <!-- AUTOLAYOUT - To be added back in when functional -->
     <!-- <a onClick="genldot()" class="icon" id="alay" style="background-position: -420px 50%;"><span class="tooltiptext">AutoLayout</span></a>
     <div class="divider"></div> -->
-    <a onClick="openModal('#modal-load');" class="icon" id="loada" style="background-position: -210px 50%;"><span class="tooltiptext">Load&nbsp;Analysis</span></a>
+    <a onClick="showReplace(); openModal('#modal-load');" class="icon" id="loada" style="background-position: -210px 50%;"><span class="tooltiptext">Load&nbsp;Analysis</span></a>
     <a onClick="svg2canvas2image(); openModal('#modal-save');" class="icon" id="savea" style="background-position: -84px 50%;"><span class="tooltiptext">Save&nbsp;Analysis</span></a>
     <a href="<?php echo $newurl; ?>" class="icon" id="newa" style="background-position: -168px 50%;"><span class="tooltiptext">New&nbsp;Analysis</span></a>
     <div class="divider"></div>
