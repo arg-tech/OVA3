@@ -151,15 +151,14 @@ function editpopup(node) {
 
         var addRA = true;
         var addCA = true;
+        var addMA = true;
         var addYA = false;
         var addTA = false;
         var addPA = false;
-        var addMA = false;
 
         if (dialogicalMode) {
             addTA = true;
             addPA = true;
-            addMA = true;
 
             for (var i = 0; i < nodesIn.length; i++) {
                 if (nodesIn[i].type == 'L' || nodesIn[i].type == 'TA') {

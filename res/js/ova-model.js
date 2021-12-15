@@ -131,6 +131,13 @@ function findParticipantIDText(text) {
     return found;
 }
 
+function getParticipantName(text) {
+    var index = text.indexOf(":");
+    var str = text.slice(0, index);
+    var name = str.split(" ");
+    return name;
+}
+
 function delTimestamp(nodeID) {
     var index = findNodeIndex(nodeID);
     if (index > -1) { //if the node exists
