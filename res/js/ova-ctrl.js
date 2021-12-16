@@ -916,8 +916,11 @@ function saveNodeEdit() {
     //var edgesToUpdate = findEdges(CurrentlyEditing);
     document.getElementById(CurrentlyEditing).remove();
     DrawNode(CurrentlyEditing, type, ntext, xCoord, yCoord);
+    if (window.showTimestamps) {
+      DrawTimestamp(mySel.nodeID, mySel.timestamp, mySel.x, mySel.y);
+  }
     window.groupID++;
-    updateNode(CurrentlyEditing, xCoord, yCoord, true, 0, type, null, ntext);
+    updateNode(CurrentlyEditing, xCoord, yCoord, true, 0, type, null, ntext, mySel.timestamp);
     // for (var i = 0; i < edgesToUpdate.length; i++) {
     //   UpdateEdge(edgesToUpdate[i]);
     // }

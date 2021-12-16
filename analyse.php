@@ -433,7 +433,7 @@ if (isset($_COOKIE['ovauser'])) {
       </div>
       <div class="modal-btns">
         <a class="save" href="#" onClick="setTimestampStart(); return false;">Continue</a>
-        <a class="cancel" href="#" onClick="closeModal('#modal-timestamps'); FormOpen = false; openModal('#modal-settings'); return false;">&#10008; Cancel</a>
+        <a class="cancel" href="#" onClick="closeModal('#modal-timestamps'); FormOpen = false; return false;">&#10008; Cancel</a>
       </div>
     </div>
   </div>
@@ -550,7 +550,11 @@ if (isset($_COOKIE['ovauser'])) {
     </div>
     <div class="modal-content">
       <form id="node_edit_form" class="fstyle" style="width: 78%;">
-        <!-- TODO: id and class names to be changed -->
+        <p id="timestamp_info">Timestamp:
+          <label id="timestamp_label"></label>
+          <a href="#" id="edit_timestamp_btn" class="btn" onClick="FormOpen = false;window.editTimestamp=true;openModal('#modal-timestamps');return false;" style="padding:0.6em;">Edit Timestamp</a>
+        </p>
+
         <label for="n_text" id="n_text_label">Text</label>
         <textarea id="n_text" name="n_text"></textarea>
 
@@ -609,6 +613,9 @@ if (isset($_COOKIE['ovauser'])) {
         <li><a href="#" onClick="this.parentNode.parentNode.parentNode.style.display='none';$('#modal-shade').hide(); FormOpen = false;$('#locution_add').show();return false;">
             <div class="btnicn" style="background-image: url('res/img/icon_ladd.png');">&nbsp;</div> Add Locution
           </a></li>
+        <!-- <li><a href="#" id="edit_timestamp_btn" onClick="this.parentNode.parentNode.parentNode.style.display='none'; FormOpen = false;$('#modal-timestamps').show();return false;">
+            <div class="btnicn" style="background-image: url('res/img/icon_ladd.png');">&nbsp;</div> Edit Timestamp
+          </a></li> -->
       <?php } ?>
     </ul>
     <div class="modal-btns">

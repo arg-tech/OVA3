@@ -230,14 +230,20 @@ function loadCorpus(corpusName) {
             var nSetID = parseInt(nodeSet);
             $.get('./db/' + nSetID, function (data) {
                 console.log("loading from ./db");
-                loadFile(data, true);
+                loaded = loadFile(data, true);
+                if (loaded) {
+                    list.innerHTML = '<ul>' + current + '<span style="font-size:0.8em;">Loaded analysis: Node Set ID <strong>' + nSetID + '</strong></span><br>' + '</ul>';
+                    showReplace(true);
+                } else {
+                    list.innerHTML = '<ul>' + current + '<span style="font-size:0.8em;color:rgba(224, 46, 66, 1);">Failed to load analysis: Node Set ID <strong>' + nSetID + '</strong></span><br>' + '</ul>';
+                }
             }).fail(function () {
                 console.log("loading with node set id: " + nSetID);
                 loadfromdb(nSetID, multi);
             });
         });
         var cName = $("#corpus_sel option:selected").text();
-        list.innerHTML = '<ul>' + current + '<span style="font-size:0.8em;">Loaded corpus: <strong>' + cName + '</strong> - Node set IDs: ' + data.nodeSets.join(', ') + '</span><br>' + '</ul>';
+        list.innerHTML = '<ul>' + current + '<span style="font-size:0.8em;">Loaded corpus: <strong>' + cName + '</strong></span><br>' + '</ul>'; //  - Node set IDs: ' + data.nodeSets.join(', ') + '
     });
     showReplace(true);
     return false;
@@ -384,7 +390,7 @@ function loadOva3Json(json, oplus, offset) {
                 updateNode(n[i].nodeID, n[i].x, newY, n[i].visible, 1);
                 DrawNode(nodelist[n[i].nodeID].nodeID, nodelist[n[i].nodeID].type, nodelist[n[i].nodeID].text, nodelist[n[i].nodeID].x, nodelist[n[i].nodeID].y);
                 if (n[i].timestamp) {
-                    updateTimestamp(n[i].nodeID, n[i].timestamp);
+                    updateTimestamp(n[i].nodeID, n[i].timestamp, 1);
                     if (window.showTimestamps) { DrawTimestamp(n[i].nodeID, n[i].timestamp, nodelist[n[i].nodeID].x, nodelist[n[i].nodeID].y); }
                 }
             }
@@ -570,7 +576,7 @@ function loaddbjson(json, oplus, offset) {
 
     //load participants
     var p = json['participants'];
-    if (p != undefined) {
+    if (p != "undefined") {
         for (var i = 0, l = p.length; i < l; i++) {
             firstname = p[i].firstname;
             surname = p[i].surname;
@@ -655,7 +661,7 @@ function loaddbjson(json, oplus, offset) {
     //set any scheme fulfillments
     var sf = json['schemefulfillments'];
     var newID = "";
-    if (sf != undefined) {
+    if (sf != "undefined") {
         for (var i = 0; i < sf.length; i++) {
             newID = ((count + sf[i].nodeID) + "_" + window.sessionid);
             updateNodeScheme(newID, sf[i].schemeID, 1);
@@ -666,7 +672,7 @@ function loaddbjson(json, oplus, offset) {
     var l = json['locutions'];
     var r3 = /\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}/g;
     var timestamp, start, tstamp, tsd, index;
-    if (l != undefined) {
+    if (l != "undefined") {
         for (var i = 0; i < l.length; i++) {
             test = r3.test(l[i].start);
             if (test) { //if a valid date time stamp
@@ -676,7 +682,7 @@ function loaddbjson(json, oplus, offset) {
                 tsd.setTime(tstamp);
                 timestamp = tsd.toString();
                 newID = ((count + l[i].nodeID) + "_" + window.sessionid);
-                updateTimestamp(newID, timestamp);
+                updateTimestamp(newID, timestamp, 1);
                 if (window.showTimestamps) {
                     index = findNodeIndex(newID);
                     DrawTimestamp(nodes[index].nodeID, nodes[index].timestamp, nodes[index].x, nodes[index].y);
@@ -693,7 +699,7 @@ function loaddbjson(json, oplus, offset) {
  * @return {void} Nothing
  */
 function loadfromdb(nodeSetID, multi) {
-    console.log("called loadfromdb(" + nodeSetID + ")");
+    // console.log("called loadfromdb(" + nodeSetID + ")");
     var oplus = false;
     var uplus = "&plus=false";
     if ("plus" in getUrlVars()) {
@@ -702,8 +708,8 @@ function loadfromdb(nodeSetID, multi) {
     }
     $.getJSON("helpers/layout.php?id=" + nodeSetID + uplus, function (ldata) {
         $.getJSON("helpers/getdbnodeset.php?id=" + nodeSetID, function (data) {
-            console.log(ldata);
-            console.log(data);
+            // console.log(ldata);
+            // console.log(data);
 
             // //load participants
             // $.each(data.participants, function (idx, p) {
@@ -721,7 +727,7 @@ function loadfromdb(nodeSetID, multi) {
 
             //load text
             $.get("helpers/gettext.php?id=" + nodeSetID, function (tdata) {
-                console.log(tdata);
+                // console.log(tdata);
                 loadText(tdata);
             });
 
@@ -823,7 +829,7 @@ function loadfromdb(nodeSetID, multi) {
                         tsd = new Date();
                         tsd.setTime(tstamp);
                         timestamp = tsd.toString();
-                        updateTimestamp(newID, timestamp);
+                        updateTimestamp(newID, timestamp, 1);
                         if (window.showTimestamps) {
                             index = findNodeIndex(newID);
                             DrawTimestamp(nodes[index].nodeID, nodes[index].timestamp, nodes[index].x, nodes[index].y);
