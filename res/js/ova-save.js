@@ -217,7 +217,7 @@ function loadFileBtn(evt) {
  * @returns  {Boolean}
  */
 function loadCorpus(corpusName) {
-    console.log("corpus: " + corpusName);
+    // console.log("corpus: " + corpusName);
     var current = "";
     var multi = false;
     var replace = document.getElementById("load_replace");
@@ -238,7 +238,7 @@ function loadCorpus(corpusName) {
                     list.innerHTML = '<ul>' + current + '<span style="font-size:0.8em;color:rgba(224, 46, 66, 1);">Failed to load analysis: Node Set ID <strong>' + nSetID + '</strong></span><br>' + '</ul>';
                 }
             }).fail(function () {
-                console.log("loading with node set id: " + nSetID);
+                // console.log("loading with node set id: " + nSetID);
                 loadfromdb(nSetID, multi);
             });
         });
@@ -257,7 +257,7 @@ function loadCorpus(corpusName) {
 function loadNodeSet(nodesetID) {
     var nsetID = parseInt(nodesetID);
     if (Number.isInteger(nsetID) && nsetID > 0) { //if a valid node set ID
-        console.log("nodeset ID: " + nodesetID);
+        // console.log("nodeset ID: " + nodesetID);
         var multi = false;
         var current = "";
         var replace = document.getElementById("load_replace");
@@ -275,7 +275,7 @@ function loadNodeSet(nodesetID) {
                 list.innerHTML = '<ul>' + current + '<span style="font-size:0.8em;color:rgba(224, 46, 66, 1);">Failed to load analysis: Node Set ID <strong>' + nsetID + '</strong></span><br>' + '</ul>';
             }
         }).fail(function () {
-            console.log("loading with node set id");
+            // console.log("loading with node set id");
             loadfromdb(nsetID, multi);
         });
     }
@@ -298,7 +298,7 @@ function loadFile(jstr, multi) {
     var offset = 0;
     if (multi) {
         offset = calOffset('y');
-        console.log("offset: " + offset);
+        // console.log("offset: " + offset);
     } else {
         clearAnalysis(); //remove the previous analysis before loading the new analysis
     }
@@ -699,7 +699,7 @@ function loaddbjson(json, oplus, offset) {
  * @return {void} Nothing
  */
 function loadfromdb(nodeSetID, multi) {
-    // console.log("called loadfromdb(" + nodeSetID + ")");
+    console.log("called loadfromdb(" + nodeSetID + ")");
     var oplus = false;
     var uplus = "&plus=false";
     if ("plus" in getUrlVars()) {
@@ -719,9 +719,9 @@ function loadfromdb(nodeSetID, multi) {
             var offset = 0;
             if (multi) {
                 offset = calOffset('y');
-                console.log("offset: " + offset);
+                // console.log("offset: " + offset);
             } else {
-                console.log("clearing analysis");
+                // console.log("clearing analysis");
                 clearAnalysis(); //remove the previous analysis before loading the new analysis
             }
 
