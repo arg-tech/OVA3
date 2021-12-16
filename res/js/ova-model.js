@@ -138,24 +138,26 @@ function getParticipantName(text) {
     return name;
 }
 
-function delTimestamp(nodeID) {
+function delTimestamp(nodeID, undone) {
     var index = findNodeIndex(nodeID);
     if (index > -1) { //if the node exists
         n = nodes[index];
         n.timestamp = '';
         window.groupID++;
-        postEdit("node", "edit", n, 1, n.nodeID);
+        var undone = typeof undone !== 'undefined' ? undone : 0;
+        postEdit("node", "edit", n, undone, n.nodeID);
         window.groupID++;
     }
 }
 
-function updateTimestamp(nodeID, timestamp) {
+function updateTimestamp(nodeID, timestamp, undone) {
     var index = findNodeIndex(nodeID);
     if (index > -1) { //if the node exists
         n = nodes[index];
         n.timestamp = timestamp;
         window.groupID++;
-        postEdit("node", "edit", n, 1, n.nodeID);
+        var undone = typeof undone !== 'undefined' ? undone : 0;
+        postEdit("node", "edit", n, undone, n.nodeID);
         window.groupID++;
     }
 }

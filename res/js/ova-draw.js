@@ -126,6 +126,9 @@ function cmenu(node, evt) {
     //if(window.msel.length > 0){
     //    $('#contextmenu').append( "<a onClick='dcEdges();$(\"#contextmenu\").hide();'>Delete Edges</a>" );
     //}
+    if (node.type == 'L' && window.addTimestamps) {
+        $('#contextmenu').append("<a style='font-size:0.85em;' onClick='window.editTimestamp=true;$(\"#modal-timestamps\").show();$(\"#contextmenu\").hide();'>Edit Timestamp</a>");
+    }
 
     $('#contextmenu').show();
 }
@@ -142,10 +145,20 @@ function editpopup(node) {
     $('#descriptor_selects').hide();
     $('#cq_selects').hide();
     $('#s_sset').hide(); $('#s_sset_label').hide();
+    $('#timestamp_info').hide(); $('#edit_timestamp_btn').hide();
 
     if (node.type == 'I' || node.type == 'L' || node.type == 'EN') {
         $('#n_text').show();
         $('#n_text_label').show();
+        if (node.type == 'L' && window.addTimestamps) {
+            if (node.timestamp != "") {
+                document.getElementById("timestamp_label").innerHTML = node.timestamp;
+            } else {
+                document.getElementById("timestamp_label").innerHTML = "No timestamp was added to this locution";
+            }
+            $('#timestamp_info').show();
+            $('#edit_timestamp_btn').show();
+        }
     } else {
         nodesIn = getNodesIn(node);
 
@@ -330,9 +343,7 @@ function showschemes(type) {
 }
 
 function setSelSchemeset(type) {
-    // console.log("setSelSchemeset called");
     var index = window.defaultSchemesets.findIndex(s => s.includes(type));
-    // console.log("s index: " + index);
     if (index > -1) {
         document.getElementById('s_sset').value = window.defaultSchemesets[index][1];
     }
@@ -400,10 +411,30 @@ function showTimestampsOnOff() {
     }
 }
 
-//removes all timestamps drawn on the svg with class name 'timestamp'
-function removeTimestamps() {
-    var allTimestamps = document.getElementsByClassName('timestamp');
-    for (var i = allTimestamps.length - 1; i >= 0; i--) {
-        allTimestamps[i].remove();
+
+function removeTimestamps(nodeID) {
+    var all = typeof nodeID == 'undefined' ? true : false; //if all timestamps should be removed or only one timestamp
+    if (all) { //removes all timestamps drawn on the svg with class name 'timestamp'
+        var allTimestamps = document.getElementsByClassName('timestamp');
+        for (var i = allTimestamps.length - 1; i >= 0; i--) {
+            allTimestamps[i].remove();
+        }
+    } else { //removes the timestamp drawn on the svg for the given nodeID
+        var g = document.getElementById(nodeID);
+        var tstamp = g.getElementsByClassName('timestamp')[0];
+        tstamp.remove();
     }
+}
+
+function editTimestampSVG(nodeID, timestamp) {
+    var g = document.getElementById(nodeID);
+    if (g) {
+        var tstamp = g.getElementsByClassName('timestamp')[0];
+        if (tstamp) {
+            var tspan = tstamp.getElementsByTagName('tspan');
+            $(tspan).text(timestamp);
+            return true;
+        }
+    }
+    return false;
 }

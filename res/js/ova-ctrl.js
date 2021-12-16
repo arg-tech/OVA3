@@ -283,7 +283,10 @@ function Grab(evt) {
 function getTimestamp() {
   var iframe = document.getElementById('analysis_text');
   if (iframe == null) { //if url loaded into LHS
-    iframe = document.getElementById('extside');
+    tstamp = Math.round(new Date(window.startdatestmp).getTime());
+    var tsd = new Date();
+    tsd.setTime(tstamp);
+    return tsd.toString();
   } else if (iframe.nodeName.toLowerCase() == 'div') {
     htmlContent = iframe.innerHTML
 
@@ -913,8 +916,11 @@ function saveNodeEdit() {
     //var edgesToUpdate = findEdges(CurrentlyEditing);
     document.getElementById(CurrentlyEditing).remove();
     DrawNode(CurrentlyEditing, type, ntext, xCoord, yCoord);
+    if (window.showTimestamps) {
+      DrawTimestamp(mySel.nodeID, mySel.timestamp, mySel.x, mySel.y);
+  }
     window.groupID++;
-    updateNode(CurrentlyEditing, xCoord, yCoord, true, 0, type, null, ntext);
+    updateNode(CurrentlyEditing, xCoord, yCoord, true, 0, type, null, ntext, mySel.timestamp);
     // for (var i = 0; i < edgesToUpdate.length; i++) {
     //   UpdateEdge(edgesToUpdate[i]);
     // }

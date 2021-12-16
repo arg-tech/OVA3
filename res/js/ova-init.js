@@ -92,6 +92,7 @@ window.defaultSchemesets = [["YA", 0], ["RA", 0], ["CA", 0], ["MA", 0], ["TA", 0
 window.startdatestmp = window.defaultSettings["timestamp"]["startdatestmp"];
 window.addTimestamps = window.defaultSettings["timestamp"]["addTimestamps"];
 window.showTimestamps = window.defaultSettings["timestamp"]["showTimestamps"];
+window.editTimestamp = false;
 
 function Init(evt) {
     SVGRoot = document.getElementById('inline');
@@ -149,7 +150,6 @@ function Init(evt) {
         }
     });
     updateAnalysis();
-
 
     $.getJSON("browserint.php?x=ipxx&url=" + window.SSurl, function (json_data) {
         window.ssets = {};
@@ -756,7 +756,7 @@ function addLocution(node) {
     if (window.addTimestamps) {
         AddNode(ltext, 'L', null, participantID, newLNodeID, (parseInt(n.x) + 450), parseInt(yCoord), true, 0, node.timestamp);
         var index = findNodeIndex(newLNodeID);
-        delTimestamp(node.nodeID); //delete the timestamp from the i node
+        delTimestamp(node.nodeID, 1); //delete the timestamp from the i node
         if (window.showTimestamps) {
             DrawTimestamp(nodes[index].nodeID, nodes[index].timestamp, nodes[index].x, nodes[index].y); //draw the timestamp on the svg
         }
@@ -1147,9 +1147,7 @@ function filterschemes(schemesetID) {
 
 //change the default scheme set
 function setDefaultSchemeset(type, schemesetID) {
-    // console.log("set default schemeset called");
     var index = window.defaultSchemesets.findIndex(x => x.includes(type));
-    // console.log(window.defaultSchemesets[index]);
     if (index == -1) { //if no default was set for that type
         window.defaultSchemesets.push([type, schemesetID]);
     } else { //if there already was a default set for that type
@@ -1603,10 +1601,10 @@ function helpTab(evt, tab) {
 
 //change the start date and time for the timestamps
 function setTimestampStart(startdatestmp) {
-    if (typeof startdatestmp !== 'undefined') {
+    if (typeof startdatestmp !== 'undefined') { //set the start date time stamp to the given value
         window.startdatestmp = startdatestmp;
         document.getElementById("startTimestampLabel").innerHTML = window.startdatestmp;
-    } else {
+    } else { //validate the user input and update the date time stamp
         var date = document.getElementById("dateInput").value;
         var time = document.getElementById("timeInput").value;
         var timezoneTime = document.getElementById("timezoneInput").value;
@@ -1616,11 +1614,28 @@ function setTimestampStart(startdatestmp) {
             var t = timezoneTime.split(":", 2);
             var timezone = "GMT" + timezoneSelect + t[0] + t[1];
             var start = d[0] + "/" + d[1] + "/" + d[2] + " " + time + " " + timezone;
-            console.log(start);
-            window.startdatestmp = start;
-            document.getElementById("startTimestampLabel").innerHTML = window.startdatestmp;
-            closeModal('#modal-timestamps'); FormOpen = false;
-            openModal('#modal-settings');
+            // console.log(start);
+            if (window.editTimestamp) { //if editing a locution's timestamp
+                var tstamp = Math.round(new Date(start).getTime());
+                var tsd = new Date();
+                tsd.setTime(tstamp);
+                var str = tsd.toString();
+                document.getElementById("timestamp_label").innerHTML = str;
+                window.editTimestamp = false;
+                updateTimestamp(mySel.nodeID, str);
+                if (window.showTimestamps) {
+                    var edited = editTimestampSVG(mySel.nodeID, str);
+                    if (!edited) { DrawTimestamp(mySel.nodeID, str, mySel.x, mySel.y); }
+                }
+                // console.log(mySel);
+                closeModal('#modal-timestamps'); FormOpen = false;
+                openModal('#node_edit');
+            } else { //if updating the start date time stamp
+                window.startdatestmp = start;
+                document.getElementById("startTimestampLabel").innerHTML = window.startdatestmp;
+                closeModal('#modal-timestamps'); FormOpen = false;
+                openModal('#modal-settings');
+            }
         }
     }
     return false;
