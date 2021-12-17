@@ -146,7 +146,7 @@ function delTimestamp(nodeID, undone) {
         window.groupID++;
         var undone = typeof undone !== 'undefined' ? undone : 0;
         postEdit("node", "edit", n, undone, n.nodeID);
-        window.groupID++;
+        // window.groupID++;
     }
 }
 
@@ -158,6 +158,6 @@ function updateTimestamp(nodeID, timestamp, undone) {
         window.groupID++;
         var undone = typeof undone !== 'undefined' ? undone : 0;
         postEdit("node", "edit", n, undone, n.nodeID);
-        window.groupID++;
+        // window.groupID++;
     }
 }

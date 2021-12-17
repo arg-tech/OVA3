@@ -757,6 +757,7 @@ function addLocution(node) {
         AddNode(ltext, 'L', null, participantID, newLNodeID, (parseInt(n.x) + 450), parseInt(yCoord), true, 0, node.timestamp);
         var index = findNodeIndex(newLNodeID);
         delTimestamp(node.nodeID, 1); //delete the timestamp from the i node
+        window.groupID++;
         if (window.showTimestamps) {
             DrawTimestamp(nodes[index].nodeID, nodes[index].timestamp, nodes[index].x, nodes[index].y); //draw the timestamp on the svg
         }
@@ -1330,17 +1331,33 @@ function nodeTut() {
                 element: '#s_tscheme',
                 intro: 'Select the argumentation scheme which this node corresponds to.',
             },
-            {
-                element: '#descriptor_selects',
-                intro: "Assign schematic roles to each of the nodes.",
-            },
+            // {
+            //     element: '#descriptor_selects',
+            //     intro: "Assign schematic roles to each of the nodes.",
+            // },
             {
                 element: '#cq_selects',
                 intro: "Status of each Critical Question. For additional Critical Questions, click the down arrow to select the corresponding node. Critical Questions associated with undercutters can only be instantiated by undercutters; likewise, premises by premises.",
             },
             {
+                element: '#timestamp_label',
+                intro: "Displays the timestamp for this node."
+            },
+            {
+                element: '#edit_timestamp_btn',
+                intro: "Click here to edit the timestamp for this node."
+            },
+            {
                 element: '#n_text',
                 intro: "Edit the text for this node."
+            },
+            {
+                element: '#del_node_btn',
+                intro: "Click here to delete this node."
+            },
+            {
+                element: '#l_add_btn',
+                intro: "Click here to add a locution for this node."
             }
         ].filter(function (obj) { return $(obj.element).length && $(obj.element).is(':visible'); }),
         showStepNumbers: false
@@ -1506,12 +1523,12 @@ function mainTut() {
             },
             {
                 element: '#loada',
-                intro: "<p>Click here to load a previous analysis saved in JSON format.</p>",
+                intro: "<p>Click here to load a previous analysis saved in JSON format or to AIFdb.</p>",
                 position: 'bottom-middle-aligned',
             },
             {
                 element: '#em_loada',
-                intro: "<p>Click here to load a previous analysis saved in JSON format.</p>",
+                intro: "<p>Click here to load a previous analysis saved in JSON format or to AIFdb.</p>",
                 position: 'left',
             },
             {
@@ -1628,6 +1645,7 @@ function setTimestampStart(startdatestmp) {
                     if (!edited) { DrawTimestamp(mySel.nodeID, str, mySel.x, mySel.y); }
                 }
                 // console.log(mySel);
+                $('#delTimestampBtn').hide();
                 closeModal('#modal-timestamps'); FormOpen = false;
                 openModal('#node_edit');
             } else { //if updating the start date time stamp
@@ -1639,4 +1657,17 @@ function setTimestampStart(startdatestmp) {
         }
     }
     return false;
+}
+
+function deleteTimestamp() {
+    console.log("current timestamp: " + mySel.timestamp);
+    if (mySel.timestamp != "") {
+        delTimestamp(mySel.nodeID);
+        removeTimestamps(mySel.nodeID);
+        document.getElementById("timestamp_label").innerHTML = "The timestamp was deleted from this locution.";
+        console.log(mySel);
+    }
+    window.editTimestamp = false;
+    closeModal('#modal-timestamps'); FormOpen = false;
+    openModal('#node_edit');
 }

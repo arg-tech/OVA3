@@ -145,7 +145,7 @@ function editpopup(node) {
     $('#descriptor_selects').hide();
     $('#cq_selects').hide();
     $('#s_sset').hide(); $('#s_sset_label').hide();
-    $('#timestamp_info').hide(); $('#edit_timestamp_btn').hide();
+    $('#timestamp_info').hide(); $('#edit_timestamp_btn').hide(); $('#delTimestampBtn').hide();
 
     if (node.type == 'I' || node.type == 'L' || node.type == 'EN') {
         $('#n_text').show();
@@ -154,10 +154,11 @@ function editpopup(node) {
             if (node.timestamp != "") {
                 document.getElementById("timestamp_label").innerHTML = node.timestamp;
             } else {
-                document.getElementById("timestamp_label").innerHTML = "No timestamp was added to this locution";
+                document.getElementById("timestamp_label").innerHTML = "No timestamp was added to this locution.";
             }
             $('#timestamp_info').show();
             $('#edit_timestamp_btn').show();
+            $('#delTimestampBtn').show();
         }
     } else {
         nodesIn = getNodesIn(node);
