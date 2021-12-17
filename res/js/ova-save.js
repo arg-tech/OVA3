@@ -245,7 +245,6 @@ function loadCorpus(corpusName) {
         var cName = $("#corpus_sel option:selected").text();
         list.innerHTML = '<ul>' + current + '<span style="font-size:0.8em;">Loaded corpus: <strong>' + cName + '</strong></span><br>' + '</ul>'; //  - Node set IDs: ' + data.nodeSets.join(', ') + '
     });
-    showReplace(true);
     return false;
 }
 
@@ -683,6 +682,7 @@ function loaddbjson(json, oplus, offset) {
                 timestamp = tsd.toString();
                 newID = ((count + l[i].nodeID) + "_" + window.sessionid);
                 updateTimestamp(newID, timestamp, 1);
+                window.groupID++;
                 if (window.showTimestamps) {
                     index = findNodeIndex(newID);
                     DrawTimestamp(nodes[index].nodeID, nodes[index].timestamp, nodes[index].x, nodes[index].y);
@@ -830,6 +830,7 @@ function loadfromdb(nodeSetID, multi) {
                         tsd.setTime(tstamp);
                         timestamp = tsd.toString();
                         updateTimestamp(newID, timestamp, 1);
+                        window.groupID++;
                         if (window.showTimestamps) {
                             index = findNodeIndex(newID);
                             DrawTimestamp(nodes[index].nodeID, nodes[index].timestamp, nodes[index].x, nodes[index].y);

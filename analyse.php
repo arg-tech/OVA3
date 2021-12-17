@@ -408,7 +408,7 @@ if (isset($_COOKIE['ovauser'])) {
   <div class="modal-dialog" id="modal-timestamps">
     <div class="modal-content">
       <div class="modal-header">
-        <h4 class="modal-title">Timestamp Start Date and Time</h4>
+        <h4 class="modal-title">Set Date and Time</h4>
       </div>
       <div class="modal-body" style="margin:0 20%;">
         <form id="timestamps_form" class="fstyle">
@@ -431,6 +431,11 @@ if (isset($_COOKIE['ovauser'])) {
           </label>
         </form>
       </div>
+      <ul class="btnlist">
+        <li><a href="#" id="delTimestampBtn" style="display:none;margin:0 17%;" onClick="deleteTimestamp(); return false;" class="bgred">
+            <div class="btnicn" style="background-image: url('res/img/icon-delnode.png');">&nbsp;</div> Delete Timestamp
+          </a></li>
+      </ul>
       <div class="modal-btns">
         <a class="save" href="#" onClick="setTimestampStart(); return false;">Continue</a>
         <a class="cancel" href="#" onClick="closeModal('#modal-timestamps'); FormOpen = false; return false;">&#10008; Cancel</a>
@@ -479,11 +484,13 @@ if (isset($_COOKIE['ovauser'])) {
           </div>
           <div id="timestamp-help" style="display:none;">
             <strong>Timestamp Format</strong>
-            <p style="color: #444; font-size: 12px;">The format of '[hh:mm:ss]' can be used to offset the start date and time by a number of hours, minutes or seconds when adding timestamps. It should be included within the text being analysed wherever the offset should start, e.g. including '[00:30:15]' at the start of the text being analysed would offset the first timestamp by 30 minutes and 15 seconds from the start time.</p>
+            <p style="color: #444; font-size: 12px;">The format of '[hh:mm:ss]' can be used to offset the start date and time by a number of hours, minutes or seconds when adding timestamps. It should be included within the text being analysed wherever the offset should start, e.g. including '[00:30:15]' at the start of the text being analysed would offset the first timestamp by 30 minutes and 15 seconds from the start time. This can only be used when analysing your own text, when analysing a URL the start date and time will be used for all timestamps instead.</p>
             <strong>Start Date and Time</strong>
             <p style="color: #444; font-size: 12px;">The start date and time is when the text being analsyed began. All timestamps are calculated based off of it. It should be updated before adding any timestamps to an analysis by clicking the 'Change Start Date and Time' button in the timestamp settings.</p>
             <strong>Adding Timestamps</strong>
-            <p style="color: #444; font-size: 12px;">Timestamps can be added to locution nodes when using dialogical mode. They can be added automatically when analysing text by turning on the 'Add Timestamps' toggle in the timestamp settings or manually added by editing a locution node if analysing a url page.</p>
+            <p style="color: #444; font-size: 12px;">Timestamps can be added to locution nodes when using dialogical mode. They can be added automatically by turning on the 'Add Timestamps' toggle in the timestamp settings or manually added by editing a locution node.</p>
+            <strong>Editing Timestamps</strong>
+            <p style="color: #444; font-size: 12px;">To edit a timestamp, either right click on its locution node and select 'Edit Timestamp' from the menu or ctrl+click on its locution node to access the edit node menu and click the 'Edit Timestamp' button. This will open a menu where a new date, time and timezone can be selected or the timestamp can be deleted.</p>
             <strong>Viewing Timestamps</strong>
             <p style="color: #444; font-size: 12px;">Turning on the 'Show Timestamps' toggle in timestamp settings will display above locution nodes any timestamps that have been added to them, while turning it off will hide all timestamps on locution nodes.</p>
           </div>
@@ -606,14 +613,14 @@ if (isset($_COOKIE['ovauser'])) {
       </form>
     </div>
     <ul class="btnlist">
-      <li><a href="#" onClick="this.parentNode.parentNode.parentNode.style.display='none';$('#modal-shade').hide(); FormOpen = false; window.groupID ++; deleteNode(mySel); return false;" class="bgred">
+      <li><a href="#" id="del_node_btn" onClick="this.parentNode.parentNode.parentNode.style.display='none';$('#modal-shade').hide(); FormOpen = false; window.groupID ++; deleteNode(mySel); return false;" class="bgred">
           <div class="btnicn" style="background-image: url('res/img/icon-delnode.png');">&nbsp;</div> Delete Node
         </a></li>
       <?php if ($pro) { ?>
-        <li><a href="#" onClick="this.parentNode.parentNode.parentNode.style.display='none';$('#modal-shade').hide(); FormOpen = false;$('#locution_add').show();return false;">
+        <li><a href="#" id="l_add_btn" onClick="this.parentNode.parentNode.parentNode.style.display='none';$('#modal-shade').hide(); FormOpen = false;$('#locution_add').show();return false;">
             <div class="btnicn" style="background-image: url('res/img/icon_ladd.png');">&nbsp;</div> Add Locution
           </a></li>
-        <!-- <li><a href="#" id="edit_timestamp_btn" onClick="this.parentNode.parentNode.parentNode.style.display='none'; FormOpen = false;$('#modal-timestamps').show();return false;">
+        <!-- <li><a href="#" id="edit_timestamp_btn" onClick="this.parentNode.parentNode.parentNode.style.display='none';FormOpen = false; window.editTimestamp=true; $('#modal-timestamps').show();return false;">
             <div class="btnicn" style="background-image: url('res/img/icon_ladd.png');">&nbsp;</div> Edit Timestamp
           </a></li> -->
       <?php } ?>
