@@ -127,7 +127,7 @@ function cmenu(node, evt) {
     //    $('#contextmenu').append( "<a onClick='dcEdges();$(\"#contextmenu\").hide();'>Delete Edges</a>" );
     //}
     if (node.type == 'L' && window.addTimestamps) {
-        $('#contextmenu').append("<a style='font-size:0.85em;' onClick='window.editTimestamp=true;$(\"#modal-timestamps\").show();$(\"#contextmenu\").hide();'>Edit Timestamp</a>");
+        $('#contextmenu').append("<a style='font-size:0.85em;' onClick='window.editTimestamp=true;$(\"#delTimestampBtn\").show();$(\"#modal-timestamps\").show();$(\"#contextmenu\").hide();'>Edit Timestamp</a>");
     }
 
     $('#contextmenu').show();

@@ -323,7 +323,7 @@ if (isset($_COOKIE['ovauser'])) {
             </p>
             <p id="startTimestamp" style="color: #444; line-height: 22px;"> Start Date and Time:
               <label for="startTimestampBtn" id="startTimestampLabel"> <?php echo $defaultSettings["timestamp"]["startdatestmp"] ?></label>
-              <a href="#" id="startTimestampBtn" class="btn" onClick="openModal('#modal-timestamps'); return false;">Change Start Date and Time</a>
+              <a href="#" id="startTimestampBtn" class="btn" onClick="$('#delTimestampBtn').hide();openModal('#modal-timestamps'); return false;">Change Start Date and Time</a>
             </p>
             <!-- Add Timestamps Toggle -->
             <p style="color: #444; line-height: 22px;">Add Timestamps
@@ -438,7 +438,7 @@ if (isset($_COOKIE['ovauser'])) {
       </ul>
       <div class="modal-btns">
         <a class="save" href="#" onClick="setTimestampStart(); return false;">Continue</a>
-        <a class="cancel" href="#" onClick="closeModal('#modal-timestamps'); FormOpen = false; return false;">&#10008; Cancel</a>
+        <a class="cancel" href="#" onClick="$('#delTimestampBtn').hide();closeModal('#modal-timestamps'); FormOpen = false; return false;">&#10008; Cancel</a>
       </div>
     </div>
   </div>

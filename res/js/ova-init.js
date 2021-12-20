@@ -1647,7 +1647,7 @@ function setTimestampStart(startdatestmp) {
                 // console.log(mySel);
                 $('#delTimestampBtn').hide();
                 closeModal('#modal-timestamps'); FormOpen = false;
-                openModal('#node_edit');
+                editpopup(mySel);
             } else { //if updating the start date time stamp
                 window.startdatestmp = start;
                 document.getElementById("startTimestampLabel").innerHTML = window.startdatestmp;
@@ -1660,14 +1660,13 @@ function setTimestampStart(startdatestmp) {
 }
 
 function deleteTimestamp() {
-    console.log("current timestamp: " + mySel.timestamp);
     if (mySel.timestamp != "") {
         delTimestamp(mySel.nodeID);
         removeTimestamps(mySel.nodeID);
-        document.getElementById("timestamp_label").innerHTML = "The timestamp was deleted from this locution.";
-        console.log(mySel);
+        document.getElementById("timestamp_label").innerHTML = "The timestamp has been deleted.";
     }
     window.editTimestamp = false;
+    $('#delTimestampBtn').hide();
     closeModal('#modal-timestamps'); FormOpen = false;
-    openModal('#node_edit');
+    editpopup(mySel);
 }
