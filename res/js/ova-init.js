@@ -1568,6 +1568,41 @@ function mainTut() {
     intro.start();
 }
 
+function loadTut() {
+    var intro = introJs();
+    intro.setOptions({
+        steps: [
+            {
+                element: '#n_file',
+                intro: "Select a JSON analysis from your local files to load."
+            },
+            {
+                element: '#corpus_sel',
+                intro: "Select a corpus from the drop-down list to load. It should start loading immediately, however it may take a few minutes to load large corpora."
+            },
+            {
+                element: '#nsetID',
+                intro: "Enter the AIFdb node set ID of the analysis you want to load."
+            },
+            {
+                element: '#loadNodeSetBtn',
+                intro: "Click here to load an analysis with the entered node set ID."
+            },
+            {
+                element: '#load-replace',
+                intro: "Check this box, if you want to replace your current analysis when loading a saved analysis. Ensure it's checked before using any of the above options to load if so. If unchecked, the saved analysis will be placed under the current analysis when it's loaded."
+            },
+            {
+                element: '#list',
+                intro: "Displays the details of what analysis has been loaded or has failed to load."
+            }
+        ].filter(function (obj) { return $(obj.element).length && $(obj.element).is(':visible'); }),
+        showStepNumbers: false
+    });
+
+    intro.start();
+}
+
 //change the font size of the text on the LHS
 function setFontSize(size) {
     if (size == "ts" || size == "tm" || size == "tl") {

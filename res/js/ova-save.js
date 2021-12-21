@@ -208,6 +208,7 @@ function loadFileBtn(evt) {
             f.lastModifiedDate ? f.lastModifiedDate.toLocaleDateString() : 'n/a', '</span><br>');
     }
     list.innerHTML = '<ul>' + current + output.join('') + '</ul>';
+    $('#list').show();
     return false;
 }
 
@@ -226,6 +227,9 @@ function loadCorpus(corpusName) {
     else { clearAnalysis(); }
 
     $.getJSON("helpers/corporanodesets.php?shortname=" + corpusName, function (data) {
+        var cName = $("#corpus_sel option:selected").text();
+        list.innerHTML = '<ul>' + current + '<span style="font-size:0.8em;">Loaded corpus: <strong>' + cName + '</strong></span><br>' + '</ul>'; //  - Node set IDs: ' + data.nodeSets.join(', ') + '
+        $('#list').show();
         $.each(data.nodeSets, function (idx, nodeSet) {
             var nSetID = parseInt(nodeSet);
             $.get('./db/' + nSetID, function (data) {
@@ -242,8 +246,6 @@ function loadCorpus(corpusName) {
                 loadfromdb(nSetID, multi);
             });
         });
-        var cName = $("#corpus_sel option:selected").text();
-        list.innerHTML = '<ul>' + current + '<span style="font-size:0.8em;">Loaded corpus: <strong>' + cName + '</strong></span><br>' + '</ul>'; //  - Node set IDs: ' + data.nodeSets.join(', ') + '
     });
     return false;
 }
@@ -263,6 +265,7 @@ function loadNodeSet(nodesetID) {
         var list = document.getElementById('list');
         if (!replace.checked) { multi = true; current = list.innerHTML.slice(4, -5); }
 
+        $('#list').show();
         var loaded = false;
         $.get('./db/' + nsetID, function (data) {
             console.log("loading from ./db");
