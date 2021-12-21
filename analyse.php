@@ -134,6 +134,7 @@ if (isset($_COOKIE['ovauser'])) {
     <div class="modal-content">
       <div class="modal-header">
         <h4 class="modal-title">Load Analysis</h4>
+        <a href="javascript:void(0);" class="helpbtn" onclick="loadTut(); return false;">?</a>
       </div>
       <div class="modal-body">
         <form id="f_loadfile" class="fstyle">
@@ -160,7 +161,7 @@ if (isset($_COOKIE['ovauser'])) {
             </label>
           </div>
         </form>
-        <output id="list"></output>
+        <output id="list" style="display:none;"></output>
       </div>
       <div class="modal-btns">
         <a class="cancel" href="#" onClick="closeModal('#modal-load');">&#10008; Close</a>
