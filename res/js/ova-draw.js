@@ -1,4 +1,11 @@
-
+/**
+ * Draws a node on the SVG
+ * @param {String} nid - The ID of the node to draw
+ * @param {String} type - The type of node to draw
+ * @param {String} txt - The text to draw
+ * @param {Number} nx - The x coordinate to draw at
+ * @param {Number} ny - The y coordinate to draw at
+ */
 function DrawNode(nid, type, txt, nx, ny) {
     var phraseArray = [];
     if (txt.length > 36) {
@@ -89,6 +96,11 @@ function DrawNode(nid, type, txt, nx, ny) {
     g.appendChild(ntext)
 }
 
+/**
+ * Draws an edge on the SVG
+ * @param {String} fromid - The ID of the node the edge connects from
+ * @param {String} toid - The ID of the node the edge connects to
+ */
 function DrawEdge(fromid, toid) {
     var nedge = document.createElementNS("http://www.w3.org/2000/svg", "path");
     nedge.setAttribute('id', 'n' + fromid + '-n' + toid);
@@ -100,16 +112,20 @@ function DrawEdge(fromid, toid) {
     SVGRootG.insertBefore(nedge, SVGRootG.childNodes[0]);
 }
 
+/**
+ * Handles the context menu
+ * @param {Node} node - The node to open the context menu for
+ * @param {*} evt - The event to handle
+ */
 function cmenu(node, evt) {
 
     tsvg = document.getElementById('inline').getBoundingClientRect();
     svgleft = tsvg.left;
     svgtop = tsvg.top;
-    var newScale = VB[2] / 1000;
-    var translationX = VB[0];
-    var translationY = VB[1];
-    //
-    //
+    // var newScale = VB[2] / 1000;
+    // var translationX = VB[0];
+    // var translationY = VB[1];
+
     // //Calculating new coordinates after panning and zooming
     // var coordx = ((node.x - svgleft) * newScale) + translationX;
     // var coordy = ((node.y  - svgtop)* newScale) + translationY;
@@ -133,6 +149,10 @@ function cmenu(node, evt) {
     $('#contextmenu').show();
 }
 
+/**
+ * Handles the edit node popup 
+ * @param {Node} node - The node to edit
+ */
 function editpopup(node) {
     $('#n_text').hide(); $('#n_text_label').hide();
     $('#s_type').hide(); $('#s_type_label').hide();
@@ -255,6 +275,10 @@ function editpopup(node) {
     });
 }
 
+/**
+ * Handles showing the correct scheme sets
+ * @param {String} type - The type of node to show scheme sets for
+ */
 function showschemes(type) {
     if (type == 'RA') {
         $('#s_ischeme').show();
@@ -343,6 +367,10 @@ function showschemes(type) {
     }
 }
 
+/**
+ * Handles displaying the default scheme set for each type
+ * @param {String} type - The type to show the default scheme set for
+ */
 function setSelSchemeset(type) {
     var index = window.defaultSchemesets.findIndex(s => s.includes(type));
     if (index > -1) {
@@ -350,6 +378,9 @@ function setSelSchemeset(type) {
     }
 }
 
+/**
+ * Handles turning black and white mode on and off
+ */
 function bwModeOnOff() {
     var allRects = document.getElementsByTagName('rect');
     if (window.bwmode) {
@@ -364,6 +395,13 @@ function bwModeOnOff() {
     }
 }
 
+/**
+ * Draws a timestamp on the SVG
+ * @param {String} nodeID - The ID of the node to draw a timestamp for
+ * @param {String} timestamp - The timestamp to draw
+ * @param {Number} xpos - The x coordinate to draw at
+ * @param {Number} ypos - The y coordinate to draw at
+ */
 function DrawTimestamp(nodeID, timestamp, xpos, ypos) {
     var g = document.getElementById(nodeID);
     if (g) {
@@ -383,6 +421,9 @@ function DrawTimestamp(nodeID, timestamp, xpos, ypos) {
     }
 }
 
+/**
+ * Handles turning 'Add Timestamp' mode on and off
+ */
 function addTimestampsOnOff() {
     if (window.addTimestamps) {
         if (!window.dialogicalMode) {
@@ -393,6 +434,9 @@ function addTimestampsOnOff() {
     }
 }
 
+/**
+ * Handles turning 'Show Timestamp' mode on and off
+ */
 function showTimestampsOnOff() {
     if (window.showTimestamps) {
         // console.log("drawing timestamps");
@@ -412,7 +456,10 @@ function showTimestampsOnOff() {
     }
 }
 
-
+/**
+ * Removes timestamps drawn on the SVG
+ * @param {String} nodeID - Optional, the ID of the node to remove the drawn timestamp for. Leave empty to remove all timestamps drawn on the SVG.
+ */
 function removeTimestamps(nodeID) {
     var all = typeof nodeID == 'undefined' ? true : false; //if all timestamps should be removed or only one timestamp
     if (all) { //removes all timestamps drawn on the svg with class name 'timestamp'
@@ -427,6 +474,12 @@ function removeTimestamps(nodeID) {
     }
 }
 
+/**
+ * Edits timestamps drawn on the SVG
+ * @param {String} nodeID - The ID of the node to edit the timestamp for
+ * @param {String} timestamp - The new timestamp value
+ * @returns {Boolean} - Indicates if the timestamp was found and edited (true) or not (false)
+ */
 function editTimestampSVG(nodeID, timestamp) {
     var g = document.getElementById(nodeID);
     if (g) {
