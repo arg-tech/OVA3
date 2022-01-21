@@ -470,6 +470,11 @@ form.fstyle label {
   margin: 0px;
 }
 
+form.fstyle label.radio_label {
+  display: inline;
+  margin-right: 2%;
+}
+
 /* input,textarea,select */
 
 form.fstyle input, form.fstyle textarea, form.fstyle select {
@@ -521,18 +526,18 @@ form.fstyle select {
   font-family: "Lucida Grande", Verdana, Arial, "Bitstream Vera Sans", sans-serif;
 }
 
+#c_loading {
+  text-align: center;
+  width: 80%;
+  margin-left: 10%;
+}
+
 .caption {
+  display: block;
   color: #6c757d;
-  text-align: left;
-  font-size: 13px;
+  font-size: 11px;
   cursor: pointer;
 }
-
-#load_replace {
-  cursor: pointer;
-  background: #6c757d;
-}
-
 
 /* ==== Social Users ==== */
 

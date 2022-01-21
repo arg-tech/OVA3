@@ -46,7 +46,10 @@ var WMIN = 0;
 let rID = null, f = 0, nav = {}, tg = Array(4);
 var scale = 0;
 
-//zooming on mousewheel scroll
+/**
+ * Zooming on mousewheel scroll
+ * @param {*} event 
+ */
 const zoom = (event) => {
     if (FormOpen == false) {
         tsvg = document.getElementById('inline').getBoundingClientRect();
@@ -94,6 +97,10 @@ window.addTimestamps = window.defaultSettings["timestamp"]["addTimestamps"];
 window.showTimestamps = window.defaultSettings["timestamp"]["showTimestamps"];
 window.editTimestamp = false;
 
+/**
+ * Initializes 
+ * @param {*} evt 
+ */
 function Init(evt) {
     SVGRoot = document.getElementById('inline');
     SVGRootG = document.createElementNS("http://www.w3.org/2000/svg", 'g');
@@ -233,7 +240,9 @@ function Init(evt) {
     setRIATMode();
 }
 
-//start of main collaborate feature code//
+/**
+ * Updates the analysis with any edits made by another user when collaborating
+ */
 function updateAnalysis() {
     var path = 'helpers/edithistory.php?last=' + lasteditCollab + '&analysisID=' + window.analysisID;
 
@@ -262,7 +271,6 @@ function updateAnalysis() {
                 updateEditText(edits.edits[i].content);
             }
             lasteditCollab = edits.edits[i].editID;
-            // console.log("lasteditCollab: " + lasteditCollab);
         }
 
         doretry = eretry;
@@ -280,7 +288,10 @@ function updateAnalysis() {
     });
 }
 
-//redraw any edges connected to a given node
+/**
+ * Updates any edges connected to a given node by redrawing them, used when collaborating
+ * @param {Node} node - The node to update the connected edges for
+ */
 function updateConnectedEdges(node) {
     var l = edges.length;
     for (var i = l - 1; i >= 0; i--) {
@@ -293,6 +304,10 @@ function updateConnectedEdges(node) {
     }
 }
 
+/**
+ * Creates and adds a new node, used when collaborating
+ * @param {Node} node - The node to add
+ */
 function updateAddNode(node) {
     // console.log("updateAddNode called");
     // console.log(node);
@@ -326,6 +341,10 @@ function updateAddNode(node) {
     }
 }
 
+/**
+ * Finds and deletes the given node, used when collaborating
+ * @param {Node} node - The node to delete
+ */
 function updateDelNode(node) {
     var index = findNodeIndex(node.nodeID);
     if (index > -1) { //if the node exists
@@ -336,6 +355,10 @@ function updateDelNode(node) {
     }
 }
 
+/**
+ * Finds and edits a node, used when collaborating
+ * @param {Node} node - The node to edit
+ */
 function updateEditNode(node) {
     // console.log("updateEditNode called");
     // console.log("editing node: " + node.nodeID);
@@ -360,6 +383,11 @@ function updateEditNode(node) {
     }
 }
 
+/**
+ * Creates and adds a new edge, used when collaborating
+ * @param {Edge} edge - The edge to add
+ * @returns {Boolean} - Indicates if the edge was added (true) or not (false)
+ */
 function updateAddEdge(edge) {
     // console.log("updateAddEdge called");
     // console.log("adding edge: " + edge.fromID + "->" + edge.toID);
@@ -380,6 +408,10 @@ function updateAddEdge(edge) {
     }
 }
 
+/**
+ * Finds and deletes a given edge, used when collaborating
+ * @param {Edge} edge - The edge to delete
+ */
 function updateDelEdge(edge) {
     // console.log("updateDelEdge called");
     // console.log("deleting edge: " + edge.fromID + "->" + edge.toID);
@@ -396,14 +428,21 @@ function updateDelEdge(edge) {
     }
 }
 
+/**
+ * Updates the analysis text by replacing it with the given text
+ * @param {String} txt - The new text
+ */
 function updateEditText(txt) {
     var iframe = document.getElementById('left1');
     if (iframe.nodeName.toLowerCase() == 'div') {
         $('#analysis_text').html(txt);
     }
 }
-//end of main collaborate feature code//
 
+/**
+ * Gets selected text from 'left1' element
+ * @returns {String} txt - The text that was selected
+ */
 function getSelText() {
     var iframe = document.getElementById('left1');
     var txt = "";
@@ -454,7 +493,12 @@ function getSelText() {
     return txt;
 }
 
-//function to add the highlight to text on LHS
+
+/**
+ * Highlights the analysis text matching the node's text
+ * @param {String} nodeID - The ID of the node to match text with
+ * @param {Number} undone - 
+ */
 function hlcurrent(nodeID, undone) {
     // console.log('hlcurrent called');
     // console.log(mySel);
@@ -480,7 +524,11 @@ function hlcurrent(nodeID, undone) {
     }
 }
 
-//function to remove the highlight from text on LHS
+/**
+ * Removes the highlight from the analysis text matching the node's text
+ * @param {String} nodeID 
+ * @param {Number} undone 
+ */
 function remhl(nodeID, undone) {
     var span = document.getElementById("node" + nodeID);
     if (span != null) {
@@ -492,21 +540,30 @@ function remhl(nodeID, undone) {
     }
 }
 
-//function to re-add the highlight to text on LHS for a given node
-function hlText(node) {
-    if (userSelection != "") {
-        range = getRangeObject(userSelection);
-        txt = userSelection.toString();
+// /**
+//  * Highlights the analysis text matching a given node
+//  * @param {Node} node 
+//  */
+// function hlText(node) {
+//     if (userSelection != "") {
+//         range = getRangeObject(userSelection);
+//         txt = userSelection.toString();
 
-        var span = document.createElement("span");
-        span.className = "highlighted";
-        span.id = "node" + node.nodeID;
-        range.surroundContents(span);
-        postEdit("text", "edit", $('#analysis_text').html(), 1);
-    }
-}
+//         var span = document.createElement("span");
+//         span.className = "highlighted";
+//         span.id = "node" + node.nodeID;
+//         range.surroundContents(span);
+//         postEdit("text", "edit", $('#analysis_text').html(), 1);
+//     }
+// }
 
-//function to find and update a span id of highlighted text on LHS
+/**
+ * Finds and updates the span ID of highlighted analysis text
+ * @param {String} nodeID 
+ * @param {String} type 
+ * @param {String} newID 
+ * @param {Number} undone 
+ */
 function hlUpdate(nodeID, type, newID, undone) {
     var span = document.getElementById("node" + nodeID);
     if (span == null && !dialogicalMode && type == 'I') {
@@ -520,6 +577,14 @@ function hlUpdate(nodeID, type, newID, undone) {
     }
 }
 
+/**
+ * Posts an edit
+ * @param {String} type 
+ * @param {String} action 
+ * @param {*} content 
+ * @param {Number} undone 
+ * @param {String} contentID 
+ */
 function postEdit(type, action, content, undone, contentID) {
     //set default values
     var undone = typeof undone !== 'undefined' ? undone : 0;
@@ -555,13 +620,15 @@ function postEdit(type, action, content, undone, contentID) {
             $.post("helpers/edit.php", { analysisID: window.analysisID, sessionid: window.sessionid, type: type, action: action, cnt: JSON.stringify(content), groupID: window.groupID, undone: undone, contentID: contentID }).done(function (data) {
                 dt = JSON.parse(data);
                 lastedit = dt.last;
-                // console.log("lastedit: " + lastedit);
             });
         }
     }
     window.unsaved = true;
 }
 
+/**
+ * Handles undoing edits made to an analysis
+ */
 function undo() {
     // console.log("undo called");
     var allEdits = [];
@@ -586,7 +653,11 @@ function undo() {
     });
 }
 
-//readd all of the deleted nodes and edges in toUndo
+/**
+ * Undoes delete edits
+ * @param {*} toUndo 
+ * @param {*} lastEditID 
+ */
 function undoDelete(toUndo, lastEditID) {
     // console.log("undoDelete called");
     var isLastEdit = false;
@@ -643,7 +714,10 @@ function undoDelete(toUndo, lastEditID) {
     }
 }
 
-//delete all of the added nodes and edges in toUndo
+/**
+ * Undoes add edits
+ * @param {*} toUndo 
+ */
 function undoAdd(toUndo) {
     // console.log("undoAdd called");
     for (i = 0; i < toUndo.length; i++) {
@@ -667,7 +741,10 @@ function undoAdd(toUndo) {
     }
 }
 
-//change all of the edited nodes in toUndo back to their previous state
+/**
+ * Undoes edit edits
+ * @param {*} toUndo 
+ */
 function undoEdit(toUndo) {
     // console.log("undoEdit called");
     for (i = 0; i < toUndo.length; i++) {
@@ -680,6 +757,9 @@ function undoEdit(toUndo) {
     }
 }
 
+/**
+ * Gets and adds a list of participants
+ */
 function getSocial() {
     $.getJSON("social.json", function (json_data) {
         for (i in json_data.users) {
@@ -702,6 +782,12 @@ function getSocial() {
     });
 }
 
+/**
+ * Adds a participant
+ * @param {String} firstname - The first name of the participant
+ * @param {String} surname - The surname of the participant
+ * @returns {Participant} - The new participant
+ */
 function addParticipant(firstname, surname) {
     var found = findParticipantID(firstname, surname);
     if (found === 0) {
@@ -721,6 +807,10 @@ function addParticipant(firstname, surname) {
     }
 }
 
+/**
+ * Adds a locution
+ * @param {Node} node - The node to add a locution to
+ */
 function addLocution(node) {
     //console.log("adding locution");
     if ($('#p_firstname').val() != '') {
@@ -782,6 +872,11 @@ function addLocution(node) {
     hlcurrent(newLNodeID);
 }
 
+/**
+ * Gets a range object
+ * @param {*} selectionObject 
+ * @returns 
+ */
 function getRangeObject(selectionObject) {
     // console.log(selectionObject.getRangeAt);
     if (selectionObject.getRangeAt) {
@@ -794,6 +889,11 @@ function getRangeObject(selectionObject) {
     }
 }
 
+/**
+ * Handles adding a locution
+ * @param {Boolean} skipcheck 
+ * @returns {Boolean}
+ */
 function addlclick(skipcheck) {
     if ($('#p_select').val() == '-' && !skipcheck) {
         if ($('#prt_name').is(':visible')) {
@@ -828,6 +928,11 @@ function addlclick(skipcheck) {
     return false;
 }
 
+/**
+ * 
+ * @param {Node} node 
+ * @returns 
+ */
 function getNodesIn(node) {
     var nlist = [];
     var l = edges.length;
@@ -841,6 +946,11 @@ function getNodesIn(node) {
     return nlist;
 }
 
+/**
+ * 
+ * @param {Node} node 
+ * @returns 
+ */
 function getNodesOut(node) {
     var nlist = [];
     var l = edges.length;
@@ -854,7 +964,10 @@ function getNodesOut(node) {
     return nlist;
 }
 
-
+/**
+ * Handles canceling adding a locution
+ * @returns {Boolean}
+ */
 function addlcancel() {
     $('#new_participant').hide();
     $('#p_sel_wrap').show();
@@ -883,6 +996,10 @@ function addlcancel() {
     return false;
 }
 
+/**
+ * 
+ * @param {*} element 
+ */
 function pfilter(element) {
     var value = $(element).val();
     var rgval = new RegExp(value, "i");
@@ -910,6 +1027,10 @@ function pfilter(element) {
 
 }
 
+/**
+ * 
+ * @returns 
+ */
 function newprt() {
     $('#socialusers').hide();
     $('#prt_name').hide();
@@ -928,6 +1049,10 @@ function newprt() {
     return false;
 }
 
+/**
+ * Gets the analysis text
+ * @returns {String} txt - The analysis text
+ */
 function getAllText() {
     var iframe = document.getElementById('left1');
     if (iframe.nodeName.toLowerCase() == 'div') {
@@ -939,6 +1064,10 @@ function getAllText() {
     return txt;
 }
 
+/**
+ * Sets the analysis text
+ * @param {String} txt - The new analysis text to set
+ */
 function setAllText(txt) {
     var iframe = document.getElementById('left1');
     if (iframe.nodeName.toLowerCase() == 'div') {
@@ -946,7 +1075,10 @@ function setAllText(txt) {
     }
 }
 
-
+/**
+ * 
+ * @param {*} fesel 
+ */
 function addCQ(fesel) {
     fename = fesel.id.substring(2);
     if (fesel.selectedIndex == 0) {
@@ -956,6 +1088,11 @@ function addCQ(fesel) {
     }
 }
 
+/**
+ * 
+ * @param {String} schemeID 
+ * @param {Node} node 
+ */
 function setdescriptors(schemeID, node) {
     document.getElementById("descriptor_selects").style.display = "block";
     //document.getElementById("node_edit").style.height = "350px";
@@ -1064,8 +1201,12 @@ function setdescriptors(schemeID, node) {
     });
 }
 
+/**
+ * Filters schemes by their scheme set
+ * @param {Number} schemesetID - The ID of the scheme set to filter by
+ * @returns {Boolean}
+ */
 function filterschemes(schemesetID) {
-    // console.log("filter schemes called");
     var setschemes = window.ssets[schemesetID];
     var type = document.getElementById("s_type").value;
     switch (type) {
@@ -1146,7 +1287,11 @@ function filterschemes(schemesetID) {
     }
 }
 
-//change the default scheme set
+/**
+ * Sets the default scheme set
+ * @param {String} type - The type to set the default for
+ * @param {String} schemesetID - The ID of the scheme set to set as default
+ */
 function setDefaultSchemeset(type, schemesetID) {
     var index = window.defaultSchemesets.findIndex(x => x.includes(type));
     if (index == -1) { //if no default was set for that type
@@ -1165,6 +1310,10 @@ var sort_by = function (field, reverse, primer) {
     }
 }
 
+/**
+ * Handles turning dialogical mode on and off
+ * @returns {Boolean}
+ */
 function dialogicalModeOnOff() {
     if (dialogicalMode) {
         if ($('#afinput').val() == "Anon" || $('#afinput').val() == "" || $('#asinput').val() == "User" || $('#asinput').val() == "") {
@@ -1182,6 +1331,9 @@ function dialogicalModeOnOff() {
     }
 }
 
+/**
+ * 
+ */
 function genldot() {
     var doto = "digraph odg {";
     var ranks = "";
@@ -1276,6 +1428,9 @@ function genldot() {
     );
 }
 
+/**
+ * The help tutorial for adding locutions
+ */
 function locTut() {
     var intro = introJs();
     intro.setOptions({
@@ -1295,6 +1450,9 @@ function locTut() {
     intro.start();
 }
 
+/**
+ * The help tutorial for editing nodes
+ */
 function nodeTut() {
     var intro = introJs();
     intro.setOptions({
@@ -1366,6 +1524,9 @@ function nodeTut() {
     intro.start();
 }
 
+/**
+ * The help tutorial for the settings modal
+ */
 function setTut() {
     var intro = introJs();
     intro.setOptions({
@@ -1457,6 +1618,9 @@ function setTut() {
     intro.start();
 }
 
+/**
+ * The main help tutorial
+ */
 function mainTut() {
     var intro = introJs();
     intro.setOptions({
@@ -1568,33 +1732,44 @@ function mainTut() {
     intro.start();
 }
 
+/**
+ * The help tutorial for the loading analysis modal
+ */
 function loadTut() {
     var intro = introJs();
     intro.setOptions({
         steps: [
             {
-                element: '#n_file',
+                element: '#load-replace',
+                intro: "Select where the saved analysis should be placed in relation to your current analysis when loaded in."
+            },
+            {
+                element: '#loadReplace',
+                intro: "Check here, if you want to replace your current analysis when loading a saved analysis."
+            },
+            {
+                element: '#loadBelow',
+                intro: "Check here, if you want the saved analysis to be placed below the current analysis when it's loaded in."
+            },
+            {
+                element: '#load-file',
                 intro: "Select a JSON analysis from your local files to load."
             },
             {
-                element: '#corpus_sel',
-                intro: "Select a corpus from the drop-down list to load. It should start loading immediately, however it may take a few minutes to load large corpora."
+                element: '#load-corpus',
+                intro: "Select a corpus from the drop-down list to load."
             },
             {
-                element: '#nsetID',
-                intro: "Enter the AIFdb node set ID of the analysis you want to load."
+                element: '#load-nodeset',
+                intro: "Enter the AIFdb node set ID of the analysis to load."
             },
             {
-                element: '#loadNodeSetBtn',
-                intro: "Click here to load an analysis with the entered node set ID."
-            },
-            {
-                element: '#load-replace',
-                intro: "Check this box, if you want to replace your current analysis when loading a saved analysis. Ensure it's checked before using any of the above options to load if so. If unchecked, the saved analysis will be placed under the current analysis when it's loaded."
+                element: '#loadBtn',
+                intro: "Click here to start loading the selected analysis."
             },
             {
                 element: '#list',
-                intro: "Displays the details of what analysis has been loaded or has failed to load."
+                intro: "Details what analysis has been loaded or has failed to load."
             }
         ].filter(function (obj) { return $(obj.element).length && $(obj.element).is(':visible'); }),
         showStepNumbers: false
@@ -1603,7 +1778,11 @@ function loadTut() {
     intro.start();
 }
 
-//change the font size of the text on the LHS
+/**
+ * Sets the font size for the analysis text
+ * @param {String} size - The new font size
+ * @returns {Boolean}
+ */
 function setFontSize(size) {
     if (size == "ts" || size == "tm" || size == "tl") {
         $("#left1").removeClass("ts tm tl");
@@ -1612,7 +1791,9 @@ function setFontSize(size) {
     return false;
 }
 
-//change rIAT mode based on default settings
+/**
+ * Sets Rapid IAT mode based on default settings
+ */
 function setRIATMode() {
     if (dialogicalMode && window.defaultSettings["analysis"]["rIAT"]) {
         window.rIATMode = true;
@@ -1621,7 +1802,12 @@ function setRIATMode() {
     }
 }
 
-//change tab on settings modal
+/**
+ * Handles changing tabs on the settings modal
+ * @param {*} evt - The event
+ * @param {String} tab - The tab to change to
+ * @returns {Boolean}
+ */
 function settingsTab(evt, tab) {
     var tabs = document.getElementsByClassName("stg");
     for (var i = 0; i < tabs.length; i++) {
@@ -1636,7 +1822,12 @@ function settingsTab(evt, tab) {
     return false;
 }
 
-//change tab on helpsheet modal
+/**
+ * Handles changing tabs on the helpsheet modal
+ * @param {*} evt - The event
+ * @param {String} tab - The tab to change to
+ * @returns {Boolean}
+ */
 function helpTab(evt, tab) {
     var tabs = document.getElementsByClassName("helpsheet");
     for (var i = 0; i < tabs.length; i++) {
@@ -1651,7 +1842,11 @@ function helpTab(evt, tab) {
     return false;
 }
 
-//change the start date and time for the timestamps
+/**
+ * Sets the start date and time for the timestamps
+ * @param {String} startdatestmp - Optional
+ * @returns 
+ */
 function setTimestampStart(startdatestmp) {
     if (typeof startdatestmp !== 'undefined') { //set the start date time stamp to the given value
         window.startdatestmp = startdatestmp;
@@ -1694,6 +1889,9 @@ function setTimestampStart(startdatestmp) {
     return false;
 }
 
+/**
+ * Handles deleting a timestamp
+ */
 function deleteTimestamp() {
     if (mySel.timestamp != "") {
         delTimestamp(mySel.nodeID);

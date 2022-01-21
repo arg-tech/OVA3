@@ -179,6 +179,17 @@ function showReplace(show) {
 }
 
 /**
+ * Sets the checked property of a radio button to true
+ * @param {String} id - The ID of the radio button to check
+ * @returns {Boolean}
+ */
+function checkRadio(id) {
+    var radio = document.getElementById(id);
+    if (radio && !radio.checked) { radio.checked = true; }
+    return false;
+}
+
+/**
  * Handles the selection and loading of files
  * @param {*} evt - The event
  * @returns {Boolean}
@@ -187,7 +198,7 @@ function loadFileBtn(evt) {
     var files = evt.target.files; // FileList object
     var multi = false;
     var current = "";
-    var replace = document.getElementById("load_replace");
+    var replace = document.getElementById("loadReplace");
     var list = document.getElementById('list');
     if (files.length > 1 || !replace.checked) { multi = true; current = list.innerHTML.slice(4, -5); }
 
@@ -213,75 +224,90 @@ function loadFileBtn(evt) {
 }
 
 /**
- * Handles the selection and loading of a corpus
- * @param {Number} corpusName - The short name of the corpus to load
- * @returns  {Boolean}
+ * Handles the load button click event
  */
-function loadCorpus(corpusName) {
-    // console.log("corpus: " + corpusName);
-    var current = "";
-    var multi = false;
-    var replace = document.getElementById("load_replace");
-    var list = document.getElementById('list');
-    if (!replace.checked) { multi = true; current = list.innerHTML.slice(4, -5); }
-    else { clearAnalysis(); }
-
-    $.getJSON("helpers/corporanodesets.php?shortname=" + corpusName, function (data) {
-        var cName = $("#corpus_sel option:selected").text();
-        list.innerHTML = '<ul>' + current + '<span style="font-size:0.8em;">Loaded corpus: <strong>' + cName + '</strong></span><br>' + '</ul>'; //  - Node set IDs: ' + data.nodeSets.join(', ') + '
-        $('#list').show();
-        $.each(data.nodeSets, function (idx, nodeSet) {
-            var nSetID = parseInt(nodeSet);
-            $.get('./db/' + nSetID, function (data) {
-                console.log("loading from ./db");
-                loaded = loadFile(data, true);
-                if (loaded) {
-                    list.innerHTML = '<ul>' + current + '<span style="font-size:0.8em;">Loaded analysis: Node Set ID <strong>' + nSetID + '</strong></span><br>' + '</ul>';
-                    showReplace(true);
-                } else {
-                    list.innerHTML = '<ul>' + current + '<span style="font-size:0.8em;color:rgba(224, 46, 66, 1);">Failed to load analysis: Node Set ID <strong>' + nSetID + '</strong></span><br>' + '</ul>';
-                }
-            }).fail(function () {
-                // console.log("loading with node set id: " + nSetID);
-                loadfromdb(nSetID, multi);
-            });
-        });
-    });
-    return false;
-}
-
-/**
- * Handles the user input for loading an analysis from a node set ID
- * @param {Number} nodesetID - The node set ID of the analysis to load
- * @returns  {Boolean}
- */
-function loadNodeSet(nodesetID) {
-    var nsetID = parseInt(nodesetID);
-    if (Number.isInteger(nsetID) && nsetID > 0) { //if a valid node set ID
-        // console.log("nodeset ID: " + nodesetID);
-        var multi = false;
+function loadBtn() {
+    var radioValue = $("input[name='loadFrom']:checked").val();
+    if (radioValue == "corpus" || radioValue == "nSetID") {
         var current = "";
-        var replace = document.getElementById("load_replace");
+        var multi = false;
+        var cLoading = document.getElementById('loading_name');
+        var replace = document.getElementById("loadReplace");
         var list = document.getElementById('list');
         if (!replace.checked) { multi = true; current = list.innerHTML.slice(4, -5); }
 
-        $('#list').show();
-        var loaded = false;
-        $.get('./db/' + nsetID, function (data) {
+
+        if (radioValue == "corpus") { //if loading in a selected corpus
+            var cName = $("#corpus_sel").val();
+            cLoading.innerHTML = "Loading Corpus: " + cName;
+            list.innerHTML = '<ul>' + current + '<span style="font-size:0.8em;">Loading corpus: <strong>' + cName + '</strong></span><br>' + '</ul>';
+            $('#c_loading').show();
+            $('#list').show();
+            if (replace.checked) { clearAnalysis(); }
+
+            loadCorpus(cName).then(() => { //when finished loading the corpus
+                list.innerHTML = '<ul>' + current + '<span style="font-size:0.8em;">Loaded corpus: <strong>' + cName + '</strong></span><br>' + '</ul>';
+                showReplace(true);
+                $('#c_loading').hide();
+            }).catch(e => {
+                console.log(e);
+                $('#c_loading').hide();
+                list.innerHTML = '<ul>' + current + '<span style="font-size:0.8em;color:rgba(224, 46, 66, 1);">Failed to load corpus: <strong>' + cName + '</strong></span><br>' + '</ul>';
+            });
+        }
+        else if (radioValue == "nSetID") { //if loading in an analysis by its node set ID
+            var nSetID = parseInt($("#nsetID").val());
+            if (Number.isInteger(nSetID) && nSetID > 0) { //if a valid node set ID
+                cLoading.innerHTML = "Loading Node Set: " + nSetID;
+                $('#c_loading').show();
+                $('#list').show();
+
+                loadNodeSet(nSetID, multi).then((result) => { //when finished loading the analysis
+                    console.log("result: " + result);
+                    if (result) {
+                        list.innerHTML = '<ul>' + current + '<span style="font-size:0.8em;">Loaded analysis: Node Set ID <strong>' + nSetID + '</strong></span><br>' + '</ul>';
+                        showReplace(true);
+                    }
+                    $('#c_loading').hide();
+                });
+            }
+        }
+    }
+}
+
+/**
+ * Loads an analysis from its node set ID
+ * @param {Number} nodeSetID - The node set ID of the analysis to load
+ * @param {Boolean} multi - Indicates if the loaded analysis should replace the current analysis (false) or be added to it (true)
+ * @returns {Promise} - Indicates if the analysis loaded (true) or failed to load (false)
+ */
+async function loadNodeSet(nodeSetID, multi) {
+    var loaded = false;
+    try {
+        await $.get('./db/' + nodeSetID, function (data) {
             console.log("loading from ./db");
             loaded = loadFile(data, multi);
-            if (loaded) {
-                list.innerHTML = '<ul>' + current + '<span style="font-size:0.8em;">Loaded analysis: Node Set ID <strong>' + nsetID + '</strong></span><br>' + '</ul>';
-                showReplace(true);
-            } else {
-                list.innerHTML = '<ul>' + current + '<span style="font-size:0.8em;color:rgba(224, 46, 66, 1);">Failed to load analysis: Node Set ID <strong>' + nsetID + '</strong></span><br>' + '</ul>';
-            }
-        }).fail(function () {
-            // console.log("loading with node set id");
-            loadfromdb(nsetID, multi);
         });
+        return loaded;
+    } catch (e) {
+        // console.log(e);
+        console.log("loading with node set id");
+        return await loadfromdb(nodeSetID, multi);
     }
-    return false;
+}
+
+/**
+ * Loads all analysis in a corpus
+ * @param {String} corpusName - The short name of the corpus to load
+ */
+async function loadCorpus(corpusName) {
+    var nodeSets = await $.getJSON("helpers/corporanodesets.php?shortname=" + corpusName).then(data => data.nodeSets);
+    console.log(nodeSets);
+
+    for (var i = 0; i < nodeSets.length; i++) {
+        console.log("count: " + i);
+        await loadNodeSet(nodeSets[i], true); //to load a corpus multi must be set to true
+    }
 }
 
 /**
@@ -697,9 +723,9 @@ function loaddbjson(json, oplus, offset) {
 
 /**
  * Loads an analysis map from the database
- * @param {*} nodeSetID - The node set ID of the analysis to load
+ * @param {Number} nodeSetID - The node set ID of the analysis to load
  * @param {Boolean} multi - Indicates if the loaded analysis should replace the current analysis (false) or be added to it (true)
- * @return {void} Nothing
+ * @return {Promise} 
  */
 function loadfromdb(nodeSetID, multi) {
     console.log("called loadfromdb(" + nodeSetID + ")");
@@ -709,153 +735,162 @@ function loadfromdb(nodeSetID, multi) {
         oplus = true;
         uplus = "&plus=true";
     }
-    $.getJSON("helpers/layout.php?id=" + nodeSetID + uplus, function (ldata) {
-        $.getJSON("helpers/getdbnodeset.php?id=" + nodeSetID, function (data) {
-            // console.log(ldata);
-            // console.log(data);
 
-            // //load participants
-            // $.each(data.participants, function (idx, p) {
-            //     addParticipant(p.firstname, p.surname);
-            // });
+    return new Promise(resolve => {
+        $.getJSON("helpers/layout.php?id=" + nodeSetID + uplus, function (ldata) {
+            $.getJSON("helpers/getdbnodeset.php?id=" + nodeSetID, function (data) {
+                // console.log(ldata);
+                // console.log(data);
 
-            var offset = 0;
-            if (multi) {
-                offset = calOffset('y');
-                // console.log("offset: " + offset);
-            } else {
-                // console.log("clearing analysis");
-                clearAnalysis(); //remove the previous analysis before loading the new analysis
-            }
+                // //load participants
+                // $.each(data.participants, function (idx, p) {
+                //     addParticipant(p.firstname, p.surname);
+                // });
 
-            //load text
-            $.get("helpers/gettext.php?id=" + nodeSetID, function (tdata) {
-                // console.log(tdata);
-                loadText(tdata);
-            });
-
-            //load nodes
-            var nodelist = {};
-            var r1 = /\w+:\s\w+\s\w+:/g;
-            var r2 = /\w+:\s\w+\s\w+\s:/g;
-            var p = null;
-            var pName = [];
-            var nID = "";
-            var count = window.nodeCounter;
-            var id = 0;
-            $.each(data.nodes, function (idx, node) {
-                id = parseInt(node.nodeID);
-                if ((count + id) > window.nodeCounter) {
-                    window.nodeCounter = (count + id); //update the node counter
-                }
-                nID = ((count + id) + "_" + window.sessionid); //new node ID
-
-                if (node.nodeID in ldata) {
-                    xpos = parseInt(ldata[node.nodeID]["x"]);
-                    xpos = xpos * 0.8;
-                    ypos = parseInt(ldata[node.nodeID]["y"]) + offset;
+                var offset = 0;
+                if (multi) {
+                    offset = calOffset('y');
+                    // console.log("offset: " + offset);
                 } else {
-                    xpos = 150;
-                    ypos = 50 + offset;
+                    clearAnalysis(); //remove the previous analysis before loading the new analysis
                 }
 
-                if (node.type == "CA") {
-                    nodelist[nID] = AddNode(node.text, node.type, '71', 0, nID, xpos, ypos, true, 1);
-                } else if (node.type == "RA") {
-                    nodelist[nID] = AddNode(node.text, node.type, '72', 0, nID, xpos, ypos, true, 1);
-                } else if (node.type == "I") {
-                    nodelist[nID] = AddNode(node.text, node.type, null, 0, nID, xpos, ypos, true, 1);
-                } else if (node.type == "MA") {
-                    nodelist[nID] = AddNode(node.text, node.type, '144', 0, nID, xpos, ypos, true, 1);
-                }
-                else if (oplus) {
-                    if (node.type == "TA") {
-                        nodelist[nID] = AddNode(node.text, node.type, '82', 0, nID, xpos, ypos, true, 1);
-                    } else if (node.type == "YA") {
-                        if (node.text == 'Analysing') { //if an analyst node
-                            nodelist[nID] = AddNode(node.text, node.type, '75', 0, nID, 0, 0, false, 1);
-                        } else {
-                            nodelist[nID] = AddNode(node.text, node.type, '168', 0, nID, xpos, ypos, true, 1);
-                        }
-                    } else if (node.type == "PA") {
-                        nodelist[nID] = AddNode(node.text, node.type, '161', 0, nID, xpos, ypos, true, 1);
-                    } else if (node.type == "L") {
-                        if (r1.test(node.text) || r2.test(node.text)) { //if an analyst node
-                            nodelist[nID] = AddNode(node.text, node.type, null, 0, nID, 0, 0, false, 1);
-                        } else { //to prevent duplicate analyst nodes
-                            pName = getParticipantName(node.text);
-                            p = addParticipant(pName[0], pName[1]);
-                            nodelist[nID] = newNode(nID, node.type, null, p.participantID, node.text, xpos, ypos, true, 1);
-                            DrawNode(nID, node.type, node.text, xpos, ypos);
-                        }
+                //load text
+                $.get("helpers/gettext.php?id=" + nodeSetID, function (tdata) {
+                    // console.log(tdata);
+                    loadText(tdata);
+                });
+
+                //load nodes
+                var nodelist = {};
+                var r1 = /\w+:\s\w+\s\w+:/g;
+                var r2 = /\w+:\s\w+\s\w+\s:/g;
+                var p = null;
+                var pName = [];
+                var nID = "";
+                var count = window.nodeCounter;
+                var id = 0;
+                $.each(data.nodes, function (idx, node) {
+                    id = parseInt(node.nodeID);
+                    if ((count + id) > window.nodeCounter) {
+                        window.nodeCounter = (count + id); //update the node counter
                     }
-                }
-            });
+                    nID = ((count + id) + "_" + window.sessionid); //new node ID
 
-            //load edges
-            var edgeList = {};
-            var from, to, id, indexF, indexT, visible;
-            $.each(data.edges, function (idx, edge) {
-                from = ((count + parseInt(edge.fromID)) + "_" + window.sessionid);
-                to = ((count + parseInt(edge.toID)) + "_" + window.sessionid);
-                id = (count + parseInt(edge.fromID)) + "_" + (count + parseInt(edge.toID));
-                if (from in nodelist && to in nodelist && !(id in edgeList)) { //if both the nodes the edge connects exist and the edge hasn't already been loaded
-                    indexF = findNodeIndex(from);
-                    indexT = findNodeIndex(to);
-                    visible = nodes[indexF].visible && nodes[indexT].visible ? true : false; //if the edge connects an invisible node it should also be invisible
-                    edgeList[id] = newEdge(from, to, visible, 1);
-                    if (visible) { //if the edge is visible then draw edge on svg
-                        DrawEdge(from, to);
-                        UpdateEdge(edgeList[id]);
+                    if (node.nodeID in ldata) {
+                        xpos = parseInt(ldata[node.nodeID]["x"]);
+                        xpos = xpos * 0.8;
+                        ypos = parseInt(ldata[node.nodeID]["y"]) + offset;
+                    } else {
+                        xpos = 150;
+                        ypos = 50 + offset;
                     }
-                }
-            });
 
-            // //set any scheme fulfillments
-            // $.each(data.schemefulfillments, function (idx, sf) {
-            //     newID = ((count + parseInt(sf.nodeID)) + "_" + window.sessionid);
-            //     if (newID in nodelist) {
-            //         updateNodeScheme(newID, sf.schemeID, 1);
-            //     }
-            // });
-
-            //set any timestamps
-            var r3 = /\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}/g;
-            var timestamp, start, tstamp, tsd, index;
-            $.each(data.locutions, function (idx, l) {
-                newID = ((count + parseInt(l.nodeID)) + "_" + window.sessionid);
-                if (newID in nodelist) {
-                    test = r3.test(l.start);
-                    if (test) { //if a valid date time stamp
-                        start = l.start.split(" ", 2); //split date and time
-                        tstamp = new Date(start[0] + "T" + start[1] + ".000Z"); //ISO string
-                        tsd = new Date();
-                        tsd.setTime(tstamp);
-                        timestamp = tsd.toString();
-                        updateTimestamp(newID, timestamp, 1);
-                        window.groupID++;
-                        if (window.showTimestamps) {
-                            index = findNodeIndex(newID);
-                            DrawTimestamp(nodes[index].nodeID, nodes[index].timestamp, nodes[index].x, nodes[index].y);
+                    if (node.type == "CA") {
+                        nodelist[nID] = AddNode(node.text, node.type, '71', 0, nID, xpos, ypos, true, 1);
+                    } else if (node.type == "RA") {
+                        nodelist[nID] = AddNode(node.text, node.type, '72', 0, nID, xpos, ypos, true, 1);
+                    } else if (node.type == "I") {
+                        nodelist[nID] = AddNode(node.text, node.type, null, 0, nID, xpos, ypos, true, 1);
+                    } else if (node.type == "MA") {
+                        nodelist[nID] = AddNode(node.text, node.type, '144', 0, nID, xpos, ypos, true, 1);
+                    }
+                    else if (oplus) {
+                        if (node.type == "TA") {
+                            nodelist[nID] = AddNode(node.text, node.type, '82', 0, nID, xpos, ypos, true, 1);
+                        } else if (node.type == "YA") {
+                            if (node.text == 'Analysing') { //if an analyst node
+                                nodelist[nID] = AddNode(node.text, node.type, '75', 0, nID, 0, 0, false, 1);
+                            } else {
+                                nodelist[nID] = AddNode(node.text, node.type, '168', 0, nID, xpos, ypos, true, 1);
+                            }
+                        } else if (node.type == "PA") {
+                            nodelist[nID] = AddNode(node.text, node.type, '161', 0, nID, xpos, ypos, true, 1);
+                        } else if (node.type == "L") {
+                            if (r1.test(node.text) || r2.test(node.text)) { //if an analyst node
+                                nodelist[nID] = AddNode(node.text, node.type, null, 0, nID, 0, 0, false, 1);
+                            } else { //to prevent duplicate analyst nodes
+                                pName = getParticipantName(node.text);
+                                p = addParticipant(pName[0], pName[1]);
+                                nodelist[nID] = newNode(nID, node.type, null, p.participantID, node.text, xpos, ypos, true, 1);
+                                DrawNode(nID, node.type, node.text, xpos, ypos);
+                            }
                         }
                     }
+                });
+
+                //load edges
+                var edgeList = {};
+                var from, to, id, indexF, indexT, visible;
+                $.each(data.edges, function (idx, edge) {
+                    from = ((count + parseInt(edge.fromID)) + "_" + window.sessionid);
+                    to = ((count + parseInt(edge.toID)) + "_" + window.sessionid);
+                    id = (count + parseInt(edge.fromID)) + "_" + (count + parseInt(edge.toID));
+                    if (from in nodelist && to in nodelist && !(id in edgeList)) { //if both the nodes the edge connects exist and the edge hasn't already been loaded
+                        indexF = findNodeIndex(from);
+                        indexT = findNodeIndex(to);
+                        visible = nodes[indexF].visible && nodes[indexT].visible ? true : false; //if the edge connects an invisible node it should also be invisible
+                        edgeList[id] = newEdge(from, to, visible, 1);
+                        if (visible) { //if the edge is visible then draw edge on svg
+                            DrawEdge(from, to);
+                            UpdateEdge(edgeList[id]);
+                        }
+                    }
+                });
+
+                // //set any scheme fulfillments
+                // $.each(data.schemefulfillments, function (idx, sf) {
+                //     newID = ((count + parseInt(sf.nodeID)) + "_" + window.sessionid);
+                //     if (newID in nodelist) {
+                //         updateNodeScheme(newID, sf.schemeID, 1);
+                //     }
+                // });
+
+                //set any timestamps
+                var r3 = /\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}/g;
+                var timestamp, start, tstamp, tsd, index;
+                $.each(data.locutions, function (idx, l) {
+                    newID = ((count + parseInt(l.nodeID)) + "_" + window.sessionid);
+                    if (newID in nodelist) {
+                        test = r3.test(l.start);
+                        if (test) { //if a valid date time stamp
+                            start = l.start.split(" ", 2); //split date and time
+                            tstamp = new Date(start[0] + "T" + start[1] + ".000Z"); //ISO string
+                            tsd = new Date();
+                            tsd.setTime(tstamp);
+                            timestamp = tsd.toString();
+                            updateTimestamp(newID, timestamp, 1);
+                            window.groupID++;
+                            if (window.showTimestamps) {
+                                index = findNodeIndex(newID);
+                                DrawTimestamp(nodes[index].nodeID, nodes[index].timestamp, nodes[index].x, nodes[index].y);
+                            }
+                        }
+                    }
+                });
+
+                if ("aifdb" in getUrlVars()) {
+                    var currenturl = window.location;
+                    var newurl = currenturl.replace(/aifdb=[0-9]+/i, "");
+                    history.pushState(null, null, newurl);
                 }
+
+                showReplace(true);
+                resolve(true); //the analysis has finished loading
+
+            }).fail(function () {
+                console.log("failed to get json db nodeset");
+                var list = document.getElementById('list');
+                var current = multi ? list.innerHTML.slice(4, -5) : "";
+                list.innerHTML = '<ul>' + current + '<span style="font-size:0.8em;color:rgba(224, 46, 66, 1);">Failed to load analysis: Node Set ID <strong>' + nodeSetID + '</strong></span><br>' + '</ul>';
+                resolve(false); //the analysis failed to load
             });
-
-            if ("aifdb" in getUrlVars()) {
-                var currenturl = window.location;
-                var newurl = currenturl.replace(/aifdb=[0-9]+/i, "");
-                history.pushState(null, null, newurl);
-            }
-
-            var list = document.getElementById('list');
-            var current = multi ? list.innerHTML.slice(4, -5) : "";
-            list.innerHTML = '<ul>' + current + '<span style="font-size:0.8em;">Loaded analysis: Node Set ID <strong>' + nodeSetID + '</strong></span><br>' + '</ul>';
-            showReplace(true);
         }).fail(function () {
+            console.log("failed to get json layout");
             var list = document.getElementById('list');
             var current = multi ? list.innerHTML.slice(4, -5) : "";
             list.innerHTML = '<ul>' + current + '<span style="font-size:0.8em;color:rgba(224, 46, 66, 1);">Failed to load analysis: Node Set ID <strong>' + nodeSetID + '</strong></span><br>' + '</ul>';
+            resolve(false); //the analysis failed to load
         });
     });
 }
@@ -988,7 +1023,7 @@ function save2db() {
 
 /**
  * Adds an analysis to a corpus
- * @param {*} addnsID - The node set ID of the analysis to be added
+ * @param {Number} addnsID - The node set ID of the analysis to be added
  * @return {void} Nothing
  */
 function add2corpus(addnsID) {
@@ -1007,8 +1042,8 @@ function add2corpus(addnsID) {
 
 /**
  * Replaces an analysis in corpora
- * @param {*} addnsID - The node set ID of the analysis to be added
- * @param {*} rplnsID - The node set ID of the analysis to be replaced
+ * @param {Number} addnsID - The node set ID of the analysis to be added
+ * @param {Number} rplnsID - The node set ID of the analysis to be replaced
  * @return {void} Nothing
  */
 function rpl2corpus(addnsID, rplnsID) {
