@@ -62,7 +62,6 @@ if (isset($_COOKIE['ovauser'])) {
   <meta name="description" content="">
   <script src="http://code.jquery.com/jquery-2.1.3.min.js"></script>
   <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.10.0/css/smoothness/jquery-ui-1.10.0.custom.min.css" />
-
   <link rel="stylesheet" href="res/css/analysis.css" />
   <link rel="stylesheet" href="res/css/introjs.css" />
 
@@ -87,6 +86,7 @@ if (isset($_COOKIE['ovauser'])) {
 
 <body>
   <div id="modal-shade"></div>
+
   <div class="modal-dialog" id="modal-save">
     <div class="modal-content">
       <div class="modal-header">
@@ -112,7 +112,6 @@ if (isset($_COOKIE['ovauser'])) {
     </div>
   </div>
 
-  <div id="modal-shade"></div>
   <div class="modal-dialog" id="modal-save2db">
     <div class="modal-content">
       <div class="modal-header">
@@ -129,7 +128,6 @@ if (isset($_COOKIE['ovauser'])) {
     </div>
   </div>
 
-  <div id="modal-shade"></div>
   <div class="modal-dialog" id="modal-load">
     <div class="modal-content">
       <div class="modal-header">
@@ -138,29 +136,41 @@ if (isset($_COOKIE['ovauser'])) {
       </div>
       <div class="modal-body">
         <form id="f_loadfile" class="fstyle">
-          <p id="load-file">
-            <label for="n_file" id="n_file_label">Select a file to load:</label>
+          <div id="load-replace" style="display:none;">
+            <p>Please select where to load the analysis:</p>
+            <input type="radio" id="loadReplace" name="load" value="replace">
+            <label for="loadReplace" class="radio_label">Replace the current analysis</label>
+            <input type="radio" id="loadBelow" name="load" value="below" checked>
+            <label for="loadBelow" class="radio_label">Below the current analysis</label>
+            <!-- <input type="radio" id="loadBeside" name="load" value="beside">
+            <label for="loadBeside" class="radio_label">Beside</label> -->
+          </div>
+          <div id="load-file" onclick="checkRadio('loadFromFile'); $('#nsetID_valid').hide();" style="margin-top:8%;">
+            <input type="radio" id="loadFromFile" name="loadFrom" value="file" checked>
+            <label for="n_file" id="n_file_label" class="radio_label">Select a file to load:</label>
             <input type="file" id="n_file" name="files[]" multiple style="width:70%;" />
-          </p>
-          <p id="load-corpus">
-            <label for="corpus_sel" id="corpus_sel_label">Select a corpus to load:</label>
-            <select id="corpus_sel" onChange="loadCorpus(this.value);" style="width:72%;">
+          </div>
+          <div id="load-corpus" onclick="checkRadio('loadFromCorpus'); $('#nsetID_valid').hide();" style="margin-top:4%;">
+            <input type="radio" id="loadFromCorpus" name="loadFrom" value="corpus">
+            <label for="corpus_sel" id="corpus_sel_label" class="radio_label">Select a corpus to load:</label>
+            <select id="corpus_sel" style="width:72%;">
               <option value="0" selected>--No corpus selected--</option>
             </select>
-          </p>
-          <p id="load-nodeset">
-            <label for="nsetID" id="nsetID_label">Enter the node set ID of an analysis to load:</label>
-            <input type="number" id="nsetID" style="width:43%;text-align:center;" placeholder="Enter a node set ID, e.g. 12345" min="1" max="999999999" />
-            <span id="nsetID_valid" class="validity"></span>
-            <a href="#" id="loadNodeSetBtn" class="btn" onClick="loadNodeSet(nsetID.value);" style="float:none;padding:0.6em;margin-left:8%;">Load Analysis</a>
-          </p>
-          <div id="load-replace" style="display:none;">
-            <label for="load_replace" id="load_replace_label">
-              <input type="checkbox" id="load_replace" />
-              <span class="caption">Replace the current analysis with the loaded analysis</span>
-            </label>
           </div>
+          <div id="load-nodeset" onclick="checkRadio('loadFromNSet'); $('#nsetID_valid').show();" style="margin-top:4%;">
+            <input type="radio" id="loadFromNSet" name="loadFrom" value="nSetID">
+            <label for="nsetID" id="nsetID_label" class="radio_label">Enter the node set ID of an analysis to load:</label>
+            <input type="number" id="nsetID" style="width:70%;text-align:center;" placeholder="Enter a node set ID, e.g. 12345" min="1" max="999999999" />
+            <span id="nsetID_valid" class="validity" style="display:none;"></span>
+          </div>
+          <a href="#" id="loadBtn" class="btn" onClick="loadBtn()">Load Analysis</a>
+          <br><br>
         </form>
+        <div id="c_loading" style="display:none;">
+          <p id="loading_name">Loading</p>
+          <img src="res/img/loading_modal.gif" style="width:70%;" />
+          <p class="caption">The analysis will continue loading even if this modal is closed.</p>
+        </div>
         <output id="list" style="display:none;"></output>
       </div>
       <div class="modal-btns">
@@ -214,7 +224,6 @@ if (isset($_COOKIE['ovauser'])) {
     </a>
   </div>
 
-  <div id="modal-shade"></div>
   <div class="modal-dialog" id="modal-account">
     <div class="modal-content">
       <div class="modal-header">
@@ -228,7 +237,6 @@ if (isset($_COOKIE['ovauser'])) {
     </div>
   </div>
 
-  <div id="modal-shade"></div>
   <div class="modal-dialog" id="modal-username">
     <div class="modal-content">
       <div class="modal-header">
@@ -252,7 +260,6 @@ if (isset($_COOKIE['ovauser'])) {
   </div>
 
   <!-- Settings Form Starts Here -->
-  <div id="modal-shade"></div>
   <div class="modal-dialog" id="modal-settings">
     <div class="modal-content">
       <div class="modal-header">
@@ -353,18 +360,18 @@ if (isset($_COOKIE['ovauser'])) {
               <select id="ca_sset" onChange="setDefaultSchemeset('CA', this.value);">
                 <option value="0">All Schemes</option>
               </select>
+              <label for="ma_sset" id="ma_sset_label">MA:</label>
+              <select id="ma_sset" onChange="setDefaultSchemeset('MA', this.value);">
+                <option value="0">All Schemes</option>
+              </select>
               <?php if ($pro) { ?>
-                <!-- only if Dialogical Mode is on then show the options for YAs, TAs, MAs and PAs -->
+                <!-- only if Dialogical Mode is on then show the options for YAs, TAs and PAs -->
                 <label for="ya_sset" id="ya_sset_label">YA:</label>
                 <select id="ya_sset" onChange="setDefaultSchemeset('YA', this.value);">
                   <option value="0">All Schemes</option>
                 </select>
                 <label for="ta_sset" id="ta_sset_label">TA:</label>
                 <select id="ta_sset" onChange="setDefaultSchemeset('TA', this.value);">
-                  <option value="0">All Schemes</option>
-                </select>
-                <label for="ma_sset" id="ma_sset_label">MA:</label>
-                <select id="ma_sset" onChange="setDefaultSchemeset('MA', this.value);">
                   <option value="0">All Schemes</option>
                 </select>
                 <label for="pa_sset" id="pa_sset_label">PA:</label>
@@ -384,7 +391,6 @@ if (isset($_COOKIE['ovauser'])) {
   <!-- Settings Form Ends Here -->
 
   <!-- Share analysis Form starts here -->
-  <div id="modal-shade"></div>
   <div class="modal-dialog" id="modal-share">
     <div class="modal-content">
       <div class="modal-header">
@@ -405,7 +411,6 @@ if (isset($_COOKIE['ovauser'])) {
   <!-- Share analysis form ends here -->
 
   <!-- Timestamp modal starts here -->
-  <div id="modal-shade"></div>
   <div class="modal-dialog" id="modal-timestamps">
     <div class="modal-content">
       <div class="modal-header">
@@ -446,7 +451,6 @@ if (isset($_COOKIE['ovauser'])) {
   <!-- Timestamp modal ends here -->
 
   <!-- Helpsheet modal starts here -->
-  <div id="modal-shade"></div>
   <div class="modal-dialog" id="modal-help">
     <div class="modal-content">
       <div class="modal-header">
