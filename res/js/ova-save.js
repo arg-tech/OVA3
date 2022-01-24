@@ -229,6 +229,7 @@ function loadFileBtn(evt) {
 function loadBtn() {
     var radioValue = $("input[name='loadFrom']:checked").val();
     if (radioValue == "corpus" || radioValue == "nSetID") {
+        $('#f_loadfile').hide();
         var current = "";
         var multi = false;
         var cLoading = document.getElementById('loading_name');
@@ -238,20 +239,21 @@ function loadBtn() {
 
 
         if (radioValue == "corpus") { //if loading in a selected corpus
-            var cName = $("#corpus_sel").val();
+            var cShortName = $("#corpus_sel").val();
+            var cName = $("#corpus_sel option:selected").text();
             cLoading.innerHTML = "Loading Corpus: " + cName;
             list.innerHTML = '<ul>' + current + '<span style="font-size:0.8em;">Loading corpus: <strong>' + cName + '</strong></span><br>' + '</ul>';
-            $('#c_loading').show();
-            $('#list').show();
+            $('#c_loading').show(); $('#list').show();
             if (replace.checked) { clearAnalysis(); }
 
-            loadCorpus(cName).then(() => { //when finished loading the corpus
+            loadCorpus(cShortName).then(() => { //when finished loading the corpus
+                current = list.innerHTML.slice(4, -5);
                 list.innerHTML = '<ul>' + current + '<span style="font-size:0.8em;">Loaded corpus: <strong>' + cName + '</strong></span><br>' + '</ul>';
                 showReplace(true);
-                $('#c_loading').hide();
+                $('#c_loading').hide(); $('#f_loadfile').show();
             }).catch(e => {
                 console.log(e);
-                $('#c_loading').hide();
+                $('#c_loading').hide(); $('#f_loadfile').show();
                 list.innerHTML = '<ul>' + current + '<span style="font-size:0.8em;color:rgba(224, 46, 66, 1);">Failed to load corpus: <strong>' + cName + '</strong></span><br>' + '</ul>';
             });
         }
@@ -259,8 +261,7 @@ function loadBtn() {
             var nSetID = parseInt($("#nsetID").val());
             if (Number.isInteger(nSetID) && nSetID > 0) { //if a valid node set ID
                 cLoading.innerHTML = "Loading Node Set: " + nSetID;
-                $('#c_loading').show();
-                $('#list').show();
+                $('#c_loading').show(); $('#list').show();
 
                 loadNodeSet(nSetID, multi).then((result) => { //when finished loading the analysis
                     console.log("result: " + result);
@@ -268,9 +269,9 @@ function loadBtn() {
                         list.innerHTML = '<ul>' + current + '<span style="font-size:0.8em;">Loaded analysis: Node Set ID <strong>' + nSetID + '</strong></span><br>' + '</ul>';
                         showReplace(true);
                     }
-                    $('#c_loading').hide();
+                    $('#c_loading').hide(); $('#f_loadfile').show();
                 });
-            }
+            } else { $('#f_loadfile').show(); }
         }
     }
 }
@@ -285,7 +286,7 @@ async function loadNodeSet(nodeSetID, multi) {
     var loaded = false;
     try {
         await $.get('./db/' + nodeSetID, function (data) {
-            console.log("loading from ./db");
+            console.log("loading from ./db/" + nodeSetID);
             loaded = loadFile(data, multi);
         });
         return loaded;
@@ -305,6 +306,7 @@ async function loadCorpus(corpusName) {
     console.log(nodeSets);
 
     for (var i = 0; i < nodeSets.length; i++) {
+        console.log("----------------");
         console.log("count: " + i);
         await loadNodeSet(nodeSets[i], true); //to load a corpus multi must be set to true
     }
@@ -875,7 +877,7 @@ function loadfromdb(nodeSetID, multi) {
                     history.pushState(null, null, newurl);
                 }
 
-                showReplace(true);
+                // showReplace(true);
                 resolve(true); //the analysis has finished loading
 
             }).fail(function () {
