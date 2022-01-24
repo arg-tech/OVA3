@@ -1768,6 +1768,10 @@ function loadTut() {
                 intro: "Click here to start loading the selected analysis."
             },
             {
+                element: '#c_loading',
+                intro: "The selected analysis is currently loading."
+            },
+            {
                 element: '#list',
                 intro: "Details what analysis has been loaded or has failed to load."
             }
