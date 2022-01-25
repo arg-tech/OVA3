@@ -655,7 +655,7 @@ function UpdateEdge(e) {
   ee = document.getElementById(edgeID);
   nodeFrom = document.getElementById(e.fromID);
   nodeTo = document.getElementById(e.toID);
-  if (nodeFrom == null || nodeTo == null) { return false; } //if either of the nodes aren't drawn on the svg, do nothing
+  if (nodeFrom == null || nodeTo == null || ee == null) { return false; } //if either of the nodes aren't drawn on the svg, do nothing
   nf = nodeFrom.getElementsByTagName('rect')[0];
   nt = nodeTo.getElementsByTagName('rect')[0];
 
@@ -901,14 +901,14 @@ function Drop(evt) {
           var newy = ny - 400;
           VB = [newx, newy, 1500, 1500];
           SVGRoot.setAttribute('viewBox', [newx, newy, 1500, 1500]);
-          openModal('#modal-edge');
+          // openModal('#modal-edge');
         }
       } else {
         //If edge is drawn to empty space and not to a node
-        tempedge = document.getElementById('n' + FromID + '-nedge_to');
-        tempnode = document.getElementById("edge_to");
-        SVGRootG.removeChild(tempedge);
-        SVGRootG.removeChild(tempnode);
+        tempEdge = document.getElementById('n' + FromID + '-nedge_to');
+        if (tempEdge) { SVGRootG.removeChild(tempEdge); }
+        tempNode = document.getElementById("edge_to");
+        if (tempNode) { SVGRootG.removeChild(tempNode); }
       }
     }
     DragTarget.setAttributeNS(null, 'pointer-events', 'all');
