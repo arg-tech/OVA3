@@ -195,7 +195,7 @@ if (isset($_COOKIE['ovauser'])) {
     <a onClick="svg2canvas2image(); openModal('#modal-save');" class="icon" id="savea" style="background-position: -84px 50%;"><span class="tooltiptext">Save&nbsp;Analysis</span></a>
     <a href="<?php echo $newurl; ?>" class="icon" id="newa" style="background-position: -168px 50%;"><span class="tooltiptext">New&nbsp;Analysis</span></a>
     <div class="divider"></div>
-    <a onClick="edgeMode('switch'); return false;" class="icon" id="eadd" style="background-position: -42px 50%;"><span class="tooltiptext">Add&nbsp;Edge</span></a>
+    <a onClick="clearEdgeModal(); openModal('#modal-edge'); return false;" class="icon" id="eadd" style="background-position: -42px 50%;"><span class="tooltiptext">Add&nbsp;Edge</span></a>
     <a onClick="nodeMode('switch'); return false;" class="icon" id="nadd" style="background-position: -0px 50%;"><span class="tooltiptext">Add&nbsp;Node</span></a>
     <div class="divider"></div>
     <a onClick="resetPosition();" class="icon" id="reset" style="background-position: -336px 50%;"><span class="tooltiptext">Reset&nbsp;View</span></a>
@@ -224,7 +224,7 @@ if (isset($_COOKIE['ovauser'])) {
     </a>
   </div>
 
-  <div class="modal-dialog" id="modal-account">
+  <!-- <div class="modal-dialog" id="modal-account">
     <div class="modal-content">
       <div class="modal-header">
         <h4 class="modal-title">Account</h4>
@@ -233,6 +233,34 @@ if (isset($_COOKIE['ovauser'])) {
       </div>
       <div class="modal-btns">
         <a class="cancel" href="#" onClick="closeModal('#modal-account'); return false;">&#10008; Close</a>
+      </div>
+    </div>
+  </div> -->
+
+  <div class="modal-dialog" id="modal-edge">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Add Edge</h4>
+        <a href="javascript:void(0);" class="helpbtn" onclick="edgeTut(); return false;">?</a>
+      </div>
+      <div class="modal-body">
+        <form id="f_loadfile" class="fstyle">
+          <div id="edge_source">
+            <label id="source_text_label" for="source_text">Source Node</label>
+            <textarea id="source_text" name="source_text" readonly placeholder="Please select a source node." style="width:75%;"></textarea>
+            <a href="#" id="sourceBtn" class="btn" onClick="edgeMode('long');closeModal('#modal-edge');return false;" style="margin-top:2%;">Select Source</a>
+          </div>
+          <div id="edge_target">
+            <label id="target_text_label" for="target_text">Target Node</label>
+            <textarea id="target_text" name="target_text" readonly placeholder="Please select a target node." style="width:75%;"></textarea>
+            <a href="#" id="targetBtn" class="btn" onClick="closeModal('#modal-edge');return false;" style="margin-top:2%;">Select Target</a>
+          </div>
+          <!-- <a href="#" id="edgeBtn" class="btn" onClick="closeModal('#modal-edge'); return false;" style="display:block;">Add Edge</a> -->
+          <!-- <br><br> -->
+        </form>
+      </div>
+      <div class="modal-btns">
+        <a class="cancel" href="#" onClick="edgeMode('off'); closeModal('#modal-edge'); return false;">&#10008; Close</a>
       </div>
     </div>
   </div>

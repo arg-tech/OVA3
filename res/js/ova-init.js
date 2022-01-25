@@ -75,6 +75,7 @@ const zoom = (event) => {
 }
 
 window.shiftPress = false;
+window.longEdge = [false, false];
 window.nodeCounter = 1;
 window.textCounter = 1;
 window.edgeCounter = 1;
@@ -1783,6 +1784,48 @@ function loadTut() {
 }
 
 /**
+ * The help tutorial for the adding an edge modal
+ */
+ function edgeTut() {
+    var intro = introJs();
+    intro.setOptions({
+        steps: [
+            {
+                element: '#edge_source',
+                intro: "First select a source node for the new edge to connect from."
+            },
+            {
+                element: '#source_text',
+                intro: "The text the selected source node contains will be displayed here."
+            },
+            {
+                element: '#sourceBtn',
+                intro: "Click here to select a source node."
+            },
+            {
+                element: '#edge_target',
+                intro: "After a source node has been selected, select the target node for the new edge to connect to."
+            },
+            {
+                element: '#target_text',
+                intro: "The text the selected target node contains will be displayed here."
+            },
+            {
+                element: '#targetBtn',
+                intro: "Click here to select a target node."
+            }
+            // ,{
+            //     element: '#edgeBtn',
+            //     intro: "Click here to add an edge between the selected source and target nodes."
+            // }
+        ].filter(function (obj) { return $(obj.element).length && $(obj.element).is(':visible'); }),
+        showStepNumbers: false
+    });
+
+    intro.start();
+}
+
+/**
  * Sets the font size for the analysis text
  * @param {String} size - The new font size
  * @returns {Boolean}
@@ -1906,4 +1949,14 @@ function deleteTimestamp() {
     $('#delTimestampBtn').hide();
     closeModal('#modal-timestamps'); FormOpen = false;
     editpopup(mySel);
+}
+
+/**
+ * Handles resetting the edge modal to its default
+ */
+function clearEdgeModal() {
+    var sourceText = document.getElementById('source_text');
+    sourceText.innerHTML = "";
+    var targetText = document.getElementById('target_text');
+    targetText.innerHTML = "";
 }
