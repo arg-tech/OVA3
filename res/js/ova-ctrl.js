@@ -1,3 +1,7 @@
+/**
+ * Handles the key down event
+ * @param {*} e - The key down event to handle
+ */
 function myKeyDown(e) {
   var keycode = e.keyCode;
   if (keycode == 16 || keycode == 83) {
@@ -22,6 +26,10 @@ function myKeyDown(e) {
   }
 }
 
+/**
+ * Handles the key up event
+ * @param {*} e - The key up event to handle
+ */
 function myKeyUp(e) {
   var keycode = e.keyCode;
   if (keycode == 16 || keycode == 83) {
@@ -41,7 +49,11 @@ function myKeyUp(e) {
   }
 }
 
-
+/**
+ * 
+ * @param {Number} keycode 
+ * @returns 
+ */
 function panZoomMode(keycode) {
   var textArea = document.getElementById('analysis_text');
   if (FormOpen == false && textArea !== document.activeElement) {
@@ -76,6 +88,10 @@ function panZoomMode(keycode) {
   }
 }
 
+/**
+ * 
+ * @returns 
+ */
 function updateView() {
   //progress k - frame index updated over total number of frames
   let k = ++f / NF
@@ -104,11 +120,17 @@ function updateView() {
   rID = requestAnimationFrame(updateView)
 }
 
+/**
+ * 
+ */
 function stopAni() {
   cancelAnimationFrame(rID);
   rID = null;
 }
 
+/**
+ * Resets the SVG's view box to the default position
+ */
 function resetPosition() {
   var mw = $("#mainwrap").width();
   $("#right1").width(mw - $("#left1").width() - 41);
@@ -116,6 +138,10 @@ function resetPosition() {
   SVGRoot.setAttribute('viewBox', [0, 0, 1500, 1500]);
 }
 
+/**
+ * Handles turning the edge mode (for adding edges) on and off
+ * @param {String} status 
+ */
 function edgeMode(status) {
   if (status == 'switch' && window.shiftPress) {
     status = 'atk';
@@ -137,17 +163,35 @@ function edgeMode(status) {
   } else if (status == 'off') {
     window.shiftPress = false;
     window.atkPress = false;
+    window.eBtn = false;
     document.getElementById("right1").style.cursor = 'auto';
     $('#eadd').removeClass("active attack support");
+    if (window.longEdge[0]) {
+      tempEdge = document.getElementById('n' + FromID + '-nedge_to');
+      if (tempEdge) { SVGRootG.removeChild(tempEdge); }
+      tempNode = document.getElementById("edge_to");
+      if (tempNode) { SVGRootG.removeChild(tempNode); }
+    }
+    window.longEdge = [false, false];
   } else if (status == 'atk') {
     window.shiftPress = false;
     window.atkPress = true;
     document.getElementById("right1").style.cursor = 'crosshair';
     $('#eadd').removeClass("active attack support");
     $('#eadd').addClass("active attack");
+  } else if (status == 'long') {
+    window.eBtn = true;
+    window.shiftPress = true;
+    window.longEdge[0] = true;
+    $('#eadd').removeClass("active attack support");
+    $('#eadd').addClass("active support");
   }
 }
 
+/**
+ * Handles turning the node mode (for adding nodes) on and off
+ * @param {String} status 
+ */
 function nodeMode(status) {
   if (status == 'switch' && window.nodeAddBtn) {
     status = 'off';
@@ -166,7 +210,11 @@ function nodeMode(status) {
   }
 }
 
-
+/**
+ * 
+ * @param {*} evt 
+ * @returns 
+ */
 function Grab(evt) {
   $("#contextmenu").hide();
 
@@ -218,6 +266,8 @@ function Grab(evt) {
       editpopup(nodes[index]);
       editMode = false;
       return;
+    } else if (window.longEdge[1]) {
+      //
     }
     else {
       DragTarget = targetElement;
@@ -280,6 +330,10 @@ function Grab(evt) {
   }
 }
 
+/**
+ * 
+ * @returns 
+ */
 function getTimestamp() {
   var iframe = document.getElementById('analysis_text');
   if (iframe == null) { //if url loaded into LHS
@@ -355,6 +409,10 @@ function getTimestamp() {
   return false;
 }
 
+/**
+ * 
+ * @param {String} dragID 
+ */
 function GetEdges(dragID) {
   for (var j = 0; j < edges.length; j++) {
     if (edges[j].fromID == dragID) {
@@ -366,6 +424,10 @@ function GetEdges(dragID) {
   }
 }
 
+/**
+ * 
+ * @param {*} evt 
+ */
 function GetTrueCoords(evt) {
   // tsvg = document.getElementById('inline').getBoundingClientRect();
   // svgleft = tsvg.left;
@@ -391,6 +453,19 @@ function GetTrueCoords(evt) {
 
 }
 
+/**
+ * 
+ * @param {String} txt 
+ * @param {String} type 
+ * @param {String} scheme 
+ * @param {Number} pid 
+ * @param {String} nid 
+ * @param {Number} nx 
+ * @param {Number} ny 
+ * @param {Boolean} visible 
+ * @param {Number} undone 
+ * @param {String} timestamp 
+ */
 function AddNode(txt, type, scheme, pid, nid, nx, ny, visible, undone, timestamp) {
   var isVisible = typeof visible !== 'undefined' ? visible : true;
   var undone = typeof undone !== 'undefined' ? undone : 0;
@@ -421,6 +496,10 @@ function AddNode(txt, type, scheme, pid, nid, nx, ny, visible, undone, timestamp
   }
 }
 
+/**
+ * 
+ * @param {*} evt 
+ */
 function Drag(evt) {
   GetTrueCoords(evt);
   if (DragTarget && !multiSel) {
@@ -553,6 +632,10 @@ function Drag(evt) {
   }
 }
 
+/**
+ * 
+ * @param {*} g 
+ */
 function updateBox(g) {
   if (document.getElementById('multiSelBox')) {
     document.getElementById('multiSelBox').remove();
@@ -561,6 +644,11 @@ function updateBox(g) {
   SVGRootG.append(g);
 }
 
+/**
+ * 
+ * @param {Edge} e 
+ * @returns 
+ */
 function UpdateEdge(e) {
   if (!e.visible || e == null) { return false; } //if the edge is null or invisible, i.e. it isn't drawn on the svg, do nothing
   edgeID = 'n' + e.fromID + '-n' + e.toID;
@@ -639,7 +727,11 @@ function UpdateEdge(e) {
   ee.setAttributeNS(null, 'd', pd);
 }
 
-
+/**
+ * 
+ * @param {*} evt 
+ * @param {*} focusElement 
+ */
 function Focus(evt, focusElement) {
   UnFocus(null, CurrentFocus);
   CurrentFocus = focusElement;
@@ -655,7 +747,11 @@ function Focus(evt, focusElement) {
   }
 }
 
-
+/**
+ * 
+ * @param {*} evt 
+ * @param {*} unfocusElement 
+ */
 function UnFocus(evt, unfocusElement) {
   var focusElement = unfocusElement;
   if (!unfocusElement && evt) {
@@ -668,7 +764,11 @@ function UnFocus(evt, unfocusElement) {
   }
 }
 
-
+/**
+ * 
+ * @param {*} evt 
+ * @returns 
+ */
 function Drop(evt) {
   if (DragTarget && mSel.length == 0) {
     children = DragTarget.children;
@@ -692,13 +792,28 @@ function Drop(evt) {
         from = document.getElementById(FromID).getElementsByTagName('rect')[0];
         to = targetElement.getElementsByTagName('rect')[0];
 
+        var index = findNodeIndex(FromID);
+        var nodeFrom = nodes[index].type;
+        var nFrom = nodes[index];
+        index = findNodeIndex(targetElement.getAttributeNS(null, 'id'));
+        var nodeTo = nodes[index].type;
+        var nTo = nodes[index];
+
         if (from == to) { //if the same node 
-          tempedge = document.getElementById('n' + FromID + '-nedge_to');
-          tempnode = document.getElementById("edge_to");
-          SVGRootG.removeChild(tempedge);
-          SVGRootG.removeChild(tempnode);
-          DragTarget.setAttributeNS(null, 'pointer-events', 'all');
-          DragTarget = null;
+          if (window.longEdge[0]) {
+            window.longEdge[1] = true;
+            window.shiftPress = false;
+            var displayText = document.getElementById('source_text');
+            displayText.innerHTML = '"' + nFrom.text + '"';
+            openModal('#modal-edge');
+          } else {
+            tempedge = document.getElementById('n' + FromID + '-nedge_to');
+            tempnode = document.getElementById("edge_to");
+            SVGRootG.removeChild(tempedge);
+            SVGRootG.removeChild(tempnode);
+            DragTarget.setAttributeNS(null, 'pointer-events', 'all');
+            DragTarget = null;
+          }
           return false;
         }
 
@@ -720,12 +835,11 @@ function Drop(evt) {
         newNodeID = (window.nodeCounter + "_" + window.sessionid);
         nx = ((tx - fx) / 2) + fx;
         ny = ((ty - fy) / 2) + fy;
-        //AddNode('Default Inference', 'RA', newNodeID, nx, ny);
-        var index = findNodeIndex(FromID);
-        var nodeFrom = nodes[index].type;
 
-        index = findNodeIndex(targetElement.getAttributeNS(null, 'id'));
-        var nodeTo = nodes[index].type;
+        // var index = findNodeIndex(FromID);
+        // var nodeFrom = nodes[index].type;
+        // index = findNodeIndex(targetElement.getAttributeNS(null, 'id'));
+        // var nodeTo = nodes[index].type;
 
         if (nodeFrom == "I" && nodeTo == "I" && window.atkPress == false) {
           AddNode('Default Inference', 'RA', '72', 0, newNodeID, nx, ny);
@@ -777,6 +891,18 @@ function Drop(evt) {
           SVGRootG.removeChild(tempedge);
           SVGRootG.removeChild(tempnode);
         }
+
+        if (window.longEdge[1]) {
+          var displayText = document.getElementById('target_text');
+          displayText.innerHTML = '"' + nTo.text + '"';
+
+          //center the view on the new edge that was added
+          var newx = nx - 250;
+          var newy = ny - 400;
+          VB = [newx, newy, 1500, 1500];
+          SVGRoot.setAttribute('viewBox', [newx, newy, 1500, 1500]);
+          openModal('#modal-edge');
+        }
       } else {
         //If edge is drawn to empty space and not to a node
         tempedge = document.getElementById('n' + FromID + '-nedge_to');
@@ -790,7 +916,6 @@ function Drop(evt) {
 
     if (window.eBtn) { //deselects the add edge icon button after adding an edge
       edgeMode('off');
-      window.eBtn = false;
     }
   }
   if (document.getElementById('multiSelBox')) {
@@ -833,7 +958,12 @@ function Drop(evt) {
   dragEdges = [];
 }
 
-
+/**
+ * 
+ * @param {Number} nx 
+ * @param {Number} ny 
+ * @returns 
+ */
 function AddPt(nx, ny) {
   var g = document.createElementNS("http://www.w3.org/2000/svg", "g");
   g.setAttribute('id', 'edge_to');
@@ -849,6 +979,11 @@ function AddPt(nx, ny) {
   return g;
 }
 
+/**
+ * 
+ * @param {*} evt 
+ * @returns 
+ */
 function myRClick(evt) {
   GetTrueCoords(evt);
   if (evt.target.nodeName == 'rect') {
@@ -873,6 +1008,12 @@ function myRClick(evt) {
 
 //finds and returns the index of a node with the given nodeID in the nodes array
 //returns -1 if no node with the given nodeID can be found
+/**
+ * 
+ * @param {String} nodeID 
+ * @param {Boolean} last 
+ * @returns {Number} - The index or -1 if no node with the given nodeID can be found
+ */
 function findNodeIndex(nodeID, last) {
   var last = typeof last !== 'undefined' ? last : false;
   if (last) {
@@ -907,6 +1048,9 @@ function findNodeIndex(nodeID, last) {
 //   }
 // }
 
+/**
+ * 
+ */
 function saveNodeEdit() {
   var type = mySel.type;
   var xCoord = mySel.x;
@@ -1002,7 +1146,11 @@ function saveNodeEdit() {
   }
 }
 
-
+/**
+ * 
+ * @param {String} nodeID 
+ * @returns 
+ */
 function findEdges(nodeID) {
   var edgesToReturn = []
   for (var i = 0; i < edges.length; i++) {
@@ -1013,7 +1161,10 @@ function findEdges(nodeID) {
   return edgesToReturn;
 }
 
-
+/**
+ * 
+ * @param {Node} node 
+ */
 function deleteNode(node) {
   //remove the node
   if (node.visible) {
@@ -1053,6 +1204,10 @@ function deleteNode(node) {
   $("#contextmenu").hide();
 }
 
+/**
+ * 
+ * @param {Edge} edge 
+ */
 function deleteEdges(edge) {
   edgeID = 'n' + edge.fromID + '-n' + edge.toID;
   edgeFrom = edge.fromID;
