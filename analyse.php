@@ -248,7 +248,7 @@ if (isset($_COOKIE['ovauser'])) {
           <div id="edge_source">
             <label id="source_text_label" for="source_text">Source Node</label>
             <textarea id="source_text" name="source_text" readonly placeholder="Please select a source node." style="width:75%;"></textarea>
-            <a href="#" id="sourceBtn" class="btn" onClick="edgeMode('long');closeModal('#modal-edge');return false;" style="margin-top:2%;">Select Source</a>
+            <a href="#" id="sourceBtn" class="btn" onClick="edgeMode('off');edgeMode('long');closeModal('#modal-edge');return false;" style="margin-top:2%;">Select Source</a>
           </div>
           <div id="edge_target">
             <label id="target_text_label" for="target_text">Target Node</label>
