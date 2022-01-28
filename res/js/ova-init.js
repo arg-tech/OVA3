@@ -1786,7 +1786,7 @@ function loadTut() {
 /**
  * The help tutorial for the adding an edge modal
  */
- function edgeTut() {
+function edgeTut() {
     var intro = introJs();
     intro.setOptions({
         steps: [
@@ -1952,11 +1952,70 @@ function deleteTimestamp() {
 }
 
 /**
- * Handles resetting the edge modal to its default
+ * Handles resetting the edge modal inputs to their defaults
  */
 function clearEdgeModal() {
+    //clear the previously selected sources and targets
     var sourceText = document.getElementById('source_text');
     sourceText.innerHTML = "";
     var targetText = document.getElementById('target_text');
     targetText.innerHTML = "";
+
+    if (window.dialogicalMode) {
+        var sourceL = document.getElementById('sel_source_L');
+        var targetL = document.getElementById('sel_target_L');
+        $("#sel_source_L").val("0");
+        $("#sel_target_L").val("0");
+
+        //update the select options to include all locutions
+        for (var i = 0; i < nodes.length; i++) {
+            if (nodes[i].type == "L" && nodes[i].visible) {
+                if (!$("#sel_source_L option[value='" + nodes[i].nodeID + "']").length > 0) {
+                    $("<option />", { value: nodes[i].nodeID, html: nodes[i].text }).appendTo(sourceL);
+                    $("<option />", { value: nodes[i].nodeID, html: nodes[i].text }).appendTo(targetL);
+                }
+            }
+        }
+    }
+}
+
+/**
+ * Handles the 'add edges' button on the add edge modal click event
+ */
+function addLongConnection() {
+    var sourceL = $("#sel_source_L").val();
+    var targetL = $("#sel_target_L").val();
+
+    from = document.getElementById(sourceL).getElementsByTagName('rect')[0];
+    to = document.getElementById(targetL).getElementsByTagName('rect')[0];
+    fx = from.getAttributeNS(null, 'x');
+    fy = from.getAttributeNS(null, 'y');
+    fw = from.getAttributeNS(null, 'width');
+    fh = from.getAttributeNS(null, 'height');
+    tx = to.getAttributeNS(null, 'x');
+    ty = to.getAttributeNS(null, 'y');
+    tw = to.getAttributeNS(null, 'width');
+    th = to.getAttributeNS(null, 'height');
+    fx = parseInt(fx) + (parseInt(fw) / 2);
+    fy = parseInt(fy) + (parseInt(fh) / 2);
+    tx = parseInt(tx) + (parseInt(tw) / 2);
+    ty = parseInt(ty) + (parseInt(th) / 2);
+
+    //add TA node
+    window.groupID++;
+    window.nodeCounter++;
+    newNodeID = (window.nodeCounter + "_" + window.sessionid);
+    nx = ((tx - fx) / 2) + fx;
+    ny = ((ty - fy) / 2) + fy;
+    AddNode('Default Transition', 'TA', '82', 0, newNodeID, nx, ny);
+
+    //add edge between source and TA
+    DrawEdge(sourceL, newNodeID);
+    var edge = newEdge(sourceL, newNodeID);
+    UpdateEdge(edge);
+
+    //add edge between TA and target
+    DrawEdge(newNodeID, targetL);
+    edge = newEdge(newNodeID, targetL);
+    UpdateEdge(edge);
 }

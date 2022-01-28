@@ -805,6 +805,13 @@ function Drop(evt) {
             window.shiftPress = false;
             var displayText = document.getElementById('source_text');
             displayText.innerHTML = '"' + nFrom.text + '"';
+            if (window.dialogicalMode) { //select suggested L source
+              var id = nFrom.nodeID.split("_");
+              // var guessL = (parseInt(id[0]) - 2) + "_" + id[1]; //for OVA2 maps loaded into OVA3
+              var guessL = (parseInt(id[0]) + 1) + "_" + id[1]; //for OVA3 maps
+              $("#sel_source_L").val(guessL);
+              console.log("Guess L source ID: " + guessL);
+            }
             openModal('#modal-edge');
           } else {
             tempedge = document.getElementById('n' + FromID + '-nedge_to');
@@ -835,11 +842,6 @@ function Drop(evt) {
         newNodeID = (window.nodeCounter + "_" + window.sessionid);
         nx = ((tx - fx) / 2) + fx;
         ny = ((ty - fy) / 2) + fy;
-
-        // var index = findNodeIndex(FromID);
-        // var nodeFrom = nodes[index].type;
-        // index = findNodeIndex(targetElement.getAttributeNS(null, 'id'));
-        // var nodeTo = nodes[index].type;
 
         if (nodeFrom == "I" && nodeTo == "I" && window.atkPress == false) {
           AddNode('Default Inference', 'RA', '72', 0, newNodeID, nx, ny);
@@ -901,7 +903,13 @@ function Drop(evt) {
           var newy = ny - 400;
           VB = [newx, newy, 1500, 1500];
           SVGRoot.setAttribute('viewBox', [newx, newy, 1500, 1500]);
-          // openModal('#modal-edge');
+          if (window.dialogicalMode) { //select suggested L target
+            var id = nTo.nodeID.split("_");
+            var guessL = (parseInt(id[0]) + 1) + "_" + id[1];
+            $("#sel_target_L").val(guessL);
+            console.log("Guess L target ID: " + guessL);
+            openModal('#modal-edge');
+          }
         }
       } else {
         //If edge is drawn to empty space and not to a node
