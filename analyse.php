@@ -245,24 +245,39 @@ if (isset($_COOKIE['ovauser'])) {
       </div>
       <div class="modal-body">
         <form id="f_loadfile" class="fstyle">
-          <div id="edge_source">
+          <div id="edge_source" style="margin-bottom:5%;">
             <label id="source_text_label" for="source_text">Source Node</label>
             <textarea id="source_text" name="source_text" readonly placeholder="Please select a source node." style="width:75%;"></textarea>
             <a href="#" id="sourceBtn" class="btn" onClick="edgeMode('off');edgeMode('long');closeModal('#modal-edge');return false;" style="margin-top:2%;">Select Source</a>
+            <?php if ($pro) { ?>
+              <label id="source_L_label" for="sel_source_L">Source Locution</label>
+              <select id="sel_source_L" required>
+                <option value="0" selected>--No locution selected--</option>
+              </select>
+            <?php } ?>
           </div>
-          <div id="edge_target">
+          <div id="edge_target" style="margin-bottom:5%;">
             <label id="target_text_label" for="target_text">Target Node</label>
             <textarea id="target_text" name="target_text" readonly placeholder="Please select a target node." style="width:75%;"></textarea>
             <a href="#" id="targetBtn" class="btn" onClick="closeModal('#modal-edge');return false;" style="margin-top:2%;">Select Target</a>
+            <?php if ($pro) { ?>
+              <label id="target_L_label" for="sel_target_L">Target Locution</label>
+              <select id="sel_target_L" required>
+                <option value="0" selected>--No locution selected--</option>
+              </select>
           </div>
-          <!-- <a href="#" id="edgeBtn" class="btn" onClick="closeModal('#modal-edge'); return false;" style="display:block;">Add Edge</a> -->
-          <!-- <br><br> -->
-        </form>
+          <p id="edge_message" style="font-size:0.9em;color:rgba(224, 46, 66, 1);"></p>
+          <a href="#" id="edgeBtn" class="btn" onClick="addLongEdge(); return false;">Add Edges</a>
+          <br><br>
+        <?php } else { ?>
       </div>
-      <div class="modal-btns">
-        <a class="cancel" href="#" onClick="edgeMode('off'); closeModal('#modal-edge'); return false;">&#10008; Close</a>
-      </div>
+    <?php } ?>
+    </form>
     </div>
+    <div class="modal-btns">
+      <a class="cancel" href="#" onClick="cancelLongEdge(); return false;">&#10008; Cancel</a>
+    </div>
+  </div>
   </div>
 
   <div class="modal-dialog" id="modal-username">

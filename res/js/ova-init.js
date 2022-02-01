@@ -239,6 +239,7 @@ function Init(evt) {
     //set defaults
     setFontSize(window.defaultSettings["display"]["font_size"]);
     setRIATMode();
+    clearEdgeModal();
 }
 
 /**
@@ -1786,7 +1787,7 @@ function loadTut() {
 /**
  * The help tutorial for the adding an edge modal
  */
- function edgeTut() {
+function edgeTut() {
     var intro = introJs();
     intro.setOptions({
         steps: [
@@ -1803,8 +1804,12 @@ function loadTut() {
                 intro: "Click here to select a source node."
             },
             {
+                element: '#sel_source_L',
+                intro: "Click here to select a source locution from the dropdown options."
+            },
+            {
                 element: '#edge_target',
-                intro: "After a source node has been selected, select the target node for the new edge to connect to."
+                intro: "After a source node has been selected, select the target node for the new edge to connect to. Please note that once a target node has been selected, neither it or the selected source node can be changed."
             },
             {
                 element: '#target_text',
@@ -1813,11 +1818,15 @@ function loadTut() {
             {
                 element: '#targetBtn',
                 intro: "Click here to select a target node."
+            },
+            {
+                element: '#sel_target_L',
+                intro: "Click here to select a target locution from the dropdown options."
+            },
+            {
+                element: '#edgeBtn',
+                intro: "Click here to add the edges between the selected source and target nodes and the selected locutions."
             }
-            // ,{
-            //     element: '#edgeBtn',
-            //     intro: "Click here to add an edge between the selected source and target nodes."
-            // }
         ].filter(function (obj) { return $(obj.element).length && $(obj.element).is(':visible'); }),
         showStepNumbers: false
     });
@@ -1908,7 +1917,6 @@ function setTimestampStart(startdatestmp) {
             var t = timezoneTime.split(":", 2);
             var timezone = "GMT" + timezoneSelect + t[0] + t[1];
             var start = d[0] + "/" + d[1] + "/" + d[2] + " " + time + " " + timezone;
-            // console.log(start);
             if (window.editTimestamp) { //if editing a locution's timestamp
                 var tstamp = Math.round(new Date(start).getTime());
                 var tsd = new Date();
@@ -1921,7 +1929,6 @@ function setTimestampStart(startdatestmp) {
                     var edited = editTimestampSVG(mySel.nodeID, str);
                     if (!edited) { DrawTimestamp(mySel.nodeID, str, mySel.x, mySel.y); }
                 }
-                // console.log(mySel);
                 $('#delTimestampBtn').hide();
                 closeModal('#modal-timestamps'); FormOpen = false;
                 editpopup(mySel);
@@ -1952,11 +1959,110 @@ function deleteTimestamp() {
 }
 
 /**
- * Handles resetting the edge modal to its default
+ * Handles resetting the edge modal inputs to their defaults
  */
 function clearEdgeModal() {
+    $('#sourceBtn').show(); $('#targetBtn').show();
+    //clear the previously selected source and target
     var sourceText = document.getElementById('source_text');
     sourceText.innerHTML = "";
     var targetText = document.getElementById('target_text');
     targetText.innerHTML = "";
+
+    if (window.dialogicalMode) {
+        var message = document.getElementById("edge_message");
+        message.innerHTML = "";
+        var sourceL = document.getElementById('sel_source_L');
+        var targetL = document.getElementById('sel_target_L');
+        //clear the source and target locutions
+        $("#sel_source_L").empty();
+        $("#sel_target_L").empty();
+        $("<option />", { value: "0", html: "--No locution selected--" }).appendTo(sourceL);
+        $("<option />", { value: "0", html: "--No locution selected--" }).appendTo(targetL);
+        $("#sel_source_L").val("0");
+        $("#sel_target_L").val("0");
+
+        //update the select options to include all relevant locutions
+        for (var i = 0; i < nodes.length; i++) {
+            if (nodes[i].type == "L" && nodes[i].visible) {
+                $("<option />", { value: nodes[i].nodeID, html: nodes[i].text }).appendTo(sourceL);
+                $("<option />", { value: nodes[i].nodeID, html: nodes[i].text }).appendTo(targetL);
+            }
+        }
+    }
+}
+
+/**
+ * Handles the 'add edges' button on the add edge modal click event
+ * @returns {Boolean} Indicates if the edges were successfully added (true) or not (false)
+ */
+function addLongEdge() {
+    var sourceL = $("#sel_source_L").val();
+    var targetL = $("#sel_target_L").val();
+    var message = document.getElementById("edge_message");
+    var sourceT = document.getElementById("source_text").value;
+    var targetT = document.getElementById("target_text").value;
+
+    //checks if any of the sources or targets need to be reselected
+    if (sourceT == "") { message.innerHTML = "Please select a <strong>source node</strong>."; return false; }
+    if (sourceL == "0") { message.innerHTML = "Please select a <strong>source locution</strong>."; return false; }
+    if (targetT == "") { message.innerHTML = "Please select a <strong>target node</strong>."; return false; }
+    if (targetL == "0") { message.innerHTML = "Please select a <strong>target locution</strong>."; return false; }
+
+    var from = document.getElementById(sourceL);
+    var to = document.getElementById(targetL);
+    if (from == null) { message.innerHTML = "The selected source locution no longer exists, please select a different <strong>source locution</strong>."; return false; }
+    if (to == null) { message.innerHTML = "The selected target locution no longer exists, please select a different <strong>target locution</strong>."; return false; }
+
+    //calculates the x and y values for a new TA node
+    from = from.getElementsByTagName('rect')[0];
+    to = to.getElementsByTagName('rect')[0];
+    var fx = from.getAttributeNS(null, 'x');
+    var fy = from.getAttributeNS(null, 'y');
+    var fw = from.getAttributeNS(null, 'width');
+    var fh = from.getAttributeNS(null, 'height');
+    var tx = to.getAttributeNS(null, 'x');
+    var ty = to.getAttributeNS(null, 'y');
+    var tw = to.getAttributeNS(null, 'width');
+    var th = to.getAttributeNS(null, 'height');
+    fx = parseInt(fx) + (parseInt(fw) / 2);
+    fy = parseInt(fy) + (parseInt(fh) / 2);
+    tx = parseInt(tx) + (parseInt(tw) / 2);
+    ty = parseInt(ty) + (parseInt(th) / 2);
+    var nx = ((tx - fx) / 2) + fx;
+    var ny = ((ty - fy) / 2) + fy;
+
+    //adds a TA node
+    window.groupID++;
+    window.nodeCounter++;
+    newNodeID = (window.nodeCounter + "_" + window.sessionid);
+    AddNode('Default Transition', 'TA', '82', 0, newNodeID, nx, ny);
+
+    //adds an edge between the source locution and TA nodes
+    DrawEdge(sourceL, newNodeID);
+    var edge = newEdge(sourceL, newNodeID);
+    UpdateEdge(edge);
+
+    //adds an edge between the TA and target locution nodes
+    DrawEdge(newNodeID, targetL);
+    edge = newEdge(newNodeID, targetL);
+    UpdateEdge(edge);
+
+    closeModal('#modal-edge');
+    return true;
+}
+
+/**
+ * Handles the cancel button on the add edge modal click event
+ */
+function cancelLongEdge() {
+    if (window.dialogicalMode) {
+        var sourceT = document.getElementById("source_text").value;
+        var targetT = document.getElementById("target_text").value;
+        if(sourceT != "" && targetT != ""){
+            undo();
+        }
+    }
+    edgeMode('off');
+    closeModal('#modal-edge');
 }
