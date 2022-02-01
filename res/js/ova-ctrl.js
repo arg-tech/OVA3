@@ -807,10 +807,13 @@ function Drop(evt) {
             displayText.innerHTML = '"' + nFrom.text + '"';
             if (window.dialogicalMode) { //select suggested L source
               var id = nFrom.nodeID.split("_");
-              // var guessL = (parseInt(id[0]) - 2) + "_" + id[1]; //for OVA2 maps loaded into OVA3
               var guessL = (parseInt(id[0]) + 1) + "_" + id[1]; //for OVA3 maps
-              $("#sel_source_L").val(guessL);
-              console.log("Guess L source ID: " + guessL);
+              var guessL2 = (parseInt(id[0]) - 2) + "_" + id[1]; //for OVA2 maps loaded into OVA3
+              if ($("#sel_source_L option[value='" + guessL + "']").length > 0) {
+                $("#sel_source_L").val(guessL);
+              } else if ($("#sel_source_L option[value='" + guessL2 + "']").length > 0) {
+                $("#sel_source_L").val(guessL2);
+              }
             }
             openModal('#modal-edge');
           } else {
@@ -905,9 +908,14 @@ function Drop(evt) {
           SVGRoot.setAttribute('viewBox', [newx, newy, 1500, 1500]);
           if (window.dialogicalMode) { //select suggested L target
             var id = nTo.nodeID.split("_");
-            var guessL = (parseInt(id[0]) + 1) + "_" + id[1];
-            $("#sel_target_L").val(guessL);
-            console.log("Guess L target ID: " + guessL);
+            var guessL = (parseInt(id[0]) + 1) + "_" + id[1]; //for OVA3 maps
+            var guessL2 = (parseInt(id[0]) - 2) + "_" + id[1]; //for OVA2 maps loaded into OVA3
+            if ($("#sel_target_L option[value='" + guessL + "']").length > 0) {
+              $("#sel_target_L").val(guessL);
+            } else if ($("#sel_target_L option[value='" + guessL2 + "']").length > 0) {
+              $("#sel_target_L").val(guessL2);
+            }
+            $('#sourceBtn').hide(); $('#targetBtn').hide();
             openModal('#modal-edge');
           }
         }
