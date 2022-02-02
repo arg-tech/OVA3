@@ -1997,6 +1997,7 @@ function clearEdgeModal() {
  * @returns {Boolean} Indicates if the edges were successfully added (true) or not (false)
  */
 function addLongEdge() {
+    var addTA = true;
     var sourceL = $("#sel_source_L").val();
     var targetL = $("#sel_target_L").val();
     var message = document.getElementById("edge_message");
@@ -2005,49 +2006,56 @@ function addLongEdge() {
 
     //checks if any of the sources or targets need to be reselected
     if (sourceT == "") { message.innerHTML = "Please select a <strong>source node</strong>."; return false; }
-    if (sourceL == "0") { message.innerHTML = "Please select a <strong>source locution</strong>."; return false; }
     if (targetT == "") { message.innerHTML = "Please select a <strong>target node</strong>."; return false; }
-    if (targetL == "0") { message.innerHTML = "Please select a <strong>target locution</strong>."; return false; }
+    if (sourceL == "0") {
+        if (window.rIATMode) { message.innerHTML = "Please select a <strong>source locution</strong>."; return false; }
+        else { addTA = false; }
+    }
+    if (targetL == "0") {
+        if (window.rIATMode) { message.innerHTML = "Please select a <strong>target locution</strong>."; return false; }
+        else { addTA = false; }
+    }
 
-    var from = document.getElementById(sourceL);
-    var to = document.getElementById(targetL);
-    if (from == null) { message.innerHTML = "The selected source locution no longer exists, please select a different <strong>source locution</strong>."; return false; }
-    if (to == null) { message.innerHTML = "The selected target locution no longer exists, please select a different <strong>target locution</strong>."; return false; }
+    if (addTA) {
+        var from = document.getElementById(sourceL);
+        var to = document.getElementById(targetL);
+        if (from == null) { message.innerHTML = "The selected source locution no longer exists, please select a different <strong>source locution</strong>."; return false; }
+        if (to == null) { message.innerHTML = "The selected target locution no longer exists, please select a different <strong>target locution</strong>."; return false; }
 
-    //calculates the x and y values for a new TA node
-    from = from.getElementsByTagName('rect')[0];
-    to = to.getElementsByTagName('rect')[0];
-    var fx = from.getAttributeNS(null, 'x');
-    var fy = from.getAttributeNS(null, 'y');
-    var fw = from.getAttributeNS(null, 'width');
-    var fh = from.getAttributeNS(null, 'height');
-    var tx = to.getAttributeNS(null, 'x');
-    var ty = to.getAttributeNS(null, 'y');
-    var tw = to.getAttributeNS(null, 'width');
-    var th = to.getAttributeNS(null, 'height');
-    fx = parseInt(fx) + (parseInt(fw) / 2);
-    fy = parseInt(fy) + (parseInt(fh) / 2);
-    tx = parseInt(tx) + (parseInt(tw) / 2);
-    ty = parseInt(ty) + (parseInt(th) / 2);
-    var nx = ((tx - fx) / 2) + fx;
-    var ny = ((ty - fy) / 2) + fy;
+        //calculates the x and y values for a new TA node
+        from = from.getElementsByTagName('rect')[0];
+        to = to.getElementsByTagName('rect')[0];
+        var fx = from.getAttributeNS(null, 'x');
+        var fy = from.getAttributeNS(null, 'y');
+        var fw = from.getAttributeNS(null, 'width');
+        var fh = from.getAttributeNS(null, 'height');
+        var tx = to.getAttributeNS(null, 'x');
+        var ty = to.getAttributeNS(null, 'y');
+        var tw = to.getAttributeNS(null, 'width');
+        var th = to.getAttributeNS(null, 'height');
+        fx = parseInt(fx) + (parseInt(fw) / 2);
+        fy = parseInt(fy) + (parseInt(fh) / 2);
+        tx = parseInt(tx) + (parseInt(tw) / 2);
+        ty = parseInt(ty) + (parseInt(th) / 2);
+        var nx = ((tx - fx) / 2) + fx;
+        var ny = ((ty - fy) / 2) + fy;
 
-    //adds a TA node
-    window.groupID++;
-    window.nodeCounter++;
-    newNodeID = (window.nodeCounter + "_" + window.sessionid);
-    AddNode('Default Transition', 'TA', '82', 0, newNodeID, nx, ny);
+        //adds a TA node
+        window.groupID++;
+        window.nodeCounter++;
+        newNodeID = (window.nodeCounter + "_" + window.sessionid);
+        AddNode('Default Transition', 'TA', '82', 0, newNodeID, nx, ny);
 
-    //adds an edge between the source locution and TA nodes
-    DrawEdge(sourceL, newNodeID);
-    var edge = newEdge(sourceL, newNodeID);
-    UpdateEdge(edge);
+        //adds an edge between the source locution and TA nodes
+        DrawEdge(sourceL, newNodeID);
+        var edge = newEdge(sourceL, newNodeID);
+        UpdateEdge(edge);
 
-    //adds an edge between the TA and target locution nodes
-    DrawEdge(newNodeID, targetL);
-    edge = newEdge(newNodeID, targetL);
-    UpdateEdge(edge);
-
+        //adds an edge between the TA and target locution nodes
+        DrawEdge(newNodeID, targetL);
+        edge = newEdge(newNodeID, targetL);
+        UpdateEdge(edge);
+    }
     closeModal('#modal-edge');
     return true;
 }
@@ -2059,7 +2067,7 @@ function cancelLongEdge() {
     if (window.dialogicalMode) {
         var sourceT = document.getElementById("source_text").value;
         var targetT = document.getElementById("target_text").value;
-        if(sourceT != "" && targetT != ""){
+        if (sourceT != "" && targetT != "") {
             undo();
         }
     }

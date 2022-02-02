@@ -805,7 +805,7 @@ function Drop(evt) {
             window.shiftPress = false;
             var displayText = document.getElementById('source_text');
             displayText.innerHTML = '"' + nFrom.text + '"';
-            if (window.dialogicalMode) { //select suggested L source
+            if (window.rIATMode) { //select suggested L source
               var id = nFrom.nodeID.split("_");
               var guessL = (parseInt(id[0]) + 1) + "_" + id[1]; //for OVA3 maps
               var guessL2 = (parseInt(id[0]) - 2) + "_" + id[1]; //for OVA2 maps loaded into OVA3
@@ -906,14 +906,16 @@ function Drop(evt) {
           var newy = ny - 400;
           VB = [newx, newy, 1500, 1500];
           SVGRoot.setAttribute('viewBox', [newx, newy, 1500, 1500]);
-          if (window.dialogicalMode) { //select suggested L target
-            var id = nTo.nodeID.split("_");
-            var guessL = (parseInt(id[0]) + 1) + "_" + id[1]; //for OVA3 maps
-            var guessL2 = (parseInt(id[0]) - 2) + "_" + id[1]; //for OVA2 maps loaded into OVA3
-            if ($("#sel_target_L option[value='" + guessL + "']").length > 0) {
-              $("#sel_target_L").val(guessL);
-            } else if ($("#sel_target_L option[value='" + guessL2 + "']").length > 0) {
-              $("#sel_target_L").val(guessL2);
+          if (window.dialogicalMode) {
+            if (window.rIATMode) { //select suggested L target
+              var id = nTo.nodeID.split("_");
+              var guessL = (parseInt(id[0]) + 1) + "_" + id[1]; //for OVA3 maps
+              var guessL2 = (parseInt(id[0]) - 2) + "_" + id[1]; //for OVA2 maps loaded into OVA3
+              if ($("#sel_target_L option[value='" + guessL + "']").length > 0) {
+                $("#sel_target_L").val(guessL);
+              } else if ($("#sel_target_L option[value='" + guessL2 + "']").length > 0) {
+                $("#sel_target_L").val(guessL2);
+              }
             }
             $('#sourceBtn').hide(); $('#targetBtn').hide();
             openModal('#modal-edge');
