@@ -76,6 +76,7 @@ if (isset($_COOKIE['ovauser'])) {
   <script>
     window.DBurl = '<?php echo $DBurl; ?>';
     window.SSurl = '<?php echo $SSurl; ?>';
+    window.OVAurl = '<?php echo $OVAurl; ?>';
     window.analysisID = '<?php echo $analysisID; ?>';
     window.defaultSettings = '<?php echo json_encode($defaultSettings); ?>';
     <?php echo $anamejs; ?>

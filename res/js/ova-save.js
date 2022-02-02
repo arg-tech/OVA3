@@ -284,16 +284,25 @@ function loadBtn() {
  */
 async function loadNodeSet(nodeSetID, multi) {
     var loaded = false;
-    try {
+    try { //loading from OVA3
         await $.get('./db/' + nodeSetID, function (data) {
-            console.log("loading from ./db/" + nodeSetID);
+            console.log("loading from OVA3/db/" + nodeSetID);
             loaded = loadFile(data, multi);
         });
         return loaded;
     } catch (e) {
         // console.log(e);
-        console.log("loading with node set id");
-        return await loadfromdb(nodeSetID, multi);
+        try { //loading from OVA2
+            await $.get(window.OVAurl + './db/' + nodeSetID, function (data) {
+                console.log("loading from OVA2/db/" + nodeSetID);
+                loaded = loadFile(data, multi);
+            });
+            return loaded;
+        } catch (e) {
+            // console.log(e);
+            console.log("loading with node set id");
+            return await loadfromdb(nodeSetID, multi);
+        }
     }
 }
 
