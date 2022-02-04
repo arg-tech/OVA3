@@ -50,7 +50,7 @@ function myKeyUp(e) {
 }
 
 /**
- * 
+ * Handles panning and zooming
  * @param {Number} keycode 
  * @returns 
  */
@@ -89,7 +89,7 @@ function panZoomMode(keycode) {
 }
 
 /**
- * 
+ * Updates the view
  * @returns 
  */
 function updateView() {
@@ -211,7 +211,7 @@ function nodeMode(status) {
 }
 
 /**
- * 
+ * Handles the mouse down event to enable grabbing on the SVG
  * @param {*} evt 
  * @returns 
  */
@@ -308,9 +308,7 @@ function Grab(evt) {
         var timestamp = '';
         if (window.addTimestamps) {
           timestamp = getTimestamp();
-          // console.log("timestamp: " + timestamp);
           timestamp = !timestamp ? '' : timestamp;
-          // console.log("timestamp: " + timestamp);
         }
         if (window.rIATMode) {
           AddNode(t, 'I', null, 0, newNodeID, TrueCoords.x, TrueCoords.y - 10, true, 0, timestamp);
@@ -331,8 +329,8 @@ function Grab(evt) {
 }
 
 /**
- * 
- * @returns 
+ * Calculates a timestamp
+ * @returns - The calculated timestamp or false if no timestamp could be calculated
  */
 function getTimestamp() {
   var iframe = document.getElementById('analysis_text');
@@ -425,7 +423,7 @@ function GetEdges(dragID) {
 }
 
 /**
- * 
+ * Calculates the true coordinates
  * @param {*} evt 
  */
 function GetTrueCoords(evt) {
@@ -454,17 +452,17 @@ function GetTrueCoords(evt) {
 }
 
 /**
- * 
- * @param {String} txt 
- * @param {String} type 
- * @param {String} scheme 
- * @param {Number} pid 
- * @param {String} nid 
- * @param {Number} nx 
- * @param {Number} ny 
- * @param {Boolean} visible 
- * @param {Number} undone 
- * @param {String} timestamp 
+ * Handles adding a node
+ * @param {String} txt - The text the node contains
+ * @param {String} type - The type of node
+ * @param {String} scheme - The ID of the scheme it fulfils or null if it doesn't fulfil a scheme
+ * @param {Number} pid - The ID of its participant or zero if it doesn't have a participant
+ * @param {String} nid - A string to identify the node by
+ * @param {Number} nx - The node's x coordinate
+ * @param {Number} ny - The node's y coordinate
+ * @param {Boolean} visible - Optional, indicates if the node should be visible (true) or not (false). The default is true.
+ * @param {Number} undone - Optional, indicates if this edit can be undone (0) or not (1). The default is zero.
+ * @param {String} timestamp - Optional, the node's timestamp value. The default is ''.
  */
 function AddNode(txt, type, scheme, pid, nid, nx, ny, visible, undone, timestamp) {
   var isVisible = typeof visible !== 'undefined' ? visible : true;
@@ -497,7 +495,7 @@ function AddNode(txt, type, scheme, pid, nid, nx, ny, visible, undone, timestamp
 }
 
 /**
- * 
+ * Handles the mouse move event to enable dragging on the SVG
  * @param {*} evt 
  */
 function Drag(evt) {
@@ -645,9 +643,9 @@ function updateBox(g) {
 }
 
 /**
- * 
+ * Handles updating a drawn edge on the SVG
  * @param {Edge} e 
- * @returns 
+ * @returns {Boolean} - Indicates if the edge was successfully updated (true) or not (false)
  */
 function UpdateEdge(e) {
   if (!e.visible || e == null) { return false; } //if the edge is null or invisible, i.e. it isn't drawn on the svg, do nothing
@@ -725,6 +723,7 @@ function UpdateEdge(e) {
 
   pd = 'M' + efx + ',' + efy + ' C' + cp1x + ',' + cp1y + ' ' + cp2x + ',' + cp2y + ' ' + etx + ',' + ety;
   ee.setAttributeNS(null, 'd', pd);
+  return true;
 }
 
 /**
@@ -765,7 +764,7 @@ function UnFocus(evt, unfocusElement) {
 }
 
 /**
- * 
+ * Handles the mouse up event to enable dropping on the SVG
  * @param {*} evt 
  * @returns 
  */
@@ -977,9 +976,9 @@ function Drop(evt) {
 }
 
 /**
- * 
- * @param {Number} nx 
- * @param {Number} ny 
+ * Adds a point to the SVG
+ * @param {Number} nx - The x coordinate to draw the point at
+ * @param {Number} ny - The y coordinate to draw the point at
  * @returns 
  */
 function AddPt(nx, ny) {
@@ -998,7 +997,7 @@ function AddPt(nx, ny) {
 }
 
 /**
- * 
+ * Handles the right click event
  * @param {*} evt 
  * @returns 
  */
@@ -1024,13 +1023,11 @@ function myRClick(evt) {
   }
 }
 
-//finds and returns the index of a node with the given nodeID in the nodes array
-//returns -1 if no node with the given nodeID can be found
 /**
- * 
- * @param {String} nodeID 
- * @param {Boolean} last 
- * @returns {Number} - The index or -1 if no node with the given nodeID can be found
+ * Finds the index of a node in the nodes array
+ * @param {String} nodeID - The ID of the node to search for
+ * @param {Boolean} last - Optional, indicates if the search should start at the end of the nodes array
+ * @returns {Number} - The index or -1 if no node with the given nodeID can be found in the array
  */
 function findNodeIndex(nodeID, last) {
   var last = typeof last !== 'undefined' ? last : false;
@@ -1067,7 +1064,7 @@ function findNodeIndex(nodeID, last) {
 // }
 
 /**
- * 
+ * Handles updating nodes to save any edits made from the edit node form
  */
 function saveNodeEdit() {
   var type = mySel.type;
@@ -1165,8 +1162,8 @@ function saveNodeEdit() {
 }
 
 /**
- * 
- * @param {String} nodeID 
+ * Finds all edges connected to a given node
+ * @param {String} nodeID - The ID of the node to find edges connected to
  * @returns 
  */
 function findEdges(nodeID) {
@@ -1180,8 +1177,8 @@ function findEdges(nodeID) {
 }
 
 /**
- * 
- * @param {Node} node 
+ * Handles deleting a node and its connected edges
+ * @param {Node} node - The node to delete
  */
 function deleteNode(node) {
   //remove the node
@@ -1223,8 +1220,8 @@ function deleteNode(node) {
 }
 
 /**
- * 
- * @param {Edge} edge 
+ * Handles deleting an edge and its connected nodes
+ * @param {Edge} edge - The edge to delete
  */
 function deleteEdges(edge) {
   edgeID = 'n' + edge.fromID + '-n' + edge.toID;
