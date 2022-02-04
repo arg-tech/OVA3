@@ -81,6 +81,7 @@ if (isset($_COOKIE['ovauser'])) {
     window.defaultSettings = '<?php echo json_encode($defaultSettings); ?>';
     <?php echo $anamejs; ?>
   </script>
+  <script src="res/js/ova-tutorial.js"></script>
   <script src="res/js/ova-init.js"></script>
   <script src="res/js/intro.min.js"></script>
 </head>
@@ -201,7 +202,7 @@ if (isset($_COOKIE['ovauser'])) {
     <div class="divider"></div>
     <a onClick="resetPosition();" class="icon" id="reset" style="background-position: -336px 50%;"><span class="tooltiptext">Reset&nbsp;View</span></a>
     <div class="divider"></div>
-    <a onClick="undo();" class="icon" id="undo" style="background-position: -462px 50%;"><span class="tooltiptext">Undo</span></a> <!-- TODO: change style -->
+    <a onClick="undo();" class="icon" id="undo" style="background-position: -462px 50%;"><span class="tooltiptext">Undo</span></a>
     <div class="divider"></div>
   </div>
 
