@@ -264,7 +264,6 @@ function loadBtn() {
                 $('#c_loading').show(); $('#list').show();
 
                 loadNodeSet(nSetID, multi).then((result) => { //when finished loading the analysis
-                    console.log("result: " + result);
                     if (result) {
                         list.innerHTML = '<ul>' + current + '<span style="font-size:0.8em;">Loaded analysis: Node Set ID <strong>' + nSetID + '</strong></span><br>' + '</ul>';
                         showReplace(true);
@@ -291,16 +290,14 @@ async function loadNodeSet(nodeSetID, multi) {
         });
         return loaded;
     } catch (e) {
-        // console.log(e);
         try { //loading from OVA2
-            await $.get(window.OVAurl + './db/' + nodeSetID, function (data) {
+            await $.getJSON("helpers/getova2nodeset.php?id=" + nodeSetID, function (data) {
                 console.log("loading from OVA2/db/" + nodeSetID);
                 loaded = loadFile(data, multi);
             });
             return loaded;
-        } catch (e) {
-            // console.log(e);
-            console.log("loading with node set id");
+        } catch (e) { //loading from database
+            console.log("loading from db: " + nodeSetID);
             return await loadfromdb(nodeSetID, multi);
         }
     }
@@ -371,7 +368,7 @@ function loadFile(jstr, multi) {
  * @return {void} Nothing
  */
 function loadOva3Json(json, oplus, offset) {
-    console.log("loading OVA3 json");
+    // console.log("loading OVA3 json");
 
     //load participants
     var p = json['AIF']['participants'];
@@ -428,7 +425,7 @@ function loadOva3Json(json, oplus, offset) {
                 newY = parseInt(n[i].y) + offset;
                 updateNode(n[i].nodeID, n[i].x, newY, n[i].visible, 1);
                 DrawNode(nodelist[n[i].nodeID].nodeID, nodelist[n[i].nodeID].type, nodelist[n[i].nodeID].text, nodelist[n[i].nodeID].x, nodelist[n[i].nodeID].y);
-                if (n[i].timestamp) {
+                if (n[i].timestamp && n[i].timestamp != '') {
                     updateTimestamp(n[i].nodeID, n[i].timestamp, 1);
                     if (window.showTimestamps) { DrawTimestamp(n[i].nodeID, n[i].timestamp, nodelist[n[i].nodeID].x, nodelist[n[i].nodeID].y); }
                 }
@@ -460,7 +457,7 @@ function loadOva3Json(json, oplus, offset) {
  * @return {void} Nothing
  */
 function loadOva2Json(json, oplus, offset) {
-    console.log("loading OVA2 json");
+    // console.log("loading OVA2 json");
 
     //load participants
     var p = json['participants'];
@@ -494,7 +491,7 @@ function loadOva2Json(json, oplus, offset) {
                 if (jnodes[i].visible) {
                     DrawNode(nID, jnodes[i].type, jnodes[i].text, jnodes[i].x, newY);
                     if (text) { hlUpdate(jnodes[i].id, jnodes[i].type, nID, 1); }
-                    if (window.showTimestamps) { DrawTimestamp(nID, jnodes[i].timestamp, jnodes[i].x, newY); }
+                    if (window.showTimestamps && jnodes[i].timestamp && jnodes[i].timestamp != '') { DrawTimestamp(nID, jnodes[i].timestamp, jnodes[i].x, newY); }
                 }
             } else {
                 nodelist[nID] = AddNode(jnodes[i].text, jnodes[i].type, jnodes[i].scheme, 0, nID, jnodes[i].x, newY, jnodes[i].visible, 1);
