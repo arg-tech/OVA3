@@ -525,13 +525,21 @@ function loadOva2Json(json, oplus, offset) {
  * Calculates the offset from the top left of the svg box required to place another analysis map to the right (x offset) 
  * or under (y offset) the current analysis map drawn on the svg
  * @param {String} type - Represents offsetting from the x or y coordinates, must be either 'x' or 'y'
- * @returns {number} - The calculated offset or zero if an offset can't be calculated
+ * @returns {Number} - The calculated offset or zero if an offset can't be calculated
  */
 function calOffset(type) {
     var offset = 0;
     if (nodes.length >= 1 && (type == 'x' || type == 'y')) { //if the current analysis contains any nodes and the type is x or y
-        nodes.sort((a, b) => type == 'x' ? b.x - a.x : b.y - a.y); //sort the nodes from largest to smallest x or y coordinates
-        offset = (type == 'x' ? parseInt(nodes[0].x) : parseInt(nodes[0].y)) + 40; //offset by the largest x or y coordinate plus 40
+        nodes.sort((a, b) => type == 'x' ? parseInt(b.x) - parseInt(a.x) : parseInt(b.y) - parseInt(a.y)); //sort the nodes from largest to smallest x or y coordinates
+        offset = type == 'x' ? parseInt(nodes[0].x) : parseInt(nodes[0].y); //the largest x or y coordinate
+        offset += 150; //plus 150 to add space
+        var g = document.getElementById(nodes[0].nodeID);
+        if (g) { //if drawn on the svg then add the width or height
+            var rect = g.getElementsByTagName('rect')[0];
+            var w = rect.getAttribute('width') * 1;
+            var h = rect.getAttribute('height') * 1;
+            offset += type == 'x' ? w : h; //plus the width or height
+        }
     }
     return offset;
 }
