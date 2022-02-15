@@ -143,6 +143,9 @@ function resetPosition() {
  * @param {String} status 
  */
 function edgeMode(status) {
+  var mw = $("#mainwrap").width();
+  $("#right1").width(mw - $("#left1").width() - 41);
+
   if (status == 'switch' && window.shiftPress) {
     status = 'atk';
     window.eBtn = true;
