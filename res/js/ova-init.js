@@ -110,6 +110,8 @@ function Init(evt) {
     GrabPoint = SVGRoot.createSVGPoint();
     window.sessionid = $.now().toString() + Math.random().toString().substring(3, 8);
 
+    var mw = $("#mainwrap").width();
+    $("#right1").width(mw - $("#left1").width() - 41);
     VB = SVGRoot.getAttribute('viewBox').split(' ').map(c => +c);
     VB_width = VB[2];
     DMAX = [10604, 135472];
