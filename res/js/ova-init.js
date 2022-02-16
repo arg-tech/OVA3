@@ -304,8 +304,24 @@ function updateConnectedEdges(node) {
             document.getElementById(edgeID).remove(); //remove the edge previously connected to the moved node
             DrawEdge(edges[i].fromID, edges[i].toID); //draw the edge to connect the node at its new position
             UpdateEdge(edges[i]); //update the edge position
+            updateMarkEdge(edges[i]);
         }
     }
+}
+
+/**
+ * Updates an edge by marking it if both nodes the edge connects are marked or by unmarking it if not
+ * @param {Edge} edge - The edge to be marked or unmarked
+ * @returns {Boolean} Indicates if the edge was successfully updated (true) or not (false)
+ */
+function updateMarkEdge(edge) {
+    var mark = false;
+    var from = document.getElementById(edge.fromID);
+    var to = document.getElementById(edge.toID);
+    if (from == null || to == null) { return false; }
+    if (from.classList.contains('hl') && to.classList.contains('hl')) { mark = true; } //if both nodes are marked, then mark the edge
+    markEdge(edge.fromID, edge.toID, mark);
+    return true;
 }
 
 /**
@@ -324,10 +340,11 @@ function updateAddNode(node) {
     n.y = node.y;
     n.visible = node.visible;
     n.timestamp = node.timestamp;
+    n.marked = node.marked;
     nodes.push(n);
 
     if (n.visible) {
-        DrawNode(n.nodeID, n.type, n.text, n.x, n.y); //if the node is visible then draw the node on the svg
+        DrawNode(n.nodeID, n.type, n.text, n.x, n.y, n.marked); //if the node is visible then draw the node on the svg
         if (window.showTimestamps && n.type == 'L') { DrawTimestamp(n.nodeID, n.timestamp, n.x, n.y); }
         updateConnectedEdges(n);
     } else if (n.type == 'L') {
@@ -371,12 +388,13 @@ function updateEditNode(node) {
         n.scheme = node.scheme;
         n.text = node.text;
         n.timestamp = node.timestamp;
+        n.marked = node.marked;
 
         if (node.visible) { //update svg if the node has been drawn on it
             if (document.getElementById(node.nodeID)) {
                 document.getElementById(node.nodeID).remove(); //remove the old version of the node
             }
-            DrawNode(n.nodeID, n.type, n.text, n.x, n.y); //draw the updated version of the node
+            DrawNode(n.nodeID, n.type, n.text, n.x, n.y, n.marked); //draw the updated version of the node
             if (window.showTimestamps && n.type == 'L') { DrawTimestamp(n.nodeID, n.timestamp, n.x, n.y); }
             updateConnectedEdges(n);
         }
@@ -401,6 +419,7 @@ function updateAddEdge(edge) {
         if (e.visible) { //if the edge is visible then draw the edge on the svg
             DrawEdge(e.fromID, e.toID);
             UpdateEdge(e);
+            updateMarkEdge(e);
         }
         return true;
     }
@@ -754,7 +773,7 @@ function undoEdit(toUndo) {
 }
 
 /**
- * Gets and adds a list of participants
+ * Gets and adds a list of participants from the 'social' JSON
  */
 function getSocial() {
     $.getJSON("social.json", function (json_data) {
@@ -922,9 +941,9 @@ function addlclick(skipcheck) {
 }
 
 /**
- * 
- * @param {Node} node 
- * @returns 
+ * Gets all nodes that are connected by an edge to the given node
+ * @param {Node} node - The node to get the connected nodes for
+ * @returns An array of the nodes connected to
  */
 function getNodesIn(node) {
     var nlist = [];
@@ -940,9 +959,9 @@ function getNodesIn(node) {
 }
 
 /**
- * 
- * @param {Node} node 
- * @returns 
+ * Gets all nodes that are connected by an edge from the given node
+ * @param {Node} node - The node to get the connected nodes for
+ * @returns An array of the nodes connected from
  */
 function getNodesOut(node) {
     var nlist = [];

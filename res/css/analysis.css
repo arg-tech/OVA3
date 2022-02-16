@@ -8,12 +8,23 @@ html, body {
 }
 
 g {
-      cursor: move;
-  }
+  cursor: move;
+}
+
 g rect.bw {
   fill: #ffffff !important;
   stroke: #000000 !important;
   stroke-width: 1;
+}
+
+g.hl rect {
+  stroke: #e74c3c !important;
+  stroke-width: 3 !important;
+}
+
+path.hl {
+  stroke: #e74c3c !important;
+  stroke-width: 2 !important;
 }
 
 svg text {
@@ -816,7 +827,7 @@ a.btn {
   float: right;
 }
 
-div#schemestg select{
+div#schemestg select {
   width: auto;
 }
 

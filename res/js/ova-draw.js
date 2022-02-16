@@ -5,8 +5,9 @@
  * @param {String} txt - The text to draw
  * @param {Number} nx - The x coordinate to draw at
  * @param {Number} ny - The y coordinate to draw at
+ * @param {Boolean} mark - Optional, indicates if the node should be marked (true) or not (false). The default is false.
  */
-function DrawNode(nid, type, txt, nx, ny) {
+function DrawNode(nid, type, txt, nx, ny, mark) {
     var phraseArray = [];
     if (txt.length > 36) {
         var wa = txt.split(' ');
@@ -34,6 +35,11 @@ function DrawNode(nid, type, txt, nx, ny) {
     var g = document.createElementNS("http://www.w3.org/2000/svg", "g");
     g.setAttribute('id', nid);
     g.setAttribute('focusable', 'true');
+
+    mark = typeof mark !== 'undefined' ? mark : false;
+    if (mark) {
+        g.classList.add('hl');
+    }
 
     var ntext = document.createElementNS("http://www.w3.org/2000/svg", "text");
     ntext.setAttribute('x', nx);
@@ -166,6 +172,12 @@ function editpopup(node) {
     $('#cq_selects').hide();
     $('#s_sset').hide(); $('#s_sset_label').hide();
     $('#timestamp_info').hide(); $('#edit_timestamp_btn').hide(); $('#delTimestampBtn').hide();
+    $('#unmark_node_btn').hide(); $('#mark_node_btn').show();
+
+    var marked = document.getElementById(node.nodeID).classList.contains('hl');
+    if (marked) {
+        $('#mark_node_btn').hide(); $('#unmark_node_btn').show();
+    }
 
     if (node.type == 'I' || node.type == 'L' || node.type == 'EN') {
         $('#n_text').show();
@@ -489,6 +501,61 @@ function editTimestampSVG(nodeID, timestamp) {
             $(tspan).text(timestamp);
             return true;
         }
+    }
+    return false;
+}
+
+/**
+ * Marks a node and its connected edges drawn on the SVG
+ * @param {Node} node - The node to be marked or unmarked
+ * @param {Boolean} mark - Indicates if the node should be marked (true) or not (false)
+ * @returns {Boolean} Indicates if the node was sucessfully marked/unmarked (true) or not (false)
+ */
+function markNode(node, mark) {
+    var g = document.getElementById(node.nodeID);
+    if (g) { //if the node is drawn on the SVG
+        if (mark) { g.classList.add('hl'); } else { g.classList.remove('hl'); } //mark or unmark the node
+        setMarked(node.nodeID, mark);
+
+        if (node.type != 'I' && node.type != 'L' && node.type != 'EN') {
+            var nIn = getNodesIn(node);
+            for (n of nIn) {
+                g = document.getElementById(n.nodeID);
+                if (g) { //if the node is drawn on the SVG
+                    if (mark) { g.classList.add('hl'); } else { g.classList.remove('hl'); } //mark or unmark the node
+                    setMarked(n.nodeID, mark);
+                    markEdge(n.nodeID, node.nodeID, mark);
+                }
+            }
+            var nOut = getNodesOut(node);
+            for (n of nOut) {
+                g = document.getElementById(n.nodeID);
+                if (g) { //if the node is drawn on the SVG
+                    if (mark) { g.classList.add('hl'); } else { g.classList.remove('hl'); } //mark or unmark the node
+                    setMarked(n.nodeID, mark);
+                    markEdge(node.nodeID, n.nodeID, mark);
+                }
+            }
+        }
+        return true;
+    }
+    return false;
+}
+
+/**
+ * Marks an edge drawn on the SVG
+ * @param {String} fromID - The ID of the node the edge connects from
+ * @param {String} toID - The ID of the node the edge connects to
+ * @param {Boolean} mark - Indicates if the edge should be marked (true) or not (false)
+ * @returns {Boolean} Indicates if the edge was sucessfully marked/unmarked (true) or not (false)
+ */
+function markEdge(fromID, toID, mark) {
+    edgeID = 'n' + fromID + '-n' + toID;
+    p = document.getElementById(edgeID);
+    if (p) { //if the edge is drawn on the SVG
+        if (mark) { p.classList.add('hl'); p.setAttribute('marker-end', 'url(#head2)'); } //mark the edge
+        else { p.classList.remove('hl'); p.setAttribute('marker-end', 'url(#head)'); } //unmark the edge
+        return true;
     }
     return false;
 }
