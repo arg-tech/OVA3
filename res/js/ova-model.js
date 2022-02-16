@@ -17,6 +17,7 @@ function Node() {
     this.y = 0;
     this.visible = true;
     this.timestamp = '';
+    this.marked = false;
 }
 
 /**
@@ -31,9 +32,10 @@ function Node() {
  * @param {Boolean} visible - Optional, indicates if the node should be visible (true) or not (false). The default is true.
  * @param {Number} undone - Optional, indicates if this edit can be undone (0) or not (1). The default is zero.
  * @param {String} timestamp - Optional, the node's timestamp value. The default is ''.
+ * @param {Boolean} marked - Optional, indicates if the node should be marked (true) or not (false). The default is false.
  * @returns {Node} n - The new node that was created
  */
-function newNode(nodeID, type, scheme, participantID, text, x, y, visible, undone, timestamp) {
+function newNode(nodeID, type, scheme, participantID, text, x, y, visible, undone, timestamp, marked) {
     var n = new Node;
     n.nodeID = nodeID;
     n.type = type;
@@ -44,6 +46,7 @@ function newNode(nodeID, type, scheme, participantID, text, x, y, visible, undon
     n.y = y;
     n.visible = typeof visible !== 'undefined' ? visible : true;
     n.timestamp = typeof timestamp !== 'undefined' ? timestamp : '';
+    n.marked = typeof marked !== 'undefined' ? marked : false;
     nodes.push(n);
 
     var undone = typeof undone !== 'undefined' ? undone : 0;
@@ -62,8 +65,9 @@ function newNode(nodeID, type, scheme, participantID, text, x, y, visible, undon
  * @param {String} scheme - Optional, the ID of the scheme it fulfils or null if it doesn't fulfil a scheme
  * @param {String} text - Optional, the text the node contains
  * @param {String} timestamp - Optional, the node's timestamp value
+ * @param {Boolean} marked - Optional, indicates if the node should be marked (true) or not (false). The default is false.
  */
-function updateNode(nodeID, x, y, visible, undone, type, scheme, text, timestamp) {
+function updateNode(nodeID, x, y, visible, undone, type, scheme, text, timestamp, marked) {
     var index = findNodeIndex(nodeID);
     if (index > -1) { //if the node exists
         n = nodes[index];
@@ -75,6 +79,7 @@ function updateNode(nodeID, x, y, visible, undone, type, scheme, text, timestamp
         if (scheme != undefined) { n.scheme = scheme; }
         if (text != undefined) { n.text = text; }
         if (timestamp != undefined) { n.timestamp = timestamp; }
+        if (marked != undefined) { n.marked = marked; }
 
         var undone = typeof undone !== 'undefined' ? undone : 0;
         postEdit("node", "edit", n, undone, n.nodeID);
@@ -136,6 +141,22 @@ function updateTimestamp(nodeID, timestamp, undone) {
         n = nodes[index];
         n.timestamp = timestamp;
         window.groupID++;
+        var undone = typeof undone !== 'undefined' ? undone : 0;
+        postEdit("node", "edit", n, undone, n.nodeID);
+    }
+}
+
+/**
+ * Sets if a node is marked or not
+ * @param {String} nodeID - The ID of the node to update
+ * @param {Boolean} marked - Indicates if the node should be marked (true) or not (false)
+ * @param {Number} undone - Optional, indicates if this edit can be undone (0) or not (1). The default is zero.
+ */
+ function setMarked(nodeID, marked, undone) {
+    var index = findNodeIndex(nodeID);
+    if (index > -1) { //if the node exists
+        n = nodes[index];
+        n.marked = marked;
         var undone = typeof undone !== 'undefined' ? undone : 0;
         postEdit("node", "edit", n, undone, n.nodeID);
     }

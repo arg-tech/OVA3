@@ -220,7 +220,8 @@ if (isset($_COOKIE['ovauser'])) {
       <div class="txt">Share Analysis</div>
     </a>
     <a onClick="openModal('#modal-help');" class="xicon">
-      <div class="icn" style=" background-position: 50% 50%;"></div>
+      <div class="icn" style="background-position: -378px 50%;"></div>
+      <!-- <div style="float:left; width:42px; height:48px; margin: 0px 5px;">?</div> -->  <!-- TODO: update icon -->
       <div class="txt" id="help">Helpsheet</div>
     </a>
   </div>
@@ -515,6 +516,7 @@ if (isset($_COOKIE['ovauser'])) {
             <pre>
 <strong>ctrl+z</strong> on canvas: undo changes you made to an analysis
 <strong>shift+drag</strong> from one node to another: add edge
+<strong>shift+a+drag</strong> from one node to another: add attacking edge
 <strong>ctrl+click</strong> on node: edit node menu
 <strong>arrow keys: </strong> move canvas
 <strong>+/- : </strong> zoom in/out
@@ -554,6 +556,7 @@ if (isset($_COOKIE['ovauser'])) {
   <!-- Helpsheet Modal ends here -->
 
   <div id="contextmenu"></div>
+
   <!-- Add Locution Form Starts here -->
   <div id="locution_add" class="modal-dialog">
     <div class="modal-content">
@@ -662,21 +665,27 @@ if (isset($_COOKIE['ovauser'])) {
       </form>
     </div>
     <ul class="btnlist">
-      <li><a href="#" id="del_node_btn" onClick="this.parentNode.parentNode.parentNode.style.display='none';$('#modal-shade').hide(); FormOpen = false; window.groupID ++; deleteNode(mySel); return false;" class="bgred">
+      <li><a href="#" id="mark_node_btn" onClick="closeModal('#node_edit');FormOpen=false;window.groupID++;markNode(mySel, true);return false;">
+          <div class="btnicn">&nbsp;</div> Mark Node <!-- TODO: add icon -->
+        </a></li>
+      <li><a href="#" id="unmark_node_btn" style="display:none;" onClick="closeModal('#node_edit');FormOpen=false;window.groupID++;markNode(mySel, false);return false;">
+          <div class="btnicn">&nbsp;</div> Unmark Node <!-- TODO: add icon -->
+        </a></li>
+      <li><a href="#" id="del_node_btn" onClick="closeModal('#node_edit'); FormOpen = false; window.groupID ++; deleteNode(mySel); return false;" class="bgred">
           <div class="btnicn" style="background-image: url('res/img/icon-delnode.png');">&nbsp;</div> Delete Node
         </a></li>
       <?php if ($pro) { ?>
-        <li><a href="#" id="l_add_btn" onClick="this.parentNode.parentNode.parentNode.style.display='none';$('#modal-shade').hide(); FormOpen = false;$('#locution_add').show();return false;">
+        <li><a href="#" id="l_add_btn" onClick="closeModal('#node_edit'); FormOpen = false;$('#locution_add').show();return false;">
             <div class="btnicn" style="background-image: url('res/img/icon_ladd.png');">&nbsp;</div> Add Locution
           </a></li>
-        <!-- <li><a href="#" id="edit_timestamp_btn" onClick="this.parentNode.parentNode.parentNode.style.display='none';FormOpen = false; window.editTimestamp=true; $('#modal-timestamps').show();return false;">
+        <!-- <li><a href="#" id="edit_timestamp_btn" onClick="closeModal('#node_edit');FormOpen = false; window.editTimestamp=true; $('#modal-timestamps').show();return false;">
             <div class="btnicn" style="background-image: url('res/img/icon_ladd.png');">&nbsp;</div> Edit Timestamp
           </a></li> -->
       <?php } ?>
     </ul>
     <div class="modal-btns">
-      <a class="save" href="#" onClick="saveNodeEdit();this.parentNode.parentNode.style.display='none';$('#modal-shade').hide(); FormOpen = false; return false;">&#x2714; Save</a>
-      <a class="cancel" href="#" onClick="this.parentNode.parentNode.style.display='none';$('#modal-shade').hide(); FormOpen = false; return false;">&#10008; Cancel</a>
+      <a class="save" href="#" onClick="saveNodeEdit();closeModal('#node_edit'); FormOpen = false; return false;">&#x2714; Save</a>
+      <a class="cancel" href="#" onClick="closeModal('#node_edit'); FormOpen = false; return false;">&#10008; Cancel</a>
     </div>
   </div>
   <!-- Edit Node Form Ends here -->
@@ -714,6 +723,10 @@ if (isset($_COOKIE['ovauser'])) {
           <marker id='head' orient="auto" markerWidth='12' markerHeight='10' refX='12' refY='5'>
             <!-- triangle pointing right (+x) -->
             <path d='M0,0 V10 L12,5 Z' fill="black" />
+          </marker>
+          <marker id='head2' orient="auto" markerWidth='12' markerHeight='10' refX='12' refY='5' markerUnits='userSpaceOnUse'>
+            <!-- triangle pointing right (+x) -->
+            <path d='M0,0 V10 L12,5 Z' fill="red" />
           </marker>
         </defs>
       </svg>

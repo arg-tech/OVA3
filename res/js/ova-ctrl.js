@@ -1077,7 +1077,7 @@ function saveNodeEdit() {
     var ntext = document.getElementById("n_text").value;
     //var edgesToUpdate = findEdges(CurrentlyEditing);
     document.getElementById(CurrentlyEditing).remove();
-    DrawNode(CurrentlyEditing, type, ntext, xCoord, yCoord);
+    DrawNode(CurrentlyEditing, type, ntext, xCoord, yCoord, mySel.marked);
     if (mySel.timestamp != "" && window.showTimestamps) {
       DrawTimestamp(mySel.nodeID, mySel.timestamp, mySel.x, mySel.y);
     }
@@ -1146,7 +1146,7 @@ function saveNodeEdit() {
       mySel.text = mySel.type
     }
     document.getElementById(CurrentlyEditing).remove();
-    DrawNode(CurrentlyEditing, mySel.type, mySel.text, xCoord, yCoord);
+    DrawNode(CurrentlyEditing, mySel.type, mySel.text, xCoord, yCoord, mySel.marked);
     window.groupID++;
     updateNode(CurrentlyEditing, xCoord, yCoord, mySel.visible, 0, mySel.type, mySel.scheme, mySel.text);
 

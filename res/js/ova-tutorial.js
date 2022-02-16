@@ -1,7 +1,7 @@
 /**
  * The main help tutorial
  */
- function mainTut() {
+function mainTut() {
     var intro = introJs();
     intro.setOptions({
         steps: [
@@ -115,7 +115,7 @@
 /**
  * The help tutorial for the settings modal
  */
- function setTut() {
+function setTut() {
     var intro = introJs();
     intro.setOptions({
         steps: [
@@ -209,7 +209,7 @@
 /**
  * The help tutorial for editing nodes
  */
- function nodeTut() {
+function nodeTut() {
     var intro = introJs();
     intro.setOptions({
         steps: [
@@ -266,6 +266,14 @@
                 intro: "Edit the text for this node."
             },
             {
+                element: '#mark_node_btn',
+                intro: "Click here to mark this node and its connected edges."
+            },
+            {
+                element: '#unmark_node_btn',
+                intro: "Click here to unmark this node and its connected edges."
+            },
+            {
                 element: '#del_node_btn',
                 intro: "Click here to delete this node."
             },
@@ -283,7 +291,7 @@
 /**
  * The help tutorial for adding locutions
  */
- function locTut() {
+function locTut() {
     var intro = introJs();
     intro.setOptions({
         steps: [
@@ -305,7 +313,7 @@
 /**
  * The help tutorial for the loading analysis modal
  */
- function loadTut() {
+function loadTut() {
     var intro = introJs();
     intro.setOptions({
         steps: [
