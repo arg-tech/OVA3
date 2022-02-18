@@ -10,7 +10,7 @@ if ($_POST['type'] == "node") {
     $q->execute(array(':analysisID' => $_POST['analysisID'], ':nodeID' => $contentID));
     $previousNode = $q->fetch(PDO::FETCH_ASSOC);
     if (!$previousNode) {
-        $preVersionNo = null;
+        $preVersionNo = 1;
         $versionNo = 1;
     } else {
         $preVersionNo = $previousNode['versionNo'];

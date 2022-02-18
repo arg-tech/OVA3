@@ -400,6 +400,10 @@ function edgeTut() {
                 intro: "Click here to select a target locution from the dropdown options."
             },
             {
+                element: '#mark_node_check',
+                intro: "Check this box to mark the edges between the selected source and target nodes and the selected locutions after adding them."
+            },
+            {
                 element: '#edgeBtn',
                 intro: "Click here to add the edges between the selected source and target nodes and the selected locutions."
             }
