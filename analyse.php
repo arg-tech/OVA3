@@ -268,6 +268,8 @@ if (isset($_COOKIE['ovauser'])) {
                 <option value="0" selected>--No locution selected--</option>
               </select>
           </div>
+          <input type="checkbox" id="mark_node_check" name="mark_node_check" style="display:inline;" checked>
+          <label for="mark_node_check" style="display:inline;font-size:0.9em;">Mark the new edges after adding them</label>
           <p id="edge_message" style="font-size:0.9em;color:rgba(224, 46, 66, 1);"></p>
           <a href="#" id="edgeBtn" class="btn" onClick="addLongEdge(); return false;">Add Edges</a>
           <br><br>

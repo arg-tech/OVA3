@@ -5,7 +5,11 @@
 function myKeyDown(e) {
   var keycode = e.keyCode;
   if (keycode == 16 || keycode == 83) {
-    edgeMode('on');
+    var textArea = document.getElementById('analysis_text');
+    var nodeText = document.getElementById('n_text');
+    if (textArea !== document.activeElement && nodeText !== document.activeElement) {
+      edgeMode('on');
+    }
   }
   if (keycode == 65) {
     var textArea = document.getElementById('analysis_text');
@@ -466,12 +470,14 @@ function GetTrueCoords(evt) {
  * @param {Boolean} visible - Optional, indicates if the node should be visible (true) or not (false). The default is true.
  * @param {Number} undone - Optional, indicates if this edit can be undone (0) or not (1). The default is zero.
  * @param {String} timestamp - Optional, the node's timestamp value. The default is ''.
+ * @param {Boolean} mark - Optional, indicates if the node should be marked (true) or not (false). The default is false.
  */
-function AddNode(txt, type, scheme, pid, nid, nx, ny, visible, undone, timestamp) {
+function AddNode(txt, type, scheme, pid, nid, nx, ny, visible, undone, timestamp, mark) {
   var isVisible = typeof visible !== 'undefined' ? visible : true;
   var undone = typeof undone !== 'undefined' ? undone : 0;
   var timestamp = typeof timestamp !== 'undefined' ? timestamp : '';
-  newNode(nid, type, scheme, pid, txt, nx, ny, isVisible, undone, timestamp); //create the node
+  var mark = typeof mark !== 'undefined' ? mark : false;
+  newNode(nid, type, scheme, pid, txt, nx, ny, isVisible, undone, timestamp, mark); //create the node
   if (isVisible) {
     DrawNode(nid, type, txt, nx, ny); //if the node is visible then draw the node on the svg
 
@@ -526,9 +532,6 @@ function Drag(evt) {
           coldX = parseInt(cE.getAttributeNS(null, 'x'));
           cnewX = (coldX + dx);
           cE.setAttributeNS(null, 'x', cnewX);
-          // coldY = parseInt(cE.getAttributeNS(null, 'y'));
-          // cnewY = (coldY + dy);
-          // cE.setAttributeNS(null, 'y', cnewY);
         }
       }
       var xdiff = (newX - oldX);
@@ -557,9 +560,6 @@ function Drag(evt) {
               coldX = parseInt(cE.getAttributeNS(null, 'x'));
               cnewX = (coldX + xdiff);
               cE.setAttributeNS(null, 'x', cnewX);
-              // coldY = parseInt(cE.getAttributeNS(null, 'y'));
-              // cnewY = (coldY + ydiff);
-              // cE.setAttributeNS(null, 'y', cnewY);
             }
           }
           GetEdges(mSel[i].nodeID);
@@ -588,9 +588,6 @@ function Drag(evt) {
           coldX = cE.getAttributeNS(null, 'x');
           cnewX = parseInt(coldX) + dx;
           cE.setAttributeNS(null, 'x', cnewX);
-          // coldY = cE.getAttributeNS(null, 'y');
-          // cnewY = parseInt(coldY) + dy;
-          // cE.setAttributeNS(null, 'y', cnewY);
         }
       }
       if (dragEdges.length > 0) {
@@ -646,8 +643,8 @@ function updateBox(g) {
 }
 
 /**
- * Handles updating a drawn edge on the SVG
- * @param {Edge} e 
+ * Handles updating an edge drawn on the SVG
+ * @param {Edge} e - The edge to update
  * @returns {Boolean} - Indicates if the edge was successfully updated (true) or not (false)
  */
 function UpdateEdge(e) {
@@ -802,22 +799,24 @@ function Drop(evt) {
         var nTo = nodes[index];
 
         if (from == to) { //if the same node 
-          if (window.longEdge[0]) {
+          if (window.longEdge[0]) { //if adding a long distance edge
             window.longEdge[1] = true;
             window.shiftPress = false;
             var displayText = document.getElementById('source_text');
             displayText.innerHTML = '"' + nFrom.text + '"';
+
             if (window.rIATMode) { //select suggested L source
               var id = nFrom.nodeID.split("_");
               var guessL = (parseInt(id[0]) + 1) + "_" + id[1]; //for OVA3 maps
               var guessL2 = (parseInt(id[0]) - 2) + "_" + id[1]; //for OVA2 maps loaded into OVA3
               if ($("#sel_source_L option[value='" + guessL + "']").length > 0) {
-                $("#sel_source_L").val(guessL);
+                $("#sel_source_L").val(guessL); //select it if it exists
               } else if ($("#sel_source_L option[value='" + guessL2 + "']").length > 0) {
-                $("#sel_source_L").val(guessL2);
+                $("#sel_source_L").val(guessL2); //select it if it exists
               }
             }
             openModal('#modal-edge');
+
           } else {
             tempedge = document.getElementById('n' + FromID + '-nedge_to');
             tempnode = document.getElementById("edge_to");
@@ -899,9 +898,22 @@ function Drop(evt) {
           SVGRootG.removeChild(tempnode);
         }
 
-        if (window.longEdge[1]) {
+        if (window.longEdge[1]) { //if adding a long distance edge
           var displayText = document.getElementById('target_text');
           displayText.innerHTML = '"' + nTo.text + '"';
+
+          //marks the newly added node and its connected edges/nodes if needed
+          var radio = document.getElementById("mark_node_check");
+          if (radio && radio.checked) {
+            var index = findNodeIndex(newNodeID);
+            if (index > -1) {
+              var n = nodes[index];
+              window.groupID++;
+              markNode(n, true);
+            } else {
+              markEdge(nFrom.nodeID, nTo.nodeID, true);
+            }
+          }
 
           //center the view on the new edge that was added
           var newx = nx - 250;
@@ -914,9 +926,9 @@ function Drop(evt) {
               var guessL = (parseInt(id[0]) + 1) + "_" + id[1]; //for OVA3 maps
               var guessL2 = (parseInt(id[0]) - 2) + "_" + id[1]; //for OVA2 maps loaded into OVA3
               if ($("#sel_target_L option[value='" + guessL + "']").length > 0) {
-                $("#sel_target_L").val(guessL);
+                $("#sel_target_L").val(guessL); //select it if it exists
               } else if ($("#sel_target_L option[value='" + guessL2 + "']").length > 0) {
-                $("#sel_target_L").val(guessL2);
+                $("#sel_target_L").val(guessL2); //select it if it exists
               }
             }
             $('#sourceBtn').hide(); $('#targetBtn').hide();
