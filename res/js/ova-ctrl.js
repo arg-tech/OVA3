@@ -966,16 +966,15 @@ function Drop(evt) {
     document.getElementById('multiSelBoxG').remove();
 
     if (window.saveImage) { //if using the multi select to save as an image
-      var space = 60;
-      var w = boxWidth + space;
+      var w = boxWidth;
       w = boxX < 0 ? w - boxX : w;
-      var h = boxHeight + space;
+      var h = boxHeight;
       h = boxY < 0 ? h - boxY : h;
 
-      console.log("x: " + boxX);
-      console.log("y: " + boxY);
-      console.log("w: " + w);
-      console.log("h: " + h);
+      // console.log("x: " + boxX);
+      // console.log("y: " + boxY);
+      // console.log("w: " + w);
+      // console.log("h: " + h);
       multiSel = false;
       window.saveImage = false;
       svg2canvas2image(boxX, boxY, w, h);

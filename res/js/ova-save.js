@@ -1095,8 +1095,9 @@ function svg2canvas2image(x, y, w, h) {
     ctx.fillRect(0, 0, canvas.width, canvas.height); // fill the colour on the canvas
 
     var svg = document.getElementById("inline");
-    VB = [(x - space), y, w, h];
-    svg.setAttribute('viewBox', [(x - space), y, w, h]);
+    var size = h > w ? h : w; //the width to height ratio of 1:1 must be kept for chrome
+    VB = [x, y, size, size];
+    svg.setAttribute('viewBox', [x, y, size, size]);
     var str = new XMLSerializer().serializeToString(svg);
     var svg64 = btoa(str.replace(/[\u00A0-\u2666]/g, function (c) {
         return '&#' + c.charCodeAt(0) + ';';
@@ -1107,8 +1108,7 @@ function svg2canvas2image(x, y, w, h) {
     image.src = image64;
 
     image.onload = function () {
-        ctx.drawImage(image, space, space, w, h);
-        
+        ctx.drawImage(image, space, space, size, size);
         var imageURI = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
         var anchor = document.getElementById("downloadBtn");
         anchor.download = "analysis.png";
@@ -1129,14 +1129,14 @@ function svg2canvas2image(x, y, w, h) {
 function saveAsImage() {
     var radioValue = $("input[name='saveImage']:checked").val();
     if (radioValue == "select") {
-        console.log("save selected image");
+        // console.log("save selected image");
         $('#confirmBtn').hide();
         closeModal('#modal-save');
         multiSel = true;
         window.saveImage = true;
 
     } else if (radioValue == "full") {
-        console.log("save full image");
+        // console.log("save full image");
         $('#confirmBtn').hide();
 
         var index = nodes.length - 1;
@@ -1150,11 +1150,10 @@ function saveAsImage() {
         var x = parseInt(nodes[index].x);
         w = x < 0 ? w - x : w;
 
-        console.log("x: " + x);
-        console.log("y: " + y);
-        console.log("w: " + w);
-        console.log("h: " + h);
-
+        // console.log("x: " + x);
+        // console.log("y: " + y);
+        // console.log("w: " + w);
+        // console.log("h: " + h);
         svg2canvas2image(x, y, w, h);
     }
 }
