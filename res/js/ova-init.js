@@ -80,6 +80,7 @@ window.nodeCounter = 1;
 window.textCounter = 1;
 window.edgeCounter = 1;
 window.unsaved = false;
+window.saveImage = false;
 
 document.addEventListener('contextmenu', event => event.preventDefault());
 window.addEventListener('keydown', myKeyDown, true);

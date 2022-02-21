@@ -92,23 +92,36 @@ if (isset($_COOKIE['ovauser'])) {
     <div class="modal-content">
       <div class="modal-header">
         <h4 class="modal-title">Save Analysis</h4>
+        <a href="javascript:void(0);" class="helpbtn" onclick="saveTut(); return false;">?</a>
       </div>
       <div class="modal-body">
-        <ul class="btnlist">
-          <li><a href="#" onClick="save2file(); return false;">
+        <ul class="btnlist" id="saveOptions">
+          <li><a href="#" onClick="save2file(); return false;" id="saveFileBtn">
               <div class="btnicn" style="background-image: url('res/img/icon-savefile.svg');">&nbsp;</div> Save to local
               file
             </a></li>
-          <li><a href="#" id="saveAsImage">
+          <li><a href="#" onClick="$('#saveOptions').hide();$('#imageOptions').show();$('#confirmBtn').show();return false;" id="saveImageBtn">
               <div class="btnicn" style="background-image: url('res/img/icon-saveimg.svg');">&nbsp;</div> Save as image
             </a></li>
-          <li><a href="#" onClick="save2db(); $('#modal-save').hide(); return false;">
+          <li><a href="#" onClick="save2db(); $('#modal-save').hide(); return false;" id="saveAIFdbBtn">
               <div class="btnicn" style="background-image: url('res/img/icon-savedb.svg');">&nbsp;</div> Save to AIFdb
             </a></li>
         </ul>
+        <form id="imageOptions" class="fstyle" style="display:none;">
+          <div style="margin-bottom:2%;">
+            <p>Please select to save as an image:</p>
+            <input type="radio" id="fullImage" name="saveImage" value="full" checked>
+            <label for="fullImage" class="radio_label">Save the full analysis</label>
+            <input type="radio" id="selectImage" name="saveImage" value="select">
+            <label for="selectImage" class="radio_label">Select part of the analysis</label>
+          </div>
+          <a href="#" id="confirmBtn" class="btn" onclick="saveAsImage();">Confirm</a>
+          <a href="#" id="downloadBtn" class="btn" onclick="closeModal('#modal-save');$('#downloadBtn').hide();$('#imageOptions').hide();$('#saveOptions').show();" style="display:none;">Download Image</a>
+          <br><br>
+        </form>
       </div>
       <div class="modal-btns">
-        <a class="cancel" href="#" onClick="closeModal('#modal-save');">&#10008; Cancel</a>
+        <a class="cancel" href="#" onClick="closeModal('#modal-save');$('#downloadBtn').hide();$('#imageOptions').hide();$('#saveOptions').show();">&#10008; Cancel</a>
       </div>
     </div>
   </div>
@@ -193,7 +206,7 @@ if (isset($_COOKIE['ovauser'])) {
     <!-- <a onClick="genldot()" class="icon" id="alay" style="background-position: -420px 50%;"><span class="tooltiptext">AutoLayout</span></a>
     <div class="divider"></div> -->
     <a onClick="showReplace(); openModal('#modal-load');" class="icon" id="loada" style="background-position: -210px 50%;"><span class="tooltiptext">Load&nbsp;Analysis</span></a>
-    <a onClick="svg2canvas2image(); openModal('#modal-save');" class="icon" id="savea" style="background-position: -84px 50%;"><span class="tooltiptext">Save&nbsp;Analysis</span></a>
+    <a onClick="openModal('#modal-save');" class="icon" id="savea" style="background-position: -84px 50%;"><span class="tooltiptext">Save&nbsp;Analysis</span></a>
     <a href="<?php echo $newurl; ?>" class="icon" id="newa" style="background-position: -168px 50%;"><span class="tooltiptext">New&nbsp;Analysis</span></a>
     <div class="divider"></div>
     <a onClick="return false;" class="icon" id="eadd" style="background-position: -42px 50%;"><span class="tooltiptext">Add&nbsp;Edge</span></a>
