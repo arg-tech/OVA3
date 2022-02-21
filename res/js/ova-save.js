@@ -317,7 +317,7 @@ async function loadCorpus(corpusName) {
  * Loads a JSON file
  * @param {*} jstr - The JSON file to load
  * @param {Boolean} multi - Indicates if the loaded analysis should replace the current analysis (false) or be added to it (true)
- * @return {Promise} - Indicates if the JSON file was successfully loaded (true) or not (false)
+ * @returns {Promise} - Indicates if the JSON file was successfully loaded (true) or not (false)
  */
 async function loadFile(jstr, multi) {
     if (typeof jstr !== 'object') {
@@ -328,7 +328,7 @@ async function loadFile(jstr, multi) {
 
     var offset = 0;
     if (multi) {
-        offset = calOffset('y');
+        offset = calOffset('y', 150);
         // console.log("offset: " + offset);
     } else {
         clearAnalysis(); //remove the previous analysis before loading the new analysis
@@ -357,7 +357,7 @@ async function loadFile(jstr, multi) {
  * @param {Object} json - The json to be loaded in
  * @param {Boolean} oplus - Indicates if the analysis should be loaded in dialogical (true) or non-dialogical (false) mode
  * @param {Number} offset - The offset to be added to the y coordinates
- * @return {Promise} - Indicates if the JSON file was successfully loaded (true) or not (false)
+ * @returns {Promise} - Indicates if the JSON file was successfully loaded (true) or not (false)
  */
 function loadOva3Json(json, oplus, offset) {
     console.log("loading OVA3 json");
@@ -448,7 +448,7 @@ function loadOva3Json(json, oplus, offset) {
  * @param {Object} json - The json to be loaded in
  * @param {Boolean} oplus - Indicates if the analysis should be loaded in dialogical (true) or non-dialogical (false) mode
  * @param {Number} offset - The offset to be added to the y coordinates
- * @return {Promise} - Indicates if the JSON file was successfully loaded (true) or not (false)
+ * @returns {Promise} - Indicates if the JSON file was successfully loaded (true) or not (false)
  */
 function loadOva2Json(json, oplus, offset) {
     console.log("loading OVA2 json");
@@ -521,14 +521,15 @@ function loadOva2Json(json, oplus, offset) {
  * Calculates the offset from the top left of the svg box required to place another analysis map to the right (x offset) 
  * or under (y offset) the current analysis map drawn on the svg
  * @param {String} type - Represents offsetting from the x or y coordinates, must be either 'x' or 'y'
+ * @param {Number} space - The amount of space to add around the map
  * @returns {Number} - The calculated offset or zero if an offset can't be calculated
  */
-function calOffset(type) {
+function calOffset(type, space) {
     var offset = 0;
     if (nodes.length >= 1 && (type == 'x' || type == 'y')) { //if the current analysis contains any nodes and the type is x or y
         nodes.sort((a, b) => type == 'x' ? parseInt(b.x) - parseInt(a.x) : parseInt(b.y) - parseInt(a.y)); //sort the nodes from largest to smallest x or y coordinates
         offset = type == 'x' ? parseInt(nodes[0].x) : parseInt(nodes[0].y); //the largest x or y coordinate
-        offset += 150; //plus 150 to add space
+        offset += space; //to add space around the map
         var g = document.getElementById(nodes[0].nodeID);
         if (g) { //if drawn on the svg then add the width or height
             var rect = g.getElementsByTagName('rect')[0];
@@ -763,7 +764,7 @@ function loadfromdb(nodeSetID, multi) {
 
                 var offset = 0;
                 if (multi) {
-                    offset = calOffset('y');
+                    offset = calOffset('y', 150);
                     // console.log("offset: " + offset);
                 } else {
                     clearAnalysis(); //remove the previous analysis before loading the new analysis
@@ -1077,38 +1078,83 @@ function rpl2corpus(addnsID, rplnsID) {
 }
 
 /**
- * Saves the on screen analysis map as a PNG
- * @return {void} Nothing
+ * Converts part of a SVG to a canvas to a PNG image which can then be downloaded
+ * @param {Number} x - The lowest x coordinate for the selected part of the SVG
+ * @param {Number} y - The lowest y coordinate for the selected part of the SVG
+ * @param {Number} w - The width of the selected part of the SVG
+ * @param {Number} h - The height of the selected part of the SVG
  */
-function svg2canvas2image() {
-    var box = SVGRoot.getBBox();
-    var x = box.x;
-    var y = box.y;
-    var w = box.width + x + 150;
-    var h = box.height + y + 150;
+function svg2canvas2image(x, y, w, h) {
+    var canvas = document.createElement("canvas");
+    var space = 60; //the size of the margins
+    canvas.width = w + space;
+    canvas.height = h + space;
+    var ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = 'white'; // background colour for the canvas
+    ctx.fillRect(0, 0, canvas.width, canvas.height); // fill the colour on the canvas
 
-    var svg = SVGRoot;
+    var svg = document.getElementById("inline");
+    var size = h > w ? h : w; //the width to height ratio of 1:1 must be kept for chrome
+    VB = [x, y, size, size];
+    svg.setAttribute('viewBox', [x, y, size, size]);
     var str = new XMLSerializer().serializeToString(svg);
     var svg64 = btoa(str.replace(/[\u00A0-\u2666]/g, function (c) {
         return '&#' + c.charCodeAt(0) + ';';
     }));
+
     var image = new Image();
     var image64 = 'data:image/svg+xml;base64,' + svg64;
     image.src = image64;
 
     image.onload = function () {
-        var canvas = document.createElement("canvas");
-        canvas.width = w;
-        canvas.height = h;
-        var ctx = canvas.getContext("2d");
-        ctx.drawImage(image, 0, 0, w, h, 0, 0, w, h);
+        ctx.drawImage(image, space, space, size, size);
         var imageURI = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
-        var anchor = document.getElementById("saveAsImage");
+        var anchor = document.getElementById("downloadBtn");
         anchor.download = "analysis.png";
         anchor.href = imageURI;
 
         window.unsaved = false;
         $(canvas).remove();
+        $('#downloadBtn').show();
+        openModal('#modal-save');
+        VB = [0, 0, 1500, 1500];
+        SVGRoot.setAttribute('viewBox', [0, 0, 1500, 1500]);
+    }
+}
+
+/**
+ * Handles saving the analysis map as an image
+ */
+function saveAsImage() {
+    var radioValue = $("input[name='saveImage']:checked").val();
+    if (radioValue == "select") {
+        // console.log("save selected image");
+        $('#confirmBtn').hide();
+        closeModal('#modal-save');
+        multiSel = true;
+        window.saveImage = true;
+
+    } else if (radioValue == "full") {
+        // console.log("save full image");
+        $('#confirmBtn').hide();
+
+        var index = nodes.length - 1;
+        //find the smallest and largest y coordinates 
+        var h = calOffset("y", 60);
+        var y = parseInt(nodes[index].y);
+        h = y < 0 ? h - y : h;
+
+        //find the smallest and largest x coordinates 
+        var w = calOffset("x", 60);
+        var x = parseInt(nodes[index].x);
+        w = x < 0 ? w - x : w;
+
+        // console.log("x: " + x);
+        // console.log("y: " + y);
+        // console.log("w: " + w);
+        // console.log("h: " + h);
+        svg2canvas2image(x, y, w, h);
     }
 }
 

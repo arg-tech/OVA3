@@ -417,3 +417,45 @@ function edgeTut() {
 
     intro.start();
 }
+
+/**
+ * The help tutorial for the save analysis modal
+ */
+function saveTut() {
+    var intro = introJs();
+    intro.setOptions({
+        steps: [
+            {
+                element: '#saveFileBtn',
+                intro: "Click here to save to your analysis as a JSON to local file."
+            },
+            {
+                element: '#saveImageBtn',
+                intro: "Click here to see the options for saving your analysis as a PNG to local file."
+            },
+            {
+                element: '#saveAIFdbBtn',
+                intro: "Click here to save to your analysis to AIFdb."
+            },
+            {
+                element: '#fullImage',
+                intro: "Check here to save your full analysis map as an image."
+            },
+            {
+                element: '#selectImage',
+                intro: "Check here to save part of your analysis map as an image. After clicking the confirm button, you will be able to select the part to save."
+            },
+            {
+                element: '#confirmBtn',
+                intro: "Click here to confirm your choice."
+            },
+            {
+                element: '#downloadBtn',
+                intro: "Click here to start downloading the PNG."
+            }
+        ].filter(function (obj) { return $(obj.element).length && $(obj.element).is(':visible'); }),
+        showStepNumbers: false
+    });
+
+    intro.start();
+}

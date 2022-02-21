@@ -964,6 +964,21 @@ function Drop(evt) {
       }
     }
     document.getElementById('multiSelBoxG').remove();
+
+    if (window.saveImage) { //if using the multi select to save as an image
+      var w = boxWidth;
+      w = boxX < 0 ? w - boxX : w;
+      var h = boxHeight;
+      h = boxY < 0 ? h - boxY : h;
+
+      // console.log("x: " + boxX);
+      // console.log("y: " + boxY);
+      // console.log("w: " + w);
+      // console.log("h: " + h);
+      multiSel = false;
+      window.saveImage = false;
+      svg2canvas2image(boxX, boxY, w, h);
+    }
   }
   else if (mSel.length > 0) { //if moving multiple nodes using the multi select
     if (DragTarget) {
