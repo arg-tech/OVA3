@@ -152,6 +152,10 @@ function setTut() {
                 intro: "<p>Toggle Rapid IAT Mode</p> <p>Turning off Rapid IAT mode will stop the dialogical aspect from being automatically added.</p>",
             },
             {
+                element: '#eAddtoggle',
+                intro: "<p>Toggle Sticky Add Edge Mode</p> <p>Turning on sticky add edge mode will change clicking the 'Add Edge' button from opening the menu to instead directly adding an edge.</p>",
+            },
+            {
                 element: '#cqtoggle',
                 intro: "Toggle Critical Question Mode"
             },

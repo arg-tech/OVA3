@@ -89,9 +89,10 @@ document.onwheel = zoom;
 //set default settings
 window.defaultSettings = JSON.parse(window.defaultSettings);
 window.bwmode = window.defaultSettings["display"]["black_white"]; //set display settings
-window.cqmode = window.defaultSettings["analysis"]["cq"]; //set analysis settings
 window.defaultSchemesets = [["YA", 0], ["RA", 0], ["CA", 0], ["MA", 0], ["TA", 0], ["PA", 0]]; //set scheme set settings
-
+//set analysis settings
+window.cqmode = window.defaultSettings["analysis"]["cq"];
+window.eAddMode = window.defaultSettings["analysis"]["eAdd"];
 //set timestamp settings
 window.startdatestmp = window.defaultSettings["timestamp"]["startdatestmp"];
 window.addTimestamps = window.defaultSettings["timestamp"]["addTimestamps"];
@@ -241,7 +242,7 @@ function Init(evt) {
     //set defaults
     setFontSize(window.defaultSettings["display"]["font_size"]);
     setRIATMode();
-    clearEdgeModal();
+    eAddModeOnOff();
 }
 
 /**
@@ -1360,101 +1361,115 @@ function dialogicalModeOnOff() {
 }
 
 /**
- * Autolayout
+ * Handles turning sticky add edge mode on and off
  */
-function genldot() {
-    var doto = "digraph odg {";
-    var ranks = "";
-    var alreadyDrawn = {};
-    if ("plus" in getUrlVars()) {
-        doto = doto + "rankdir=RL;";
+function eAddModeOnOff() {
+    if (window.eAddMode) {
+        $("#eadd").attr("onclick", "edgeMode('switch')");
+        // console.log("sticky add edge mode turned on");
     }
-
-    for (var i = 0, l = nodes.length; i < l; i++) {
-        dnode = nodes[i];
-        doto = doto + dnode.nodeID + ' [label="xxx xxx xxx xxx xxx\\nxxx xxx xxx xxx xxx\\nxxx xxx xxx xxx xxx\\nxxx xxx xxx xxx xxx"];';
-
-        if (dnode.type != 'I' && dnode.type != 'L') {
-
-            dout = getNodesOut(dnode);
-            for (var j = 0, ol = dout.length; j < ol; j++) {
-                if (alreadyDrawn[dnode.nodeID + "-" + dout[j].nodeID] !== 100) {
-                    doto = doto + dnode.nodeID + ' -> ' + dout[j].nodeID;
-                    alreadyDrawn[dnode.nodeID + "-" + dout[j].nodeID] = 100;
-                    if ("plus" in getUrlVars() && dnode.type != 'YA' && dout[j].type != 'YA') {
-                        doto = doto + " [constraint=false]";
-                        if ((dnode.type == 'RA' || dnode.type == 'CA') && dout[j].type == 'I') {
-                            ranks = ranks + '{ rank = same; ' + dnode.nodeID + '; ' + dout[j].nodeID + '; }';
-                        }
-                    }
-                    doto = doto + ';';
-                }
-                // doto = doto + dnode.nodeID + ' -> ' + dout[j].nodeID;
-                // alreadyDrawn[dnode.nodeID+"-"+dout[j].nodeID]=100;
-                // console.log(doto);
-                // if("plus" in getUrlVars() && dnode.type != 'YA' && dout[j].type != 'YA'){
-                //     doto = doto + " [constraint=false]";
-                //     if((dnode.type == 'RA' || dnode.type == 'CA') && dout[j].type == 'I'){
-                //         ranks = ranks + '{ rank = same; ' + dnode.nodeID + '; ' + dout[j].nodeID + '; }';
-                //     }
-                // }
-                // doto = doto + ';';
-            }
-            din = getNodesIn(dnode);
-            for (var j = 0, ol = din.length; j < ol; j++) {
-                if (alreadyDrawn[din[j].nodeID + "-" + dnode.nodeID] !== 100) {
-                    doto = doto + din[j].nodeID + ' -> ' + dnode.nodeID;
-
-                    alreadyDrawn[din[j].nodeID + "-" + dnode.nodeID] = 100;
-                    if ("plus" in getUrlVars() && dnode.type != 'YA' && din[j].type != 'YA') {
-                        doto = doto + " [constraint=false]";
-                        if ((din[j].type == 'RA' || din[j].type == 'CA') && dnode.type == 'I') {
-                            ranks = ranks + '{ rank = same; ' + din[j].nodeID + '; ' + dnode.nodeID + '; }';
-                        }
-                    }
-                    doto = doto + ';';
-                }
-                // doto = doto + din[j].nodeID + ' -> ' + dnode.nodeID;
-                //     if("plus" in getUrlVars() && dnode.type != 'YA' && din[j].type != 'YA'){
-                //         doto = doto + " [constraint=false]";
-                //         if((din[j].type == 'RA' || din[j].type == 'CA') && dnode.type == 'I'){
-                //             ranks = ranks + '{ rank = same; ' + din[j].nodeID + '; ' + dnode.nodeID + '; }';
-                //         }
-                //     }
-                //     doto = doto + ';';
-            }
-        }
+    else {
+        $("#eadd").attr("onclick", "clearEdgeModal()");
+        // console.log("sticky add edge mode turned off");
     }
-
-    doto = doto + ranks;
-    doto = doto + '}';
-
-    mwidth = 1000;
-    mheight = 12775;
-
-    $.post("dot/index.php", { data: doto },
-        function (reply) {
-            ldata = JSON.parse(reply);
-            for (var i = 0, l = nodes.length; i < l; i++) {
-                mnode = nodes[i];
-                if (mnode.nodeID in ldata) {
-                    xpos = parseInt(ldata[mnode.nodeID]["x"]);
-                    mnode.x = xpos * 0.8;
-                    if (xpos > mwidth - 100) { mwidth = xpos + 100; }
-                    ypos = parseInt(ldata[mnode.nodeID]["y"]);
-                    mnode.y = ypos;
-                    if (ypos > mheight - 100) { mheight = ypos + 100; }
-                }
-            }
-            //
-            // if(mwidth > WIDTH || mheight > HEIGHT){
-            //     resize_canvas(mwidth, mheight);
-            // }
-
-            //invalidate();
-        }
-    );
 }
+
+// /**
+//  * Autolayout
+//  */
+// function genldot() {
+//     var doto = "digraph odg {";
+//     var ranks = "";
+//     var alreadyDrawn = {};
+//     if ("plus" in getUrlVars()) {
+//         doto = doto + "rankdir=RL;";
+//     }
+
+//     for (var i = 0, l = nodes.length; i < l; i++) {
+//         dnode = nodes[i];
+//         doto = doto + dnode.nodeID + ' [label="xxx xxx xxx xxx xxx\\nxxx xxx xxx xxx xxx\\nxxx xxx xxx xxx xxx\\nxxx xxx xxx xxx xxx"];';
+
+//         if (dnode.type != 'I' && dnode.type != 'L') {
+
+//             dout = getNodesOut(dnode);
+//             for (var j = 0, ol = dout.length; j < ol; j++) {
+//                 if (alreadyDrawn[dnode.nodeID + "-" + dout[j].nodeID] !== 100) {
+//                     doto = doto + dnode.nodeID + ' -> ' + dout[j].nodeID;
+//                     alreadyDrawn[dnode.nodeID + "-" + dout[j].nodeID] = 100;
+//                     if ("plus" in getUrlVars() && dnode.type != 'YA' && dout[j].type != 'YA') {
+//                         doto = doto + " [constraint=false]";
+//                         if ((dnode.type == 'RA' || dnode.type == 'CA') && dout[j].type == 'I') {
+//                             ranks = ranks + '{ rank = same; ' + dnode.nodeID + '; ' + dout[j].nodeID + '; }';
+//                         }
+//                     }
+//                     doto = doto + ';';
+//                 }
+//                 // doto = doto + dnode.nodeID + ' -> ' + dout[j].nodeID;
+//                 // alreadyDrawn[dnode.nodeID+"-"+dout[j].nodeID]=100;
+//                 // console.log(doto);
+//                 // if("plus" in getUrlVars() && dnode.type != 'YA' && dout[j].type != 'YA'){
+//                 //     doto = doto + " [constraint=false]";
+//                 //     if((dnode.type == 'RA' || dnode.type == 'CA') && dout[j].type == 'I'){
+//                 //         ranks = ranks + '{ rank = same; ' + dnode.nodeID + '; ' + dout[j].nodeID + '; }';
+//                 //     }
+//                 // }
+//                 // doto = doto + ';';
+//             }
+//             din = getNodesIn(dnode);
+//             for (var j = 0, ol = din.length; j < ol; j++) {
+//                 if (alreadyDrawn[din[j].nodeID + "-" + dnode.nodeID] !== 100) {
+//                     doto = doto + din[j].nodeID + ' -> ' + dnode.nodeID;
+
+//                     alreadyDrawn[din[j].nodeID + "-" + dnode.nodeID] = 100;
+//                     if ("plus" in getUrlVars() && dnode.type != 'YA' && din[j].type != 'YA') {
+//                         doto = doto + " [constraint=false]";
+//                         if ((din[j].type == 'RA' || din[j].type == 'CA') && dnode.type == 'I') {
+//                             ranks = ranks + '{ rank = same; ' + din[j].nodeID + '; ' + dnode.nodeID + '; }';
+//                         }
+//                     }
+//                     doto = doto + ';';
+//                 }
+//                 // doto = doto + din[j].nodeID + ' -> ' + dnode.nodeID;
+//                 //     if("plus" in getUrlVars() && dnode.type != 'YA' && din[j].type != 'YA'){
+//                 //         doto = doto + " [constraint=false]";
+//                 //         if((din[j].type == 'RA' || din[j].type == 'CA') && dnode.type == 'I'){
+//                 //             ranks = ranks + '{ rank = same; ' + din[j].nodeID + '; ' + dnode.nodeID + '; }';
+//                 //         }
+//                 //     }
+//                 //     doto = doto + ';';
+//             }
+//         }
+//     }
+
+//     doto = doto + ranks;
+//     doto = doto + '}';
+
+//     mwidth = 1000;
+//     mheight = 12775;
+
+//     $.post("dot/index.php", { data: doto },
+//         function (reply) {
+//             ldata = JSON.parse(reply);
+//             for (var i = 0, l = nodes.length; i < l; i++) {
+//                 mnode = nodes[i];
+//                 if (mnode.nodeID in ldata) {
+//                     xpos = parseInt(ldata[mnode.nodeID]["x"]);
+//                     mnode.x = xpos * 0.8;
+//                     if (xpos > mwidth - 100) { mwidth = xpos + 100; }
+//                     ypos = parseInt(ldata[mnode.nodeID]["y"]);
+//                     mnode.y = ypos;
+//                     if (ypos > mheight - 100) { mheight = ypos + 100; }
+//                 }
+//             }
+//             //
+//             // if(mwidth > WIDTH || mheight > HEIGHT){
+//             //     resize_canvas(mwidth, mheight);
+//             // }
+
+//             //invalidate();
+//         }
+//     );
+// }
 
 /**
  * Sets the font size for the analysis text
@@ -1612,6 +1627,7 @@ function clearEdgeModal() {
             }
         }
     }
+    openModal('#modal-edge');
 }
 
 /**
