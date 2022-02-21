@@ -196,7 +196,7 @@ if (isset($_COOKIE['ovauser'])) {
     <a onClick="svg2canvas2image(); openModal('#modal-save');" class="icon" id="savea" style="background-position: -84px 50%;"><span class="tooltiptext">Save&nbsp;Analysis</span></a>
     <a href="<?php echo $newurl; ?>" class="icon" id="newa" style="background-position: -168px 50%;"><span class="tooltiptext">New&nbsp;Analysis</span></a>
     <div class="divider"></div>
-    <a onClick="clearEdgeModal(); openModal('#modal-edge'); return false;" class="icon" id="eadd" style="background-position: -42px 50%;"><span class="tooltiptext">Add&nbsp;Edge</span></a>
+    <a onClick="return false;" class="icon" id="eadd" style="background-position: -42px 50%;"><span class="tooltiptext">Add&nbsp;Edge</span></a>
     <a onClick="nodeMode('switch'); return false;" class="icon" id="nadd" style="background-position: -0px 50%;"><span class="tooltiptext">Add&nbsp;Node</span></a>
     <div class="divider"></div>
     <a onClick="resetPosition();" class="icon" id="reset" style="background-position: -336px 50%;"><span class="tooltiptext">Reset&nbsp;View</span></a>
@@ -361,6 +361,16 @@ if (isset($_COOKIE['ovauser'])) {
                 <?php } ?>
               </p>
             <?php } ?>
+
+            <!-- Sticky Add Edge Toggle -->
+            <p style="color: #444; line-height: 22px;">Sticky Add Edge
+              <?php if ($defaultSettings["analysis"]["eAdd"]) { ?>
+                <a href="#" id="eAddtoggle" class="togglesw on" onClick='$("#eAddtoggle").toggleClass("on off"); window.eAddMode=!window.eAddMode; eAddModeOnOff(); return false;'><span class="tson">On</span><span class="tsoff">Off</span></a>
+              <?php } else { ?>
+                <a href="#" id="eAddtoggle" class="togglesw off" onClick='$("#eAddtoggle").toggleClass("on off"); window.eAddMode=!window.eAddMode; eAddModeOnOff(); return false;'><span class="tson">On</span><span class="tsoff">Off</span></a>
+              <?php } ?>
+            </p>
+
             <!-- Critical Questions Toggle -->
             <p style="color: #444; line-height: 22px;">Critical Questions
               <?php if ($defaultSettings["analysis"]["cq"]) { ?>
@@ -516,9 +526,9 @@ if (isset($_COOKIE['ovauser'])) {
             <strong>Keyboard Shortcuts:</strong>
             <p style="color: #444; font-size: 12px;">
             <pre>
+<strong>shift+drag</strong> from one node to another: add supporting edge
+<strong>a+drag</strong> from one node to another: add attacking edge
 <strong>ctrl+z</strong> on canvas: undo changes you made to an analysis
-<strong>shift+drag</strong> from one node to another: add edge
-<strong>shift+a+drag</strong> from one node to another: add attacking edge
 <strong>ctrl+click</strong> on node: edit node menu
 <strong>arrow keys: </strong> move canvas
 <strong>+/- : </strong> zoom in/out
