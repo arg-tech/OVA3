@@ -391,8 +391,9 @@ function updateEditNode(node) {
         n.text = node.text;
         n.timestamp = node.timestamp;
         n.marked = node.marked;
+        n.visible = node.visible;
 
-        if (node.visible) { //update svg if the node has been drawn on it
+        if (n.visible) { //update svg if the node has been drawn on it
             if (document.getElementById(node.nodeID)) {
                 document.getElementById(node.nodeID).remove(); //remove the old version of the node
             }
