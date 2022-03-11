@@ -955,7 +955,10 @@ function addlclick(skipcheck) {
     $('#prt_name').show();
     $('#locution_add').hide();
     $('#socialusers').hide();
+    $('#modal-shade').hide();
 
+    var mw = $("#mainwrap").width();
+    $("#right1").width(mw - $("#left1").width() - 41);
     return false;
 }
 
