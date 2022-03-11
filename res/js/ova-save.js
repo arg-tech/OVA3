@@ -267,6 +267,8 @@ function loadBtn() {
                     if (result) {
                         list.innerHTML = '<ul>' + current + '<span style="font-size:0.8em;">Loaded analysis: Node Set ID <strong>' + nSetID + '</strong></span><br>' + '</ul>';
                         showReplace(true);
+                    } else {
+                        list.innerHTML = '<ul>' + current + '<span style="font-size:0.8em;color:rgba(224, 46, 66, 1);">Failed to load analysis: Node Set ID <strong>' + nSetID + '</strong></span><br>' + '</ul>';
                     }
                     $('#c_loading').hide(); $('#f_loadfile').show();
                 });
@@ -306,10 +308,16 @@ async function loadCorpus(corpusName) {
     var nodeSets = await $.getJSON("helpers/corporanodesets.php?shortname=" + corpusName).then(data => data.nodeSets);
     console.log(nodeSets);
 
+    var loaded, current;
+    var list = document.getElementById('list');
     for (var i = 0; i < nodeSets.length; i++) {
         console.log("----------------");
         console.log("count: " + i);
-        await loadNodeSet(nodeSets[i], true); //to load a corpus multi must be set to true
+        loaded = await loadNodeSet(nodeSets[i], true); //to load a corpus multi must be set to true
+        if (!loaded) {
+            current = list.innerHTML.slice(4, -5);
+            list.innerHTML = '<ul>' + current + '<span style="font-size:0.8em;color:rgba(224, 46, 66, 1);">Failed to load analysis: Node Set ID <strong>' + nodeSets[i] + '</strong></span><br>' + '</ul>';
+        }
     }
 }
 
@@ -321,7 +329,8 @@ async function loadCorpus(corpusName) {
  */
 async function loadFile(jstr, multi) {
     if (typeof jstr !== 'object') {
-        var json = JSON.parse(jstr);
+        try { var json = JSON.parse(jstr); }
+        catch (e) { console.log(e); return false; }
     } else {
         var json = jstr;
     }
@@ -464,10 +473,10 @@ async function loadOva3Json(json, oplus, offset) {
         // console.log(JSON.stringify(edgesContent));
         lastedit = await $.post("helpers/load.php", { analysisID: window.analysisID, sessionid: window.sessionid, type: "edge", action: "add", cnt: JSON.stringify(edgesContent), groupID: window.groupID, undone: 1, counter: window.edgeCounter }).then(data => JSON.parse(data).last);
         console.log("last edit id: " + lastedit);
-    } catch (e) { 
+    } catch (e) {
         // console.log(e);
-        alert("Unable to add to the database"); 
-        return false; 
+        alert("Unable to add to the database");
+        return false;
     }
 
     return true;
@@ -927,16 +936,10 @@ function loadfromdb(nodeSetID, multi) {
 
             }).fail(function () {
                 console.log("failed to get json db nodeset");
-                var list = document.getElementById('list');
-                var current = multi ? list.innerHTML.slice(4, -5) : "";
-                list.innerHTML = '<ul>' + current + '<span style="font-size:0.8em;color:rgba(224, 46, 66, 1);">Failed to load analysis: Node Set ID <strong>' + nodeSetID + '</strong></span><br>' + '</ul>';
                 resolve(false); //the analysis failed to load
             });
         }).fail(function () {
             console.log("failed to get json layout");
-            var list = document.getElementById('list');
-            var current = multi ? list.innerHTML.slice(4, -5) : "";
-            list.innerHTML = '<ul>' + current + '<span style="font-size:0.8em;color:rgba(224, 46, 66, 1);">Failed to load analysis: Node Set ID <strong>' + nodeSetID + '</strong></span><br>' + '</ul>';
             resolve(false); //the analysis failed to load
         });
     });
