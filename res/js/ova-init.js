@@ -1694,14 +1694,26 @@ function addLongEdge() {
         }
         AddNode('Default Transition', 'TA', '82', 0, newNodeID, nx, ny, true, 0, "", mark);
 
-        //adds an edge between the source locution and TA nodes
-        DrawEdge(sourceL, newNodeID);
-        var edge = newEdge(sourceL, newNodeID);
-        UpdateEdge(edge);
+        var edge;
+        if (fy > ty) {
+            //adds an edge between the target locution and TA nodes
+            DrawEdge(targetL, newNodeID);
+            edge = newEdge(targetL, newNodeID);
+            UpdateEdge(edge);
 
-        //adds an edge between the TA and target locution nodes
-        DrawEdge(newNodeID, targetL);
-        edge = newEdge(newNodeID, targetL);
+            //adds an edge between the TA and source locution nodes
+            DrawEdge(newNodeID, sourceL);
+            edge = newEdge(newNodeID, sourceL);
+        } else {
+            //adds an edge between the source locution and TA nodes
+            DrawEdge(sourceL, newNodeID);
+            edge = newEdge(sourceL, newNodeID);
+            UpdateEdge(edge);
+
+            //adds an edge between the TA and target locution nodes
+            DrawEdge(newNodeID, targetL);
+            edge = newEdge(newNodeID, targetL);
+        }
         UpdateEdge(edge);
 
         //marks the new TA and its connected edges/nodes if needed
