@@ -33,9 +33,10 @@ function Node() {
  * @param {Number} undone - Optional, indicates if this edit can be undone (0) or not (1). The default is zero.
  * @param {String} timestamp - Optional, the node's timestamp value. The default is ''.
  * @param {Boolean} marked - Optional, indicates if the node should be marked (true) or not (false). The default is false.
+ * @param {Boolean} post - Optional, indicates if the node should be added to the database (true) or not (false). The default is true.
  * @returns {Node} n - The new node that was created
  */
-function newNode(nodeID, type, scheme, participantID, text, x, y, visible, undone, timestamp, marked) {
+function newNode(nodeID, type, scheme, participantID, text, x, y, visible, undone, timestamp, marked, post) {
     var n = new Node;
     n.nodeID = nodeID;
     n.type = type;
@@ -50,7 +51,8 @@ function newNode(nodeID, type, scheme, participantID, text, x, y, visible, undon
     nodes.push(n);
 
     var undone = typeof undone !== 'undefined' ? undone : 0;
-    postEdit("node", "add", n, undone, n.nodeID);
+    var post = typeof post !== 'undefined' ? post : true;
+    if (post) { postEdit("node", "add", n, undone, n.nodeID); }
     return n;
 }
 
@@ -61,13 +63,14 @@ function newNode(nodeID, type, scheme, participantID, text, x, y, visible, undon
  * @param {Number} y - The node's y coordinate
  * @param {Boolean} visible - Optional, indicates if the node should be visible (true) or not (false). The default is true.
  * @param {Number} undone - Optional, indicates if this edit can be undone (0) or not (1). The default is zero.
+ * @param {Boolean} post - Optional, indicates if the updated node should be added to the database (true) or not (false). The default is true.
  * @param {String} type - Optional, the type of node
  * @param {String} scheme - Optional, the ID of the scheme it fulfils or null if it doesn't fulfil a scheme
  * @param {String} text - Optional, the text the node contains
  * @param {String} timestamp - Optional, the node's timestamp value
  * @param {Boolean} marked - Optional, indicates if the node should be marked (true) or not (false). The default is false.
  */
-function updateNode(nodeID, x, y, visible, undone, type, scheme, text, timestamp, marked) {
+function updateNode(nodeID, x, y, visible, undone, post, type, scheme, text, timestamp, marked) {
     var index = findNodeIndex(nodeID);
     if (index > -1) { //if the node exists
         n = nodes[index];
@@ -75,14 +78,15 @@ function updateNode(nodeID, x, y, visible, undone, type, scheme, text, timestamp
         n.y = y;
         n.visible = typeof visible !== 'undefined' ? visible : true;
 
-        if (type != undefined) { n.type = type; }
-        if (scheme != undefined) { n.scheme = scheme; }
-        if (text != undefined) { n.text = text; }
-        if (timestamp != undefined) { n.timestamp = timestamp; }
-        if (marked != undefined) { n.marked = marked; }
+        if (typeof type !== 'undefined') { n.type = type; }
+        if (typeof scheme !== 'undefined') { n.scheme = scheme; }
+        if (typeof text !== 'undefined') { n.text = text; }
+        if (typeof timestamp !== 'undefined') { n.timestamp = timestamp; }
+        if (typeof marked !== 'undefined') { n.marked = marked; }
 
         var undone = typeof undone !== 'undefined' ? undone : 0;
-        postEdit("node", "edit", n, undone, n.nodeID);
+        var post = typeof post !== 'undefined' ? post : true;
+        if (post) { postEdit("node", "edit", n, undone, n.nodeID); }
     }
 }
 
@@ -91,13 +95,15 @@ function updateNode(nodeID, x, y, visible, undone, type, scheme, text, timestamp
  * @param {String} nodeID - The ID of the node to update
  * @param {String} scheme - The ID of the scheme it fulfils or null if it doesn't fulfil a scheme
  * @param {Number} undone - Optional, indicates if this edit can be undone (0) or not (1). The default is zero.
+ * @param {Boolean} post - Optional, indicates if the updated node should be added to the database (true) or not (false). The default is true.
  */
-function updateNodeScheme(nodeID, scheme, undone) {
+function updateNodeScheme(nodeID, scheme, undone, post) {
     var index = findNodeIndex(nodeID);
     if (index > -1) { //if the node exists
         n = nodes[index];
         n.scheme = scheme;
-        postEdit("node", "edit", n, undone, n.nodeID);
+        var post = typeof post !== 'undefined' ? post : true;
+        if (post) { postEdit("node", "edit", n, undone, n.nodeID); }
     }
 }
 
@@ -134,15 +140,16 @@ function delTimestamp(nodeID, undone) {
  * @param {String} nodeID - The ID of the node to update
  * @param {String} timestamp - The value to set the node's timestamp to
  * @param {Number} undone - Optional, indicates if this edit can be undone (0) or not (1). The default is zero.
+ * @param {Boolean} post - Optional, indicates if the updated node should be added to the database (true) or not (false). The default is true.
  */
-function updateTimestamp(nodeID, timestamp, undone) {
+function updateTimestamp(nodeID, timestamp, undone, post) {
     var index = findNodeIndex(nodeID);
     if (index > -1) { //if the node exists
         n = nodes[index];
         n.timestamp = timestamp;
-        window.groupID++;
         var undone = typeof undone !== 'undefined' ? undone : 0;
-        postEdit("node", "edit", n, undone, n.nodeID);
+        var post = typeof post !== 'undefined' ? post : true;
+        if (post) { postEdit("node", "edit", n, undone, n.nodeID); }
     }
 }
 
@@ -152,7 +159,7 @@ function updateTimestamp(nodeID, timestamp, undone) {
  * @param {Boolean} marked - Indicates if the node should be marked (true) or not (false)
  * @param {Number} undone - Optional, indicates if this edit can be undone (0) or not (1). The default is zero.
  */
- function setMarked(nodeID, marked, undone) {
+function setMarked(nodeID, marked, undone) {
     var index = findNodeIndex(nodeID);
     if (index > -1) { //if the node exists
         n = nodes[index];
@@ -177,9 +184,10 @@ function Edge() {
  * @param {String} toID - The ID of the node the edge connects to
  * @param {Boolean} visible - Optional, indicates if the edge should be visible (true) or not (false)
  * @param {Number} undone - Optional, indicates if this edit can be undone (0) or not (1). The default is zero.
+ * @param {Boolean} post - Optional, indicates if the edge should be added to the database (true) or not (false). The default is true.
  * @returns {Edge} e - The new edge that was created
  */
-function newEdge(fromID, toID, visible, undone) {
+function newEdge(fromID, toID, visible, undone, post) {
     var e = new Edge;
     e.fromID = fromID;
     e.toID = toID;
@@ -187,7 +195,8 @@ function newEdge(fromID, toID, visible, undone) {
     edges.push(e);
 
     var undone = typeof undone !== 'undefined' ? undone : 0;
-    postEdit("edge", "add", e, undone);
+    var post = typeof post !== 'undefined' ? post : true;
+    if (post) { postEdit("edge", "add", e, undone); }
     return e;
 }
 

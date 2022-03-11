@@ -1563,6 +1563,7 @@ function setTimestampStart(startdatestmp) {
                 var str = tsd.toString();
                 document.getElementById("timestamp_label").innerHTML = str;
                 window.editTimestamp = false;
+                window.groupID++;
                 updateTimestamp(mySel.nodeID, str);
                 if (window.showTimestamps) {
                     var edited = editTimestampSVG(mySel.nodeID, str);

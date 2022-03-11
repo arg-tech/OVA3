@@ -1109,7 +1109,7 @@ function saveNodeEdit() {
       DrawTimestamp(mySel.nodeID, mySel.timestamp, mySel.x, mySel.y);
     }
     window.groupID++;
-    updateNode(CurrentlyEditing, xCoord, yCoord, true, 0, type, null, ntext, mySel.timestamp);
+    updateNode(CurrentlyEditing, xCoord, yCoord, true, 0, true, type, null, ntext, mySel.timestamp);
     // for (var i = 0; i < edgesToUpdate.length; i++) {
     //   UpdateEdge(edgesToUpdate[i]);
     // }
@@ -1175,7 +1175,7 @@ function saveNodeEdit() {
     document.getElementById(CurrentlyEditing).remove();
     DrawNode(CurrentlyEditing, mySel.type, mySel.text, xCoord, yCoord, mySel.marked);
     window.groupID++;
-    updateNode(CurrentlyEditing, xCoord, yCoord, mySel.visible, 0, mySel.type, mySel.scheme, mySel.text);
+    updateNode(CurrentlyEditing, xCoord, yCoord, mySel.visible, 0, true, mySel.type, mySel.scheme, mySel.text);
 
     $('.dselect').each(function (index) {
       mySel.descriptors[$(this).attr('id')] = $(this).val();

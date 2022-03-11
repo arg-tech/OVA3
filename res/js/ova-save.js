@@ -359,88 +359,118 @@ async function loadFile(jstr, multi) {
  * @param {Number} offset - The offset to be added to the y coordinates
  * @returns {Promise} - Indicates if the JSON file was successfully loaded (true) or not (false)
  */
-function loadOva3Json(json, oplus, offset) {
+async function loadOva3Json(json, oplus, offset) {
     console.log("loading OVA3 json");
-    return new Promise(resolve => {
-        //load participants
-        var p = json['AIF']['participants'];
-        if (p != undefined) {
-            for (var i = 0, l = p.length; i < l; i++) {
-                firstname = p[i].firstname;
-                surname = p[i].surname;
-                addParticipant(firstname, surname)
+    //load participants
+    var p = json['AIF']['participants'];
+    if (p != undefined) {
+        for (var i = 0, l = p.length; i < l; i++) {
+            firstname = p[i].firstname;
+            surname = p[i].surname;
+            addParticipant(firstname, surname)
+        }
+    }
+
+    var text = false;
+    if (json['text']['txt'] != "") {
+        text = loadText(json['text']['txt']);
+    }
+    if (!text && json['text'].hasOwnProperty("url")) {
+        loadUrl(json['text']['url']);
+    }
+
+    //create the nodes
+    var jnodes = json['AIF']['nodes'];
+    var nodelist = {};
+    var pID = 0;
+    for (var i = 0, l = jnodes.length; i < l; i++) {
+        if (oplus) {
+            if (jnodes[i].type == "L") {
+                pID = findParticipantIDText(jnodes[i].text);
+                nodelist[jnodes[i].nodeID] = newNode(jnodes[i].nodeID, jnodes[i].type, null, pID, jnodes[i].text, 0, 0, false, 1, "", false, false);
+            } else {
+                nodelist[jnodes[i].nodeID] = newNode(jnodes[i].nodeID, jnodes[i].type, null, 0, jnodes[i].text, 0, 0, false, 1, "", false, false);
             }
+        } else if (jnodes[i].type == "I" || jnodes[i].type == "RA" || jnodes[i].type == "CA" || jnodes[i].type == "MA" || jnodes[i].type == "EN") {
+            nodelist[jnodes[i].nodeID] = newNode(jnodes[i].nodeID, jnodes[i].type, null, 0, jnodes[i].text, 0, 0, false, 1);
+            if (jnodes[i].type == "I" && text) { hlUpdate(jnodes[i].nodeID, jnodes[i].type, jnodes[i].nodeID, 1); }
         }
+    }
 
-        var text = false;
-        if (json['text']['txt'] != "") {
-            text = loadText(json['text']['txt']);
+    window.nodeCounter += jnodes.length; //update the node counter
+
+    //set any scheme fulfillments
+    var sf = json['AIF']['schemefulfillments'];
+    if (sf != undefined) {
+        for (var i = 0; i < sf.length; i++) {
+            updateNodeScheme(sf[i].nodeID, sf[i].schemeID, 1, false);
         }
-        if (!text && json['text'].hasOwnProperty("url")) {
-            loadUrl(json['text']['url']);
-        }
+    }
 
-        //create the nodes
-        var jnodes = json['AIF']['nodes'];
-        var nodelist = {};
-        var pID = 0;
-        for (var i = 0, l = jnodes.length; i < l; i++) {
-            if (oplus) {
-                if (jnodes[i].type == "L") {
-                    pID = findParticipantIDText(jnodes[i].text);
-                    nodelist[jnodes[i].nodeID] = newNode(jnodes[i].nodeID, jnodes[i].type, null, pID, jnodes[i].text, 0, 0, false, 1);
-                } else {
-                    nodelist[jnodes[i].nodeID] = newNode(jnodes[i].nodeID, jnodes[i].type, null, 0, jnodes[i].text, 0, 0, false, 1);
-                }
-            } else if (jnodes[i].type == "I" || jnodes[i].type == "RA" || jnodes[i].type == "CA" || jnodes[i].type == "MA" || jnodes[i].type == "EN") {
-                nodelist[jnodes[i].nodeID] = newNode(jnodes[i].nodeID, jnodes[i].type, null, 0, jnodes[i].text, 0, 0, false, 1);
-                if (jnodes[i].type == "I" && text) { hlUpdate(jnodes[i].nodeID, jnodes[i].type, jnodes[i].nodeID, 1); }
-            }
-        }
-
-        window.nodeCounter += jnodes.length; //update the node counter
-
-        //set any scheme fulfillments
-        var sf = json['AIF']['schemefulfillments'];
-        if (sf != undefined) {
-            for (var i = 0; i < sf.length; i++) {
-                updateNodeScheme(sf[i].nodeID, sf[i].schemeID, 1);
-            }
-        }
-
-        //set the layout of the nodes and draw them on the svg
-        var n = json['OVA']['nodes'];
-        var newY = 0;
-        for (var i = 0, l = n.length; i < l; i++) {
-            if (nodelist[n[i].nodeID]) {
-                if (n[i].visible) {
-                    newY = parseInt(n[i].y) + offset;
-                    updateNode(n[i].nodeID, n[i].x, newY, n[i].visible, 1);
-                    DrawNode(nodelist[n[i].nodeID].nodeID, nodelist[n[i].nodeID].type, nodelist[n[i].nodeID].text, nodelist[n[i].nodeID].x, nodelist[n[i].nodeID].y);
-                    if (n[i].timestamp && n[i].timestamp != '') {
-                        updateTimestamp(n[i].nodeID, n[i].timestamp, 1);
-                        if (window.showTimestamps) { DrawTimestamp(n[i].nodeID, n[i].timestamp, nodelist[n[i].nodeID].x, nodelist[n[i].nodeID].y); }
-                    }
+    //set the layout of the nodes and draw them on the svg
+    var n = json['OVA']['nodes'];
+    var newY = 0;
+    for (var i = 0, l = n.length; i < l; i++) {
+        if (nodelist[n[i].nodeID]) {
+            if (n[i].visible) {
+                newY = parseInt(n[i].y) + offset;
+                updateNode(n[i].nodeID, n[i].x, newY, true, 1, false);
+                DrawNode(nodelist[n[i].nodeID].nodeID, nodelist[n[i].nodeID].type, nodelist[n[i].nodeID].text, nodelist[n[i].nodeID].x, nodelist[n[i].nodeID].y);
+                if (n[i].timestamp && n[i].timestamp != '') {
+                    updateTimestamp(n[i].nodeID, n[i].timestamp, 1, false);
+                    if (window.showTimestamps) { DrawTimestamp(n[i].nodeID, n[i].timestamp, nodelist[n[i].nodeID].x, nodelist[n[i].nodeID].y); }
                 }
             }
         }
+    }
 
-        //create and draw any connecting edges
-        var e = json['OVA']['edges'];
-        var from, to, edge;
-        for (var i = 0, l = e.length; i < l; i++) {
-            from = e[i].fromID;
-            to = e[i].toID;
-            if (from in nodelist && to in nodelist) { //if both the nodes the edge connects exist
-                edge = newEdge(from, to, e[i].visible, 1);
-                if (e[i].visible) {
-                    DrawEdge(from, to);
-                    UpdateEdge(edge);
-                }
+    //create and draw any connecting edges
+    var edgeStart = edges.length;
+    console.log(edgeStart);
+    var e = json['OVA']['edges'];
+    var from, to, edge;
+    for (var i = 0, l = e.length; i < l; i++) {
+        from = e[i].fromID;
+        to = e[i].toID;
+        if (from in nodelist && to in nodelist) { //if both the nodes the edge connects exist
+            edge = newEdge(from, to, e[i].visible, 1, false);
+            if (e[i].visible) {
+                DrawEdge(from, to);
+                UpdateEdge(edge);
             }
         }
-        resolve(true); //the analysis has finished loading
-    });
+    }
+
+    try {
+        //add the nodes to the database
+        var nodesContent = [];
+        var start = findNodeIndex(jnodes[0].nodeID);
+        var nodesToAdd = nodes.slice(start);
+        for (var i = 0; i < nodesToAdd.length; i++) {
+            nodesContent.push([nodesToAdd[i].nodeID, JSON.stringify(nodesToAdd[i])]);
+        }
+        // console.log(nodesContent);
+        lastedit = await $.post("helpers/load.php", { analysisID: window.analysisID, sessionid: window.sessionid, type: "node", action: "add", cnt: JSON.stringify(nodesContent), groupID: window.groupID, undone: 1, counter: window.nodeCounter }).then(data => JSON.parse(data).last);
+        console.log("last edit id: " + lastedit);
+
+        //add the edges to the database
+        var edgesContent = [];
+        var edgesToAdd = edges.slice(edgeStart);
+        for (var i = 0; i < edgesToAdd.length; i++) {
+            window.edgeCounter++;
+            var contentID = window.edgeCounter + "_" + window.sessionid;
+            edgesContent.push([contentID, JSON.stringify(edgesToAdd[i])]);
+        }
+        // console.log(JSON.stringify(edgesContent));
+        lastedit = await $.post("helpers/load.php", { analysisID: window.analysisID, sessionid: window.sessionid, type: "edge", action: "add", cnt: JSON.stringify(edgesContent), groupID: window.groupID, undone: 1, counter: window.edgeCounter }).then(data => JSON.parse(data).last);
+        console.log("last edit id: " + lastedit);
+    } catch (e) { 
+        // console.log(e);
+        alert("Unable to add to the database"); 
+        return false; 
+    }
+
+    return true;
 }
 
 /**
@@ -723,6 +753,7 @@ function loaddbjson(json, oplus, offset) {
                     tsd.setTime(tstamp);
                     timestamp = tsd.toString();
                     newID = ((count + l[i].nodeID) + "_" + window.sessionid);
+                    window.groupID++;
                     updateTimestamp(newID, timestamp, 1);
                     window.groupID++;
                     if (window.showTimestamps) {
@@ -874,6 +905,7 @@ function loadfromdb(nodeSetID, multi) {
                             tsd = new Date();
                             tsd.setTime(tstamp);
                             timestamp = tsd.toString();
+                            window.groupID++;
                             updateTimestamp(newID, timestamp, 1);
                             window.groupID++;
                             if (window.showTimestamps) {
@@ -1150,10 +1182,6 @@ function saveAsImage() {
         var x = parseInt(nodes[index].x);
         w = x < 0 ? w - x : w;
 
-        // console.log("x: " + x);
-        // console.log("y: " + y);
-        // console.log("w: " + w);
-        // console.log("h: " + h);
         svg2canvas2image(x, y, w, h);
     }
 }
