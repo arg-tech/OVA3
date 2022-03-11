@@ -920,7 +920,7 @@ function Drop(evt) {
           var newy = ny - 400;
           VB = [newx, newy, 1500, 1500];
           SVGRoot.setAttribute('viewBox', [newx, newy, 1500, 1500]);
-          if (window.dialogicalMode) {
+          if (window.dialogicalMode && !(nodeFrom == "L" && nodeTo == "L")) {
             if (window.rIATMode) { //select suggested L target
               var id = nTo.nodeID.split("_");
               var guessL = (parseInt(id[0]) + 1) + "_" + id[1]; //for OVA3 maps
