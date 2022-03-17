@@ -471,13 +471,15 @@ function GetTrueCoords(evt) {
  * @param {Number} undone - Optional, indicates if this edit can be undone (0) or not (1). The default is zero.
  * @param {String} timestamp - Optional, the node's timestamp value. The default is ''.
  * @param {Boolean} mark - Optional, indicates if the node should be marked (true) or not (false). The default is false.
+ * @param {Boolean} post - Optional, indicates if the node should be added to the database (true) or not (false). The default is true.
  */
-function AddNode(txt, type, scheme, pid, nid, nx, ny, visible, undone, timestamp, mark) {
+function AddNode(txt, type, scheme, pid, nid, nx, ny, visible, undone, timestamp, mark, post) {
   var isVisible = typeof visible !== 'undefined' ? visible : true;
   var undone = typeof undone !== 'undefined' ? undone : 0;
   var timestamp = typeof timestamp !== 'undefined' ? timestamp : '';
   var mark = typeof mark !== 'undefined' ? mark : false;
-  newNode(nid, type, scheme, pid, txt, nx, ny, isVisible, undone, timestamp, mark); //create the node
+  var post = typeof post !== 'undefined' ? post : true;
+  newNode(nid, type, scheme, pid, txt, nx, ny, isVisible, undone, timestamp, mark, post); //create the node
   if (isVisible) {
     DrawNode(nid, type, txt, nx, ny); //if the node is visible then draw the node on the svg
 
