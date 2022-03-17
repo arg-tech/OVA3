@@ -267,6 +267,8 @@ function loadBtn() {
                     if (result) {
                         list.innerHTML = '<ul>' + current + '<span style="font-size:0.8em;">Loaded analysis: Node Set ID <strong>' + nSetID + '</strong></span><br>' + '</ul>';
                         showReplace(true);
+                    } else {
+                        list.innerHTML = '<ul>' + current + '<span style="font-size:0.8em;color:rgba(224, 46, 66, 1);">Failed to load analysis: Node Set ID <strong>' + nSetID + '</strong></span><br>' + '</ul>';
                     }
                     $('#c_loading').hide(); $('#f_loadfile').show();
                 });
@@ -279,7 +281,7 @@ function loadBtn() {
  * Loads an analysis from its node set ID
  * @param {Number} nodeSetID - The node set ID of the analysis to load
  * @param {Boolean} multi - Indicates if the loaded analysis should replace the current analysis (false) or be added to it (true)
- * @returns {Promise} - Indicates if the analysis was successfully loaded (true) or failed to load (false)
+ * @returns {Promise<Boolean>} - Indicates if the analysis was successfully loaded (true) or failed to load (false)
  */
 async function loadNodeSet(nodeSetID, multi) {
     try { //loading from OVA3
@@ -306,10 +308,16 @@ async function loadCorpus(corpusName) {
     var nodeSets = await $.getJSON("helpers/corporanodesets.php?shortname=" + corpusName).then(data => data.nodeSets);
     console.log(nodeSets);
 
+    var loaded, current;
+    var list = document.getElementById('list');
     for (var i = 0; i < nodeSets.length; i++) {
         console.log("----------------");
         console.log("count: " + i);
-        await loadNodeSet(nodeSets[i], true); //to load a corpus multi must be set to true
+        loaded = await loadNodeSet(nodeSets[i], true); //to load a corpus multi must be set to true
+        if (!loaded) {
+            current = list.innerHTML.slice(4, -5);
+            list.innerHTML = '<ul>' + current + '<span style="font-size:0.8em;color:rgba(224, 46, 66, 1);">Failed to load analysis: Node Set ID <strong>' + nodeSets[i] + '</strong></span><br>' + '</ul>';
+        }
     }
 }
 
@@ -317,11 +325,12 @@ async function loadCorpus(corpusName) {
  * Loads a JSON file
  * @param {*} jstr - The JSON file to load
  * @param {Boolean} multi - Indicates if the loaded analysis should replace the current analysis (false) or be added to it (true)
- * @returns {Promise} - Indicates if the JSON file was successfully loaded (true) or not (false)
+ * @returns {Promise<Boolean>} - Indicates if the JSON file was successfully loaded (true) or not (false)
  */
 async function loadFile(jstr, multi) {
     if (typeof jstr !== 'object') {
-        var json = JSON.parse(jstr);
+        try { var json = JSON.parse(jstr); }
+        catch (e) { console.log(e); return false; }
     } else {
         var json = jstr;
     }
@@ -357,90 +366,92 @@ async function loadFile(jstr, multi) {
  * @param {Object} json - The json to be loaded in
  * @param {Boolean} oplus - Indicates if the analysis should be loaded in dialogical (true) or non-dialogical (false) mode
  * @param {Number} offset - The offset to be added to the y coordinates
- * @returns {Promise} - Indicates if the JSON file was successfully loaded (true) or not (false)
+ * @returns {Promise<Boolean>} - Indicates if the JSON file was successfully loaded (true) or not (false)
  */
-function loadOva3Json(json, oplus, offset) {
+async function loadOva3Json(json, oplus, offset) {
     console.log("loading OVA3 json");
-    return new Promise(resolve => {
-        //load participants
-        var p = json['AIF']['participants'];
-        if (p != undefined) {
-            for (var i = 0, l = p.length; i < l; i++) {
-                firstname = p[i].firstname;
-                surname = p[i].surname;
-                addParticipant(firstname, surname)
+    //load participants
+    var p = json['AIF']['participants'];
+    if (p != undefined) {
+        for (var i = 0, l = p.length; i < l; i++) {
+            firstname = p[i].firstname;
+            surname = p[i].surname;
+            addParticipant(firstname, surname)
+        }
+    }
+
+    var text = false;
+    if (json['text']['txt'] != "") {
+        text = loadText(json['text']['txt']);
+    }
+    if (!text && json['text'].hasOwnProperty("url")) {
+        loadUrl(json['text']['url']);
+    }
+
+    //create the nodes
+    var jnodes = json['AIF']['nodes'];
+    var nodelist = {};
+    var pID = 0;
+    for (var i = 0, l = jnodes.length; i < l; i++) {
+        if (oplus) {
+            if (jnodes[i].type == "L") {
+                pID = findParticipantIDText(jnodes[i].text);
+                nodelist[jnodes[i].nodeID] = newNode(jnodes[i].nodeID, jnodes[i].type, null, pID, jnodes[i].text, 0, 0, false, 1, "", false, false);
+            } else {
+                nodelist[jnodes[i].nodeID] = newNode(jnodes[i].nodeID, jnodes[i].type, null, 0, jnodes[i].text, 0, 0, false, 1, "", false, false);
             }
+        } else if (jnodes[i].type == "I" || jnodes[i].type == "RA" || jnodes[i].type == "CA" || jnodes[i].type == "MA" || jnodes[i].type == "EN") {
+            nodelist[jnodes[i].nodeID] = newNode(jnodes[i].nodeID, jnodes[i].type, null, 0, jnodes[i].text, 0, 0, false, 1, "", false, false);
+            if (jnodes[i].type == "I" && text) { hlUpdate(jnodes[i].nodeID, jnodes[i].type, jnodes[i].nodeID, false); }
         }
+    }
 
-        var text = false;
-        if (json['text']['txt'] != "") {
-            text = loadText(json['text']['txt']);
+    window.nodeCounter += jnodes.length; //update the node counter
+    if (!oplus && text) { postEdit("text", "edit", $('#analysis_text').html(), 1); }
+
+    //set any scheme fulfillments
+    var sf = json['AIF']['schemefulfillments'];
+    if (sf != undefined) {
+        for (var i = 0; i < sf.length; i++) {
+            updateNodeScheme(sf[i].nodeID, sf[i].schemeID, 1, false);
         }
-        if (!text && json['text'].hasOwnProperty("url")) {
-            loadUrl(json['text']['url']);
-        }
+    }
 
-        //create the nodes
-        var jnodes = json['AIF']['nodes'];
-        var nodelist = {};
-        var pID = 0;
-        for (var i = 0, l = jnodes.length; i < l; i++) {
-            if (oplus) {
-                if (jnodes[i].type == "L") {
-                    pID = findParticipantIDText(jnodes[i].text);
-                    nodelist[jnodes[i].nodeID] = newNode(jnodes[i].nodeID, jnodes[i].type, null, pID, jnodes[i].text, 0, 0, false, 1);
-                } else {
-                    nodelist[jnodes[i].nodeID] = newNode(jnodes[i].nodeID, jnodes[i].type, null, 0, jnodes[i].text, 0, 0, false, 1);
-                }
-            } else if (jnodes[i].type == "I" || jnodes[i].type == "RA" || jnodes[i].type == "CA" || jnodes[i].type == "MA" || jnodes[i].type == "EN") {
-                nodelist[jnodes[i].nodeID] = newNode(jnodes[i].nodeID, jnodes[i].type, null, 0, jnodes[i].text, 0, 0, false, 1);
-                if (jnodes[i].type == "I" && text) { hlUpdate(jnodes[i].nodeID, jnodes[i].type, jnodes[i].nodeID, 1); }
-            }
-        }
-
-        window.nodeCounter += jnodes.length; //update the node counter
-
-        //set any scheme fulfillments
-        var sf = json['AIF']['schemefulfillments'];
-        if (sf != undefined) {
-            for (var i = 0; i < sf.length; i++) {
-                updateNodeScheme(sf[i].nodeID, sf[i].schemeID, 1);
-            }
-        }
-
-        //set the layout of the nodes and draw them on the svg
-        var n = json['OVA']['nodes'];
-        var newY = 0;
-        for (var i = 0, l = n.length; i < l; i++) {
-            if (nodelist[n[i].nodeID]) {
-                if (n[i].visible) {
-                    newY = parseInt(n[i].y) + offset;
-                    updateNode(n[i].nodeID, n[i].x, newY, n[i].visible, 1);
-                    DrawNode(nodelist[n[i].nodeID].nodeID, nodelist[n[i].nodeID].type, nodelist[n[i].nodeID].text, nodelist[n[i].nodeID].x, nodelist[n[i].nodeID].y);
-                    if (n[i].timestamp && n[i].timestamp != '') {
-                        updateTimestamp(n[i].nodeID, n[i].timestamp, 1);
-                        if (window.showTimestamps) { DrawTimestamp(n[i].nodeID, n[i].timestamp, nodelist[n[i].nodeID].x, nodelist[n[i].nodeID].y); }
-                    }
-                }
-            }
-        }
-
-        //create and draw any connecting edges
-        var e = json['OVA']['edges'];
-        var from, to, edge;
-        for (var i = 0, l = e.length; i < l; i++) {
-            from = e[i].fromID;
-            to = e[i].toID;
-            if (from in nodelist && to in nodelist) { //if both the nodes the edge connects exist
-                edge = newEdge(from, to, e[i].visible, 1);
-                if (e[i].visible) {
-                    DrawEdge(from, to);
-                    UpdateEdge(edge);
+    //set the layout of the nodes and draw them on the svg
+    var n = json['OVA']['nodes'];
+    var newY = 0;
+    for (var i = 0, l = n.length; i < l; i++) {
+        if (nodelist[n[i].nodeID]) {
+            if (n[i].visible) {
+                newY = parseInt(n[i].y) + offset;
+                updateNode(n[i].nodeID, n[i].x, newY, true, 1, false);
+                DrawNode(nodelist[n[i].nodeID].nodeID, nodelist[n[i].nodeID].type, nodelist[n[i].nodeID].text, nodelist[n[i].nodeID].x, nodelist[n[i].nodeID].y);
+                if (n[i].timestamp && n[i].timestamp != '') {
+                    updateTimestamp(n[i].nodeID, n[i].timestamp, 1, false);
+                    if (window.showTimestamps) { DrawTimestamp(n[i].nodeID, n[i].timestamp, nodelist[n[i].nodeID].x, nodelist[n[i].nodeID].y); }
                 }
             }
         }
-        resolve(true); //the analysis has finished loading
-    });
+    }
+
+    //create and draw any connecting edges
+    var edgeStart = edges.length;
+    var e = json['OVA']['edges'];
+    var from, to, edge;
+    for (var i = 0, l = e.length; i < l; i++) {
+        from = e[i].fromID;
+        to = e[i].toID;
+        if (from in nodelist && to in nodelist) { //if both the nodes the edge connects exist
+            edge = newEdge(from, to, e[i].visible, 1, false);
+            if (e[i].visible) {
+                DrawEdge(from, to);
+                UpdateEdge(edge);
+            }
+        }
+    }
+
+    var nodeStart = findNodeIndex(jnodes[0].nodeID);
+    return await postAddEdits(nodeStart, edgeStart);
 }
 
 /**
@@ -448,73 +459,78 @@ function loadOva3Json(json, oplus, offset) {
  * @param {Object} json - The json to be loaded in
  * @param {Boolean} oplus - Indicates if the analysis should be loaded in dialogical (true) or non-dialogical (false) mode
  * @param {Number} offset - The offset to be added to the y coordinates
- * @returns {Promise} - Indicates if the JSON file was successfully loaded (true) or not (false)
+ * @returns {Promise<Boolean>} - Indicates if the JSON file was successfully loaded (true) or not (false)
  */
-function loadOva2Json(json, oplus, offset) {
+async function loadOva2Json(json, oplus, offset) {
     console.log("loading OVA2 json");
-    return new Promise(resolve => {
-        //load participants
-        var p = json['participants'];
-        var pID = 0;
-        if (p != undefined) {
-            for (var i = 0, l = p.length; i < l; i++) {
-                firstname = p[i].firstname;
-                surname = p[i].surname;
-                addParticipant(firstname, surname)
-            }
+    //load participants
+    var p = json['participants'];
+    var pID = 0;
+    if (p != undefined) {
+        for (var i = 0, l = p.length; i < l; i++) {
+            firstname = p[i].firstname;
+            surname = p[i].surname;
+            addParticipant(firstname, surname)
         }
+    }
 
-        var text = loadText(json['analysis']['txt']); //load text on LHS
+    var text = loadText(json['analysis']['txt']); //load text on LHS
 
-        //load nodes
-        var nodelist = {};
-        var jnodes = json['nodes'];
-        var nID = '';
-        var count = window.nodeCounter;
-        var newY = 0;
-        for (var i = 0, l = jnodes.length; i < l; i++) {
-            if ((count + jnodes[i].id) > window.nodeCounter) {
-                window.nodeCounter = (count + jnodes[i].id); //update the node counter
-            }
-            nID = ((count + jnodes[i].id) + "_" + window.sessionid);
-            newY = parseInt(jnodes[i].y) + offset;
-            if (oplus) {
-                if (jnodes[i].type == "L") {
-                    pID = findParticipantIDText(jnodes[i].text);
-                    nodelist[nID] = newNode(nID, jnodes[i].type, jnodes[i].scheme, pID, jnodes[i].text, jnodes[i].x, newY, jnodes[i].visible, 1, jnodes[i].timestamp);
-                    if (jnodes[i].visible) {
-                        DrawNode(nID, jnodes[i].type, jnodes[i].text, jnodes[i].x, newY);
-                        if (text) { hlUpdate(jnodes[i].id, jnodes[i].type, nID, 1); }
-                        if (window.showTimestamps && jnodes[i].timestamp && jnodes[i].timestamp != '') { DrawTimestamp(nID, jnodes[i].timestamp, jnodes[i].x, newY); }
-                    }
-                } else {
-                    nodelist[nID] = AddNode(jnodes[i].text, jnodes[i].type, jnodes[i].scheme, 0, nID, jnodes[i].x, newY, jnodes[i].visible, 1);
+    //load nodes
+    var nodelist = {};
+    var jnodes = json['nodes'];
+    var nID = '';
+    var count = window.nodeCounter;
+    var newY = 0;
+    var start;
+    for (var i = 0, l = jnodes.length; i < l; i++) {
+        if ((count + jnodes[i].id) > window.nodeCounter) {
+            window.nodeCounter = (count + jnodes[i].id); //update the node counter
+        }
+        nID = ((count + jnodes[i].id) + "_" + window.sessionid);
+        newY = parseInt(jnodes[i].y) + offset;
+        if (oplus) {
+            if (jnodes[i].type == "L") {
+                pID = findParticipantIDText(jnodes[i].text);
+                nodelist[nID] = newNode(nID, jnodes[i].type, jnodes[i].scheme, pID, jnodes[i].text, jnodes[i].x, newY, jnodes[i].visible, 1, jnodes[i].timestamp, false, false);
+                if (jnodes[i].visible) {
+                    DrawNode(nID, jnodes[i].type, jnodes[i].text, jnodes[i].x, newY);
+                    if (text) { hlUpdate(jnodes[i].id, jnodes[i].type, nID, false); }
+                    if (window.showTimestamps && jnodes[i].timestamp && jnodes[i].timestamp != '') { DrawTimestamp(nID, jnodes[i].timestamp, jnodes[i].x, newY); }
                 }
-            } else if (jnodes[i].type == "I" || jnodes[i].type == "RA" || jnodes[i].type == "CA" || jnodes[i].type == "MA" || jnodes[i].type == "EN") {
-                nodelist[nID] = AddNode(jnodes[i].text, jnodes[i].type, jnodes[i].scheme, 0, nID, jnodes[i].x, newY, jnodes[i].visible, 1);
-                if (jnodes[i].type == "I" && text) { hlUpdate((jnodes[i].id - 2), jnodes[i].type, nID, 1); }
+            } else {
+                nodelist[nID] = AddNode(jnodes[i].text, jnodes[i].type, jnodes[i].scheme, 0, nID, jnodes[i].x, newY, jnodes[i].visible, 1, "", false, false);
             }
+        } else if (jnodes[i].type == "I" || jnodes[i].type == "RA" || jnodes[i].type == "CA" || jnodes[i].type == "MA" || jnodes[i].type == "EN") {
+            nodelist[nID] = AddNode(jnodes[i].text, jnodes[i].type, jnodes[i].scheme, 0, nID, jnodes[i].x, newY, jnodes[i].visible, 1, "", false, false);
+            if (jnodes[i].type == "I" && text) { hlUpdate((jnodes[i].id - 2), jnodes[i].type, nID, false); }
         }
-        window.nodeCounter++; //update the node counter
 
-        //load edges
-        var e = json['edges'];
-        var edgeList = {};
-        var from, to, id;
-        for (var i = 0, l = e.length; i < l; i++) {
-            from = ((count + e[i].from.id) + "_" + window.sessionid);
-            to = ((count + e[i].to.id) + "_" + window.sessionid);
-            id = (count + e[i].from.id) + "_" + (count + e[i].to.id);
-            if (from in nodelist && to in nodelist && !(id in edgeList)) { //if both the nodes the edge connects exist and the edge hasn't already been loaded
-                edgeList[id] = newEdge(from, to, e[i].visible, 1);
-                if (edgeList[id].visible) {
-                    DrawEdge(from, to);
-                    UpdateEdge(edgeList[id]);
-                }
+        if (i === 0) { start = findNodeIndex(nID, true); }
+    }
+    window.nodeCounter++; //update the node counter
+    if (text) { postEdit("text", "edit", $('#analysis_text').html(), 1); }
+
+    //load edges
+    var edgeStart = edges.length;
+    console.log(edgeStart);
+    var e = json['edges'];
+    var edgeList = {};
+    var from, to, id;
+    for (var i = 0, l = e.length; i < l; i++) {
+        from = ((count + e[i].from.id) + "_" + window.sessionid);
+        to = ((count + e[i].to.id) + "_" + window.sessionid);
+        id = (count + e[i].from.id) + "_" + (count + e[i].to.id);
+        if (from in nodelist && to in nodelist && !(id in edgeList)) { //if both the nodes the edge connects exist and the edge hasn't already been loaded
+            edgeList[id] = newEdge(from, to, e[i].visible, 1, false);
+            if (edgeList[id].visible) {
+                DrawEdge(from, to);
+                UpdateEdge(edgeList[id]);
             }
         }
-        resolve(true); //the analysis has finished loading
-    });
+    }
+
+    return await postAddEdits(start, edgeStart);
 }
 
 /**
@@ -569,7 +585,7 @@ function loadText(text) {
 
         //display the text in the analysis text div on the left
         setAllText(allTxt);
-        postEdit("text", "edit", allTxt, 1);
+        postEdit("text", "edit", allTxt);
         return true;
     }
     return false;
@@ -606,141 +622,177 @@ function loadUrl(url) {
 }
 
 /**
+ * Adds multiple nodes and edges to the database through two post requests
+ * @param {Number} nodeStart - The index of the nodes array to start adding nodes from
+ * @param {Number} edgeStart - The index of the edges array to start adding edges from
+ * @returns {Promise<Boolean>} - Indicates if the nodes and edges were successfully added (true) or not (false)
+ */
+async function postAddEdits(nodeStart, edgeStart) {
+    try {
+        //add the nodes to the database
+        var nodesContent = [];
+        var nodesToAdd = nodes.slice(nodeStart);
+        for (var i = 0; i < nodesToAdd.length; i++) {
+            nodesContent.push([nodesToAdd[i].nodeID, JSON.stringify(nodesToAdd[i])]);
+        }
+        lastedit = await $.post("helpers/load.php", { analysisID: window.analysisID, sessionid: window.sessionid, type: "node", action: "add", cnt: JSON.stringify(nodesContent), groupID: window.groupID, undone: 1, counter: window.nodeCounter }).then(data => JSON.parse(data).last);
+        // console.log("last edit id: " + lastedit);
+
+        //add the edges to the database
+        var edgesContent = [];
+        var edgesToAdd = edges.slice(edgeStart);
+        for (var i = 0; i < edgesToAdd.length; i++) {
+            window.edgeCounter++;
+            var contentID = window.edgeCounter + "_" + window.sessionid;
+            edgesContent.push([contentID, JSON.stringify(edgesToAdd[i])]);
+        }
+        lastedit = await $.post("helpers/load.php", { analysisID: window.analysisID, sessionid: window.sessionid, type: "edge", action: "add", cnt: JSON.stringify(edgesContent), groupID: window.groupID, undone: 1, counter: window.edgeCounter }).then(data => JSON.parse(data).last);
+        // console.log("last edit id: " + lastedit);
+    } catch (e) { alert("Unable to add to the database"); return false; }
+
+    return true;
+}
+
+/**
  * Loads analysis maps from AIF formatted JSONs
  * @param {Object} json - The json to be loaded in
  * @param {Boolean} oplus - Indicates if the analysis should be loaded in dialogical (true) or non-dialogical (false) mode
  * @param {Number} offset - The offset to be added to the y coordinates
- * @return {Promise} - Indicates if the JSON file was successfully loaded (true) or not (false)
+ * @return {Promise<Boolean>} - Indicates if the JSON file was successfully loaded (true) or not (false)
  */
-function loaddbjson(json, oplus, offset) {
+async function loaddbjson(json, oplus, offset) {
     console.log("loading DB json");
-    return new Promise(resolve => {
-        //load participants
-        var p = json['participants'];
-        if (p != "undefined") {
-            for (var i = 0, l = p.length; i < l; i++) {
-                firstname = p[i].firstname;
-                surname = p[i].surname;
-                addParticipant(firstname, surname)
-            }
+    //load participants
+    var p = json['participants'];
+    if (p != "undefined") {
+        for (var i = 0, l = p.length; i < l; i++) {
+            firstname = p[i].firstname;
+            surname = p[i].surname;
+            addParticipant(firstname, surname)
         }
+    }
 
-        //load nodes
-        var nodelist = {};
-        var xpos = 0;
-        var ypos = 0;
-        var jnodes = json['nodes'];
-        var r1 = /\b\w+:\s\w+\s\w+:/g; //e.g. "annotator: firstname surname:"
-        var r2 = /\b\w+:\s\w+\s\w+\s:/g; //e.g. "annotator: firstname surname :"
-        var participant = null;
-        var pName = [];
-        var nID = "";
-        var count = window.nodeCounter;
+    //load nodes
+    var nodelist = {};
+    var xpos = 0;
+    var ypos = 0;
+    var jnodes = json['nodes'];
+    var r1 = /\b\w+:\s\w+\s\w+:/g; //e.g. "annotator: firstname surname:"
+    var r2 = /\b\w+:\s\w+\s\w+\s:/g; //e.g. "annotator: firstname surname :"
+    var participant = null;
+    var pName = [];
+    var nID = "";
+    var count = window.nodeCounter;
+    var start;
 
-        for (var i = 0, l = jnodes.length; i < l; i++) {
-            node = jnodes[i];
-            xpos = 50 + (i * 10);
-            ypos = 50 + offset;
+    for (var i = 0, l = jnodes.length; i < l; i++) {
+        node = jnodes[i];
+        xpos = 50 + (i * 10);
+        ypos = 50 + offset;
 
-            if ((count + node.nodeID) > window.nodeCounter) {
-                window.nodeCounter = (count + node.nodeID); //update the node counter
-            }
-            nID = ((count + node.nodeID) + "_" + window.sessionid);
+        if ((count + node.nodeID) > window.nodeCounter) {
+            window.nodeCounter = (count + node.nodeID); //update the node counter
+        }
+        nID = ((count + node.nodeID) + "_" + window.sessionid);
 
-            if (node.type == "CA") {
-                nodelist[nID] = AddNode(node.text, node.type, '71', 0, nID, xpos, ypos, true, 1);
-            } else if (node.type == "RA") {
-                nodelist[nID] = AddNode(node.text, node.type, '72', 0, nID, xpos, ypos, true, 1);
-            } else if (node.type == "I") {
-                nodelist[nID] = AddNode(node.text, node.type, null, 0, nID, xpos, ypos, true, 1);
-            } else if (node.type == "MA") {
-                nodelist[nID] = AddNode(node.text, node.type, '144', 0, nID, xpos, ypos, true, 1);
-            } else if (oplus) {
-                if (node.type == "TA") {
-                    nodelist[nID] = AddNode(node.text, node.type, '82', 0, nID, xpos, ypos, true, 1);
-                } else if (node.type == "YA") {
-                    if (node.text == 'Analysing') { //if an analyst node
-                        nodelist[nID] = AddNode(node.text, node.type, '75', 0, nID, 0, 0, false, 1);
-                    } else {
-                        nodelist[nID] = AddNode(node.text, node.type, '168', 0, nID, xpos, ypos, true, 1);
-                    }
-                } else if (node.type == "PA") {
-                    nodelist[nID] = AddNode(node.text, node.type, '161', 0, nID, xpos, ypos, true, 1);
-                } else if (node.type == "L") {
-                    if (r1.test(node.text) || r2.test(node.text)) { //if an analyst node
-                        nodelist[nID] = AddNode(node.text, node.type, null, 0, nID, 0, 0, false, 1);
-                    } else { //to prevent duplicate analyst nodes
-                        pName = getParticipantName(node.text);
-                        participant = addParticipant(pName[0], pName[1]);
-                        nodelist[nID] = newNode(nID, node.type, null, participant.participantID, node.text, xpos, ypos, true, 1);
-                        DrawNode(nID, node.type, node.text, xpos, ypos);
-                    }
+        if (node.type == "CA") {
+            nodelist[nID] = AddNode(node.text, node.type, '71', 0, nID, xpos, ypos, true, 1, "", false, false);
+        } else if (node.type == "RA") {
+            nodelist[nID] = AddNode(node.text, node.type, '72', 0, nID, xpos, ypos, true, 1, "", false, false);
+        } else if (node.type == "I") {
+            nodelist[nID] = AddNode(node.text, node.type, null, 0, nID, xpos, ypos, true, 1, "", false, false);
+        } else if (node.type == "MA") {
+            nodelist[nID] = AddNode(node.text, node.type, '144', 0, nID, xpos, ypos, true, 1, "", false, false);
+        } else if (oplus) {
+            if (node.type == "TA") {
+                nodelist[nID] = AddNode(node.text, node.type, '82', 0, nID, xpos, ypos, true, 1, "", false, false);
+            } else if (node.type == "YA") {
+                if (node.text == 'Analysing') { //if an analyst node
+                    nodelist[nID] = AddNode(node.text, node.type, '75', 0, nID, 0, 0, false, 1, "", false, false);
+                } else {
+                    nodelist[nID] = AddNode(node.text, node.type, '168', 0, nID, xpos, ypos, true, 1, "", false, false);
+                }
+            } else if (node.type == "PA") {
+                nodelist[nID] = AddNode(node.text, node.type, '161', 0, nID, xpos, ypos, true, 1, "", false, false);
+            } else if (node.type == "L") {
+                if (r1.test(node.text) || r2.test(node.text)) { //if an analyst node
+                    nodelist[nID] = AddNode(node.text, node.type, null, 0, nID, 0, 0, false, 1, "", false, false);
+                } else { //to prevent duplicate analyst nodes
+                    pName = getParticipantName(node.text);
+                    participant = addParticipant(pName[0], pName[1]);
+                    nodelist[nID] = newNode(nID, node.type, null, participant.participantID, node.text, xpos, ypos, true, 1, "", false, false);
+                    DrawNode(nID, node.type, node.text, xpos, ypos);
                 }
             }
         }
 
-        //load edges
-        var e = json['edges'];
-        var edgeList = {};
-        var from, to, id, indexF, indexT, visible;
-        for (var i = 0, l = e.length; i < l; i++) {
-            from = ((count + e[i].fromID) + "_" + window.sessionid);
-            to = ((count + e[i].toID) + "_" + window.sessionid);
-            id = (count + e[i].fromID) + "_" + (count + e[i].toID);
-            if (from in nodelist && to in nodelist && !(id in edgeList)) { //if both the nodes the edge connects exist and the edge hasn't already been loaded
-                indexF = findNodeIndex(from);
-                indexT = findNodeIndex(to);
-                visible = nodes[indexF].visible && nodes[indexT].visible ? true : false; //if the edge connects an invisible node it should also be invisible
-                edgeList[id] = newEdge(from, to, visible, 1);
-                if (visible) {
-                    DrawEdge(from, to);
-                    UpdateEdge(edgeList[id]);
+        if (i === 0) { start = findNodeIndex(nID, true); }
+    }
+
+    //load edges
+    var edgeStart = edges.length;
+    var e = json['edges'];
+    var edgeList = {};
+    var from, to, id, indexF, indexT, visible;
+    for (var i = 0, l = e.length; i < l; i++) {
+        from = ((count + e[i].fromID) + "_" + window.sessionid);
+        to = ((count + e[i].toID) + "_" + window.sessionid);
+        id = (count + e[i].fromID) + "_" + (count + e[i].toID);
+        if (from in nodelist && to in nodelist && !(id in edgeList)) { //if both the nodes the edge connects exist and the edge hasn't already been loaded
+            indexF = findNodeIndex(from);
+            indexT = findNodeIndex(to);
+            visible = nodes[indexF].visible && nodes[indexT].visible ? true : false; //if the edge connects an invisible node it should also be invisible
+            edgeList[id] = newEdge(from, to, visible, 1, false);
+            if (visible) {
+                DrawEdge(from, to);
+                UpdateEdge(edgeList[id]);
+            }
+        }
+    }
+
+    //set any scheme fulfillments
+    var sf = json['schemefulfillments'];
+    var newID = "";
+    if (sf != "undefined") {
+        for (var i = 0; i < sf.length; i++) {
+            newID = ((count + sf[i].nodeID) + "_" + window.sessionid);
+            updateNodeScheme(newID, sf[i].schemeID, 1, false);
+        }
+    }
+
+    //set any timestamps
+    var l = json['locutions'];
+    var r3 = /\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}/g;
+    var timestamp, start, tstamp, tsd, index;
+    if (l != "undefined") {
+        for (var i = 0; i < l.length; i++) {
+            test = r3.test(l[i].start);
+            if (test) { //if a valid date time stamp
+                start = l[i].start.split(" ", 2); //split date and time
+                tstamp = new Date(start[0] + "T" + start[1] + ".000Z"); //ISO string
+                tsd = new Date();
+                tsd.setTime(tstamp);
+                timestamp = tsd.toString();
+                newID = ((count + l[i].nodeID) + "_" + window.sessionid);
+                window.groupID++;
+                updateTimestamp(newID, timestamp, 1, false);
+                window.groupID++;
+                if (window.showTimestamps) {
+                    index = findNodeIndex(newID);
+                    DrawTimestamp(nodes[index].nodeID, nodes[index].timestamp, nodes[index].x, nodes[index].y);
                 }
             }
         }
+    }
 
-        //set any scheme fulfillments
-        var sf = json['schemefulfillments'];
-        var newID = "";
-        if (sf != "undefined") {
-            for (var i = 0; i < sf.length; i++) {
-                newID = ((count + sf[i].nodeID) + "_" + window.sessionid);
-                updateNodeScheme(newID, sf[i].schemeID, 1);
-            }
-        }
-
-        //set any timestamps
-        var l = json['locutions'];
-        var r3 = /\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}/g;
-        var timestamp, start, tstamp, tsd, index;
-        if (l != "undefined") {
-            for (var i = 0; i < l.length; i++) {
-                test = r3.test(l[i].start);
-                if (test) { //if a valid date time stamp
-                    start = l[i].start.split(" ", 2); //split date and time
-                    tstamp = new Date(start[0] + "T" + start[1] + ".000Z"); //ISO string
-                    tsd = new Date();
-                    tsd.setTime(tstamp);
-                    timestamp = tsd.toString();
-                    newID = ((count + l[i].nodeID) + "_" + window.sessionid);
-                    updateTimestamp(newID, timestamp, 1);
-                    window.groupID++;
-                    if (window.showTimestamps) {
-                        index = findNodeIndex(newID);
-                        DrawTimestamp(nodes[index].nodeID, nodes[index].timestamp, nodes[index].x, nodes[index].y);
-                    }
-                }
-            }
-        }
-        resolve(true); //the analysis has finished loading
-    });
+    return await postAddEdits(start, edgeStart);
 }
 
 /**
  * Loads an analysis map from the database
  * @param {Number} nodeSetID - The node set ID of the analysis to load
  * @param {Boolean} multi - Indicates if the loaded analysis should replace the current analysis (false) or be added to it (true)
- * @return {Promise} 
+ * @return {Promise<Boolean>} - Indicates if the node set was successfully loaded (true) or not (false)
  */
 function loadfromdb(nodeSetID, multi) {
     console.log("called loadfromdb(" + nodeSetID + ")");
@@ -874,6 +926,7 @@ function loadfromdb(nodeSetID, multi) {
                             tsd = new Date();
                             tsd.setTime(tstamp);
                             timestamp = tsd.toString();
+                            window.groupID++;
                             updateTimestamp(newID, timestamp, 1);
                             window.groupID++;
                             if (window.showTimestamps) {
@@ -890,21 +943,14 @@ function loadfromdb(nodeSetID, multi) {
                     history.pushState(null, null, newurl);
                 }
 
-                // showReplace(true);
                 resolve(true); //the analysis has finished loading
 
             }).fail(function () {
                 console.log("failed to get json db nodeset");
-                var list = document.getElementById('list');
-                var current = multi ? list.innerHTML.slice(4, -5) : "";
-                list.innerHTML = '<ul>' + current + '<span style="font-size:0.8em;color:rgba(224, 46, 66, 1);">Failed to load analysis: Node Set ID <strong>' + nodeSetID + '</strong></span><br>' + '</ul>';
                 resolve(false); //the analysis failed to load
             });
         }).fail(function () {
             console.log("failed to get json layout");
-            var list = document.getElementById('list');
-            var current = multi ? list.innerHTML.slice(4, -5) : "";
-            list.innerHTML = '<ul>' + current + '<span style="font-size:0.8em;color:rgba(224, 46, 66, 1);">Failed to load analysis: Node Set ID <strong>' + nodeSetID + '</strong></span><br>' + '</ul>';
             resolve(false); //the analysis failed to load
         });
     });
@@ -1150,10 +1196,6 @@ function saveAsImage() {
         var x = parseInt(nodes[index].x);
         w = x < 0 ? w - x : w;
 
-        // console.log("x: " + x);
-        // console.log("y: " + y);
-        // console.log("w: " + w);
-        // console.log("h: " + h);
         svg2canvas2image(x, y, w, h);
     }
 }

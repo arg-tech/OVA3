@@ -577,13 +577,14 @@ function remhl(nodeID, undone) {
 // }
 
 /**
- * Finds and updates the span ID of highlighted analysis text
- * @param {String} nodeID 
- * @param {String} type 
- * @param {String} newID 
- * @param {Number} undone 
+ * Finds and updates the span ID of highlighted analysis text for a given node
+ * @param {String} nodeID - The ID to search for
+ * @param {String} type - The type of node
+ * @param {String} newID - The new ID to set the span ID to
+ * @param {Boolean} post - Optional, indicates if the updated text should be added to the database (true) or not (false). The default is true.
+ * @param {Number} undone - Optional, indicates if this edit can be undone (0) or not (1). The default is zero.
  */
-function hlUpdate(nodeID, type, newID, undone) {
+function hlUpdate(nodeID, type, newID, post, undone) {
     var span = document.getElementById("node" + nodeID);
     if (span == null && !dialogicalMode && type == 'I') {
         var id = nodeID.split("_", 2);
@@ -592,7 +593,11 @@ function hlUpdate(nodeID, type, newID, undone) {
     }
     if (span != null) {
         span.id = "node" + newID;
-        postEdit("text", "edit", $('#analysis_text').html(), undone);
+        var post = typeof post !== 'undefined' ? post : true;
+        if (post) {
+            var undone = typeof undone !== 'undefined' ? undone : 0;
+            postEdit("text", "edit", $('#analysis_text').html(), undone);
+        }
     }
 }
 
@@ -647,7 +652,7 @@ function postEdit(type, action, content, undone, contentID) {
 
 /**
  * Handles undoing edits made to an analysis
- * @returns {Promise} - Indicates if the edits were successfully undone (true) or not (false)
+ * @returns {Promise<Boolean>} - Indicates if the edits were successfully undone (true) or not (false)
  */
 async function undo() {
     // console.log("undo called");
@@ -678,7 +683,7 @@ async function undo() {
  * Undoes delete edits
  * @param {*} toUndo - The delete edits to be undone
  * @param {Number} lastEditID - The ID of the last edit made
- * @returns {Promise} - Indicates if the edits were successfully undone (true) or not (false)
+ * @returns {Promise<Boolean>} - Indicates if the edits were successfully undone (true) or not (false)
  */
 function undoDelete(toUndo, lastEditID) {
     // console.log("undoDelete called");
@@ -743,7 +748,7 @@ function undoDelete(toUndo, lastEditID) {
 /**
  * Undoes add edits
  * @param {*} toUndo - The add edits to be undone
- * @returns {Promise} - Indicates if the edits were successfully undone (true) or not (false)
+ * @returns {Promise<Boolean>} - Indicates if the edits were successfully undone (true) or not (false)
  */
 function undoAdd(toUndo) {
     // console.log("undoAdd called");
@@ -774,7 +779,7 @@ function undoAdd(toUndo) {
 /**
  * Undoes edit edits
  * @param {*} toUndo - The edits to be undone
- * @returns {Promise} - Indicates if the edits were successfully undone (true) or not (false)
+ * @returns {Promise<Boolean>} - Indicates if the edits were successfully undone (true) or not (false)
  */
 function undoEdit(toUndo) {
     // console.log("undoEdit called");
@@ -1566,6 +1571,7 @@ function setTimestampStart(startdatestmp) {
                 var str = tsd.toString();
                 document.getElementById("timestamp_label").innerHTML = str;
                 window.editTimestamp = false;
+                window.groupID++;
                 updateTimestamp(mySel.nodeID, str);
                 if (window.showTimestamps) {
                     var edited = editTimestampSVG(mySel.nodeID, str);

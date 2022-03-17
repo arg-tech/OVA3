@@ -471,13 +471,15 @@ function GetTrueCoords(evt) {
  * @param {Number} undone - Optional, indicates if this edit can be undone (0) or not (1). The default is zero.
  * @param {String} timestamp - Optional, the node's timestamp value. The default is ''.
  * @param {Boolean} mark - Optional, indicates if the node should be marked (true) or not (false). The default is false.
+ * @param {Boolean} post - Optional, indicates if the node should be added to the database (true) or not (false). The default is true.
  */
-function AddNode(txt, type, scheme, pid, nid, nx, ny, visible, undone, timestamp, mark) {
+function AddNode(txt, type, scheme, pid, nid, nx, ny, visible, undone, timestamp, mark, post) {
   var isVisible = typeof visible !== 'undefined' ? visible : true;
   var undone = typeof undone !== 'undefined' ? undone : 0;
   var timestamp = typeof timestamp !== 'undefined' ? timestamp : '';
   var mark = typeof mark !== 'undefined' ? mark : false;
-  newNode(nid, type, scheme, pid, txt, nx, ny, isVisible, undone, timestamp, mark); //create the node
+  var post = typeof post !== 'undefined' ? post : true;
+  newNode(nid, type, scheme, pid, txt, nx, ny, isVisible, undone, timestamp, mark, post); //create the node
   if (isVisible) {
     DrawNode(nid, type, txt, nx, ny); //if the node is visible then draw the node on the svg
 
@@ -1109,7 +1111,7 @@ function saveNodeEdit() {
       DrawTimestamp(mySel.nodeID, mySel.timestamp, mySel.x, mySel.y);
     }
     window.groupID++;
-    updateNode(CurrentlyEditing, xCoord, yCoord, true, 0, type, null, ntext, mySel.timestamp);
+    updateNode(CurrentlyEditing, xCoord, yCoord, true, 0, true, type, null, ntext, mySel.timestamp);
     // for (var i = 0; i < edgesToUpdate.length; i++) {
     //   UpdateEdge(edgesToUpdate[i]);
     // }
@@ -1175,7 +1177,7 @@ function saveNodeEdit() {
     document.getElementById(CurrentlyEditing).remove();
     DrawNode(CurrentlyEditing, mySel.type, mySel.text, xCoord, yCoord, mySel.marked);
     window.groupID++;
-    updateNode(CurrentlyEditing, xCoord, yCoord, mySel.visible, 0, mySel.type, mySel.scheme, mySel.text);
+    updateNode(CurrentlyEditing, xCoord, yCoord, mySel.visible, 0, true, mySel.type, mySel.scheme, mySel.text);
 
     $('.dselect').each(function (index) {
       mySel.descriptors[$(this).attr('id')] = $(this).val();
