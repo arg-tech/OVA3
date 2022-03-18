@@ -437,20 +437,25 @@ async function loadOva3Json(json, oplus, offset) {
     //create and draw any connecting edges
     var edgeStart = edges.length;
     var e = json['OVA']['edges'];
-    var from, to, edge;
+    var edgeList = {};
+    var from, to, id, indexF, indexT, visible;
     for (var i = 0, l = e.length; i < l; i++) {
         from = e[i].fromID;
         to = e[i].toID;
-        if (from in nodelist && to in nodelist) { //if both the nodes the edge connects exist
-            edge = newEdge(from, to, e[i].visible, 1, false);
-            if (e[i].visible) {
+        id = from + "_" + to;
+        if (from in nodelist && to in nodelist && !(id in edgeList)) { //if both the nodes the edge connects exist and the edge hasn't already been loaded
+            indexF = findNodeIndex(from, true);
+            indexT = findNodeIndex(to, true);
+            visible = nodes[indexF].visible && nodes[indexT].visible ? true : false; //if the edge connects an invisible node it should also be invisible
+            edgeList[id] = newEdge(from, to, visible, 1, false);
+            if (visible) {
                 DrawEdge(from, to);
-                UpdateEdge(edge);
+                UpdateEdge(edgeList[id]);
             }
         }
     }
 
-    var nodeStart = findNodeIndex(jnodes[0].nodeID);
+    var nodeStart = findNodeIndex(jnodes[0].nodeID, true);
     return await postAddEdits(nodeStart, edgeStart);
 }
 
@@ -516,13 +521,16 @@ async function loadOva2Json(json, oplus, offset) {
     console.log(edgeStart);
     var e = json['edges'];
     var edgeList = {};
-    var from, to, id;
+    var from, to, id, indexF, indexT, visible;
     for (var i = 0, l = e.length; i < l; i++) {
         from = ((count + e[i].from.id) + "_" + window.sessionid);
         to = ((count + e[i].to.id) + "_" + window.sessionid);
         id = (count + e[i].from.id) + "_" + (count + e[i].to.id);
         if (from in nodelist && to in nodelist && !(id in edgeList)) { //if both the nodes the edge connects exist and the edge hasn't already been loaded
-            edgeList[id] = newEdge(from, to, e[i].visible, 1, false);
+            indexF = findNodeIndex(from, true);
+            indexT = findNodeIndex(to, true);
+            visible = nodes[indexF].visible && nodes[indexT].visible ? true : false; //if the edge connects an invisible node it should also be invisible
+            edgeList[id] = newEdge(from, to, visible, 1, false);
             if (edgeList[id].visible) {
                 DrawEdge(from, to);
                 UpdateEdge(edgeList[id]);
@@ -739,8 +747,8 @@ async function loaddbjson(json, oplus, offset) {
         to = ((count + e[i].toID) + "_" + window.sessionid);
         id = (count + e[i].fromID) + "_" + (count + e[i].toID);
         if (from in nodelist && to in nodelist && !(id in edgeList)) { //if both the nodes the edge connects exist and the edge hasn't already been loaded
-            indexF = findNodeIndex(from);
-            indexT = findNodeIndex(to);
+            indexF = findNodeIndex(from, true);
+            indexT = findNodeIndex(to, true);
             visible = nodes[indexF].visible && nodes[indexT].visible ? true : false; //if the edge connects an invisible node it should also be invisible
             edgeList[id] = newEdge(from, to, visible, 1, false);
             if (visible) {
