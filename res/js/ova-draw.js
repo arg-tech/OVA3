@@ -95,6 +95,8 @@ function DrawNode(nid, type, txt, nx, ny, mark) {
         nbox.setAttribute('style', 'fill:#fbeadb;stroke:#e67e22;stroke-width:1;');
     } else if (type == 'EN') {
         nbox.setAttribute('style', 'fill:#dedddc;stroke:#969696;stroke-width:1;');
+    } else if (type == 'PA') {
+            nbox.setAttribute('style', 'fill:#dde1f9;stroke:#5060ba;stroke-width:1;');
     } else {
         nbox.setAttribute('style', 'fill:#ddeef9;stroke:#3498db;stroke-width:1;');
     }

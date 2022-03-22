@@ -163,6 +163,7 @@ function Init(evt) {
     });
     updateAnalysis();
 
+
     $.getJSON("browserint.php?x=ipxx&url=" + window.SSurl, function (json_data) {
         window.ssets = {};
         schemesets = json_data.schemesets;
@@ -180,6 +181,7 @@ function Init(evt) {
             $('#pa_sset').append('<option value="' + schemeset.id + '">' + schemeset.name + '</option>');
         }
 
+    
         //set default scheme sets through config file
         var stgs = window.defaultSettings["schemeset"];
         var keys = Object.getOwnPropertyNames(stgs);
@@ -245,6 +247,7 @@ function Init(evt) {
     setRIATMode();
     eAddModeOnOff();
 }
+
 
 /**
  * Updates the analysis with any edits made by another user when collaborating
@@ -527,6 +530,17 @@ function hlcurrent(nodeID, undone) {
     var span = document.getElementById("node" + nodeID);
     if (dialogicalMode && span == null && mySel.type == 'I') {
         span = document.getElementById("node" + CurrentlyEditing);
+        //centre view on node
+        $("span").dblclick(function(event){
+            event.stopPropagation();
+            index = findNodeIndex(event.currentTarget.id.substring(4), false);
+            console.log(index);
+            //center the view on the node
+            var newx = nodes[index].x - 550;
+            var newy = nodes[index].y  - 400;
+            VB = [newx, newy, 1500, 1500];
+            SVGRoot.setAttribute('viewBox', [newx, newy, 1500, 1500]);
+            });
     }
 
     if (span != null) {
@@ -1246,6 +1260,7 @@ function setdescriptors(schemeID, node) {
  * @returns {Boolean}
  */
 function filterschemes(schemesetID) {
+    // console.log(schemesetID)
     var setschemes = window.ssets[schemesetID];
     var type = document.getElementById("s_type").value;
     switch (type) {
