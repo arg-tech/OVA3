@@ -7,10 +7,11 @@ var images = [];
  * Constructor for a node
  */
 function Node() {
-    this.nodeID = 0;
+    this.nodeID = '';
     this.type = '';
     this.scheme = '';
     this.descriptors = {};
+    this.cqdesc = {};
     this.participantID = 0;
     this.text = '';
     this.x = 0;

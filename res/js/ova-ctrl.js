@@ -1179,14 +1179,18 @@ function saveNodeEdit() {
     window.groupID++;
     updateNode(CurrentlyEditing, xCoord, yCoord, mySel.visible, 0, true, mySel.type, mySel.scheme, mySel.text);
 
+    var selected;
     $('.dselect').each(function (index) {
-      mySel.descriptors[$(this).attr('id')] = $(this).val();
+      selected = $(this).val();
+      if (selected !== "-") { mySel.descriptors[$(this).attr('id')] = selected; }
     });
 
     $('.cqselect').each(function (index) {
-      mySel.cqdesc[$(this).attr('id')] = $(this).val();
+      selected = $(this).val();
+      if (selected !== "-") { mySel.cqdesc[$(this).attr('id')] = selected; }
     });
   }
+
   var edgesToUpdate = findEdges(CurrentlyEditing);
   for (var i = 0; i < edgesToUpdate.length; i++) {
     UpdateEdge(edgesToUpdate[i]);

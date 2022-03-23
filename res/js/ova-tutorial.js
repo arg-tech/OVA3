@@ -218,6 +218,18 @@ function nodeTut() {
     intro.setOptions({
         steps: [
             {
+                element: '#tab_node_options',
+                intro: "Click here to view the options for editing the node.",
+            },
+            {
+                element: '#tab_descriptor_selects',
+                intro: "Click here to view the options for editing the node's descriptors.",
+            },
+            {
+                element: '#tab_cq_selects',
+                intro: "Click here to view the critical questions for this node.",
+            },
+            {
                 element: '#s_type',
                 intro: "Click here to change the node type."
             },
@@ -249,10 +261,10 @@ function nodeTut() {
                 element: '#s_tscheme',
                 intro: 'Select the argumentation scheme which this node corresponds to.',
             },
-            // {
-            //     element: '#descriptor_selects',
-            //     intro: "Assign schematic roles to each of the nodes.",
-            // },
+            {
+                element: '#descriptor_selects',
+                intro: "Assign schematic roles to each of the nodes.",
+            },
             {
                 element: '#cq_selects',
                 intro: "Status of each Critical Question. For additional Critical Questions, click the down arrow to select the corresponding node. Critical Questions associated with undercutters can only be instantiated by undercutters; likewise, premises by premises.",
