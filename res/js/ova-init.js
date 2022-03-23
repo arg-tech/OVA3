@@ -163,7 +163,6 @@ function Init(evt) {
     });
     updateAnalysis();
 
-
     $.getJSON("browserint.php?x=ipxx&url=" + window.SSurl, function (json_data) {
         window.ssets = {};
         schemesets = json_data.schemesets;
@@ -181,7 +180,6 @@ function Init(evt) {
             $('#pa_sset').append('<option value="' + schemeset.id + '">' + schemeset.name + '</option>');
         }
 
-    
         //set default scheme sets through config file
         var stgs = window.defaultSettings["schemeset"];
         var keys = Object.getOwnPropertyNames(stgs);
@@ -531,16 +529,16 @@ function hlcurrent(nodeID, undone) {
     if (dialogicalMode && span == null && mySel.type == 'I') {
         span = document.getElementById("node" + CurrentlyEditing);
         //centre view on node
-        $("span").dblclick(function(event){
+        $("span").dblclick(function (event) {
             event.stopPropagation();
             index = findNodeIndex(event.currentTarget.id.substring(4), false);
             console.log(index);
             //center the view on the node
             var newx = nodes[index].x - 550;
-            var newy = nodes[index].y  - 400;
+            var newy = nodes[index].y - 400;
             VB = [newx, newy, 1500, 1500];
             SVGRoot.setAttribute('viewBox', [newx, newy, 1500, 1500]);
-            });
+        });
     }
 
     if (span != null) {
@@ -1147,9 +1145,6 @@ function addCQ(fesel) {
  * @param {Node} node 
  */
 function setdescriptors(schemeID, node) {
-    document.getElementById("descriptor_selects").style.display = "block";
-    //document.getElementById("node_edit").style.height = "350px";
-
     $.getJSON("browserint.php?x=ipxx&url=" + window.DBurl + "/formedges/scheme/" + schemeID, function (json_data) {
         $('#descriptor_selects').empty();
         $('#descriptor_selects').append('<b>Descriptors</b>');
@@ -1158,7 +1153,6 @@ function setdescriptors(schemeID, node) {
         var nodes_out = getNodesOut(node);
         var adddesc = false;
         var addcq = false;
-        window.editnode = node;
 
         var l = nodes.length;
         var nodeselect = $('<select class="cqselect" onChange="addCQ(this);" style="display:none;"></select>');
@@ -1231,25 +1225,28 @@ function setdescriptors(schemeID, node) {
                         nsclone = ucselect.clone().prop('id', 'cq' + formedge.name);
                     }
                     $('#cq_selects').append(nsclone);
-                    if ('cq' + formedge.name in node.cqdesc && node.cqdesc['cq' + formedge.name] != '-') {
-                        $('#cqi-' + formedge.name).css('color', '#27ae60');
-                        $("#cq" + formedge.name + " option").filter(function () {
-                            return $(this).text() == node.cqdesc['cq' + formedge.name];
-                        }).prop('selected', true);
+                    if (typeof node.cqdesc != "undefined") {
+                        if ('cq' + formedge.name in node.cqdesc && node.cqdesc['cq' + formedge.name] != '-') {
+                            $('#cqi-' + formedge.name).css('color', '#27ae60');
+                            $("#cq" + formedge.name + " option").filter(function () {
+                                return $(this).text() == node.cqdesc['cq' + formedge.name];
+                            }).prop('selected', true);
+                        }
                     }
                 }
             }
         }
 
-        if (!adddesc) {
-            $('#descriptor_selects').hide();
+        if (adddesc) {
+            $('#tab-bar-edits').show();
+            $('#tab_descriptor_selects').show();
         }
 
         if (window.cqmode && addcq) {
             $('#cq_selects').prepend('<b>Critical Questions</b>');
-            $('#cq_selects').show();
+            $('#tab_cq_selects').show();
         } else {
-            $('#cq_selects').hide();
+            $('#tab_cq_selects').hide();
         }
     });
 }
@@ -1556,6 +1553,24 @@ function helpTab(evt, tab) {
     $('#node-help').hide();
     $('#edge-help').hide();
     $('#timestamp-help').hide();
+    $('#' + tab).show();
+    return false;
+}
+
+/**
+ * Handles changing tabs on the edit node modal
+ * @param {String} tab - The tab to change to
+ * @returns {Boolean}
+ */
+function editsTab(tab) {
+    var tabs = document.getElementsByClassName("nEdit");
+    for (var i = 0; i < tabs.length; i++) {
+        tabs[i].classList.remove("selected");
+    }
+    document.getElementById("tab_" + tab).classList.add("selected");
+    $('#node_options').hide();
+    $('#descriptor_selects').hide();
+    $('#cq_selects').hide();
     $('#' + tab).show();
     return false;
 }

@@ -234,7 +234,8 @@ if (isset($_COOKIE['ovauser'])) {
     </a>
     <a onClick="openModal('#modal-help');" class="xicon">
       <div class="icn" style="background-position: -378px 50%;"></div>
-      <!-- <div style="float:left; width:42px; height:48px; margin: 0px 5px;">?</div> -->  <!-- TODO: update icon -->
+      <!-- <div style="float:left; width:42px; height:48px; margin: 0px 5px;">?</div> -->
+      <!-- TODO: update icon -->
       <div class="txt" id="help">Helpsheet</div>
     </a>
   </div>
@@ -633,55 +634,63 @@ if (isset($_COOKIE['ovauser'])) {
       <a href="javascript:void(0);" class="helpbtn" onclick="nodeTut(); return false;">?</a>
     </div>
     <div class="modal-content">
+      <div id="tab-bar-edits" class="tab-bar">
+        <a href="#" id="tab_node_options" class="btn tab nEdit selected" onclick="editsTab('node_options')">Node</a>
+        <a href="#" id="tab_descriptor_selects" class="btn tab nEdit" onclick="editsTab('descriptor_selects')">Descriptors</a>
+        <a href="#" id="tab_cq_selects" class="btn tab nEdit" onclick="editsTab('cq_selects')" style="display:none;">Critical Questions</a>
+      </div>
+
       <form id="node_edit_form" class="fstyle" style="width: 78%;">
-        <p id="timestamp_info">Timestamp:
-          <label id="timestamp_label"></label>
-          <a href="#" id="edit_timestamp_btn" class="btn" onClick="FormOpen = false;window.editTimestamp=true;openModal('#modal-timestamps');return false;" style="padding:0.6em;">Edit Timestamp</a>
-        </p>
+        <div id="node_options">
+          <p id="timestamp_info">Timestamp:
+            <label id="timestamp_label"></label>
+            <a href="#" id="edit_timestamp_btn" class="btn" onClick="FormOpen = false;window.editTimestamp=true;openModal('#modal-timestamps');return false;" style="padding:0.6em;">Edit Timestamp</a>
+          </p>
 
-        <label for="n_text" id="n_text_label">Text</label>
-        <textarea id="n_text" name="n_text"></textarea>
+          <label for="n_text" id="n_text_label">Text</label>
+          <textarea id="n_text" name="n_text"></textarea>
 
-        <label for="s_type" id="s_type_label">Type</label>
-        <select id="s_type" onChange="showschemes(this.value);">
-          <option value="RA">RA</option>
-          <option value="CA">CA</option>
-        </select>
+          <label for="s_type" id="s_type_label">Type</label>
+          <select id="s_type" onChange="showschemes(this.value);">
+            <option value="RA">RA</option>
+            <option value="CA">CA</option>
+          </select>
 
-        <label for="s_sset" id="s_sset_label">Scheme Set</label>
-        <select id="s_sset" onChange="filterschemes(this.value);">
-          <option value="0">All Schemes</option>
-        </select>
+          <label for="s_sset" id="s_sset_label">Scheme Set</label>
+          <select id="s_sset" onChange="filterschemes(this.value);">
+            <option value="0">All Schemes</option>
+          </select>
 
-        <label for="s_cscheme" id="s_cscheme_label">Scheme</label>
-        <select id="s_cscheme" onChange="setdescriptors(this.value);">
-          <option value="0">-</option>
-        </select>
+          <label for="s_cscheme" id="s_cscheme_label">Scheme</label>
+          <select id="s_cscheme" onChange="setdescriptors(this.value);">
+            <option value="0">-</option>
+          </select>
 
-        <label for="s_ischeme" id="s_ischeme_label">Scheme</label>
-        <select id="s_ischeme" onChange="setdescriptors(this.value, mySel);">
-          <option value="0">-</option>
-        </select>
+          <label for="s_ischeme" id="s_ischeme_label">Scheme</label>
+          <select id="s_ischeme" onChange="setdescriptors(this.value, mySel);">
+            <option value="0">-</option>
+          </select>
 
-        <label for="s_lscheme" id="s_lscheme_label">Scheme</label>
-        <select id="s_lscheme" onChange="setdescriptors(this.value, mySel);">
-          <option value="0">-</option>
-        </select>
+          <label for="s_lscheme" id="s_lscheme_label">Scheme</label>
+          <select id="s_lscheme" onChange="setdescriptors(this.value, mySel);">
+            <option value="0">-</option>
+          </select>
 
-        <label for="s_mscheme" id="s_mscheme_label">Scheme</label>
-        <select id="s_mscheme" onChange="setdescriptors(this.value, mySel);">
-          <option value="0">-</option>
-        </select>
+          <label for="s_mscheme" id="s_mscheme_label">Scheme</label>
+          <select id="s_mscheme" onChange="setdescriptors(this.value, mySel);">
+            <option value="0">-</option>
+          </select>
 
-        <label for="s_pscheme" id="s_pscheme_label">Scheme</label>
-        <select id="s_pscheme" onChange="setdescriptors(this.value, mySel);">
-          <option value="0">-</option>
-        </select>
+          <label for="s_pscheme" id="s_pscheme_label">Scheme</label>
+          <select id="s_pscheme" onChange="setdescriptors(this.value, mySel);">
+            <option value="0">-</option>
+          </select>
 
-        <label for="s_tscheme" id="s_tscheme_label">Scheme</label>
-        <select id="s_tscheme" onChange="setdescriptors(this.value, mySel);">
-          <option value="0">-</option>
-        </select>
+          <label for="s_tscheme" id="s_tscheme_label">Scheme</label>
+          <select id="s_tscheme" onChange="setdescriptors(this.value, mySel);">
+            <option value="0">-</option>
+          </select>
+        </div>
 
         <div id="descriptor_selects" style="display:none;"></div>
 
@@ -691,10 +700,12 @@ if (isset($_COOKIE['ovauser'])) {
     </div>
     <ul class="btnlist">
       <li><a href="#" id="mark_node_btn" onClick="closeModal('#node_edit');FormOpen=false;window.groupID++;markNode(mySel, true);return false;">
-          <div class="btnicn">&nbsp;</div> Mark Node <!-- TODO: add icon -->
+          <div class="btnicn">&nbsp;</div> Mark Node
+          <!-- TODO: add icon -->
         </a></li>
       <li><a href="#" id="unmark_node_btn" style="display:none;" onClick="closeModal('#node_edit');FormOpen=false;window.groupID++;markNode(mySel, false);return false;">
-          <div class="btnicn">&nbsp;</div> Unmark Node <!-- TODO: add icon -->
+          <div class="btnicn">&nbsp;</div> Unmark Node
+          <!-- TODO: add icon -->
         </a></li>
       <li><a href="#" id="del_node_btn" onClick="closeModal('#node_edit'); FormOpen = false; window.groupID ++; deleteNode(mySel); return false;" class="bgred">
           <div class="btnicn" style="background-image: url('res/img/icon-delnode.png');">&nbsp;</div> Delete Node
