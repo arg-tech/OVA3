@@ -188,8 +188,10 @@ function Init(evt) {
                 var found = schemesets.find(s => s.name == stgs[keys[i]]);
                 if (typeof found !== "undefined") {
                     var selSet = document.getElementById(keys[i].toLowerCase() + '_sset');
-                    selSet.value = found.id;
-                    setDefaultSchemeset(keys[i], found.id);
+                    if (selSet !== null && typeof selSet !== "undefined") {
+                        selSet.value = found.id;
+                        setDefaultSchemeset(keys[i], found.id);
+                    }
                 }
             }
         }

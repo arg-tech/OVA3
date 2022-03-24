@@ -358,16 +358,16 @@ function loadTut() {
                 intro: "Enter the AIFdb node set ID of the analysis to load."
             },
             {
-                element: '#loadBtn',
-                intro: "Click here to start loading the selected analysis."
-            },
-            {
                 element: '#c_loading',
                 intro: "The selected analysis is currently loading."
             },
             {
                 element: '#list',
                 intro: "Details what analysis has been loaded or has failed to load."
+            },
+            {
+                element: '#loadBtn',
+                intro: "Click here to start loading the selected analysis."
             }
         ].filter(function (obj) { return $(obj.element).length && $(obj.element).is(':visible'); }),
         showStepNumbers: false

@@ -229,7 +229,7 @@ function loadFileBtn(evt) {
 function loadBtn() {
     var radioValue = $("input[name='loadFrom']:checked").val();
     if (radioValue == "corpus" || radioValue == "nSetID") {
-        $('#f_loadfile').hide();
+        $('#f_loadfile').hide(); $('#loadBtn').hide();
         var current = "";
         var multi = false;
         var cLoading = document.getElementById('loading_name');
@@ -250,10 +250,10 @@ function loadBtn() {
                 current = list.innerHTML.slice(4, -5);
                 list.innerHTML = '<ul>' + current + '<span style="font-size:0.8em;">Loaded corpus: <strong>' + cName + '</strong></span><br>' + '</ul>';
                 showReplace(true);
-                $('#c_loading').hide(); $('#f_loadfile').show();
+                $('#c_loading').hide(); $('#f_loadfile').show(); $('#loadBtn').show();
             }).catch(e => {
                 console.log(e);
-                $('#c_loading').hide(); $('#f_loadfile').show();
+                $('#c_loading').hide(); $('#f_loadfile').show(); $('#loadBtn').show();
                 list.innerHTML = '<ul>' + current + '<span style="font-size:0.8em;color:rgba(224, 46, 66, 1);">Failed to load corpus: <strong>' + cName + '</strong></span><br>' + '</ul>';
             });
         }
@@ -270,7 +270,7 @@ function loadBtn() {
                     } else {
                         list.innerHTML = '<ul>' + current + '<span style="font-size:0.8em;color:rgba(224, 46, 66, 1);">Failed to load analysis: Node Set ID <strong>' + nSetID + '</strong></span><br>' + '</ul>';
                     }
-                    $('#c_loading').hide(); $('#f_loadfile').show();
+                    $('#c_loading').hide(); $('#f_loadfile').show(); $('#loadBtn').show();
                 });
             } else { $('#f_loadfile').show(); }
         }
