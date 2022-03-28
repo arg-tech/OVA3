@@ -81,27 +81,23 @@ function genjson() {
     };
     json['AIF'] = aif;
 
-    var ova = {
-        "firstname": window.afirstname,
-        "surname": window.asurname,
-        "nodes": nodesLayout,
-        "edges": edgesLayout
-    };
-    json['OVA'] = ova;
-
     var url = getUrlVars()["url"];
     var txt = '';
-
     if (url == 'local') {
         txt = getAllText();
         url = '';
     }
 
-    var text = {
-        "txt": txt,
-        "url": url
+    json['text'] = txt;
+
+    var ova = {
+        "firstname": window.afirstname,
+        "surname": window.asurname,
+        "url": url,
+        "nodes": nodesLayout,
+        "edges": edgesLayout
     };
-    json['text'] = text;
+    json['OVA'] = ova;
 
     jstr = JSON.stringify(json);
 
@@ -380,11 +376,19 @@ async function loadOva3Json(json, oplus, offset) {
         }
     }
 
+    //load the analysis text or URL
     var text = false;
-    if (json['text']['txt'] != "") {
-        text = loadText(json['text']['txt']);
+    if (json['text'].hasOwnProperty("txt")) {
+        if (json['text']['txt'] != "") { text = loadText(json['text']['txt']); }
     }
-    if (!text && json['text'].hasOwnProperty("url")) {
+    else if (json['text'] != "") {
+        text = loadText(json['text']);
+    }
+
+    if (!text && json['OVA'].hasOwnProperty("url")) {
+        loadUrl(json['OVA']['url']);
+    }
+    else if (!text && json['text'].hasOwnProperty("url")) {
         loadUrl(json['text']['url']);
     }
 

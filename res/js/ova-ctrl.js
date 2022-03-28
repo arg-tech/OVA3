@@ -341,7 +341,7 @@ function Grab(evt) {
  */
 function getTimestamp() {
   var iframe = document.getElementById('analysis_text');
-  if (iframe == null) { //if url loaded into LHS
+  if (iframe !== null && iframe.getAttribute("style") === "display:none;") { //if url loaded into LHS
     tstamp = Math.round(new Date(window.startdatestmp).getTime());
     var tsd = new Date();
     tsd.setTime(tstamp);
