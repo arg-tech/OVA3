@@ -115,13 +115,12 @@ if (isset($_COOKIE['ovauser'])) {
             <input type="radio" id="selectImage" name="saveImage" value="select">
             <label for="selectImage" class="radio_label">Select part of the analysis</label>
           </div>
-          <a href="#" id="confirmBtn" class="btn" onclick="saveAsImage();">Confirm</a>
-          <a href="#" id="downloadBtn" class="btn" onclick="closeModal('#modal-save');$('#downloadBtn').hide();$('#imageOptions').hide();$('#saveOptions').show();" style="display:none;">Download Image</a>
-          <br><br>
         </form>
       </div>
       <div class="modal-btns">
-        <a class="cancel" href="#" onClick="closeModal('#modal-save');$('#downloadBtn').hide();$('#imageOptions').hide();$('#saveOptions').show();">&#10008; Cancel</a>
+        <a class="save" href="#" id="confirmBtn" onclick="saveAsImage();" style="display:none;">&#x2714; Confirm</a>
+        <a class="save" href="#" id="downloadBtn" onclick="closeModal('#modal-save');$('#downloadBtn').hide();$('#imageOptions').hide();$('#confirmBtn').hide();$('#saveOptions').show();" style="display:none;">&#x2714; Download Image</a>
+        <a class="cancel" href="#" onClick="closeModal('#modal-save');$('#downloadBtn').hide();$('#imageOptions').hide();$('#confirmBtn').hide();$('#saveOptions').show();">&#10008; Cancel</a>
       </div>
     </div>
   </div>
@@ -162,23 +161,21 @@ if (isset($_COOKIE['ovauser'])) {
           <div id="load-file" onclick="checkRadio('loadFromFile'); $('#nsetID_valid').hide();" style="margin-top:8%;">
             <input type="radio" id="loadFromFile" name="loadFrom" value="file" checked>
             <label for="n_file" id="n_file_label" class="radio_label">Select a file to load:</label>
-            <input type="file" id="n_file" name="files[]" multiple style="width:70%;" />
+            <input type="file" id="n_file" name="files[]" multiple style="width:96%;" />
           </div>
           <div id="load-corpus" onclick="checkRadio('loadFromCorpus'); $('#nsetID_valid').hide();" style="margin-top:4%;">
             <input type="radio" id="loadFromCorpus" name="loadFrom" value="corpus">
             <label for="corpus_sel" id="corpus_sel_label" class="radio_label">Select a corpus to load:</label>
-            <select id="corpus_sel" style="width:72%;">
+            <select id="corpus_sel" style="width:98%;">
               <option value="0" selected>--No corpus selected--</option>
             </select>
           </div>
-          <div id="load-nodeset" onclick="checkRadio('loadFromNSet'); $('#nsetID_valid').show();" style="margin-top:4%;">
+          <div id="load-nodeset" onclick="checkRadio('loadFromNSet'); $('#nsetID_valid').show();" style="margin:4% 0;">
             <input type="radio" id="loadFromNSet" name="loadFrom" value="nSetID">
             <label for="nsetID" id="nsetID_label" class="radio_label">Enter the node set ID of an analysis to load:</label>
-            <input type="number" id="nsetID" style="width:70%;text-align:center;" placeholder="Enter a node set ID, e.g. 12345" min="1" max="999999999" />
+            <input type="number" id="nsetID" style="width:96%;text-align:center;" placeholder="Enter a node set ID, e.g. 12345" min="1" max="999999999" />
             <span id="nsetID_valid" class="validity" style="display:none;"></span>
           </div>
-          <a href="#" id="loadBtn" class="btn" onClick="loadBtn()">Load Analysis</a>
-          <br><br>
         </form>
         <div id="c_loading" style="display:none;">
           <p id="loading_name">Loading</p>
@@ -188,6 +185,7 @@ if (isset($_COOKIE['ovauser'])) {
         <output id="list" style="display:none;"></output>
       </div>
       <div class="modal-btns">
+        <a class="save" href="#" id="loadBtn" onClick="loadBtn()">&#x2714; Load Analysis</a>
         <a class="cancel" href="#" onClick="closeModal('#modal-load');">&#10008; Close</a>
       </div>
     </div>
@@ -285,14 +283,15 @@ if (isset($_COOKIE['ovauser'])) {
           <input type="checkbox" id="mark_node_check" name="mark_node_check" style="display:inline;" checked>
           <label for="mark_node_check" style="display:inline;font-size:0.9em;">Mark the new edges after adding them</label>
           <p id="edge_message" style="font-size:0.9em;color:rgba(224, 46, 66, 1);"></p>
-          <a href="#" id="edgeBtn" class="btn" onClick="addLongEdge(); return false;">Add Edges</a>
-          <br><br>
         <?php } else { ?>
       </div>
     <?php } ?>
     </form>
     </div>
     <div class="modal-btns">
+      <?php if ($pro) { ?>
+        <a class="save" href="#" id="edgeBtn" onClick="addLongEdge(); return false;">&#x2714; Add Edges</a>
+      <?php } ?>
       <a class="cancel" href="#" onClick="cancelLongEdge(); return false;">&#10008; Cancel</a>
     </div>
   </div>
@@ -314,7 +313,7 @@ if (isset($_COOKIE['ovauser'])) {
         </form>
       </div>
       <div class="modal-btns">
-        <a class="save" href="#" onClick="closeModal('#modal-username'); dialogicalModeOnOff(); return false;">Continue</a>
+        <a class="save" href="#" onClick="closeModal('#modal-username'); dialogicalModeOnOff(); return false;">&#x2714; Continue</a>
         <a class="cancel" href="#" onClick="closeModal('#modal-username'); return false;">&#10008; Cancel</a>
       </div>
     </div>
@@ -514,7 +513,7 @@ if (isset($_COOKIE['ovauser'])) {
           </a></li>
       </ul>
       <div class="modal-btns">
-        <a class="save" href="#" onClick="setTimestampStart(); return false;">Continue</a>
+        <a class="save" href="#" onClick="setTimestampStart(); return false;">&#x2714; Save</a>
         <a class="cancel" href="#" onClick="$('#delTimestampBtn').hide();closeModal('#modal-timestamps'); FormOpen = false; return false;">&#10008; Cancel</a>
       </div>
     </div>
@@ -619,7 +618,7 @@ if (isset($_COOKIE['ovauser'])) {
       </div>
       <div id="socialusers" style="display:none;"></div>
       <div class="modal-btns">
-        <a class="save" href="#" onClick="addlclick(false); $('#modal-shade').hide(); FormOpen = false;  return false;">Add</a>
+        <a class="save" href="#" onClick="addlclick(false); $('#modal-shade').hide(); FormOpen = false;  return false;">&#x2714; Add</a>
         <a class="cancel" href="#" onClick="addlcancel(); $('#modal-shade').hide();FormOpen = false; return false;">&#10008; Cancel</a>
       </div>
     </div>
