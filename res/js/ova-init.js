@@ -233,6 +233,17 @@ function Init(evt) {
         postEdit("text", "edit", $('#analysis_text').html());
     });
 
+    $("#analysis_text").on("dblclick", "span", function (event) {
+        event.stopPropagation();
+        index = findNodeIndex(event.currentTarget.id.substring(4), false);
+        // console.log("index: " + index);
+        //center the view on the node
+        var newx = nodes[index].x - 550;
+        var newy = nodes[index].y - 400;
+        VB = [newx, newy, 1500, 1500];
+        SVGRoot.setAttribute('viewBox', [newx, newy, 1500, 1500]);
+    });
+
     //set up the load analysis modal select with a list of the corpora
     $.getJSON("helpers/corporalist.php", function (data) {
         var sel = document.getElementById("corpus_sel");
@@ -531,30 +542,16 @@ function hlcurrent(nodeID, undone) {
     var span = document.getElementById("node" + nodeID);
     if (dialogicalMode && span == null && mySel.type == 'I') {
         span = document.getElementById("node" + CurrentlyEditing);
-        //centre view on node
-        $("span").dblclick(function (event) {
-            event.stopPropagation();
-            index = findNodeIndex(event.currentTarget.id.substring(4), false);
-            console.log(index);
-            //center the view on the node
-            var newx = nodes[index].x - 550;
-            var newy = nodes[index].y - 400;
-            VB = [newx, newy, 1500, 1500];
-            SVGRoot.setAttribute('viewBox', [newx, newy, 1500, 1500]);
-        });
     }
 
     if (span != null) {
         span.id = "node" + nodeID;
         span.className = "highlighted";
-        if (nodeID != 'none') {
-            span.className = "highlighted";
-            $('#analysis_text').animate({
-                scrollTop: $('#analysis_text').scrollTop() + $("#node" + nodeID).offset().top - 200
-            }, 1000);
-            var undone = typeof undone !== 'undefined' ? undone : 0;
-            postEdit("text", "edit", $('#analysis_text').html(), undone);
-        }
+        $('#analysis_text').animate({
+            scrollTop: $('#analysis_text').scrollTop() + $("#node" + nodeID).offset().top - 200
+        }, 1000);
+        var undone = typeof undone !== 'undefined' ? undone : 0;
+        postEdit("text", "edit", $('#analysis_text').html(), undone);
     }
 }
 
