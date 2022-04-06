@@ -175,6 +175,7 @@ function editpopup(node) {
     $('#s_sset').hide(); $('#s_sset_label').hide();
     $('#timestamp_info').hide(); $('#edit_timestamp_btn').hide(); $('#delTimestampBtn').hide();
     $('#unmark_node_btn').hide(); $('#mark_node_btn').show();
+    editsTab('node_options'); $('#tab-bar-edits').hide();
 
     var marked = document.getElementById(node.nodeID).classList.contains('hl');
     if (marked) {
@@ -182,8 +183,6 @@ function editpopup(node) {
     }
 
     if (node.type == 'I' || node.type == 'L' || node.type == 'EN') {
-        editsTab('node_options'); $('#tab-bar-edits').hide();
-
         $('#n_text').show(); $('#n_text_label').show();
         if (node.type == 'L' && window.addTimestamps) {
             if (node.timestamp != "") {
@@ -240,11 +239,8 @@ function editpopup(node) {
         $('#s_type_label').show();
         $('#s_type').val(node.type);
 
-        if (node.scheme == 0) {
-            //$('#node_edit').height(180);
-        } else {
+        if (node.scheme != null && node.scheme != '0') {
             setdescriptors(node.scheme, node);
-            //$('#node_edit').height(350);
         }
 
         if (node.type == 'RA') {
