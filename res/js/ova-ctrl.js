@@ -267,7 +267,7 @@ function Grab(evt) {
       Focus(evt, targetElement);
     }
     else if (editMode) {
-      var index = findNodeIndex(targetElement.id)
+      var index = findNodeIndex(targetElement.id);
       mySel = nodes[index];
       CurrentlyEditing = targetElement.id;
       editpopup(nodes[index]);
@@ -296,7 +296,7 @@ function Grab(evt) {
       window.nodeCounter++;
       newNodeID = (window.nodeCounter + "_" + window.sessionid);
       AddNode("", 'EN', null, 0, newNodeID, TrueCoords.x, TrueCoords.y - 10);
-      var index = findNodeIndex(newNodeID)
+      var index = findNodeIndex(newNodeID, true);
       mySel = nodes[index];
       CurrentlyEditing = newNodeID;
       editpopup(nodes[index]);
@@ -319,7 +319,7 @@ function Grab(evt) {
         }
         if (window.rIATMode) {
           AddNode(t, 'I', null, 0, newNodeID, TrueCoords.x, TrueCoords.y - 10, true, 0, timestamp);
-          var nIndex = findNodeIndex(newNodeID)
+          var nIndex = findNodeIndex(newNodeID, true);
           mySel = nodes[nIndex];
           CurrentlyEditing = mySel.nodeID;
           $('#locution_add').show();
@@ -327,7 +327,7 @@ function Grab(evt) {
           FormOpen = true;
         } else {
           AddNode(t, 'I', null, 0, newNodeID, TrueCoords.x, TrueCoords.y - 10, true, 0, timestamp);
-          var nIndex = findNodeIndex(newNodeID)
+          var nIndex = findNodeIndex(newNodeID, true);
           mySel = nodes[nIndex];
         }
       }
@@ -380,6 +380,7 @@ function getTimestamp() {
     }
 
     // TEXT BEFORE/AFTER AND PERCENT THROUGH
+    if (typeof matchx == 'undefined') { return false; }
     turnbefore = striphtml(htmlContent.substring(beforei, matchx.index));
     turnafter = striphtml(htmlContent.substring(matchx.index + matchx[0].length, afteri));
     pcthru = turnbefore.length / (turnbefore.length + turnafter.length);
@@ -858,7 +859,7 @@ function Drop(evt) {
         } else if (nodeFrom == "L" && nodeTo == "L") {
           AddNode('Default Transition', 'TA', '82', 0, newNodeID, nx, ny);
         } else if (nodeFrom == "TA" && nodeTo == "MA") {
-          AddNode('Default Illocuting', 'YA', '168', 0, newNodeID, nx, ny);
+          AddNode('Restating', 'YA', '101', 0, newNodeID, nx, ny);
         } else if (nodeFrom == "TA" && nodeTo == "RA") {
           AddNode('Arguing', 'YA', '80', 0, newNodeID, nx, ny);
         } else if (nodeFrom == "TA" && nodeTo == "CA") {
