@@ -859,7 +859,7 @@ function Drop(evt) {
         } else if (nodeFrom == "L" && nodeTo == "L") {
           AddNode('Default Transition', 'TA', '82', 0, newNodeID, nx, ny);
         } else if (nodeFrom == "TA" && nodeTo == "MA") {
-          AddNode('Default Illocuting', 'YA', '168', 0, newNodeID, nx, ny);
+          AddNode('Restating', 'YA', '101', 0, newNodeID, nx, ny);
         } else if (nodeFrom == "TA" && nodeTo == "RA") {
           AddNode('Arguing', 'YA', '80', 0, newNodeID, nx, ny);
         } else if (nodeFrom == "TA" && nodeTo == "CA") {
