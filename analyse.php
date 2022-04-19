@@ -551,6 +551,8 @@ if (isset($_COOKIE['ovauser'])) {
           <div id="node-help" style="display:none;">
             <strong>Adding Nodes to the Canvas</strong>
             <p style="color: #444; font-size: 12px;">To add a node, enter the text you would like to use into the left hand side panel. Then, highlight the text and click on the canvas, the highlighted text will be added to a node.</p>
+            <strong>Adding Nodes for Interposed Material</strong>
+            <p style="color: #444; font-size: 12px;">First, highlight the text including the interposed material and click on the canvas, the highlighted text will be added to a node. The interposed material can then be removed by editing the node's text. Then highlight only the interposed material within the previously highlighted text and click on the canvas, the interposed text will be added to a separate node.</p>
             <strong>Editing Nodes</strong>
             <p style="color: #444; font-size: 12px;">To access the edit node menu, either right click on a node and select 'Edit Node' from the menu or ctrl+click on the node you would like to edit.</p>
           </div>
