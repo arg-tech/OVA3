@@ -1100,22 +1100,17 @@ function findNodeIndex(nodeID, last) {
  * Handles updating nodes to save any edits made from the edit node form
  */
 function saveNodeEdit() {
-  var type = mySel.type;
   var xCoord = mySel.x;
   var yCoord = mySel.y;
   if (mySel.type == 'I' || mySel.type == 'L' || mySel.type == 'EN') {
     var ntext = document.getElementById("n_text").value;
-    //var edgesToUpdate = findEdges(CurrentlyEditing);
     document.getElementById(CurrentlyEditing).remove();
-    DrawNode(CurrentlyEditing, type, ntext, xCoord, yCoord, mySel.marked);
+    DrawNode(CurrentlyEditing, mySel.type, ntext, xCoord, yCoord, mySel.marked);
     if (mySel.timestamp != "" && window.showTimestamps) {
       DrawTimestamp(mySel.nodeID, mySel.timestamp, mySel.x, mySel.y);
     }
     window.groupID++;
-    updateNode(CurrentlyEditing, xCoord, yCoord, true, 0, true, type, null, ntext, mySel.timestamp);
-    // for (var i = 0; i < edgesToUpdate.length; i++) {
-    //   UpdateEdge(edgesToUpdate[i]);
-    // }
+    updateNode(CurrentlyEditing, xCoord, yCoord, true, 0, true, mySel.type, null, ntext, mySel.timestamp);
   } else {
     mySel.type = document.getElementById("s_type").value;
     if (mySel.type == 'RA') {
@@ -1175,21 +1170,41 @@ function saveNodeEdit() {
     } else {
       mySel.text = mySel.type
     }
+
     document.getElementById(CurrentlyEditing).remove();
-    DrawNode(CurrentlyEditing, mySel.type, mySel.text, xCoord, yCoord, mySel.marked);
-    window.groupID++;
-    updateNode(CurrentlyEditing, xCoord, yCoord, mySel.visible, 0, true, mySel.type, mySel.scheme, mySel.text);
+    DrawNode(CurrentlyEditing, mySel.type, mySel.text, xCoord, yCoord, mySel.marked); //update the SVG
 
-    var selected;
-    $('.dselect').each(function (index) {
-      selected = $(this).val();
-      if (selected !== "-") { mySel.descriptors[$(this).attr('id')] = selected; }
+    //create the descriptors if needed
+    var descriptors = [];
+    $('.dselect').each(function () {
+      var dName = $(this).attr('id').slice(2);
+      var text = $(this).val();
+      if (text != "-") {
+        var d = newDescriptor($(this).attr('name'), dName, text);
+        descriptors.push(d);
+      }
+      $("#l_" + dName).remove();
+      $("#s_" + dName).remove();
     });
 
+    mySel.descriptors = descriptors; //update the node's descriptors
+
+    //create the cq descriptors if needed
+    var cqs = [];
     $('.cqselect').each(function (index) {
-      selected = $(this).val();
-      if (selected !== "-") { mySel.cqdesc[$(this).attr('id')] = selected; }
+      var dName = $(this).attr('id').slice(2);
+      var text = $(this).val();
+      if (text != "-") {
+        var d = newDescriptor($(this).attr('name'), dName, text);
+        cqs.push(d);
+      }
     });
+
+    mySel.cqdesc = cqs; //update the node's cq descriptors
+    console.log(mySel);
+
+    window.groupID++;
+    updateNode(CurrentlyEditing, xCoord, yCoord);
   }
 
   var edgesToUpdate = findEdges(CurrentlyEditing);
