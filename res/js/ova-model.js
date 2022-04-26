@@ -9,9 +9,9 @@ var images = [];
 function Node() {
     this.nodeID = '';
     this.type = '';
-    this.scheme = '';
-    this.descriptors = {};
-    this.cqdesc = {};
+    this.scheme = null;
+    this.descriptors = [];
+    this.cqdesc = [];
     this.participantID = 0;
     this.text = '';
     this.x = 0;
@@ -279,4 +279,65 @@ function getParticipantName(text) {
     var str = text.slice(0, index);
     var name = str.split(" ");
     return name;
+}
+
+/**
+ * Constructor for a descriptor
+ */
+function Descriptor() {
+    this.descriptorID = '';
+    this.type = '';
+    this.selectedID = '';
+}
+
+/**
+ * Creates a descriptor with the given parameter values
+ * @param {String} descriptorID - A string to identify the descriptor by
+ * @param {String} type - The type of descriptor
+ * @param {String} selectedID - The node ID of the selected text for the descriptor
+ * @returns {Descriptor} d - The new descriptor that was created
+ */
+function newDescriptor(descriptorID, type, selectedID) {
+    var d = new Descriptor;
+    d.descriptorID = descriptorID;
+    d.type = type;
+    d.selectedID = selectedID;
+    return d;
+}
+
+/**
+ * Adds a descriptor to a node
+ * @param {String} nodeID - The ID of the node to add the descriptor to
+ * @param {Boolean} cq - Indicates if the descriptor is a critical question (true) or not (false)
+ * @param {String} descriptorID - The ID of the descriptor to add
+ * @param {String} scheme - The type of descriptor to add
+ * @param {String} selectedID - The node ID of the selected text for the descriptor to add
+ * @param {Number} undone - Optional, indicates if this edit can be undone (0) or not (1). The default is zero.
+ * @param {Boolean} post - Optional, indicates if the updated node should be added to the database (true) or not (false). The default is true.
+ */
+function addNodeDescriptor(nodeID, cq, descriptorID, type, selectedID, undone, post) {
+    var index = findNodeIndex(nodeID);
+    if (index > -1) { //if the node exists
+        var n = nodes[index];
+        var d = newDescriptor(descriptorID, type, selectedID);
+        if (cq) { n.cqdesc.push(d); }
+        else { n.descriptors.push(d); }
+        console.log(n);
+        var post = typeof post !== 'undefined' ? post : true;
+        if (post) { postEdit("node", "edit", n, undone, n.nodeID); }
+    }
+}
+
+/**
+ * Finds a node's descriptor's selected ID based on its type
+ * @param {Node} node - The node to search the descriptors for
+ * @param {String} type - The type of descriptor to search for
+ * @returns {Number} - The selected ID found or zero if no selected ID was found
+ */
+function findSelectedID(node, type) {
+    var found = node.descriptors.find(d => d.type == type);
+    if (typeof found !== "undefined") {
+        return found.selectedID;
+    }
+    return 0;
 }

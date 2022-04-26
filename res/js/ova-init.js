@@ -357,6 +357,8 @@ function updateAddNode(node) {
     n.visible = node.visible;
     n.timestamp = node.timestamp;
     n.marked = node.marked;
+    n.descriptors = node.descriptors;
+    n.cqdesc = node.cqdesc;
     nodes.push(n);
 
     if (n.visible) {
@@ -406,6 +408,8 @@ function updateEditNode(node) {
         n.timestamp = node.timestamp;
         n.marked = node.marked;
         n.visible = node.visible;
+        n.descriptors = node.descriptors;
+        n.cqdesc = node.cqdesc;
 
         if (n.visible) { //update svg if the node has been drawn on it
             if (document.getElementById(node.nodeID)) {
@@ -1127,25 +1131,30 @@ function setAllText(txt) {
 }
 
 /**
- * Critical questions
- * @param {*} fesel 
+ * Changes the colour for a critical question to show if it's been answered (green) or not (red)
+ * @param {*} fesel - The select element to check if it's been answered
  */
 function addCQ(fesel) {
     fename = fesel.id.substring(2);
     if (fesel.selectedIndex == 0) {
-        $('#cqi-' + fename).css('color', '#c0392b');
+        $('#cqi-' + fename).css('color', '#c0392b'); //red
     } else {
-        $('#cqi-' + fename).css('color', '#27ae60');
+        $('#cqi-' + fename).css('color', '#27ae60'); //green
     }
 }
 
 /**
- * Descriptors
- * @param {String} schemeID 
- * @param {Node} node 
+ * Sets the descriptors (including critical questions) for a given scheme and node
+ * @param {String} schemeID - The scheme to set descriptor options for
+ * @param {Node} node - The node to set descriptor options for
  */
 function setdescriptors(schemeID, node) {
     $.getJSON("browserint.php?x=ipxx&url=" + window.DBurl + "/formedges/scheme/" + schemeID, function (json_data) {
+        console.log("----------");
+        console.log("scheme: " + schemeID);
+        console.log(json_data);
+
+        //clears and sets the defaults
         $('#descriptor_selects').empty();
         $('#descriptor_selects').append('<b>Descriptors</b>');
         $('#cq_selects').empty();
@@ -1154,7 +1163,7 @@ function setdescriptors(schemeID, node) {
         var adddesc = false;
         var addcq = false;
 
-        var l = nodes.length;
+        //sets up the selects and options for the critical questions
         var nodeselect = $('<select class="cqselect" onChange="addCQ(this);" style="display:none;"></select>');
         nodeselect.append('<option value="-">Click to select</option>');
         var ucselect = $('<select class="cqselect" onChange="addCQ(this);" style="display:none;"></select>');
@@ -1162,13 +1171,13 @@ function setdescriptors(schemeID, node) {
         for (index in nodes_in) {
             nin = nodes_in[index];
             if (nin.type == 'I' || nin.type == 'L') {
-                nodeselect.append('<option value="' + nin.text + '">' + nin.text + '</option>');
+                nodeselect.append('<option value="' + nin.nodeID + '">' + nin.text + '</option>');
             } else {
                 nodes_in_in = getNodesIn(nin);
                 for (inindex in nodes_in_in) {
                     ninin = nodes_in_in[inindex];
                     if (ninin.type == 'I') {
-                        ucselect.append('<option value="' + ninin.text + '">' + ninin.text + '</option>');
+                        ucselect.append('<option value="' + ninin.nodeID + '">' + ninin.text + '</option>');
                     }
                 }
             }
@@ -1179,11 +1188,20 @@ function setdescriptors(schemeID, node) {
             formedge = json_data.formedges[index];
 
             if (formedge.Explicit == 1) {
-                selected = node.descriptors['s_' + formedge.name];
-                var newselect = $('<select id="s_' + formedge.name + '" class="dselect" onChange="addCQ(this);"></select>');
+                var selected = 0;
+                var selectedIDs = [];
+                if (node.scheme == schemeID) { //if the scheme hasn't been changed
+                    selected = findSelectedID(node, formedge.name); //find the previously selected ID
+                    if (selected == 0) { //if no selected ID was found
+                        selectedIDs = node.descriptors.filter(d => d.descriptorID == formedge.descriptorID && d.type == null)
+                            .map(d => d.selectedID);  //check if previously selected with type set to null
+                    }
+                }
+
+                var newselect = $('<select id="s_' + formedge.name + '" class="dselect" onChange="addCQ(this);" name="' + formedge.descriptorID + '"></select>');
                 newselect.append('<option value="-">Click to select</option>');
 
-                if (formedge.CQ != null) {
+                if (formedge.CQ != null) { //adds the critical question if it exists
                     addcq = true;
                     $('#cq_selects').prepend('<div style="clear:both"><strong>Q: </strong>' + formedge.CQ + ' <div style="color:#c0392b; float:right; font-size:22px; margin-top:-8px;" id="cqi-' + formedge.name + '">&#x25CF;</div></div>');
                 }
@@ -1192,46 +1210,57 @@ function setdescriptors(schemeID, node) {
                     for (index in nodes_in) {
                         nin = nodes_in[index];
                         if (nin.type == 'I' || nin.type == 'L') {
-                            if (nin.text == selected) {
+                            if (nin.nodeID == selected || selectedIDs.includes(nin.nodeID)) { //reselect the option that was previously set
                                 $('#cqi-' + formedge.name).css('color', '#27ae60');
-                                newselect.append('<option value="' + nin.text + '" selected="selected">' + nin.text + '</option>');
-                            } else {
-                                newselect.append('<option value="' + nin.text + '">' + nin.text + '</option>');
+                                newselect.append('<option value="' + nin.nodeID + '" selected="selected">' + nin.text + '</option>');
+                            } else { //add a new option
+                                newselect.append('<option value="' + nin.nodeID + '">' + nin.text + '</option>');
                             }
                         }
                     }
                 } else if (formedge.formEdgeTypeID in { '2': '', '7': '', '10': '', '12': '', '14': '', '17': '', '21': '' }) {
                     for (index in nodes_out) {
                         nut = nodes_out[index];
-                        if (nut.text == selected) {
-                            newselect.append('<option value="' + nut.text + '" selected="selected">' + nut.text + '</option>');
-                        } else {
-                            newselect.append('<option value="' + nut.text + '">' + nut.text + '</option>');
+                        if (nut.nodeID == selected || selectedIDs.includes(nut.nodeID)) { //reselect the option that was previously set
+                            newselect.append('<option value="' + nut.nodeID + '" selected="selected">' + nut.text + '</option>');
+                        } else { //add a new option
+                            newselect.append('<option value="' + nut.nodeID + '">' + nut.text + '</option>');
                         }
                     }
                 } else {
                     continue;
                 }
 
-                $('#descriptor_selects').append('<label id="">' + formedge.name + '</label>');
+                //add the newly created select and its label to the descriptors section
+                $('#descriptor_selects').append('<label id="l_' + formedge.name + '" for="s_' + formedge.name + '">' + formedge.name + '</label>');
                 $('#descriptor_selects').append(newselect);
             } else {
-                if (formedge.CQ != null) {
+                if (formedge.CQ != null) { //adds the critical question if it exists
                     addcq = true;
                     $('#cq_selects').append('<div style="clear:both"><strong>Q: </strong>' + formedge.CQ + ' <div style="color:#c0392b; float:right; font-size:22px; margin-top:-8px;" id="cqi-' + formedge.name + '"><a href="" onClick="$(\'#cq' + formedge.name + '\').toggle();$(this).html($(this).text()==\'&#x25BE;\'?\'&#x25B4;\':\'&#x25BE;\');return false;" style="color:#444;text-decoration:none;font-size:16px;">&#x25BE;</a>&#x25CF;</div></div>');
                     if (formedge.descriptorID != null) {
-                        nsclone = nodeselect.clone().prop('id', 'cq' + formedge.name);
+                        nsclone = nodeselect.clone().prop({ id: 'cq' + formedge.name, name: formedge.descriptorID });
                     } else {
-                        nsclone = ucselect.clone().prop('id', 'cq' + formedge.name);
+                        nsclone = ucselect.clone().prop({ id: 'cq' + formedge.name, name: formedge.descriptorID });
                     }
                     $('#cq_selects').append(nsclone);
-                    if (typeof node.cqdesc != "undefined") {
-                        if ('cq' + formedge.name in node.cqdesc && node.cqdesc['cq' + formedge.name] != '-') {
-                            $('#cqi-' + formedge.name).css('color', '#27ae60');
-                            $("#cq" + formedge.name + " option").filter(function () {
-                                return $(this).text() == node.cqdesc['cq' + formedge.name];
-                            }).prop('selected', true);
-                        }
+                }
+            }
+        }
+
+        //reselect the cq options that were previously set
+        if (node.scheme == schemeID) { //if the scheme hasn't been changed
+            for (cq of node.cqdesc) {
+                if (cq.type != null) {
+                    $('#cqi-' + cq.type).css('color', '#27ae60');
+                    $('#cq' + cq.type).val(cq.selectedID);
+                }
+                else if (cq.descriptorID != null) { //reselect the cq options that were previously set with null type
+                    if ($("select[name='" + cq.descriptorID + "'] option[value='" + cq.selectedID + "']").length > 0) {
+                        var id = $("select[name='" + cq.descriptorID + "']")[0].id;
+                        console.log(id);
+                        $("#" + id).val(cq.selectedID);
+                        $('#cqi-' + id.slice(2)).css('color', '#27ae60');
                     }
                 }
             }

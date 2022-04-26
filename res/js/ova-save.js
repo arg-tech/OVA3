@@ -7,6 +7,7 @@ function genjson() {
     var jnodes = [];
     var jschemeFulfillments = [];
     var jdescriptorFulfillments = [];
+    var jcqFulfillments = [];
     var jlocutions = [];
     var jedges = [];
     var nodesLayout = [];
@@ -34,12 +35,25 @@ function genjson() {
             jschemeFulfillments.push(jschemeFulfillment);
         }
 
-        // if (nodes[i].descriptor != null) {
-        //     var jdescriptorFulfillment = {};
-        //     jdescriptorFulfillment['nodeID'] = nodes[i].nodeID;
-        //     jdescriptorFulfillment['descriptorID'] = nodes[i].descriptor;
-        //     jdescriptorFulfillments.push(jdescriptorFulfillment);
-        // }
+        for (d of nodes[i].descriptors) {
+            if (d.descriptorID !== null && d.descriptorID !== "null") {
+                var jdescriptorFulfillment = {};
+                jdescriptorFulfillment['nodeID'] = nodes[i].nodeID;
+                jdescriptorFulfillment['descriptorID'] = d.descriptorID;
+                jdescriptorFulfillment['selectedID'] = d.selectedID;
+                jdescriptorFulfillments.push(jdescriptorFulfillment);
+            }
+        }
+
+        for (cq of nodes[i].cqdesc) {
+            if (cq.descriptorID !== null && cq.descriptorID !== "null") {
+                var jcqFulfillment = {};
+                jcqFulfillment['nodeID'] = nodes[i].nodeID;
+                jcqFulfillment['descriptorID'] = cq.descriptorID;
+                jcqFulfillment['selectedID'] = cq.selectedID;
+                jcqFulfillments.push(jcqFulfillment);
+            }
+        }
 
         if (nodes[i].participantID != 0) {
             var jlocution = {};
@@ -75,9 +89,10 @@ function genjson() {
         "nodes": jnodes,
         "edges": jedges,
         "schemefulfillments": jschemeFulfillments,
-        "descriptorfulfillments": jdescriptorFulfillments,
         "participants": participants,
-        "locutions": jlocutions
+        "locutions": jlocutions,
+        "descriptorfulfillments": jdescriptorFulfillments,
+        "cqdescriptorfulfillments": jcqFulfillments
     };
     json['AIF'] = aif;
 
@@ -421,6 +436,22 @@ async function loadOva3Json(json, oplus, offset) {
         }
     }
 
+    //set any descriptor fulfillments
+    var df = json['AIF']['descriptorfulfillments'];
+    if (df != undefined) {
+        for (var i = 0; i < df.length; i++) {
+            addNodeDescriptor(df[i].nodeID, false, df[i].descriptorID, null, df[i].selectedID, 1, false);
+        }
+    }
+
+    //set any cq fulfillments
+    var cqf = json['AIF']['cqdescriptorfulfillments'];
+    if (cqf != undefined) {
+        for (var i = 0; i < cqf.length; i++) {
+            addNodeDescriptor(cqf[i].nodeID, true, cqf[i].descriptorID, null, cqf[i].selectedID, 1, false);
+        }
+    }
+
     //set the layout of the nodes and draw them on the svg
     var n = json['OVA']['nodes'];
     var newY = 0;
@@ -676,7 +707,7 @@ async function loaddbjson(json, oplus, offset) {
     console.log("loading DB json");
     //load participants
     var p = json['participants'];
-    if (p != "undefined") {
+    if (p != undefined) {
         for (var i = 0, l = p.length; i < l; i++) {
             firstname = p[i].firstname;
             surname = p[i].surname;
@@ -765,10 +796,31 @@ async function loaddbjson(json, oplus, offset) {
     //set any scheme fulfillments
     var sf = json['schemefulfillments'];
     var newID = "";
-    if (sf != "undefined") {
+    if (sf != undefined) {
         for (var i = 0; i < sf.length; i++) {
             newID = ((count + sf[i].nodeID) + "_" + window.sessionid);
             updateNodeScheme(newID, sf[i].schemeID, 1, false);
+        }
+    }
+
+    //set any descriptor fulfillments
+    var df = json['descriptorfulfillments'];
+    var newSelected = "";
+    if (df != undefined) {
+        for (var i = 0; i < df.length; i++) {
+            newID = ((count + df[i].nodeID) + "_" + window.sessionid);
+            newSelected = ((count + df[i].selectedID) + "_" + window.sessionid);
+            addNodeDescriptor(newID, false, df[i].descriptorID, null, newSelected, 1, false);
+        }
+    }
+
+    //set any cq fulfillments
+    var cqf = json['cqdescriptorfulfillments'];
+    if (cqf != undefined) {
+        for (var i = 0; i < cqf.length; i++) {
+            newID = ((count + cqf[i].nodeID) + "_" + window.sessionid);
+            newSelected = ((count + cqf[i].selectedID) + "_" + window.sessionid);
+            addNodeDescriptor(newID, true, cqf[i].descriptorID, null, newSelected, 1, false);
         }
     }
 
@@ -776,7 +828,7 @@ async function loaddbjson(json, oplus, offset) {
     var l = json['locutions'];
     var r3 = /\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}/g;
     var timestamp, start, tstamp, tsd, index;
-    if (l != "undefined") {
+    if (l != undefined) {
         for (var i = 0; i < l.length; i++) {
             test = r3.test(l[i].start);
             if (test) { //if a valid date time stamp
@@ -982,6 +1034,8 @@ function save2db() {
     var jschemefulfillments = [];
     var jlocutions = [];
     var jedges = [];
+    // var jdescriptorFulfillments = [];
+    // var jcqFulfillments = [];
 
     for (var i = 0, l = nodes.length; i < l; i++) {
         var jnode = {};
@@ -1004,6 +1058,26 @@ function save2db() {
             if (nodes[i].timestamp !== "") { jlocution['start'] = Math.round(new Date(nodes[i].timestamp).getTime() / 1000); }
             jlocutions.push(jlocution);
         }
+
+        // for (d of nodes[i].descriptors) {
+        //     if (d.descriptorID !== null && d.descriptorID !== "null") {
+        //         var jdescriptorFulfillment = {};
+        //         jdescriptorFulfillment['nodeID'] = nodes[i].nodeID;
+        //         jdescriptorFulfillment['descriptorID'] = d.descriptorID;
+        //         jdescriptorFulfillment['selectedID'] = d.selectedID;
+        //         jdescriptorFulfillments.push(jdescriptorFulfillment);
+        //     }
+        // }
+
+        // for (cq of nodes[i].cqdesc) {
+        //     if (cq.descriptorID !== null && cq.descriptorID !== "null") {
+        //         var jcqFulfillment = {};
+        //         jcqFulfillment['nodeID'] = nodes[i].nodeID;
+        //         jcqFulfillment['descriptorID'] = cq.descriptorID;
+        //         jcqFulfillment['selectedID'] = cq.selectedID;
+        //         jcqFulfillments.push(jcqFulfillment);
+        //     }
+        // }
     }
 
     for (var i = 0, l = edges.length; i < l; i++) {
@@ -1019,6 +1093,8 @@ function save2db() {
     json['schemefulfillments'] = jschemefulfillments;
     json['participants'] = participants;
     json['locutions'] = jlocutions;
+    // json['descriptorfulfillments'] = jdescriptorFulfillments;
+    // json['cqdescriptorfulfillments'] = jcqFulfillments;
 
     jstring = JSON.stringify(json);
     console.log(jstring);
@@ -1103,8 +1179,6 @@ function add2corpus(addnsID) {
     var cID = $("#s_corpus").val();
     var cName = $("#s_corpus option:selected").text();
     $.get("helpers/corporapost.php?nsID=" + addnsID + "&cID=" + cID, function (data) {
-        // $('#modal-save2db').hide();
-        // $('#modal-shade').hide();
         $('#m_content').hide();
         $('#m_confirm').html("<p style='font-weight:700'>Added to " + cName + " corpus.</p>" + "<p style='font-weight:700'>Node Set ID: " + addnsID + "</p>");
         $('#m_confirm').show();
