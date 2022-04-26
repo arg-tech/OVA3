@@ -16,7 +16,7 @@ var CurrentlyEditing = 0;
 var editMode = false;
 var FormOpen = false;
 var dragEdges = [];
-var count = 0;
+var count = 0; //
 var users = [];
 
 var mSel = [];
@@ -484,9 +484,7 @@ function getSelText() {
     var iframe = document.getElementById('left1');
     var analysisTxt = document.getElementById('analysis_text');
     var txt = "";
-    count = count + 1;
-    // if (iframe.nodeName.toLowerCase() == 'div') {
-    // console.log(document.getElementById('analysis_text'));
+    count = count + 1; //
     if (analysisTxt != null && analysisTxt.getAttribute("style") !== "display:none;") {
         // if (iframe.getElementsByTagName('div')) {
         // console.log("in if");
@@ -535,7 +533,7 @@ function getSelText() {
 /**
  * Highlights the analysis text matching the node's text
  * @param {String} nodeID - The ID of the node to match text with
- * @param {Number} undone - 
+ * @param {Number} undone - Optional, indicates if this edit can be undone (0) or not (1). The default is zero.
  */
 function hlcurrent(nodeID, undone) {
     // console.log('hlcurrent called');
@@ -561,36 +559,64 @@ function hlcurrent(nodeID, undone) {
 
 /**
  * Removes the highlight from the analysis text matching the node's text
- * @param {String} nodeID 
- * @param {Number} undone 
+ * @param {String} nodeID - The ID of the node to remove the highlight for
+ * @param {Number} undone - Optional, indicates if this edit can be undone (0) or not (1). The default is zero.
  */
 function remhl(nodeID, undone) {
     var span = document.getElementById("node" + nodeID);
-    if (span != null) {
+    if (span != null) { //if a span exists for this node
         var text = span.textContent || span.innerText;
         var node = document.createTextNode(text);
+        var cSpans = span.children;
+        // console.log(cSpans);
         span.parentNode.replaceChild(node, span);
+        for (var i = 0; i < cSpans.length; i++) {
+            var id = cSpans[i].id.substring(4);
+            // console.log("found child span: " + id);
+            var index = findNodeIndex(id);
+            if (index > -1) { //if the node still exists
+                hlText(nodes[index]); //re-highlight the analysis text for the node
+            }
+        }
         var undone = typeof undone !== 'undefined' ? undone : 0;
         postEdit("text", "edit", $('#analysis_text').html(), undone);
     }
 }
 
-// /**
-//  * Highlights the analysis text matching a given node
-//  * @param {Node} node 
-//  */
-// function hlText(node) {
-//     if (userSelection != "") {
-//         range = getRangeObject(userSelection);
-//         txt = userSelection.toString();
+/**
+ * Highlights the analysis text matching a given node's text
+ * @param {Node} node - The node to highlight the analysis text for
+ * @returns {Boolean} - Indicates if the analysis text was successfully highlighted (true) or not (false)
+ */
+function hlText(node) {
+    // console.log("hlText called");
+    var toHl = node.text;
+    if (node.type == 'L') { //remove the participants name from the text if needed
+        var text = node.text.split(": ");
+        toHl = text[1];
+    }
 
-//         var span = document.createElement("span");
-//         span.className = "highlighted";
-//         span.id = "node" + node.nodeID;
-//         range.surroundContents(span);
-//         postEdit("text", "edit", $('#analysis_text').html(), 1);
-//     }
-// }
+    const cNodes = document.getElementById('analysis_text').childNodes;
+    for (var c of cNodes) {
+        if (c.nodeType === 3) { //if the child node is of type text
+            var start = c.nodeValue.indexOf(toHl);
+            // console.log(c); console.log(start);
+            if (start > -1) { //if found in that text node
+                const range = document.createRange();
+                range.setStart(c, start);
+                range.setEnd(c, start + toHl.length);
+
+                var span = document.createElement("span");
+                span.className = "highlighted";
+                span.id = "node" + node.nodeID;
+                range.surroundContents(span);
+                postEdit("text", "edit", $('#analysis_text').html(), 1);
+                return true;
+            }
+        }
+    }
+    return false;
+}
 
 /**
  * Finds and updates the span ID of highlighted analysis text for a given node
@@ -618,12 +644,12 @@ function hlUpdate(nodeID, type, newID, post, undone) {
 }
 
 /**
- * Posts an edit
- * @param {String} type 
- * @param {String} action 
- * @param {*} content 
- * @param {Number} undone 
- * @param {String} contentID 
+ * Adds an edit to the database through a post request
+ * @param {String} type - Whether the edit is for a node, edge or the text
+ * @param {String} action - Whether the edit is to add, delete or edit
+ * @param {*} content - The object content to add to the database
+ * @param {Number} undone - Optional, indicates if this edit can be undone (0) or not (1). The default is zero.
+ * @param {String} contentID - Optional, the ID for this content
  */
 function postEdit(type, action, content, undone, contentID) {
     //set default values
@@ -711,7 +737,7 @@ function undoDelete(toUndo, lastEditID) {
         if (toUndo[0].editID == lastEditID) { //if undoing the last change to an analysis
             isLastEdit = true;
         } else {
-            //confirmUndo = confirm("Are you sure you want to undo? \nTo undo you will need to reselect the text as further changes have been made to this analysis. \nIf you select to cancel, this edit will be skipped if you undo again.");
+            // confirmUndo = confirm("Are you sure you want to undo?\nFurther changes have been made to this analysis by another analyst.\nIf you select to cancel, this edit will be skipped if you undo again.");
             confirmUndo = false;
             alert("Cannot undo as further changes have been made to this analysis by another analyst. This edit will be skipped if you select undo again.");
             resolve(false); //the edits cannot be undone
@@ -739,9 +765,12 @@ function undoDelete(toUndo, lastEditID) {
                         updateAddNode(toAdd); //readd node
                         postEdit("node", "add", toAdd, 1, toAdd.nodeID);
                         //add highlight to text on LHS when adding locutions in dialogical mode or when adding I nodes when not in dialogical mode
+                        // if (!isLastEdit) {
                         if ((dialogicalMode && toAdd.type == 'L' && toAdd.visible) || (!dialogicalMode && toAdd.type == 'I')) {
+                            // highlight = true; //test
                             toHighlight = toAdd;
                         }
+                        // }
                     } else if (toUndo[i].type == 'edge') { //if toAdd is an edge
                         // console.log("____________");
                         // console.log("adding edge: " + toAdd.fromID + "->" + toAdd.toID);
@@ -751,10 +780,11 @@ function undoDelete(toUndo, lastEditID) {
                 }
             }
 
-            if (highlight) {
-                //get user to highlight text on LHS for toHighlight node
-                // console.log("need to reselect text");
-                //hlText(toHighlight);
+            // console.log("highlight: " + highlight);
+            if (highlight) { //re-highlights the analysis text on LHS if needed
+                console.log("need to re-highlight text");
+                // var hled = hlText(toHighlight);
+                // if (!hled) { alert("Cannot re-highlight the analysis text for this node."); }
             }
         }
         resolve(true); //the edits have been undone
@@ -898,7 +928,7 @@ function addLocution(node) {
 
     if (window.addTimestamps) {
         AddNode(ltext, 'L', null, participantID, newLNodeID, (parseInt(n.x) + 450), parseInt(yCoord), true, 0, node.timestamp);
-        var index = findNodeIndex(newLNodeID);
+        var index = findNodeIndex(newLNodeID, true);
         delTimestamp(node.nodeID, 1); //delete the timestamp from the i node
         window.groupID++;
         if (window.showTimestamps) {
@@ -926,9 +956,9 @@ function addLocution(node) {
 }
 
 /**
- * Gets a range object
- * @param {*} selectionObject 
- * @returns 
+ * Gets or creates the range around a selection
+ * @param {*} selectionObject - The selection to get the range for
+ * @returns The range around the selection
  */
 function getRangeObject(selectionObject) {
     // console.log(selectionObject.getRangeAt);
@@ -1033,7 +1063,7 @@ function addlcancel() {
     $('#locution_add').hide();
 
 
-    var index = findNodeIndex(CurrentlyEditing);
+    var index = findNodeIndex(CurrentlyEditing, true);
     var toDelete = true;
 
     for (var i = 0; i < edges.length; i++) {
@@ -1783,7 +1813,7 @@ function addLongEdge() {
 
         //marks the new TA and its connected edges/nodes if needed
         if (mark) {
-            var index = findNodeIndex(newNodeID)
+            var index = findNodeIndex(newNodeID, true);
             var n = nodes[index];
             window.groupID++;
             markNode(n, true);
