@@ -274,7 +274,7 @@ function Grab(evt) {
       editMode = false;
       return;
     } else if (window.longEdge[1]) {
-      //
+      //do nothing
     }
     else {
       DragTarget = targetElement;
@@ -330,6 +330,7 @@ function Grab(evt) {
           var nIndex = findNodeIndex(newNodeID, true);
           mySel = nodes[nIndex];
         }
+        clearSelText();
       }
     }
   }
