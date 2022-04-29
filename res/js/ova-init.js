@@ -242,6 +242,7 @@ function Init(evt) {
         var newy = nodes[index].y - 400;
         VB = [newx, newy, 1500, 1500];
         SVGRoot.setAttribute('viewBox', [newx, newy, 1500, 1500]);
+        clearSelText();
     });
 
     //set up the load analysis modal select with a list of the corpora
@@ -529,6 +530,27 @@ function getSelText() {
     return txt;
 }
 
+/**
+ * Clears the selected text from the 'left1' element
+ */
+function clearSelText() {
+    var analysisTxt = document.getElementById('analysis_text');
+    var iframe = document.getElementById('extside');
+    if (analysisTxt != null && analysisTxt.getAttribute("style") !== "display:none;") { //if using text on LHS
+        if (window.getSelection) { window.getSelection().removeAllRanges(); }
+        else if (document.selection) { document.selection.empty(); }
+    } else { //if using pdf or url on LHS
+        // var innerDoc = iframe.contentDocument || iframe.contentWindow.document;
+        var sel = window.getSelection ? iframe.contentWindow.getSelection() : document.selection;
+        if (sel) {
+            if (sel.removeAllRanges) {
+                sel.removeAllRanges();
+            } else if (sel.empty) {
+                sel.empty();
+            }
+        }
+    }
+}
 
 /**
  * Highlights the analysis text matching the node's text
