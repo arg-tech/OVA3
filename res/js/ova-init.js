@@ -580,14 +580,18 @@ function remhl(nodeID, undone) {
 }
 
 /**
- * Highlights the analysis text matching a given node's text
+ * Highlights a section of the analysis text matching a given node's text. 
+ * Note: it will only be able to find and highlight exact matches in the analysis text that haven't already been highlighted,
+ *  i.e. if the node's text has been reconstructed or contains interposed material 
+ * it will not be able to find and highlight the analysis text. 
+ * If the analysis text contains repetitions exactly matching the node's text, the first unhighlighted repetition will then be highlighted.
  * @param {Node} node - The node to highlight the analysis text for
  * @returns {Boolean} - Indicates if the analysis text was successfully highlighted (true) or not (false)
  */
 function hlText(node) {
     // console.log("hlText called");
     var toHl = node.text;
-    if (node.type == 'L') { //remove the participants name from the text if needed
+    if (node.type == 'L') { //if a locution, remove the participant's name from the node's text
         var text = node.text.split(": ");
         toHl = text[1];
     }
@@ -733,15 +737,17 @@ function undoDelete(toUndo, lastEditID) {
         if (toUndo[0].editID == lastEditID) { //if undoing the last change to an analysis
             isLastEdit = true;
         } else {
-            // confirmUndo = confirm("Are you sure you want to undo?\nFurther changes have been made to this analysis by another analyst.\nIf you select to cancel, this edit will be skipped if you undo again.");
-            confirmUndo = false;
-            alert("Cannot undo as further changes have been made to this analysis by another analyst. This edit will be skipped if you select undo again.");
-            resolve(false); //the edits cannot be undone
+            confirmUndo = confirm("Are you sure you want to undo?\nFurther changes have been made to this analysis by another analyst.\nIf you select to cancel, this edit will be skipped if you undo again.");
+            // //block undoing deleting a node if not the last edit
+            // confirmUndo = false;
+            // alert("Cannot undo as further changes have been made to this analysis by another analyst. This edit will be skipped if you select undo again.");
+            // resolve(false); //the edits cannot be undone
         }
 
         if (confirmUndo) {
             var highlight = false;
-            var toHighlight = null;
+            var toHighlight = [];
+            var url = getUrlVars()["url"];
 
             for (i = 0; i < toUndo.length; i++) {
                 if (toUndo[i].type == 'text') {
@@ -750,8 +756,6 @@ function undoDelete(toUndo, lastEditID) {
                         // console.log("overwriting text on LHS");
                         updateEditText(toUndo[i].content); //overwrite the text on LHS to readd any highlighting that was removed
                         postEdit("text", "edit", $('#analysis_text').html(), 1);
-                    } else {
-                        highlight = true;
                     }
                 } else {
                     toAdd = JSON.parse(toUndo[i].content);
@@ -760,13 +764,15 @@ function undoDelete(toUndo, lastEditID) {
                         // console.log("adding node: " + toAdd.nodeID);
                         updateAddNode(toAdd); //readd node
                         postEdit("node", "add", toAdd, 1, toAdd.nodeID);
-                        //add highlight to text on LHS when adding locutions in dialogical mode or when adding I nodes when not in dialogical mode
-                        // if (!isLastEdit) {
-                        if ((dialogicalMode && toAdd.type == 'L' && toAdd.visible) || (!dialogicalMode && toAdd.type == 'I')) {
-                            // highlight = true; //test
-                            toHighlight = toAdd;
+
+                        //add highlight to analysis text on LHS when adding locutions in dialogical mode or when adding I nodes in non-dialogical mode
+                        //Note: if in dialogical mode with rapid IAT off and the highlight span linked to the I node, it won't be re-highlighted
+                        if (!isLastEdit && url == 'local') {
+                            if ((dialogicalMode && toAdd.type == 'L' && toAdd.visible) || (!dialogicalMode && toAdd.type == 'I')) {
+                                highlight = true;
+                                toHighlight.push(toAdd);
+                            }
                         }
-                        // }
                     } else if (toUndo[i].type == 'edge') { //if toAdd is an edge
                         // console.log("____________");
                         // console.log("adding edge: " + toAdd.fromID + "->" + toAdd.toID);
@@ -776,11 +782,13 @@ function undoDelete(toUndo, lastEditID) {
                 }
             }
 
-            // console.log("highlight: " + highlight);
             if (highlight) { //re-highlights the analysis text on LHS if needed
-                console.log("need to re-highlight text");
-                // var hled = hlText(toHighlight);
-                // if (!hled) { alert("Cannot re-highlight the analysis text for this node."); }
+                for (var i = 0; i < toHighlight.length; i++) {
+                    console.log("need to re-highlight text for: " + toHighlight[i].nodeID);
+                    if (!hlText(toHighlight[i])) { //mostly if in non-dialogical mode and the I node's text had been reconstructed
+                        alert("Cannot re-highlight the analysis text for this node.\nPlease delete the node and manually re-add it instead by highlighting the text and clicking on the canvas.");
+                    }
+                }
             }
         }
         resolve(true); //the edits have been undone
