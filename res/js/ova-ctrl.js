@@ -346,7 +346,7 @@ function getTimestamp() {
     tstamp = Math.round(new Date(window.startdatestmp).getTime());
     var tsd = new Date();
     tsd.setTime(tstamp);
-    return tsd.toString();
+    return tsd.toString().split(" (")[0];
   } else if (iframe.nodeName.toLowerCase() == 'div') {
     htmlContent = iframe.innerHTML
 
@@ -398,7 +398,7 @@ function getTimestamp() {
 
       var tsd = new Date();
       tsd.setTime(tstamp);
-      return tsd.toString();
+      return tsd.toString().split(" (")[0];
     } else {
       startut = Math.round(new Date(startdatestmp).getTime());
       baseut = Math.round(new Date("2000/01/01 00:00:00").getTime());
@@ -410,7 +410,7 @@ function getTimestamp() {
 
       var tsd = new Date();
       tsd.setTime(tstamp);
-      return tsd.toString();
+      return tsd.toString().split(" (")[0];
     }
   }
   return false;
