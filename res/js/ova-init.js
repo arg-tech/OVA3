@@ -431,6 +431,7 @@ function updateEditNode(node) {
  */
 function updateAddEdge(edge) {
     if (edge == null || edge.fromID == '' || edge.toID == '') {
+        console.log("cannot add edge (updateAddEdge)"); console.log(edge);
         return false;
     } else {
         var e = new Edge;
@@ -700,21 +701,23 @@ function postEdit(type, action, content, undone, contentID) {
     // console.log("undone: " + undone);
     // console.log("contentID: " + contentID);
 
-    if (type == 'text') {
-        $.post("helpers/edit.php", { analysisID: window.analysisID, sessionid: window.sessionid, type: type, action: action, cnt: content, groupID: window.groupID, undone: undone, contentID: contentID }).done(function (data) {
-            dt = JSON.parse(data);
-            lastedit = dt.last;
-        });
-    } else {
-        if (content == null) {
-            alert("Error with " + type + " " + action);
-        } else {
-            $.post("helpers/edit.php", { analysisID: window.analysisID, sessionid: window.sessionid, type: type, action: action, cnt: JSON.stringify(content), groupID: window.groupID, undone: undone, contentID: contentID }).done(function (data) {
+    try {
+        if (type == 'text') {
+            $.post("helpers/edit.php", { analysisID: window.analysisID, sessionid: window.sessionid, type: type, action: action, cnt: content, groupID: window.groupID, undone: undone, contentID: contentID }).done(function (data) {
                 dt = JSON.parse(data);
                 lastedit = dt.last;
             });
+        } else {
+            if (content == null) {
+                alert("Error with " + type + " " + action);
+            } else {
+                $.post("helpers/edit.php", { analysisID: window.analysisID, sessionid: window.sessionid, type: type, action: action, cnt: JSON.stringify(content), groupID: window.groupID, undone: undone, contentID: contentID }).done(function (data) {
+                    dt = JSON.parse(data);
+                    lastedit = dt.last;
+                });
+            }
         }
-    }
+    } catch (e) { console.log(e); console.log("error posting " + action + " " + type + " ID: " + contentID); console.log(content); }
     window.unsaved = true;
 }
 
