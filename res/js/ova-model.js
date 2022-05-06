@@ -322,7 +322,6 @@ function addNodeDescriptor(nodeID, cq, descriptorID, type, selectedID, undone, p
         var d = newDescriptor(descriptorID, type, selectedID);
         if (cq) { n.cqdesc.push(d); }
         else { n.descriptors.push(d); }
-        console.log(n);
         var post = typeof post !== 'undefined' ? post : true;
         if (post) { postEdit("node", "edit", n, undone, n.nodeID); }
     }

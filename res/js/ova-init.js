@@ -1058,7 +1058,7 @@ function getNodesIn(node) {
         if (edges[i].toID == node.nodeID) {
             var nID = edges[i].fromID;
             var nIndex = findNodeIndex(nID);
-            nlist.push(nodes[nIndex]);
+            if (nIndex > -1) { nlist.push(nodes[nIndex]); }  //if the node exists add it
         }
     }
     return nlist;
@@ -1076,7 +1076,7 @@ function getNodesOut(node) {
         if (edges[i].fromID == node.nodeID) {
             var nID = edges[i].toID;
             var nIndex = findNodeIndex(nID);
-            nlist.push(nodes[nIndex]);
+            if (nIndex > -1) { nlist.push(nodes[nIndex]); }  //if the node exists add it
         }
     }
     return nlist;
@@ -1212,10 +1212,11 @@ function addCQ(fesel) {
  * @param {Node} node - The node to set descriptor options for
  */
 function setdescriptors(schemeID, node) {
+    $('#tab-bar-edits').hide();
     $.getJSON("browserint.php?x=ipxx&url=" + window.DBurl + "/formedges/scheme/" + schemeID, function (json_data) {
-        console.log("----------");
-        console.log("scheme: " + schemeID);
-        console.log(json_data);
+        // console.log("----------");
+        // console.log("scheme: " + schemeID);
+        // console.log(json_data);
 
         //clears and sets the defaults
         $('#descriptor_selects').empty();
@@ -1321,7 +1322,6 @@ function setdescriptors(schemeID, node) {
                 else if (cq.descriptorID != null) { //reselect the cq options that were previously set with null type
                     if ($("select[name='" + cq.descriptorID + "'] option[value='" + cq.selectedID + "']").length > 0) {
                         var id = $("select[name='" + cq.descriptorID + "']")[0].id;
-                        console.log(id);
                         $("#" + id).val(cq.selectedID);
                         $('#cqi-' + id.slice(2)).css('color', '#27ae60');
                     }
