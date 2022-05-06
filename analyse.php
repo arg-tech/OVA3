@@ -663,7 +663,7 @@ if (isset($_COOKIE['ovauser'])) {
           </select>
 
           <label for="s_cscheme" id="s_cscheme_label">Scheme</label>
-          <select id="s_cscheme" onChange="setdescriptors(this.value);">
+          <select id="s_cscheme" onChange="setdescriptors(this.value, mySel);">
             <option value="0">-</option>
           </select>
 
