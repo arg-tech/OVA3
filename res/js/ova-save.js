@@ -454,7 +454,7 @@ async function loadOva3Json(json, oplus, offset) {
 
     //set the layout of the nodes and draw them on the svg
     var n = json['OVA']['nodes'];
-    var newY = 0;
+    var newY = 0, tstamp;
     for (var i = 0, l = n.length; i < l; i++) {
         if (nodelist[n[i].nodeID]) {
             if (n[i].visible) {
@@ -462,8 +462,9 @@ async function loadOva3Json(json, oplus, offset) {
                 updateNode(n[i].nodeID, n[i].x, newY, true, 1, false);
                 DrawNode(nodelist[n[i].nodeID].nodeID, nodelist[n[i].nodeID].type, nodelist[n[i].nodeID].text, nodelist[n[i].nodeID].x, nodelist[n[i].nodeID].y);
                 if (n[i].timestamp && n[i].timestamp != '') {
-                    updateTimestamp(n[i].nodeID, n[i].timestamp, 1, false);
-                    if (window.showTimestamps) { DrawTimestamp(n[i].nodeID, n[i].timestamp, nodelist[n[i].nodeID].x, nodelist[n[i].nodeID].y); }
+                    tstamp = n[i].timestamp.split(" (")[0]; //remove the timezone name from the timestamp
+                    updateTimestamp(n[i].nodeID, tstamp, 1, false);
+                    if (window.showTimestamps) { DrawTimestamp(n[i].nodeID, tstamp, nodelist[n[i].nodeID].x, nodelist[n[i].nodeID].y); }
                 }
             }
         }
@@ -677,6 +678,7 @@ async function postAddEdits(nodeStart, edgeStart) {
         var nodesToAdd = nodes.slice(nodeStart);
         for (var i = 0; i < nodesToAdd.length; i++) {
             nodesContent.push([nodesToAdd[i].nodeID, JSON.stringify(nodesToAdd[i])]);
+            // nodesContent.push([nodesToAdd[i].nodeID, encodeURI(JSON.stringify(nodesToAdd[i]))]);
         }
         lastedit = await $.post("helpers/load.php", { analysisID: window.analysisID, sessionid: window.sessionid, type: "node", action: "add", cnt: JSON.stringify(nodesContent), groupID: window.groupID, undone: 1, counter: window.nodeCounter }).then(data => JSON.parse(data).last);
         // console.log("last edit id: " + lastedit);

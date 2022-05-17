@@ -272,13 +272,17 @@ function findParticipantIDText(text) {
 /**
  * Gets and separates a participant's name from text containing it
  * @param {String} text - The text containing the participant's name
- * @returns {Array} name - The name of the participant
+ * @returns {Array<String>} pname - An array containing 2 elements, the first name and the surname of the participant respectively
  */
 function getParticipantName(text) {
+    var pname = [];
     var index = text.indexOf(":");
     var str = text.slice(0, index);
-    var name = str.split(" ");
-    return name;
+    var names = str.split(" ");
+    pname.push(names[0]);
+    names.splice(0, 1);
+    pname.push(names.join(" "));
+    return pname;
 }
 
 /**

@@ -148,7 +148,7 @@ if (isset($_COOKIE['ovauser'])) {
         <a href="javascript:void(0);" class="helpbtn" onclick="loadTut(); return false;">?</a>
       </div>
       <div class="modal-body">
-        <form id="f_loadfile" class="fstyle">
+        <form id="f_loadfile" class="fstyle" action="javascript:void(0);">
           <div id="load-replace" style="display:none;">
             <p>Please select where to load the analysis:</p>
             <input type="radio" id="loadReplace" name="load" value="replace">
@@ -467,7 +467,7 @@ if (isset($_COOKIE['ovauser'])) {
         <h4 class="modal-title">Share Analysis</h4>
       </div>
       <div class="modal-body">
-        <form id="share_form" class="fstyle">
+        <form id="share_form" class="fstyle" action="javascript:void(0);">
           <label> Share this analysis: </label>
           <input type="text" id="shareinput" value="Generating link" onClick="this.select();" style="font-size: 16px; padding: 3px; width:90%;" />
           <p id="edited-by" style="color: #444; font-size: 12px;"></p>
