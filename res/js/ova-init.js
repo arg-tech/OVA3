@@ -254,6 +254,11 @@ function Init(evt) {
         });
     });
 
+    $('#nsetID').on("keyup", function (e) {
+        if (e.key !== "Enter") { return false; }
+        loadBtn();
+    });
+
     //set defaults
     setFontSize(window.defaultSettings["display"]["font_size"]);
     setRIATMode();
