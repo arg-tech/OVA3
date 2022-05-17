@@ -867,14 +867,14 @@ function Drop(evt) {
           AddNode('Disagreeing', 'YA', '78', 0, newNodeID, nx, ny);
         } else if (nodeFrom == "RA" && nodeTo == "I") {
 
-        } else if (nodeFrom == "I" && nodeTo == "RA" || nodeFrom == "I" && nodeTo == "RA" || nodeFrom == "EN" && nodeTo == "RA" || nodeFrom == "RA" && nodeTo == "EN") {
+        } else if (nodeFrom == "I" && nodeTo == "RA" || nodeFrom == "EN" && nodeTo == "RA" || nodeFrom == "RA" && nodeTo == "EN" || nodeFrom == "L" && nodeTo == "TA") {
 
         }
         else {
           AddNode('Default Inference', 'RA', '72', 0, newNodeID, nx, ny);
         }
         //If linked argument
-        if ((nodeFrom == "RA" && nodeTo == "I") || (nodeFrom == "I" && nodeTo == "RA") || (nodeFrom == "EN" && nodeTo == "RA")) {
+        if ((nodeFrom == "RA" && nodeTo == "I") || (nodeFrom == "I" && nodeTo == "RA") || (nodeFrom == "EN" && nodeTo == "RA") || (nodeFrom == "L" && nodeTo == "TA")) {
           //only draw edge
           DrawEdge(FromID, targetElement.getAttributeNS(null, 'id'));
           var edge = newEdge(FromID, targetElement.getAttributeNS(null, 'id'));
