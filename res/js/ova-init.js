@@ -236,7 +236,7 @@ function Init(evt) {
     $("#analysis_text").on("dblclick", "span", function (event) {
         event.stopPropagation();
         index = findNodeIndex(event.currentTarget.id.substring(4), false);
-        // console.log("index: " + index);
+
         //center the view on the node
         var newx = nodes[index].x - 550;
         var newy = nodes[index].y - 400;
@@ -275,6 +275,7 @@ function updateAnalysis() {
                 //do nothing for our own edits
             } else if (edits.edits[i].type == 'node' && edits.edits[i].action == 'add') {
                 node = JSON.parse(edits.edits[i].content);
+                // node = JSON.parse(decodeURI(edits.edits[i].content));
                 updateAddNode(node);
             } else if (edits.edits[i].type == 'node' && edits.edits[i].action == 'delete') {
                 node = JSON.parse(edits.edits[i].content);
@@ -1690,7 +1691,7 @@ function setTimestampStart(startdatestmp) {
                 var tstamp = Math.round(new Date(start).getTime());
                 var tsd = new Date();
                 tsd.setTime(tstamp);
-                var str = tsd.toString();
+                var str = tsd.toString().split(" (")[0];
                 document.getElementById("timestamp_label").innerHTML = str;
                 window.editTimestamp = false;
                 window.groupID++;
