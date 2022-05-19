@@ -22,7 +22,11 @@ while ($row = $STH->fetch()) {
 	if (!$r) {
 		$content = null;
 	} else {
-		$content = $r['content'];
+		if ($row['type'] == 'text') {
+			$content = json_decode($r['content']);
+		} else {
+			$content = $r['content'];
+		}
 	}
 
 	$edit = array();

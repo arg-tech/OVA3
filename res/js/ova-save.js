@@ -211,23 +211,29 @@ function loadFileBtn(evt) {
     var current = "";
     var replace = document.getElementById("loadReplace");
     var list = document.getElementById('list');
-    if (files.length > 1 || !replace.checked) { multi = true; current = list.innerHTML.slice(4, -5); }
+    if (!replace.checked) { multi = true; current = list.innerHTML.slice(4, -5); }
+    else if (files.length > 1 && replace.checked) { multi = true; clearAnalysis(); } //multi must be set to true to load multiple files
 
     var output = [];
     for (var i = 0, f; f = files[i]; i++) {
         var reader = new FileReader();
-        reader.onload = (function (theFile) {
-            return function (e) {
-                loadFile(e.target.result, multi);
-                showReplace();
-            };
-        })(f);
-
         reader.readAsText(f);
 
-        output.push('<span style="font-size:0.8em;">Loaded file: <strong>', f.name, '</strong> - ',
-            f.size, ' bytes, last modified: ',
-            f.lastModifiedDate ? f.lastModifiedDate.toLocaleDateString() : 'n/a', '</span><br>');
+        if (list.innerHTML.includes('Loaded file: <strong>' + f.name)) { //if this file has already been loaded into the analysis then skip loading it again
+            alert("Cannot load file: " + f.name + " \nThe file has already been loaded into this analysis.");
+            current = list.innerHTML.slice(4, -5); //keep the previously loaded list even if replace was selected
+        } else { //load the file
+            output.push('<span style="font-size:0.8em;">Loaded file: <strong>', f.name, '</strong> - ',
+                f.size, ' bytes, last modified: ',
+                f.lastModifiedDate ? f.lastModifiedDate.toLocaleDateString() : 'n/a', '</span><br>');
+
+            reader.onload = (function (theFile) {
+                return function (e) {
+                    loadFile(e.target.result, multi);
+                    showReplace();
+                };
+            })(f);
+        }
     }
     list.innerHTML = '<ul>' + current + output.join('') + '</ul>';
     $('#list').show();
@@ -252,12 +258,22 @@ function loadBtn() {
         if (radioValue == "corpus") { //if loading in a selected corpus
             var cShortName = $("#corpus_sel").val();
             var cName = $("#corpus_sel option:selected").text();
+
+            //if this corpus has already been loaded into the analysis
+            if (list.innerHTML.includes('Loaded corpus: <strong>' + cName)) {
+                alert("Cannot load corpus: " + cName + " \nThe corpus has already been loaded into this analysis.");
+                $('#c_loading').hide(); $('#f_loadfile').show(); $('#loadBtn').show();
+                return false;
+            }
+
+            //start loading the corpus
             cLoading.innerHTML = "Loading Corpus: " + cName;
             list.innerHTML = '<ul>' + current + '<span style="font-size:0.8em;">Loading corpus: <strong>' + cName + '</strong></span><br>' + '</ul>';
             $('#c_loading').show(); $('#list').show();
             if (replace.checked) { clearAnalysis(); }
 
-            loadCorpus(cShortName).then(() => { //when finished loading the corpus
+            //when finished loading the corpus
+            loadCorpus(cShortName).then(() => {
                 current = list.innerHTML.slice(4, -5);
                 list.innerHTML = '<ul>' + current + '<span style="font-size:0.8em;">Loaded corpus: <strong>' + cName + '</strong></span><br>' + '</ul>';
                 showReplace(true);
@@ -271,10 +287,19 @@ function loadBtn() {
         else if (radioValue == "nSetID") { //if loading in an analysis by its node set ID
             var nSetID = parseInt($("#nsetID").val());
             if (Number.isInteger(nSetID) && nSetID > 0) { //if a valid node set ID
+                //if this node set has already been loaded into the analysis
+                if (list.innerHTML.includes('Loaded analysis: Node Set ID <strong>' + nSetID)) {
+                    alert("Cannot load node set with ID: " + nSetID + " \nThe node set has already been loaded into this analysis.");
+                    $('#c_loading').hide(); $('#f_loadfile').show(); $('#loadBtn').show();
+                    return false;
+                }
+
+                //start loading the node set
                 cLoading.innerHTML = "Loading Node Set: " + nSetID;
                 $('#c_loading').show(); $('#list').show();
 
-                loadNodeSet(nSetID, multi).then((result) => { //when finished loading the analysis
+                //when finished loading the node set
+                loadNodeSet(nSetID, multi).then((result) => {
                     if (result) {
                         list.innerHTML = '<ul>' + current + '<span style="font-size:0.8em;">Loaded analysis: Node Set ID <strong>' + nSetID + '</strong></span><br>' + '</ul>';
                         showReplace(true);
@@ -324,11 +349,13 @@ async function loadCorpus(corpusName) {
     for (var i = 0; i < nodeSets.length; i++) {
         console.log("----------------");
         console.log("count: " + i);
-        loaded = await loadNodeSet(nodeSets[i], true); //to load a corpus multi must be set to true
-        if (!loaded) {
-            current = list.innerHTML.slice(4, -5);
-            list.innerHTML = '<ul>' + current + '<span style="font-size:0.8em;color:rgba(224, 46, 66, 1);">Failed to load analysis: Node Set ID <strong>' + nodeSets[i] + '</strong></span><br>' + '</ul>';
-        }
+        if (!list.innerHTML.includes('Loaded analysis: Node Set ID <strong>' + nodeSets[i])) { //if this node set hasn't already been loaded into the analysis then load it
+            loaded = await loadNodeSet(nodeSets[i], true); //to load a corpus multi must be set to true
+            if (!loaded) { //if it failed to load
+                current = list.innerHTML.slice(4, -5);
+                list.innerHTML = '<ul>' + current + '<span style="font-size:0.8em;color:rgba(224, 46, 66, 1);">Failed to load analysis: Node Set ID <strong>' + nodeSets[i] + '</strong></span><br>' + '</ul>';
+            }
+        } else { console.log("already loaded node set with ID: " + nodeSets[i]); }
     }
 }
 
@@ -349,7 +376,6 @@ async function loadFile(jstr, multi) {
     var offset = 0;
     if (multi) {
         offset = calOffset('y', 150);
-        // console.log("offset: " + offset);
     } else {
         clearAnalysis(); //remove the previous analysis before loading the new analysis
     }
@@ -387,7 +413,7 @@ async function loadOva3Json(json, oplus, offset) {
         for (var i = 0, l = p.length; i < l; i++) {
             firstname = p[i].firstname;
             surname = p[i].surname;
-            addParticipant(firstname, surname)
+            addParticipant(firstname, surname);
         }
     }
 
@@ -678,7 +704,6 @@ async function postAddEdits(nodeStart, edgeStart) {
         var nodesToAdd = nodes.slice(nodeStart);
         for (var i = 0; i < nodesToAdd.length; i++) {
             nodesContent.push([nodesToAdd[i].nodeID, JSON.stringify(nodesToAdd[i])]);
-            // nodesContent.push([nodesToAdd[i].nodeID, encodeURI(JSON.stringify(nodesToAdd[i]))]);
         }
         lastedit = await $.post("helpers/load.php", { analysisID: window.analysisID, sessionid: window.sessionid, type: "node", action: "add", cnt: JSON.stringify(nodesContent), groupID: window.groupID, undone: 1, counter: window.nodeCounter }).then(data => JSON.parse(data).last);
         // console.log("last edit id: " + lastedit);
@@ -693,7 +718,7 @@ async function postAddEdits(nodeStart, edgeStart) {
         }
         lastedit = await $.post("helpers/load.php", { analysisID: window.analysisID, sessionid: window.sessionid, type: "edge", action: "add", cnt: JSON.stringify(edgesContent), groupID: window.groupID, undone: 1, counter: window.edgeCounter }).then(data => JSON.parse(data).last);
         // console.log("last edit id: " + lastedit);
-    } catch (e) { alert("Unable to add to the database"); return false; }
+    } catch (e) { alert("Unable to add to the OVA3 database"); return false; }
 
     return true;
 }
