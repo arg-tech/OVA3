@@ -66,7 +66,11 @@ if ($action == 'edit' && $type == 'node') {
 			if (!$r) {
 				$content = null;
 			} else {
-				$content = $r['content'];
+				if ($row['type'] == 'text') {
+					$content = json_decode($r['content']);
+				} else {
+					$content = $r['content'];
+				}
 			}
 
 			$edit = array();

@@ -704,7 +704,6 @@ async function postAddEdits(nodeStart, edgeStart) {
         var nodesToAdd = nodes.slice(nodeStart);
         for (var i = 0; i < nodesToAdd.length; i++) {
             nodesContent.push([nodesToAdd[i].nodeID, JSON.stringify(nodesToAdd[i])]);
-            // nodesContent.push([nodesToAdd[i].nodeID, encodeURI(JSON.stringify(nodesToAdd[i]))]);
         }
         lastedit = await $.post("helpers/load.php", { analysisID: window.analysisID, sessionid: window.sessionid, type: "node", action: "add", cnt: JSON.stringify(nodesContent), groupID: window.groupID, undone: 1, counter: window.nodeCounter }).then(data => JSON.parse(data).last);
         // console.log("last edit id: " + lastedit);
@@ -719,7 +718,7 @@ async function postAddEdits(nodeStart, edgeStart) {
         }
         lastedit = await $.post("helpers/load.php", { analysisID: window.analysisID, sessionid: window.sessionid, type: "edge", action: "add", cnt: JSON.stringify(edgesContent), groupID: window.groupID, undone: 1, counter: window.edgeCounter }).then(data => JSON.parse(data).last);
         // console.log("last edit id: " + lastedit);
-    } catch (e) { alert("Unable to add to the database"); return false; }
+    } catch (e) { alert("Unable to add to the OVA3 database"); return false; }
 
     return true;
 }

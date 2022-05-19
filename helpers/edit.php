@@ -20,19 +20,21 @@ if ($_POST['type'] == "node") {
     if ($_POST['action'] == 'delete') { //if a delete edit don't add a new version of the node to the table
         $versionNo = $preVersionNo; //current version is same as previous version
     } else {
+        $content = str_replace(['"{', '}"', '\"'], ['{', '}', '"'], json_encode($_POST['cnt']));
         try {
             $q = $DBH->prepare("INSERT INTO nodes(nodeID, analysisID, versionNo, content) VALUES (:nodeID, :analysisID, :versionNo, :cnt)");
-            $q->execute(array(':nodeID' => $contentID, ':analysisID' => $_POST['analysisID'], ':versionNo' => $versionNo, ':cnt' => $_POST['cnt']));
+            $q->execute(array(':nodeID' => $contentID, ':analysisID' => $_POST['analysisID'], ':versionNo' => $versionNo, ':cnt' => $content));
         } catch (Exception $e) {
             $versionNo++;
             $q = $DBH->prepare("INSERT INTO nodes(nodeID, analysisID, versionNo, content) VALUES (:nodeID, :analysisID, :versionNo, :cnt)");
-            $q->execute(array(':nodeID' => $contentID, ':analysisID' => $_POST['analysisID'], ':versionNo' => $versionNo, ':cnt' => $_POST['cnt']));
+            $q->execute(array(':nodeID' => $contentID, ':analysisID' => $_POST['analysisID'], ':versionNo' => $versionNo, ':cnt' => $content));
         }
     }
 } else if ($_POST['type'] == "text") {
+    $content = json_encode($_POST['cnt']);
     $sql = "INSERT INTO texts(textID, analysisID, content) VALUES (:id, :analysisID, :cnt)";
     $q = $DBH->prepare($sql);
-    $q->execute(array(':id' => $contentID, ':analysisID' => $_POST['analysisID'], ':cnt' => $_POST['cnt']));
+    $q->execute(array(':id' => $contentID, ':analysisID' => $_POST['analysisID'], ':cnt' => $content));
 } else if ($_POST['type'] == "edge") {
     $sql = "INSERT INTO edges(edgeID, analysisID, content) VALUES (:id, :analysisID, :cnt)";
     $q = $DBH->prepare($sql);
