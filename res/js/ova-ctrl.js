@@ -851,10 +851,10 @@ function Drop(evt) {
         nx = ((tx - fx) / 2) + fx;
         ny = ((ty - fy) / 2) + fy;
 
-        if (nodeFrom == "I" && nodeTo == "I" && window.atkPress == false) {
-          AddNode('Default Inference', 'RA', '72', 0, newNodeID, nx, ny);
-        } else if (nodeFrom == "I" && nodeTo == "I" && window.atkPress == true) {
+        if (window.atkPress && nodeFrom == "I" && nodeTo == "I") {
           AddNode('Default Conflict', 'CA', '71', 0, newNodeID, nx, ny);
+        } else if (nodeFrom == "I" && nodeTo == "I") {
+          AddNode('Default Inference', 'RA', '72', 0, newNodeID, nx, ny);
         } else if (nodeFrom == "L" && nodeTo == "I") {
           AddNode('Asserting', 'YA', '74', 0, newNodeID, nx, ny);
         } else if (nodeFrom == "L" && nodeTo == "L") {
@@ -865,16 +865,17 @@ function Drop(evt) {
           AddNode('Arguing', 'YA', '80', 0, newNodeID, nx, ny);
         } else if (nodeFrom == "TA" && nodeTo == "CA") {
           AddNode('Disagreeing', 'YA', '78', 0, newNodeID, nx, ny);
-        } else if (nodeFrom == "RA" && nodeTo == "I") {
-
-        } else if (nodeFrom == "I" && nodeTo == "RA" || nodeFrom == "EN" && nodeTo == "RA" || nodeFrom == "RA" && nodeTo == "EN" || nodeFrom == "L" && nodeTo == "TA") {
-
+        } else if (window.atkPress && ((nodeFrom == "I" && nodeTo == "RA") || (nodeFrom == "EN" && nodeTo == "RA"))) { //undercutting
+          AddNode('Default Conflict', 'CA', '71', 0, newNodeID, nx, ny);
+        } else if ((nodeFrom == "I" && nodeTo == "RA") || (nodeFrom == "RA" && nodeTo == "I") || (nodeFrom == "EN" && nodeTo == "RA") || (nodeFrom == "RA" && nodeTo == "EN") || (nodeFrom == "L" && nodeTo == "TA") || (nodeFrom == "TA" && nodeTo == "L")) {
+          //if linked argument don't add a node
         }
         else {
           AddNode('Default Inference', 'RA', '72', 0, newNodeID, nx, ny);
         }
+
         //If linked argument
-        if ((nodeFrom == "RA" && nodeTo == "I") || (nodeFrom == "I" && nodeTo == "RA") || (nodeFrom == "EN" && nodeTo == "RA") || (nodeFrom == "L" && nodeTo == "TA")) {
+        if ((nodeFrom == "RA" && nodeTo == "I") || (!window.atkPress && nodeFrom == "I" && nodeTo == "RA") || (!window.atkPress && nodeFrom == "EN" && nodeTo == "RA") || (nodeFrom == "RA" && nodeTo == "EN") || (nodeFrom == "L" && nodeTo == "TA") || (nodeFrom == "TA" && nodeTo == "L")) {
           //only draw edge
           DrawEdge(FromID, targetElement.getAttributeNS(null, 'id'));
           var edge = newEdge(FromID, targetElement.getAttributeNS(null, 'id'));
@@ -975,10 +976,6 @@ function Drop(evt) {
       var h = boxHeight;
       h = boxY < 0 ? h - boxY : h;
 
-      // console.log("x: " + boxX);
-      // console.log("y: " + boxY);
-      // console.log("w: " + w);
-      // console.log("h: " + h);
       multiSel = false;
       window.saveImage = false;
       svg2canvas2image(boxX, boxY, w, h);
@@ -1202,7 +1199,6 @@ function saveNodeEdit() {
     });
 
     mySel.cqdesc = cqs; //update the node's cq descriptors
-    console.log(mySel);
 
     window.groupID++;
     updateNode(CurrentlyEditing, xCoord, yCoord);
