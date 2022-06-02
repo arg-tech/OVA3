@@ -747,13 +747,9 @@ async function loaddbjson(json, oplus, offset) {
     var xpos = 0;
     var ypos = 0;
     var jnodes = json['nodes'];
-    var r1 = /\b\w+:\s\w+\s\w+:/g; //e.g. "annotator: firstname surname:"
-    var r2 = /\b\w+:\s\w+\s\w+\s:/g; //e.g. "annotator: firstname surname :"
-    var participant = null;
-    var pName = [];
     var nID = "";
     var count = window.nodeCounter;
-    var start;
+    var start, scheme;
 
     for (var i = 0, l = jnodes.length; i < l; i++) {
         node = jnodes[i];
@@ -766,58 +762,43 @@ async function loaddbjson(json, oplus, offset) {
         nID = ((count + node.nodeID) + "_" + window.sessionid);
 
         if (node.type == "CA") {
-            nodelist[nID] = AddNode(node.text, node.type, '71', 0, nID, xpos, ypos, true, 1, "", false, false);
+            scheme = $("#s_cscheme option:contains('" + node.text + "')").val();
+            scheme = typeof scheme !== 'undefined' ? scheme : '71';
+            nodelist[nID] = AddNode(node.text, node.type, scheme, 0, nID, xpos, ypos, true, 1, "", false, false);
         } else if (node.type == "RA") {
-            nodelist[nID] = AddNode(node.text, node.type, '72', 0, nID, xpos, ypos, true, 1, "", false, false);
+            scheme = $("#s_ischeme option:contains('" + node.text + "')").val();
+            scheme = typeof scheme !== 'undefined' ? scheme : '72';
+            nodelist[nID] = AddNode(node.text, node.type, scheme, 0, nID, xpos, ypos, true, 1, "", false, false);
         } else if (node.type == "I") {
             nodelist[nID] = AddNode(node.text, node.type, null, 0, nID, xpos, ypos, true, 1, "", false, false);
         } else if (node.type == "MA") {
-            nodelist[nID] = AddNode(node.text, node.type, '144', 0, nID, xpos, ypos, true, 1, "", false, false);
+            scheme = $("#s_mscheme option:contains('" + node.text + "')").val();
+            scheme = typeof scheme !== 'undefined' ? scheme : '144';
+            nodelist[nID] = AddNode(node.text, node.type, scheme, 0, nID, xpos, ypos, true, 1, "", false, false);
         } else if (oplus) {
             if (node.type == "TA") {
-                nodelist[nID] = AddNode(node.text, node.type, '82', 0, nID, xpos, ypos, true, 1, "", false, false);
+                scheme = $("#s_tscheme option:contains('" + node.text + "')").val();
+                scheme = typeof scheme !== 'undefined' ? scheme : '82';
+                nodelist[nID] = AddNode(node.text, node.type, scheme, 0, nID, xpos, ypos, true, 1, "", false, false);
             } else if (node.type == "YA") {
                 if (node.text == 'Analysing') { //if an analyst node
                     nodelist[nID] = AddNode(node.text, node.type, '75', 0, nID, 0, 0, false, 1, "", false, false);
                 } else {
-                    nodelist[nID] = AddNode(node.text, node.type, '168', 0, nID, xpos, ypos, true, 1, "", false, false);
+                    scheme = $("#s_lscheme option:contains('" + node.text + "')").val();
+                    scheme = typeof scheme !== 'undefined' ? scheme : '168';
+                    console.log("YA '" + node.text + "' is: " + scheme);
+                    nodelist[nID] = AddNode(node.text, node.type, scheme, 0, nID, xpos, ypos, true, 1, "", false, false);
                 }
             } else if (node.type == "PA") {
-                nodelist[nID] = AddNode(node.text, node.type, '161', 0, nID, xpos, ypos, true, 1, "", false, false);
+                scheme = $("#s_pscheme option:contains('" + node.text + "')").val();
+                scheme = typeof scheme !== 'undefined' ? scheme : '161';
+                nodelist[nID] = AddNode(node.text, node.type, scheme, 0, nID, xpos, ypos, true, 1, "", false, false);
             } else if (node.type == "L") {
-                if (r1.test(node.text) || r2.test(node.text)) { //if an analyst node
-                    nodelist[nID] = AddNode(node.text, node.type, null, 0, nID, 0, 0, false, 1, "", false, false);
-                } else { //to prevent duplicate analyst nodes
-                    pName = getParticipantName(node.text);
-                    participant = addParticipant(pName[0], pName[1]);
-                    nodelist[nID] = newNode(nID, node.type, null, participant.participantID, node.text, xpos, ypos, true, 1, "", false, false);
-                    DrawNode(nID, node.type, node.text, xpos, ypos);
-                }
+                nodelist[nID] = newNode(nID, node.type, null, 0, node.text, 0, 0, false, 1, "", false, false); //to prevent duplicate analyst nodes
             }
         }
 
         if (i === 0) { start = findNodeIndex(nID, true); }
-    }
-
-    //load edges
-    var edgeStart = edges.length;
-    var e = json['edges'];
-    var edgeList = {};
-    var from, to, id, indexF, indexT, visible;
-    for (var i = 0, l = e.length; i < l; i++) {
-        from = ((count + e[i].fromID) + "_" + window.sessionid);
-        to = ((count + e[i].toID) + "_" + window.sessionid);
-        id = (count + e[i].fromID) + "_" + (count + e[i].toID);
-        if (from in nodelist && to in nodelist && !(id in edgeList)) { //if both the nodes the edge connects exist and the edge hasn't already been loaded
-            indexF = findNodeIndex(from, true);
-            indexT = findNodeIndex(to, true);
-            visible = nodes[indexF].visible && nodes[indexT].visible ? true : false; //if the edge connects an invisible node it should also be invisible
-            edgeList[id] = newEdge(from, to, visible, 1, false);
-            if (visible) {
-                DrawEdge(from, to);
-                UpdateEdge(edgeList[id]);
-            }
-        }
     }
 
     //set any scheme fulfillments
@@ -851,27 +832,61 @@ async function loaddbjson(json, oplus, offset) {
         }
     }
 
-    //set any timestamps
+    //set any timestamps and update the locutions
     var l = json['locutions'];
-    var r3 = /\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}/g;
-    var timestamp, start, tstamp, tsd, index;
+    var r = /\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}/;
+    var timestamp, start, tstamp, tsd, index, x;
+    var y = 50 + offset;
+    var participant = null;
+    var pName = [];
     if (l != undefined) {
         for (var i = 0; i < l.length; i++) {
-            test = r3.test(l[i].start);
-            if (test) { //if a valid date time stamp
-                start = l[i].start.split(" ", 2); //split date and time
-                tstamp = new Date(start[0] + "T" + start[1] + ".000Z"); //ISO string
-                tsd = new Date();
-                tsd.setTime(tstamp);
-                timestamp = tsd.toString();
-                newID = ((count + l[i].nodeID) + "_" + window.sessionid);
-                window.groupID++;
-                updateTimestamp(newID, timestamp, 1, false);
-                window.groupID++;
-                if (window.showTimestamps) {
-                    index = findNodeIndex(newID);
-                    DrawTimestamp(nodes[index].nodeID, nodes[index].timestamp, nodes[index].x, nodes[index].y);
-                }
+            newID = ((count + l[i].nodeID) + "_" + window.sessionid);
+            index = findNodeIndex(newID);
+            if (index > -1) { //if the node has been loaded
+                pName = getParticipantName(nodes[index].text);
+                participant = addParticipant(pName[0], pName[1]);
+                nodes[index].participantID = participant.participantID;
+
+                x = 50 + (i * 10);
+                updateNode(newID, x, y, true, 1, false);
+                DrawNode(newID, nodes[index].type, nodes[index].text, x, y);
+
+                //set timestamp
+                test = r.test(l[i].start);
+                if (test) { //if a valid date time stamp
+                    start = l[i].start.split(" ", 2); //split date and time
+                    tstamp = new Date(start[0] + "T" + start[1] + ".000Z"); //ISO string
+                    tsd = new Date();
+                    tsd.setTime(tstamp);
+                    timestamp = tsd.toString().split(" (")[0];
+                    updateTimestamp(newID, timestamp, 1, false);
+                    if (window.showTimestamps) {
+                        DrawTimestamp(nodes[index].nodeID, nodes[index].timestamp, nodes[index].x, nodes[index].y);
+                    }
+                } else { console.log("invalid date: '" + l[i].start + "'\nnode ID: " + newID); }
+            }
+        }
+    }
+
+
+    //load edges
+    var edgeStart = edges.length;
+    var e = json['edges'];
+    var edgeList = {};
+    var from, to, id, indexF, indexT, visible;
+    for (var i = 0, l = e.length; i < l; i++) {
+        from = ((count + e[i].fromID) + "_" + window.sessionid);
+        to = ((count + e[i].toID) + "_" + window.sessionid);
+        id = (count + e[i].fromID) + "_" + (count + e[i].toID);
+        if (from in nodelist && to in nodelist && !(id in edgeList)) { //if both the nodes the edge connects exist and the edge hasn't already been loaded
+            indexF = findNodeIndex(from, true);
+            indexT = findNodeIndex(to, true);
+            visible = nodes[indexF].visible && nodes[indexT].visible ? true : false; //if the edge connects an invisible node it should also be invisible
+            edgeList[id] = newEdge(from, to, visible, 1, false);
+            if (visible) {
+                DrawEdge(from, to);
+                UpdateEdge(edgeList[id]);
             }
         }
     }
@@ -897,7 +912,7 @@ function loadfromdb(nodeSetID, multi) {
     return new Promise(resolve => {
         $.getJSON("helpers/layout.php?id=" + nodeSetID + uplus, function (ldata) {
             $.getJSON("helpers/getdbnodeset.php?id=" + nodeSetID, function (data) {
-                // console.log(ldata);
+                console.log(ldata);
                 // console.log(data);
 
                 // //load participants
@@ -908,7 +923,6 @@ function loadfromdb(nodeSetID, multi) {
                 var offset = 0;
                 if (multi) {
                     offset = calOffset('y', 150);
-                    // console.log("offset: " + offset);
                 } else {
                     clearAnalysis(); //remove the previous analysis before loading the new analysis
                 }
@@ -920,14 +934,12 @@ function loadfromdb(nodeSetID, multi) {
                 });
 
                 //load nodes
+                var nodeStart = nodes.length;
                 var nodelist = {};
-                var r1 = /\w+:\s\w+\s\w+:/g;
-                var r2 = /\w+:\s\w+\s\w+\s:/g;
-                var p = null;
-                var pName = [];
                 var nID = "";
                 var count = window.nodeCounter;
                 var id = 0;
+                var scheme = null;
                 $.each(data.nodes, function (idx, node) {
                     id = parseInt(node.nodeID);
                     if ((count + id) > window.nodeCounter) {
@@ -945,53 +957,40 @@ function loadfromdb(nodeSetID, multi) {
                     }
 
                     if (node.type == "CA") {
-                        nodelist[nID] = AddNode(node.text, node.type, '71', 0, nID, xpos, ypos, true, 1);
+                        scheme = $("#s_cscheme option:contains('" + node.text + "')").val();
+                        scheme = typeof scheme !== 'undefined' ? scheme : '71';
+                        nodelist[nID] = AddNode(node.text, node.type, scheme, 0, nID, xpos, ypos, true, 1, "", false, false);
                     } else if (node.type == "RA") {
-                        nodelist[nID] = AddNode(node.text, node.type, '72', 0, nID, xpos, ypos, true, 1);
+                        scheme = $("#s_ischeme option:contains('" + node.text + "')").val();
+                        scheme = typeof scheme !== 'undefined' ? scheme : '72';
+                        nodelist[nID] = AddNode(node.text, node.type, scheme, 0, nID, xpos, ypos, true, 1, "", false, false);
                     } else if (node.type == "I") {
-                        nodelist[nID] = AddNode(node.text, node.type, null, 0, nID, xpos, ypos, true, 1);
+                        nodelist[nID] = AddNode(node.text, node.type, null, 0, nID, xpos, ypos, true, 1, "", false, false);
                     } else if (node.type == "MA") {
-                        nodelist[nID] = AddNode(node.text, node.type, '144', 0, nID, xpos, ypos, true, 1);
+                        scheme = $("#s_mscheme option:contains('" + node.text + "')").val();
+                        scheme = typeof scheme !== 'undefined' ? scheme : '144';
+                        nodelist[nID] = AddNode(node.text, node.type, scheme, 0, nID, xpos, ypos, true, 1, "", false, false);
                     }
                     else if (oplus) {
                         if (node.type == "TA") {
-                            nodelist[nID] = AddNode(node.text, node.type, '82', 0, nID, xpos, ypos, true, 1);
+                            scheme = $("#s_tscheme option:contains('" + node.text + "')").val();
+                            scheme = typeof scheme !== 'undefined' ? scheme : '82';
+                            nodelist[nID] = AddNode(node.text, node.type, scheme, 0, nID, xpos, ypos, true, 1, "", false, false);
                         } else if (node.type == "YA") {
                             if (node.text == 'Analysing') { //if an analyst node
-                                nodelist[nID] = AddNode(node.text, node.type, '75', 0, nID, 0, 0, false, 1);
+                                nodelist[nID] = AddNode(node.text, node.type, '75', 0, nID, 0, 0, false, 1, "", false, false);
                             } else {
-                                nodelist[nID] = AddNode(node.text, node.type, '168', 0, nID, xpos, ypos, true, 1);
+                                scheme = $("#s_lscheme option:contains('" + node.text + "')").val();
+                                scheme = typeof scheme !== 'undefined' ? scheme : '168';
+                                // console.log("YA '" + node.text + "' is: " + scheme);
+                                nodelist[nID] = AddNode(node.text, node.type, scheme, 0, nID, xpos, ypos, true, 1, "", false, false);
                             }
                         } else if (node.type == "PA") {
-                            nodelist[nID] = AddNode(node.text, node.type, '161', 0, nID, xpos, ypos, true, 1);
+                            scheme = $("#s_pscheme option:contains('" + node.text + "')").val();
+                            scheme = typeof scheme !== 'undefined' ? scheme : '161';
+                            nodelist[nID] = AddNode(node.text, node.type, scheme, 0, nID, xpos, ypos, true, 1, "", false, false);
                         } else if (node.type == "L") {
-                            if (r1.test(node.text) || r2.test(node.text)) { //if an analyst node
-                                nodelist[nID] = AddNode(node.text, node.type, null, 0, nID, 0, 0, false, 1);
-                            } else { //to prevent duplicate analyst nodes
-                                pName = getParticipantName(node.text);
-                                p = addParticipant(pName[0], pName[1]);
-                                nodelist[nID] = newNode(nID, node.type, null, p.participantID, node.text, xpos, ypos, true, 1);
-                                DrawNode(nID, node.type, node.text, xpos, ypos);
-                            }
-                        }
-                    }
-                });
-
-                //load edges
-                var edgeList = {};
-                var from, to, id, indexF, indexT, visible;
-                $.each(data.edges, function (idx, edge) {
-                    from = ((count + parseInt(edge.fromID)) + "_" + window.sessionid);
-                    to = ((count + parseInt(edge.toID)) + "_" + window.sessionid);
-                    id = (count + parseInt(edge.fromID)) + "_" + (count + parseInt(edge.toID));
-                    if (from in nodelist && to in nodelist && !(id in edgeList)) { //if both the nodes the edge connects exist and the edge hasn't already been loaded
-                        indexF = findNodeIndex(from);
-                        indexT = findNodeIndex(to);
-                        visible = nodes[indexF].visible && nodes[indexT].visible ? true : false; //if the edge connects an invisible node it should also be invisible
-                        edgeList[id] = newEdge(from, to, visible, 1);
-                        if (visible) { //if the edge is visible then draw edge on svg
-                            DrawEdge(from, to);
-                            UpdateEdge(edgeList[id]);
+                            nodelist[nID] = newNode(nID, node.type, null, 0, node.text, xpos, ypos, false, 1, "", false, false); //to prevent duplicate analyst nodes
                         }
                     }
                 });
@@ -1004,26 +1003,53 @@ function loadfromdb(nodeSetID, multi) {
                 //     }
                 // });
 
-                //set any timestamps
-                var r3 = /\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}/g;
+                //set any timestamps and update locutions
+                var r = /\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}/;
                 var timestamp, start, tstamp, tsd, index;
+                var participant = null;
+                var pName = [];
                 $.each(data.locutions, function (idx, l) {
                     newID = ((count + parseInt(l.nodeID)) + "_" + window.sessionid);
-                    if (newID in nodelist) {
-                        test = r3.test(l.start);
+                    if (newID in nodelist && !nodelist[newID].visible) { //if the locution has been loaded and hasn't already been updated
+                        index = findNodeIndex(newID);
+                        pName = getParticipantName(nodes[index].text);
+                        participant = addParticipant(pName[0], pName[1]);
+                        nodes[index].participantID = participant.participantID;
+
+                        nodes[index].visible = true;
+                        DrawNode(newID, nodes[index].type, nodes[index].text, nodes[index].x, nodes[index].y);
+
+                        test = r.test(l.start);
                         if (test) { //if a valid date time stamp
                             start = l.start.split(" ", 2); //split date and time
                             tstamp = new Date(start[0] + "T" + start[1] + ".000Z"); //ISO string
                             tsd = new Date();
                             tsd.setTime(tstamp);
-                            timestamp = tsd.toString();
-                            window.groupID++;
-                            updateTimestamp(newID, timestamp, 1);
-                            window.groupID++;
+                            timestamp = tsd.toString().split(" (")[0];
+                            updateTimestamp(newID, timestamp, 1, false);
                             if (window.showTimestamps) {
-                                index = findNodeIndex(newID);
                                 DrawTimestamp(nodes[index].nodeID, nodes[index].timestamp, nodes[index].x, nodes[index].y);
                             }
+                        } else { console.log("invalid date: '" + l.start + "'\nnode ID: " + newID); }
+                    }
+                });
+
+                //load edges
+                var edgeStart = edges.length;
+                var edgeList = {};
+                var from, to, id, indexF, indexT, visible;
+                $.each(data.edges, function (idx, edge) {
+                    from = ((count + parseInt(edge.fromID)) + "_" + window.sessionid);
+                    to = ((count + parseInt(edge.toID)) + "_" + window.sessionid);
+                    id = (count + parseInt(edge.fromID)) + "_" + (count + parseInt(edge.toID));
+                    if (from in nodelist && to in nodelist && !(id in edgeList)) { //if both the nodes the edge connects exist and the edge hasn't already been loaded
+                        indexF = findNodeIndex(from);
+                        indexT = findNodeIndex(to);
+                        visible = nodes[indexF].visible && nodes[indexT].visible ? true : false; //if the edge connects an invisible node it should also be invisible
+                        edgeList[id] = newEdge(from, to, visible, 1, false);
+                        if (visible) { //if the edge is visible then draw edge on svg
+                            DrawEdge(from, to);
+                            UpdateEdge(edgeList[id]);
                         }
                     }
                 });
@@ -1034,7 +1060,8 @@ function loadfromdb(nodeSetID, multi) {
                     history.pushState(null, null, newurl);
                 }
 
-                resolve(true); //the analysis has finished loading
+                var added = postAddEdits(nodeStart, edgeStart);
+                resolve(added); //the analysis has finished loading
 
             }).fail(function () {
                 console.log("failed to get json db nodeset");
