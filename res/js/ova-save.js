@@ -762,35 +762,34 @@ async function loaddbjson(json, oplus, offset) {
         nID = ((count + node.nodeID) + "_" + window.sessionid);
 
         if (node.type == "CA") {
-            scheme = $("#s_cscheme option:contains('" + node.text + "')").val();
+            scheme = $('#s_cscheme option').filter(function () { return $(this).text() == node.text; }).val();
             scheme = typeof scheme !== 'undefined' ? scheme : '71';
             nodelist[nID] = AddNode(node.text, node.type, scheme, 0, nID, xpos, ypos, true, 1, "", false, false);
         } else if (node.type == "RA") {
-            scheme = $("#s_ischeme option:contains('" + node.text + "')").val();
+            scheme = $('#s_ischeme option').filter(function () { return $(this).text() == node.text; }).val();
             scheme = typeof scheme !== 'undefined' ? scheme : '72';
             nodelist[nID] = AddNode(node.text, node.type, scheme, 0, nID, xpos, ypos, true, 1, "", false, false);
         } else if (node.type == "I") {
             nodelist[nID] = AddNode(node.text, node.type, null, 0, nID, xpos, ypos, true, 1, "", false, false);
         } else if (node.type == "MA") {
-            scheme = $("#s_mscheme option:contains('" + node.text + "')").val();
+            scheme = $('#s_mscheme option').filter(function () { return $(this).text() == node.text; }).val();
             scheme = typeof scheme !== 'undefined' ? scheme : '144';
             nodelist[nID] = AddNode(node.text, node.type, scheme, 0, nID, xpos, ypos, true, 1, "", false, false);
         } else if (oplus) {
             if (node.type == "TA") {
-                scheme = $("#s_tscheme option:contains('" + node.text + "')").val();
+                scheme = $('#s_tscheme option').filter(function () { return $(this).text() == node.text; }).val();
                 scheme = typeof scheme !== 'undefined' ? scheme : '82';
                 nodelist[nID] = AddNode(node.text, node.type, scheme, 0, nID, xpos, ypos, true, 1, "", false, false);
             } else if (node.type == "YA") {
                 if (node.text == 'Analysing') { //if an analyst node
                     nodelist[nID] = AddNode(node.text, node.type, '75', 0, nID, 0, 0, false, 1, "", false, false);
                 } else {
-                    scheme = $("#s_lscheme option:contains('" + node.text + "')").val();
+                    scheme = $('#s_lscheme option').filter(function () { return $(this).text() == node.text; }).val();
                     scheme = typeof scheme !== 'undefined' ? scheme : '168';
-                    console.log("YA '" + node.text + "' is: " + scheme);
                     nodelist[nID] = AddNode(node.text, node.type, scheme, 0, nID, xpos, ypos, true, 1, "", false, false);
                 }
             } else if (node.type == "PA") {
-                scheme = $("#s_pscheme option:contains('" + node.text + "')").val();
+                scheme = $('#s_pscheme option').filter(function () { return $(this).text() == node.text; }).val();
                 scheme = typeof scheme !== 'undefined' ? scheme : '161';
                 nodelist[nID] = AddNode(node.text, node.type, scheme, 0, nID, xpos, ypos, true, 1, "", false, false);
             } else if (node.type == "L") {
@@ -911,8 +910,8 @@ function loadfromdb(nodeSetID, multi) {
 
     return new Promise(resolve => {
         $.getJSON("helpers/layout.php?id=" + nodeSetID + uplus, function (ldata) {
+            console.log(ldata);
             $.getJSON("helpers/getdbnodeset.php?id=" + nodeSetID, function (data) {
-                console.log(ldata);
                 // console.log(data);
 
                 // //load participants
@@ -957,36 +956,35 @@ function loadfromdb(nodeSetID, multi) {
                     }
 
                     if (node.type == "CA") {
-                        scheme = $("#s_cscheme option:contains('" + node.text + "')").val();
+                        scheme = $('#s_cscheme option').filter(function () { return $(this).text() == node.text; }).val();
                         scheme = typeof scheme !== 'undefined' ? scheme : '71';
                         nodelist[nID] = AddNode(node.text, node.type, scheme, 0, nID, xpos, ypos, true, 1, "", false, false);
                     } else if (node.type == "RA") {
-                        scheme = $("#s_ischeme option:contains('" + node.text + "')").val();
+                        scheme = $('#s_ischeme option').filter(function () { return $(this).text() == node.text; }).val();
                         scheme = typeof scheme !== 'undefined' ? scheme : '72';
                         nodelist[nID] = AddNode(node.text, node.type, scheme, 0, nID, xpos, ypos, true, 1, "", false, false);
                     } else if (node.type == "I") {
                         nodelist[nID] = AddNode(node.text, node.type, null, 0, nID, xpos, ypos, true, 1, "", false, false);
                     } else if (node.type == "MA") {
-                        scheme = $("#s_mscheme option:contains('" + node.text + "')").val();
+                        scheme = $('#s_mscheme option').filter(function () { return $(this).text() == node.text; }).val();
                         scheme = typeof scheme !== 'undefined' ? scheme : '144';
                         nodelist[nID] = AddNode(node.text, node.type, scheme, 0, nID, xpos, ypos, true, 1, "", false, false);
                     }
                     else if (oplus) {
                         if (node.type == "TA") {
-                            scheme = $("#s_tscheme option:contains('" + node.text + "')").val();
+                            scheme = $('#s_tscheme option').filter(function () { return $(this).text() == node.text; }).val();
                             scheme = typeof scheme !== 'undefined' ? scheme : '82';
                             nodelist[nID] = AddNode(node.text, node.type, scheme, 0, nID, xpos, ypos, true, 1, "", false, false);
                         } else if (node.type == "YA") {
                             if (node.text == 'Analysing') { //if an analyst node
                                 nodelist[nID] = AddNode(node.text, node.type, '75', 0, nID, 0, 0, false, 1, "", false, false);
                             } else {
-                                scheme = $("#s_lscheme option:contains('" + node.text + "')").val();
+                                scheme = $('#s_lscheme option').filter(function () { return $(this).text() == node.text; }).val();
                                 scheme = typeof scheme !== 'undefined' ? scheme : '168';
-                                // console.log("YA '" + node.text + "' is: " + scheme);
                                 nodelist[nID] = AddNode(node.text, node.type, scheme, 0, nID, xpos, ypos, true, 1, "", false, false);
                             }
                         } else if (node.type == "PA") {
-                            scheme = $("#s_pscheme option:contains('" + node.text + "')").val();
+                            scheme = $('#s_pscheme option').filter(function () { return $(this).text() == node.text; }).val();
                             scheme = typeof scheme !== 'undefined' ? scheme : '161';
                             nodelist[nID] = AddNode(node.text, node.type, scheme, 0, nID, xpos, ypos, true, 1, "", false, false);
                         } else if (node.type == "L") {
@@ -1030,7 +1028,8 @@ function loadfromdb(nodeSetID, multi) {
                             if (window.showTimestamps) {
                                 DrawTimestamp(nodes[index].nodeID, nodes[index].timestamp, nodes[index].x, nodes[index].y);
                             }
-                        } else { console.log("invalid date: '" + l.start + "'\nnode ID: " + newID); }
+                        }
+                        // else { console.log("invalid date: '" + l.start + "'\nnode ID: " + newID); }
                     }
                 });
 
