@@ -1494,102 +1494,98 @@ function eAddModeOnOff() {
     }
 }
 
-// /**
-//  * Autolayout
-//  */
-// function genldot() {
-//     var doto = "digraph odg {";
-//     var ranks = "";
-//     var alreadyDrawn = {};
-//     if ("plus" in getUrlVars()) {
-//         doto = doto + "rankdir=RL;";
-//     }
+/**
+ * Autolayout
+ */
+function genldot() {
+    console.log("autolayout");
+    //create a temp dot file for this analysis
+    var doto = "digraph odg {";
+    var ranks = "";
+    var alreadyDrawn = {};
+    if ("plus" in getUrlVars()) {
+        doto = doto + "rankdir=RL;";
+    }
 
-//     for (var i = 0, l = nodes.length; i < l; i++) {
-//         dnode = nodes[i];
-//         doto = doto + dnode.nodeID + ' [label="xxx xxx xxx xxx xxx\\nxxx xxx xxx xxx xxx\\nxxx xxx xxx xxx xxx\\nxxx xxx xxx xxx xxx"];';
+    for (var i = 0, l = nodes.length; i < l; i++) { //for each node in the analysis
+        dnode = nodes[i];
+        dnodeID = i; //its index in the nodes array as the dot file needs integer IDs
+        doto = doto + dnodeID + ' [label="xxx xxx xxx xxx xxx\\nxxx xxx xxx xxx xxx\\nxxx xxx xxx xxx xxx\\nxxx xxx xxx xxx xxx"];';
 
-//         if (dnode.type != 'I' && dnode.type != 'L') {
+        if (dnode.type != 'I' && dnode.type != 'L') {
+            dout = getNodesOut(dnode);
+            for (var j = 0, ol = dout.length; j < ol; j++) { //for each node connected from
+                doutID = findNodeIndex(dout[j].nodeID); //its index in the nodes array as the dot file needs integer IDs
+                if (alreadyDrawn[dnodeID + "-" + doutID] !== 100) { //if not already drawn
+                    doto = doto + dnodeID + ' -> ' + doutID; //add the edge
+                    alreadyDrawn[dnodeID + "-" + doutID] = 100; //set that it's already been drawn
 
-//             dout = getNodesOut(dnode);
-//             for (var j = 0, ol = dout.length; j < ol; j++) {
-//                 if (alreadyDrawn[dnode.nodeID + "-" + dout[j].nodeID] !== 100) {
-//                     doto = doto + dnode.nodeID + ' -> ' + dout[j].nodeID;
-//                     alreadyDrawn[dnode.nodeID + "-" + dout[j].nodeID] = 100;
-//                     if ("plus" in getUrlVars() && dnode.type != 'YA' && dout[j].type != 'YA') {
-//                         doto = doto + " [constraint=false]";
-//                         if ((dnode.type == 'RA' || dnode.type == 'CA') && dout[j].type == 'I') {
-//                             ranks = ranks + '{ rank = same; ' + dnode.nodeID + '; ' + dout[j].nodeID + '; }';
-//                         }
-//                     }
-//                     doto = doto + ';';
-//                 }
-//                 // doto = doto + dnode.nodeID + ' -> ' + dout[j].nodeID;
-//                 // alreadyDrawn[dnode.nodeID+"-"+dout[j].nodeID]=100;
-//                 // console.log(doto);
-//                 // if("plus" in getUrlVars() && dnode.type != 'YA' && dout[j].type != 'YA'){
-//                 //     doto = doto + " [constraint=false]";
-//                 //     if((dnode.type == 'RA' || dnode.type == 'CA') && dout[j].type == 'I'){
-//                 //         ranks = ranks + '{ rank = same; ' + dnode.nodeID + '; ' + dout[j].nodeID + '; }';
-//                 //     }
-//                 // }
-//                 // doto = doto + ';';
-//             }
-//             din = getNodesIn(dnode);
-//             for (var j = 0, ol = din.length; j < ol; j++) {
-//                 if (alreadyDrawn[din[j].nodeID + "-" + dnode.nodeID] !== 100) {
-//                     doto = doto + din[j].nodeID + ' -> ' + dnode.nodeID;
+                    if ("plus" in getUrlVars() && dnode.type != 'YA' && dout[j].type != 'YA') {
+                        doto = doto + " [constraint=false]";
+                        if ((dnode.type == 'RA' || dnode.type == 'CA') && dout[j].type == 'I') {
+                            ranks = ranks + '{ rank = same; ' + dnodeID + '; ' + doutID + '; }';
+                        }
+                    }
+                    doto = doto + ';';
+                }
+            }
 
-//                     alreadyDrawn[din[j].nodeID + "-" + dnode.nodeID] = 100;
-//                     if ("plus" in getUrlVars() && dnode.type != 'YA' && din[j].type != 'YA') {
-//                         doto = doto + " [constraint=false]";
-//                         if ((din[j].type == 'RA' || din[j].type == 'CA') && dnode.type == 'I') {
-//                             ranks = ranks + '{ rank = same; ' + din[j].nodeID + '; ' + dnode.nodeID + '; }';
-//                         }
-//                     }
-//                     doto = doto + ';';
-//                 }
-//                 // doto = doto + din[j].nodeID + ' -> ' + dnode.nodeID;
-//                 //     if("plus" in getUrlVars() && dnode.type != 'YA' && din[j].type != 'YA'){
-//                 //         doto = doto + " [constraint=false]";
-//                 //         if((din[j].type == 'RA' || din[j].type == 'CA') && dnode.type == 'I'){
-//                 //             ranks = ranks + '{ rank = same; ' + din[j].nodeID + '; ' + dnode.nodeID + '; }';
-//                 //         }
-//                 //     }
-//                 //     doto = doto + ';';
-//             }
-//         }
-//     }
+            din = getNodesIn(dnode);
+            for (var j = 0, ol = din.length; j < ol; j++) { //for each node connected to
+                dinID = findNodeIndex(din[j].nodeID); //its index in the nodes array as the dot file needs integer IDs
+                if (alreadyDrawn[dinID + "-" + dnodeID] !== 100) { //if not already drawn
+                    doto = doto + dinID + ' -> ' + dnodeID; //add the edge
+                    alreadyDrawn[dinID + "-" + dnodeID] = 100; //set that it's already been drawn
 
-//     doto = doto + ranks;
-//     doto = doto + '}';
+                    if ("plus" in getUrlVars() && dnode.type != 'YA' && din[j].type != 'YA') {
+                        doto = doto + " [constraint=false]";
+                        if ((din[j].type == 'RA' || din[j].type == 'CA') && dnode.type == 'I') {
+                            ranks = ranks + '{ rank = same; ' + dinID + '; ' + dnodeID + '; }';
+                        }
+                    }
+                    doto = doto + ';';
+                }
+            }
+        }
+    }
 
-//     mwidth = 1000;
-//     mheight = 12775;
+    doto = doto + ranks;
+    doto = doto + '}';
 
-//     $.post("dot/index.php", { data: doto },
-//         function (reply) {
-//             ldata = JSON.parse(reply);
-//             for (var i = 0, l = nodes.length; i < l; i++) {
-//                 mnode = nodes[i];
-//                 if (mnode.nodeID in ldata) {
-//                     xpos = parseInt(ldata[mnode.nodeID]["x"]);
-//                     mnode.x = xpos * 0.8;
-//                     if (xpos > mwidth - 100) { mwidth = xpos + 100; }
-//                     ypos = parseInt(ldata[mnode.nodeID]["y"]);
-//                     mnode.y = ypos;
-//                     if (ypos > mheight - 100) { mheight = ypos + 100; }
-//                 }
-//             }
-//             //
-//             // if(mwidth > WIDTH || mheight > HEIGHT){
-//             //     resize_canvas(mwidth, mheight);
-//             // }
+    //post the temp dot file to get a json of coordinates for autolayout
+    $.post("dot/index.php", { data: doto },
+        function (reply) {
+            ldata = JSON.parse(reply);
+            //update the nodes
+            window.groupID++;
+            for (var i = 0, l = nodes.length; i < l; i++) {
+                mnode = nodes[i];
+                if (i in ldata) {
+                    //update the node's coordinates
+                    xpos = parseInt(ldata[i]["x"]) * 0.8 + 50;
+                    ypos = parseInt(ldata[i]["y"]);
+                    updateNode(mnode.nodeID, xpos, ypos, mnode.visible);
 
-//             //invalidate();
-//         }
-//     );
-// }
+                    //update the svg
+                    prevNode = document.getElementById(mnode.nodeID);
+                    if (prevNode) { //if the node was previously drawn on the svg
+                        prevNode.remove();
+                        DrawNode(mnode.nodeID, mnode.type, mnode.text, xpos, ypos, mnode.marked); //draw the updated node
+                        if (mnode.timestamp != "" && window.showTimestamps) {
+                            DrawTimestamp(mnode.nodeID, mnode.timestamp, xpos, ypos); //draw the updated timestamp if needed
+                        }
+                    }
+
+                }
+            }
+
+            //update the edges
+            for (var i = 0; i < edges.length; i++) {
+                UpdateEdge(edges[i]);
+            }
+        }
+    );
+}
 
 /**
  * Sets the font size for the analysis text
