@@ -20,7 +20,7 @@ if ($_POST['type'] == "node") {
     if ($_POST['action'] == 'delete') { //if a delete edit don't add a new version of the node to the table
         $versionNo = $preVersionNo; //current version is same as previous version
     } else {
-        $content = str_replace(['"{', '}"', '\"'], ['{', '}', '"'], json_encode($_POST['cnt']));
+        $content = str_replace(['"{', '}"', '\"', '\\\\', '\/'], ['{', '}', '"', '\\', '/'], json_encode($_POST['cnt']));
         try {
             $q = $DBH->prepare("INSERT INTO nodes(nodeID, analysisID, versionNo, content) VALUES (:nodeID, :analysisID, :versionNo, :cnt)");
             $q->execute(array(':nodeID' => $contentID, ':analysisID' => $_POST['analysisID'], ':versionNo' => $versionNo, ':cnt' => $content));
