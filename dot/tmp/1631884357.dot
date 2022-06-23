@@ -1,6 +1,0 @@
-digraph odg {
-	graph [bb="0,0,0,0",
-		rankdir=RL
-	];
-	node [label="\N"];
-}
