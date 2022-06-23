@@ -259,6 +259,13 @@ function Init(evt) {
         loadBtn();
     });
 
+    $('#n_text').on("keydown", function (e) {
+        if (e.key == "Enter" && !e.shiftKey) {
+            e.preventDefault(); //prevent new lines being added
+            saveNodeEdit(); closeModal('#node_edit'); FormOpen = false; return false; //save the edit to the node
+        }
+    });
+
     //set defaults
     setFontSize(window.defaultSettings["display"]["font_size"]);
     setRIATMode();
@@ -280,7 +287,6 @@ function updateAnalysis() {
                 //do nothing for our own edits
             } else if (edits.edits[i].type == 'node' && edits.edits[i].action == 'add') {
                 node = JSON.parse(edits.edits[i].content);
-                // node = JSON.parse(decodeURI(edits.edits[i].content));
                 updateAddNode(node);
             } else if (edits.edits[i].type == 'node' && edits.edits[i].action == 'delete') {
                 node = JSON.parse(edits.edits[i].content);
@@ -517,9 +523,16 @@ function getSelText() {
             } else {
                 span.className = "hlcurrent";
             }
-            range.surroundContents(span);
-            window.groupID++;
-            postEdit("text", "edit", $('#analysis_text').html());
+
+            try {
+                range.surroundContents(span);
+                window.groupID++;
+                postEdit("text", "edit", $('#analysis_text').html());
+            } catch (e) {
+                console.log(e);
+                txt = '';
+                alert("Cannot highlight text containing newlines or carriage returns.");
+            }
         }
     } else if (iframe.getElementsByTagName('iframe')) {
         // console.log("identified iframe");
