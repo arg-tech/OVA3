@@ -851,7 +851,7 @@ function Drop(evt) {
         nx = ((tx - fx) / 2) + fx;
         ny = ((ty - fy) / 2) + fy;
 
-        if (window.atkPress && nodeFrom == "I" && nodeTo == "I") {
+        if (window.atkPress && (nodeFrom == "I" || nodeFrom == "EN") && (nodeTo == "I" || nodeTo == "EN")) {
           AddNode('Default Conflict', 'CA', '71', 0, newNodeID, nx, ny);
         } else if (nodeFrom == "I" && nodeTo == "I") {
           AddNode('Default Inference', 'RA', '72', 0, newNodeID, nx, ny);
@@ -961,11 +961,15 @@ function Drop(evt) {
     var boxHeight = parseInt(box.getAttributeNS(null, 'height'));
     var boxX = parseInt(box.getAttributeNS(null, 'x'));
     var boxY = parseInt(box.getAttributeNS(null, 'y'));
+    var svgNode = null;
     for (var i = 0; i < nodes.length; i++) {
       if (nodes[i].x > boxX && nodes[i].x < boxX + boxWidth && nodes[i].y > boxY && nodes[i].y < boxY + boxHeight) {
-        mSel.push(nodes[i]);
-        rect = document.getElementById(nodes[i].nodeID).getElementsByTagName('rect')[0];
-        rect.style.setProperty('stroke-width', 2);
+        svgNode = document.getElementById(nodes[i].nodeID);
+        if (svgNode != null && typeof svgNode != 'undefined') { //if the node is drawn on the svg
+          mSel.push(nodes[i]);
+          rect = svgNode.getElementsByTagName('rect')[0];
+          rect.style.setProperty('stroke-width', 2);
+        }
       }
     }
     document.getElementById('multiSelBoxG').remove();
