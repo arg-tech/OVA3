@@ -546,8 +546,13 @@ if (isset($_COOKIE['ovauser'])) {
             <pre>
 <strong>shift+drag</strong> from one node to another: add supporting edge
 <strong>a+drag</strong> from one node to another: add attacking edge
+<br>
+<strong>ctrl+click</strong> on node: open edit node menu
+<strong>enter</strong> editing node's text: save your edit to the node
+<strong>shift+enter</strong> editing node's text: add a new line to the node's text
+<br>
 <strong>ctrl+z</strong> on canvas: undo changes you made to an analysis
-<strong>ctrl+click</strong> on node: edit node menu
+<strong>alt+click</strong> on canvas: draw a box to multi select
 <strong>arrow keys: </strong> move canvas
 <strong>+/- : </strong> zoom in/out
 </pre>
