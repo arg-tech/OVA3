@@ -100,7 +100,7 @@ if (isset($_COOKIE['ovauser'])) {
               <div class="btnicn" style="background-image: url('res/img/icon-savefile.svg');">&nbsp;</div> Save to local
               file
             </a></li>
-          <li><a href="#" onClick="$('#saveOptions').hide();$('#imageOptions').show();$('#confirmBtn').show();return false;" id="saveImageBtn">
+          <li><a href="#" onClick="saveAsImage();$('#saveOptions').hide();$('#imageOptions').show();$('#fullDownloadBtn').show();return false;" id="saveImageBtn">
               <div class="btnicn" style="background-image: url('res/img/icon-saveimg.svg');">&nbsp;</div> Save as image
             </a></li>
           <li><a href="#" onClick="save2db(); $('#modal-save').hide(); return false;" id="saveAIFdbBtn">
@@ -110,17 +110,22 @@ if (isset($_COOKIE['ovauser'])) {
         <form id="imageOptions" class="fstyle" style="display:none;">
           <div style="margin-bottom:2%;">
             <p>Please select to save as an image:</p>
-            <input type="radio" id="fullImage" name="saveImage" value="full" checked>
-            <label for="fullImage" class="radio_label">Save the full analysis</label>
-            <input type="radio" id="selectImage" name="saveImage" value="select">
-            <label for="selectImage" class="radio_label">Select part of the analysis</label>
+            <div onclick="checkRadio('fullImage');$('#selectBtn').hide();$('#fullDownloadBtn').show();$('#partDownloadBtn').hide();">
+              <input type="radio" id="fullImage" name="saveImage" value="full" checked>
+              <label for="fullImage" class="radio_label">Save the full analysis</label>
+            </div>
+            <div onclick="checkRadio('selectImage');$('#selectBtn').show();$('#partDownloadBtn').show();$('#fullDownloadBtn').hide();" style="margin:6% 0;">
+              <input type="radio" id="selectImage" name="saveImage" value="select">
+              <label for="selectImage" class="radio_label">Select part of the analysis</label>
+              <a class="btn" href="#" id="selectBtn" onclick="saveAsImage();" style="display:none;float:none;margin-left:4%;">Select</a>
+            </div>
           </div>
         </form>
       </div>
       <div class="modal-btns">
-        <a class="save" href="#" id="confirmBtn" onclick="saveAsImage();" style="display:none;">&#x2714; Confirm</a>
-        <a class="save" href="#" id="downloadBtn" onclick="closeModal('#modal-save');$('#downloadBtn').hide();$('#imageOptions').hide();$('#confirmBtn').hide();$('#saveOptions').show();" style="display:none;">&#x2714; Download Image</a>
-        <a class="cancel" href="#" onClick="closeModal('#modal-save');$('#downloadBtn').hide();$('#imageOptions').hide();$('#confirmBtn').hide();$('#saveOptions').show();">&#10008; Cancel</a>
+        <a class="save" href="#" id="fullDownloadBtn" style="display:none;" onclick="closeModal('#modal-save');$('#fullDownloadBtn').hide();$('#partDownloadBtn').hide();$('#imageOptions').hide();$('#selectBtn').hide();$('#saveOptions').show();">&#x2714; Download Image</a>
+        <a href="#" id="partDownloadBtn" style="display:none;">&#x2714; Download Image</a>
+        <a class="cancel" href="#" onClick="closeModal('#modal-save');checkRadio('fullImage');$('#fullDownloadBtn').hide();$('#partDownloadBtn').hide();$('#imageOptions').hide();$('#selectBtn').hide();$('#saveOptions').show();">&#10008; Cancel</a>
       </div>
     </div>
   </div>

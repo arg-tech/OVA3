@@ -26,7 +26,7 @@ function myKeyDown(e) {
     panZoomMode(keycode);
   }
   if (keycode == 18 && !(window.shiftPress || window.atkPress) && mSel.length == 0) {
-    multiSel = true;
+    multiSel[0] = true;
   }
 }
 
@@ -46,7 +46,7 @@ function myKeyUp(e) {
     editMode = false;
   }
   if (keycode == 18) {
-    multiSel = false;
+    multiSel = [false, false];
   }
   if (keycode == 90 && e.ctrlKey) { //ctrl + z for undo shortcut
     undo();
@@ -303,9 +303,10 @@ function Grab(evt) {
       nodeMode('off');
       return;
     }
-    else if (multiSel) {
+    else if (multiSel[0]) { //if multi select is on
       multiSelRect.startX = TrueCoords.x;
       multiSelRect.startY = TrueCoords.y;
+      multiSel[1] = true; //indicates the starting coords have been selected
     }
     else {
       t = getSelText();
@@ -513,7 +514,7 @@ function AddNode(txt, type, scheme, pid, nid, nx, ny, visible, undone, timestamp
  */
 function Drag(evt) {
   GetTrueCoords(evt);
-  if (DragTarget && !multiSel) {
+  if (DragTarget && !multiSel[0]) {
     var dx = (TrueCoords.x - GrabPoint.x);
     var dy = (TrueCoords.y - GrabPoint.y);
     GrabPoint.x = TrueCoords.x;
@@ -603,7 +604,7 @@ function Drag(evt) {
 
   }
   else {
-    if (multiSel) {
+    if (multiSel[1]) { //if the starting coords for multi select have already been selected
       var x = parseInt(multiSelRect.startX);
       var y = parseInt(multiSelRect.startY);
       if (!isNaN(x) && !isNaN(y)) {
@@ -975,18 +976,26 @@ function Drop(evt) {
     document.getElementById('multiSelBoxG').remove();
 
     if (window.saveImage) { //if using the multi select to save as an image
+      //calculate the width and height for the image
       var w = boxWidth;
       w = boxX < 0 ? w - boxX : w;
       var h = boxHeight;
       h = boxY < 0 ? h - boxY : h;
 
-      multiSel = false;
+      //deselect the nodes
+      multiSel = [false, false];
+      for (var i = 0; i < mSel.length; i++) {
+        var rect = document.getElementById(mSel[i].nodeID).getElementsByTagName('rect')[0];
+        rect.style.setProperty('stroke-width', 1);
+      }
+      mSel = [];
+
       window.saveImage = false;
-      svg2canvas2image(boxX, boxY, w, h);
+      svg2canvas2image(boxX, boxY, w, h, true); //create the image
     }
   }
   else if (mSel.length > 0) { //if moving multiple nodes using the multi select
-    if (DragTarget) {
+    if (DragTarget) { //if moved then update each node
       window.groupID++;
       for (var i = 0; i < mSel.length; i++) {
         var childElement = document.getElementById(mSel[i].nodeID);
@@ -998,14 +1007,15 @@ function Drop(evt) {
       }
       DragTarget.setAttributeNS(null, 'pointer-events', 'all');
       DragTarget = null;
-    } else {
+    } else { //deselect each node
       for (var i = 0; i < mSel.length; i++) {
         var rect = document.getElementById(mSel[i].nodeID).getElementsByTagName('rect')[0];
         rect.style.setProperty('stroke-width', 1);
       }
     }
+
     mSel = [];
-    multiSel = false;
+    multiSel = [false, false];
   }
   dragEdges = [];
 }
