@@ -359,6 +359,7 @@ div.modal-btns a {
 
 div.modal-btns a:hover {
   color: #fff !important;
+  background-color: rgb(120, 120, 120);
 }
 
 div.modal-btns a.save {

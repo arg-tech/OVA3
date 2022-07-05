@@ -1268,8 +1268,9 @@ function rpl2corpus(addnsID, rplnsID) {
  * @param {Number} y - The lowest y coordinate for the selected part of the SVG
  * @param {Number} w - The width of the selected part of the SVG
  * @param {Number} h - The height of the selected part of the SVG
+ * @param {Boolean} part - Indicates if part of the analysis is to be converted to an image (true) or the entire analysis (false)
  */
-function svg2canvas2image(x, y, w, h) {
+function svg2canvas2image(x, y, w, h, part) {
     var canvas = document.createElement("canvas");
     var space = 60; //the size of the margins
     canvas.width = w + space;
@@ -1295,13 +1296,17 @@ function svg2canvas2image(x, y, w, h) {
     image.onload = function () {
         ctx.drawImage(image, space, space, size, size);
         var imageURI = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
-        var anchor = document.getElementById("downloadBtn");
+        var anchor;
+        if (part) {
+            anchor = document.getElementById("partDownloadBtn");
+            anchor.onclick = function () { closeModal('#modal-save'); checkRadio('fullImage'); $('#fullDownloadBtn').hide(); $('#partDownloadBtn').hide(); $('#imageOptions').hide(); $('#selectBtn').hide(); $('#saveOptions').show(); };
+            anchor.classList.add("save");
+        } else { anchor = document.getElementById("fullDownloadBtn"); }
         anchor.download = "analysis.png";
         anchor.href = imageURI;
 
         window.unsaved = false;
         $(canvas).remove();
-        $('#downloadBtn').show();
         openModal('#modal-save');
         VB = [0, 0, 1500, 1500];
         SVGRoot.setAttribute('viewBox', [0, 0, 1500, 1500]);
@@ -1313,16 +1318,20 @@ function svg2canvas2image(x, y, w, h) {
  */
 function saveAsImage() {
     var radioValue = $("input[name='saveImage']:checked").val();
-    if (radioValue == "select") {
+    if (radioValue == "select") { //if selecting part of the analysis to save as an image
         // console.log("save selected image");
-        $('#confirmBtn').hide();
         closeModal('#modal-save');
-        multiSel = true;
+        $('#selectBtn').text("Reselect"); //update the select button
+        multiSel[0] = true;
         window.saveImage = true;
 
     } else if (radioValue == "full") {
         // console.log("save full image");
-        $('#confirmBtn').hide();
+        //reset the select and part download buttons to their defaults
+        $('#selectBtn').text("Select");
+        var a = document.getElementById("partDownloadBtn");
+        a.onclick = function () { return false; };
+        a.classList.remove("save");
 
         var index = nodes.length - 1;
         //find the smallest and largest y coordinates 
@@ -1335,7 +1344,7 @@ function saveAsImage() {
         var x = parseInt(nodes[index].x);
         w = x < 0 ? w - x : w;
 
-        svg2canvas2image(x, y, w, h);
+        svg2canvas2image(x, y, w, h, false); //create the image
     }
 }
 

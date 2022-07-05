@@ -1,5 +1,3 @@
-window.multisel = false;
-
 var SVGRoot = null;
 var SVGRootG = null;
 
@@ -10,7 +8,7 @@ var DragTarget = null;
 var dialogicalMode = ("plus" in getUrlVars());
 var rIATMode = false;
 var CurrentFocus = null;
-var multiSel = false;
+var multiSel = [false, false];
 var multiSelRect = {};
 var CurrentlyEditing = 0;
 var editMode = false;

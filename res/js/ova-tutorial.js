@@ -455,15 +455,19 @@ function saveTut() {
             },
             {
                 element: '#selectImage',
-                intro: "Check here to save part of your analysis map as an image. After clicking the confirm button, you will be able to select the part to save."
+                intro: "Check here to save part of your analysis map as an image. Then click the select button to select the part to save."
             },
             {
-                element: '#confirmBtn',
-                intro: "Click here to confirm your choice."
+                element: '#selectBtn',
+                intro: "After clicking here, you will be able to select the part of your analysis map to save. To do so please click on your analysis and draw a box around the part to save as an image."
             },
             {
-                element: '#downloadBtn',
+                element: '#fullDownloadBtn',
                 intro: "Click here to start downloading the PNG."
+            },
+            {
+                element: '#partDownloadBtn',
+                intro: "Click here to start downloading the PNG. Please note you will need to select the part of your analysis to save as an image first."
             }
         ].filter(function (obj) { return $(obj.element).length && $(obj.element).is(':visible'); }),
         showStepNumbers: false
