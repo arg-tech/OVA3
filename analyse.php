@@ -262,7 +262,7 @@ if (isset($_COOKIE['ovauser'])) {
         <a href="javascript:void(0);" class="helpbtn" onclick="edgeTut(); return false;">?</a>
       </div>
       <div class="modal-body">
-        <form id="f_loadfile" class="fstyle">
+        <form id="f_edge" class="fstyle">
           <div id="edge_source" style="margin-bottom:5%;">
             <label id="source_text_label" for="source_text">Source Node</label>
             <textarea id="source_text" name="source_text" readonly placeholder="Please select a source node." style="width:75%;"></textarea>
@@ -284,7 +284,7 @@ if (isset($_COOKIE['ovauser'])) {
                 <option value="0" selected>--No locution selected--</option>
               </select>
           </div>
-          <input type="checkbox" id="mark_node_check" name="mark_node_check" style="display:inline;" checked>
+          <input type="checkbox" id="mark_node_check" name="mark_node_check" style="display:inline;">
           <label for="mark_node_check" style="display:inline;font-size:0.9em;">Mark the new edges after adding them</label>
           <p id="edge_message" style="font-size:0.9em;color:rgba(224, 46, 66, 1);"></p>
         <?php } else { ?>

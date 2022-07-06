@@ -1800,6 +1800,21 @@ function addLongEdge() {
         else { addTA = false; }
     }
 
+    //marks the newly added node and its connected edges/nodes if needed
+    var mark = false;
+    var radio = document.getElementById("mark_node_check");
+    if (radio && radio.checked) {
+        mark = true;
+        var index = findNodeIndex(CurrentlyEditing);
+        if (index > -1) {
+            var n = nodes[index];
+            window.groupID++;
+            markNode(n, true);
+        } else {
+            markEdge(nFrom.nodeID, nTo.nodeID, true);
+        }
+    }
+
     if (addTA) {
         var from = document.getElementById(sourceL);
         var to = document.getElementById(targetL);
@@ -1828,11 +1843,6 @@ function addLongEdge() {
         window.groupID++;
         window.nodeCounter++;
         newNodeID = (window.nodeCounter + "_" + window.sessionid);
-        var mark = false;
-        var radio = document.getElementById("mark_node_check");
-        if (radio && radio.checked) {
-            mark = true;
-        }
         AddNode('Default Transition', 'TA', '82', 0, newNodeID, nx, ny, true, 0, "", mark);
 
         var edge;
