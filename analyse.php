@@ -547,6 +547,7 @@ if (isset($_COOKIE['ovauser'])) {
 <strong>a+drag</strong> from one node to another: add attacking edge
 <br>
 <strong>ctrl+click</strong> on node: open edit node menu
+<strong>click+delete</strong> on node: delete the selected node
 <strong>enter</strong> editing node's text: save your edit to the node
 <strong>shift+enter</strong> editing node's text: add a new line to the node's text
 <br>

@@ -4,28 +4,22 @@
  */
 function myKeyDown(e) {
   var keycode = e.keyCode;
-  if (keycode == 16 || keycode == 83) {
+  var key = e.key.toLowerCase();
+  if (key == 'shift' || key == 's' || key == 'a') { //add edge
     var textArea = document.getElementById('analysis_text');
     var nodeText = document.getElementById('n_text');
-    if (textArea !== document.activeElement && nodeText !== document.activeElement) {
-      edgeMode('on');
+    if (!e.repeat && textArea !== document.activeElement && nodeText !== document.activeElement) {
+      if (key == 'a') { edgeMode('atk'); } //add attacking edge
+      else { edgeMode('on'); } //add supporting edge
     }
   }
-  if (keycode == 65) {
-    var textArea = document.getElementById('analysis_text');
-    var nodeText = document.getElementById('n_text');
-    if (textArea !== document.activeElement && nodeText !== document.activeElement) {
-      edgeMode('atk');
-    }
-  }
-  if (keycode == 17) {
+  else if (key == 'control') { //edit node on
     editMode = true;
   }
-  //if (keycode == 37 || keycode == 38 || keycode == 39 || keycode == 40) {
-  if (keycode in NAV_MAP) {
+  else if (keycode in NAV_MAP) {
     panZoomMode(keycode);
   }
-  if (keycode == 18 && !(window.shiftPress || window.atkPress) && mSel.length == 0) {
+  else if (key == 'alt' && !(window.shiftPress || window.atkPress) && mSel.length == 0) { //multi select on
     multiSel[0] = true;
   }
 }
@@ -35,21 +29,26 @@ function myKeyDown(e) {
  * @param {*} e - The key up event to handle
  */
 function myKeyUp(e) {
-  var keycode = e.keyCode;
-  if (keycode == 16 || keycode == 83) {
+  var key = e.key.toLowerCase();
+  if (key == 'shift' || key == 's' || key == 'a') { //add edge off
     edgeMode('off');
   }
-  if (keycode == 65) {
-    edgeMode('off');
-  }
-  if (keycode == 17) {
+  else if (key == 'control') { //edit node off
     editMode = false;
   }
-  if (keycode == 18) {
+  else if (key == 'alt') { //multi select off
     multiSel = [false, false];
   }
-  if (keycode == 90 && e.ctrlKey) { //ctrl + z for undo shortcut
+  else if (key == 'z' && e.ctrlKey) { //ctrl + z for undo shortcut
     undo();
+  }
+  else if (key == "backspace" || key == "delete") { //delete node shortcut
+    var textArea = document.getElementById('analysis_text');
+    var nodeText = document.getElementById('n_text');
+    if (textArea !== document.activeElement && nodeText !== document.activeElement) {
+      window.groupID++;
+      deleteNode(mySel);
+    }
   }
 }
 
@@ -290,6 +289,9 @@ function Grab(evt) {
       GrabPoint.y = TrueCoords.y;
 
       Focus(evt, targetElement);
+      var index = findNodeIndex(DragID);
+      mySel = nodes[index];
+      CurrentlyEditing = DragID;
     }
   }
   else {
@@ -1240,10 +1242,10 @@ function findEdges(nodeID) {
 function deleteNode(node) {
   //remove the node
   if (node.visible) {
-    if (document.getElementById(CurrentlyEditing)) {
-      document.getElementById(CurrentlyEditing).remove(); //if the node was drawn on the svg remove it
+    if (document.getElementById(node.nodeID)) {
+      document.getElementById(node.nodeID).remove(); //if the node was drawn on the svg remove it
     }
-    if (mySel.type == 'L' || mySel.type == 'I') {
+    if (node.type == 'L' || node.type == 'I') {
       remhl(node.nodeID);
     }
   }
@@ -1253,14 +1255,14 @@ function deleteNode(node) {
   var edgesToDelete = [];
   lNodeToDelete = null;
   for (var j = 0; j < edges.length; j++) {
-    if (edges[j].toID == CurrentlyEditing) {
+    if (edges[j].toID == node.nodeID) {
       edgesToDelete.push(edges[j]);
       if (node.type == 'YA' && !(node.visible)) { //if a YA analyst node then record the connected L analyst node
         index = findNodeIndex(edges[j].fromID);
         lNodeToDelete = nodes[index];
       }
     }
-    if (edges[j].fromID == CurrentlyEditing) {
+    if (edges[j].fromID == node.nodeID) {
       edgesToDelete.push(edges[j]);
     }
   }
@@ -1269,7 +1271,6 @@ function deleteNode(node) {
   }
 
   if (lNodeToDelete != null) { //if a connected L analyst node was found then also delete it
-    CurrentlyEditing = lNodeToDelete.nodeID;
     deleteNode(lNodeToDelete);
   }
 
@@ -1298,7 +1299,7 @@ function deleteEdges(edge) {
           CurrentlyEditing = nodes[i].nodeID;
           deleteNode(nodes[i]);
         }
-        if (nodes[i].nodeID == edgeTo && nodes[i].type != "I" && nodes[i].type != "L" && nodes[i].type != 'EN' && nodes[i].type != 'TA') {
+        if (typeof nodes[i] != "undefined" && nodes[i].nodeID == edgeTo && nodes[i].type != "I" && nodes[i].type != "L" && nodes[i].type != 'EN' && nodes[i].type != 'TA') {
           CurrentlyEditing = nodes[i].nodeID;
           deleteNode(nodes[i]);
         }
