@@ -225,7 +225,7 @@ function nodeMode(status) {
 function Grab(evt) {
   $("#contextmenu").hide();
 
-  if (evt.button != 0) {
+  if (evt.button != 0 && !longEdge[0]) { //disable right click when in the middle of adding a long distance edge
     myRClick(evt);
     return;
   }
@@ -266,6 +266,9 @@ function Grab(evt) {
 
       Focus(evt, targetElement);
     }
+    else if (window.longEdge[1]) {
+      //do nothing
+    }
     else if (editMode) {
       var index = findNodeIndex(targetElement.id);
       mySel = nodes[index];
@@ -273,8 +276,6 @@ function Grab(evt) {
       editpopup(nodes[index]);
       editMode = false;
       return;
-    } else if (window.longEdge[1]) {
-      //do nothing
     }
     else {
       DragTarget = targetElement;
@@ -290,8 +291,12 @@ function Grab(evt) {
 
       Focus(evt, targetElement);
     }
-  } else {
-    if (window.nodeAddBtn) {
+  }
+  else {
+    if (window.longEdge[0]) {
+      //do nothing
+    }
+    else if (window.nodeAddBtn) {
       window.groupID++;
       window.nodeCounter++;
       newNodeID = (window.nodeCounter + "_" + window.sessionid);
@@ -907,25 +912,14 @@ function Drop(evt) {
         if (window.longEdge[1]) { //if adding a long distance edge
           var displayText = document.getElementById('target_text');
           displayText.innerHTML = '"' + nTo.text + '"';
-
-          //marks the newly added node and its connected edges/nodes if needed
-          var radio = document.getElementById("mark_node_check");
-          if (radio && radio.checked) {
-            var index = findNodeIndex(newNodeID);
-            if (index > -1) {
-              var n = nodes[index];
-              window.groupID++;
-              markNode(n, true);
-            } else {
-              markEdge(nFrom.nodeID, nTo.nodeID, true);
-            }
-          }
+          CurrentlyEditing = newNodeID;
 
           //center the view on the new edge that was added
           var newx = nx - 250;
           var newy = ny - 400;
           VB = [newx, newy, 1500, 1500];
           SVGRoot.setAttribute('viewBox', [newx, newy, 1500, 1500]);
+
           if (window.dialogicalMode && !(nodeFrom == "L" && nodeTo == "L")) {
             if (window.rIATMode) { //select suggested L target
               var id = nTo.nodeID.split("_");
