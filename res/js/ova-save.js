@@ -35,23 +35,27 @@ function genjson() {
             jschemeFulfillments.push(jschemeFulfillment);
         }
 
-        for (d of nodes[i].descriptors) {
-            if (d.descriptorID !== null && d.descriptorID !== "null") {
-                var jdescriptorFulfillment = {};
-                jdescriptorFulfillment['nodeID'] = nodes[i].nodeID;
-                jdescriptorFulfillment['descriptorID'] = d.descriptorID;
-                jdescriptorFulfillment['selectedID'] = d.selectedID;
-                jdescriptorFulfillments.push(jdescriptorFulfillment);
+        if (Symbol.iterator in nodes[i].descriptors) {
+            for (d of nodes[i].descriptors) {
+                if (d.descriptorID !== null && d.descriptorID !== "null") {
+                    var jdescriptorFulfillment = {};
+                    jdescriptorFulfillment['nodeID'] = nodes[i].nodeID;
+                    jdescriptorFulfillment['descriptorID'] = d.descriptorID;
+                    jdescriptorFulfillment['selectedID'] = d.selectedID;
+                    jdescriptorFulfillments.push(jdescriptorFulfillment);
+                }
             }
         }
 
-        for (cq of nodes[i].cqdesc) {
-            if (cq.descriptorID !== null && cq.descriptorID !== "null") {
-                var jcqFulfillment = {};
-                jcqFulfillment['nodeID'] = nodes[i].nodeID;
-                jcqFulfillment['descriptorID'] = cq.descriptorID;
-                jcqFulfillment['selectedID'] = cq.selectedID;
-                jcqFulfillments.push(jcqFulfillment);
+        if (Symbol.iterator in nodes[i].cqdesc) {
+            for (cq of nodes[i].cqdesc) {
+                if (cq.descriptorID !== null && cq.descriptorID !== "null") {
+                    var jcqFulfillment = {};
+                    jcqFulfillment['nodeID'] = nodes[i].nodeID;
+                    jcqFulfillment['descriptorID'] = cq.descriptorID;
+                    jcqFulfillment['selectedID'] = cq.selectedID;
+                    jcqFulfillments.push(jcqFulfillment);
+                }
             }
         }
 
