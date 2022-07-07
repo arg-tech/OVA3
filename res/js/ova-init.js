@@ -284,14 +284,23 @@ function updateAnalysis() {
             if (edits.edits[i].sessionid == window.sessionid) {
                 //do nothing for our own edits
             } else if (edits.edits[i].type == 'node' && edits.edits[i].action == 'add') {
-                node = JSON.parse(edits.edits[i].content);
-                updateAddNode(node);
+                try {
+                    node = JSON.parse(edits.edits[i].content);
+                    updateAddNode(node);
+                }
+                catch (e) { console.log(e); console.log(edits.edits[i].content); }
             } else if (edits.edits[i].type == 'node' && edits.edits[i].action == 'delete') {
-                node = JSON.parse(edits.edits[i].content);
-                updateDelNode(node);
+                try {
+                    node = JSON.parse(edits.edits[i].content);
+                    updateDelNode(node);
+                }
+                catch (e) { console.log(e); console.log(edits.edits[i].content); }
             } else if (edits.edits[i].type == 'node' && edits.edits[i].action == 'edit') {
-                node = JSON.parse(edits.edits[i].content);
-                updateEditNode(node);
+                try {
+                    node = JSON.parse(edits.edits[i].content);
+                    updateEditNode(node);
+                }
+                catch (e) { console.log(e); console.log(edits.edits[i].content); }
             } else if (edits.edits[i].type == 'edge' && edits.edits[i].action == 'add') {
                 edge = JSON.parse(edits.edits[i].content);
                 eretry.push([edge, 'add']);
