@@ -203,20 +203,20 @@ if (isset($_COOKIE['ovauser'])) {
     <a href="index.php" class="home"><img src="res/img/logo.svg" /></a>
     <a onClick='$("#xmenu").toggle("slide", {direction: "right"}, "slow");' class="icon" id="xmenutoggle" style="background-position: -126px 50%;"></a>
     <div class="divider"></div>
-    <a onClick="mainTut()" class="icon" style="background-position: -378px 50%;"><span class="tooltiptext">Tutorial</span></a>
+    <a onClick="mainTut();" class="icon" id="tutorial" style="display:none; background-position: -378px 50%;"><span class="tooltiptext">Tutorial</span></a>
     <div class="divider"></div>
-    <a onClick="genldot()" class="icon" id="alay" style="background-position: -420px 50%;"><span class="tooltiptext">AutoLayout</span></a>
+    <a onClick="genldot();" class="icon" id="alay" style="display:none; background-position: -420px 50%;"><span class="tooltiptext">AutoLayout</span></a>
     <div class="divider"></div>
-    <a onClick="showReplace(); openModal('#modal-load');" class="icon" id="loada" style="background-position: -210px 50%;"><span class="tooltiptext">Load&nbsp;Analysis</span></a>
-    <a onClick="openModal('#modal-save');" class="icon" id="savea" style="background-position: -84px 50%;"><span class="tooltiptext">Save&nbsp;Analysis</span></a>
-    <a href="<?php echo $newurl; ?>" class="icon" id="newa" style="background-position: -168px 50%;"><span class="tooltiptext">New&nbsp;Analysis</span></a>
+    <a onClick="showReplace(); openModal('#modal-load');" class="icon" id="loada" style="display:none; background-position: -210px 50%;"><span class="tooltiptext">Load&nbsp;Analysis</span></a>
+    <a onClick="openModal('#modal-save');" class="icon" id="savea" style="display:none; background-position: -84px 50%;"><span class="tooltiptext">Save&nbsp;Analysis</span></a>
+    <a href="<?php echo $newurl; ?>" class="icon" id="newa" style="display:none; background-position: -168px 50%;"><span class="tooltiptext">New&nbsp;Analysis</span></a>
     <div class="divider"></div>
-    <a onClick="return false;" class="icon" id="eadd" style="background-position: -42px 50%;"><span class="tooltiptext">Add&nbsp;Edge</span></a>
-    <a onClick="nodeMode('switch'); return false;" class="icon" id="nadd" style="background-position: -0px 50%;"><span class="tooltiptext">Add&nbsp;Node</span></a>
+    <a onClick="return false;" class="icon" id="eadd" style="display:none; background-position: -42px 50%;"><span class="tooltiptext">Add&nbsp;Edge</span></a>
+    <a onClick="nodeMode('switch'); return false;" class="icon" id="nadd" style="display:none; background-position: -0px 50%;"><span class="tooltiptext">Add&nbsp;Node</span></a>
     <div class="divider"></div>
-    <a onClick="resetPosition();" class="icon" id="reset" style="background-position: -336px 50%;"><span class="tooltiptext">Reset&nbsp;View</span></a>
+    <a onClick="resetPosition();" class="icon" id="reset" style="display:none; background-position: -336px 50%;"><span class="tooltiptext">Reset&nbsp;View</span></a>
     <div class="divider"></div>
-    <a onClick="undo();" class="icon" id="undo" style="background-position: -462px 50%;"><span class="tooltiptext">Undo</span></a>
+    <a onClick="undo();" class="icon" id="undo" style="display:none; background-position: -462px 50%;"><span class="tooltiptext">Undo</span></a>
     <div class="divider"></div>
   </div>
 
@@ -226,20 +226,58 @@ if (isset($_COOKIE['ovauser'])) {
       <div class="icn" style="background-position: -294px 50%;"></div>
       <div class="txt">Account</div>
     </a> -->
-    <a onClick="openModal('#modal-settings');" class="xicon">
+    <a onClick="openModal('#modal-settings');" class="xicon" id="stngs">
       <div class="icn" style="background-position: -252px 50%;"></div>
-      <div class="txt" id="stngs">Settings</div>
+      <div class="txt">Settings</div>
     </a>
-    <a onClick="genlink(); openModal('#modal-share');" class="xicon">
+    <a onClick="genlink(); openModal('#modal-share');" class="xicon" id="sharea">
       <div class="icn" style="background-image: url('res/img/linkicon.png'); background-position: 50% 50%;"></div>
       <div class="txt">Share Analysis</div>
     </a>
-    <a onClick="openModal('#modal-help');" class="xicon">
+    <a onClick="openModal('#modal-help');" class="xicon" id="helpsheet">
       <div class="icn" style="background-position: -378px 50%;"></div>
       <!-- <div style="float:left; width:42px; height:48px; margin: 0px 5px;">?</div> -->
       <!-- TODO: update icon -->
-      <div class="txt" id="help">Helpsheet</div>
+      <div class="txt">Helpsheet</div>
     </a>
+    <div>
+      <a onClick="genldot();" class="xicon" id="alayX" style="display:none;">
+        <div class="icn" style="background-position: -420px 50%;"></div>
+        <div class="txt">AutoLayout</div>
+      </a>
+      <a onClick="showReplace(); openModal('#modal-load');" class="xicon" id="loadaX" style="display:none;">
+        <div class="icn" style="background-position: -210px 50%;"></div>
+        <div class="txt">Load&nbsp;Analysis</div>
+      </a>
+      <a onClick="openModal('#modal-save');" class="xicon" id="saveaX" style="display:none;">
+        <div class="icn" style="background-position: -84px 50%;"></div>
+        <div class="txt">Save&nbsp;Analysis</div>
+      </a>
+      <a href="<?php echo $newurl; ?>" class="xicon" id="newaX" style="display:none;">
+        <div class="icn" style="background-position: -168px 50%;"></div>
+        <div class="txt">New&nbsp;Analysis</div>
+      </a>
+      <a onClick="return false;" class="xicon" id="eaddX" style="display:none;">
+        <div class="icn" style="background-position: -42px 50%;"></div>
+        <div class="txt">Add&nbsp;Edge</div>
+      </a>
+      <a onClick="nodeMode('switch'); return false;" class="xicon" id="naddX" style="display:none;">
+        <div class="icn" style="background-position: -0px 50%;"></div>
+        <div class="txt">Add&nbsp;Node</div>
+      </a>
+      <a onClick="resetPosition();" class="xicon" id="resetX" style="display:none;">
+        <div class="icn" style="background-position: -336px 50%;"></div>
+        <div class="txt">Reset&nbsp;View</div>
+      </a>
+      <a onClick="undo();" class="xicon" id="undoX" style="display:none;">
+        <div class="icn" style="background-position: -462px 50%;"></div>
+        <div class="txt">Undo</div>
+      </a>
+      <a onClick="mainTut();" class="xicon" id="tutorialX" style="display:none;">
+        <div class="icn" style="background-position: -378px 50%;"></div>
+        <div class="txt">Tutorial</div>
+      </a>
+    </div>
   </div>
 
   <!-- <div class="modal-dialog" id="modal-account">

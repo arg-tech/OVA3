@@ -164,14 +164,14 @@ function edgeMode(status) {
     window.atkPress = false;
     window.shiftPress = true;
     document.getElementById("right1").style.cursor = 'crosshair';
-    $('#eadd').removeClass("active attack support");
-    $('#eadd').addClass("active support");
+    $('#eadd').removeClass("active attack support"); $('#eaddX').removeClass("active attack support");
+    $('#eadd').addClass("active support"); $('#eaddX').addClass("active support");
   } else if (status == 'off') {
     window.shiftPress = false;
     window.atkPress = false;
     window.eBtn = false;
     document.getElementById("right1").style.cursor = 'auto';
-    $('#eadd').removeClass("active attack support");
+    $('#eadd').removeClass("active attack support"); $('#eaddX').removeClass("active attack support");
     if (window.longEdge[0]) {
       tempEdge = document.getElementById('n' + FromID + '-nedge_to');
       if (tempEdge) { SVGRootG.removeChild(tempEdge); }
@@ -183,14 +183,14 @@ function edgeMode(status) {
     window.shiftPress = false;
     window.atkPress = true;
     document.getElementById("right1").style.cursor = 'crosshair';
-    $('#eadd').removeClass("active attack support");
-    $('#eadd').addClass("active attack");
+    $('#eadd').removeClass("active attack support"); $('#eaddX').removeClass("active attack support");
+    $('#eadd').addClass("active attack"); $('#eaddX').addClass("active attack");
   } else if (status == 'long') {
     window.eBtn = true;
     window.shiftPress = true;
     window.longEdge[0] = true;
-    $('#eadd').removeClass("active attack support");
-    $('#eadd').addClass("active support");
+    $('#eadd').removeClass("active attack support"); $('#eaddX').removeClass("active attack support");
+    $('#eadd').addClass("active support"); $('#eaddX').addClass("active support");
   }
 }
 
@@ -208,11 +208,11 @@ function nodeMode(status) {
   if (status == 'on') {
     window.nodeAddBtn = true;
     document.getElementById("right1").style.cursor = 'crosshair';
-    $('#nadd').addClass("active");
+    $('#nadd').addClass("active"); $('#naddX').addClass("active");
   } else {
     window.nodeAddBtn = false;
     document.getElementById("right1").style.cursor = 'auto';
-    $('#nadd').removeClass("active");
+    $('#nadd').removeClass("active"); $('#naddX').removeClass("active");
   }
 }
 

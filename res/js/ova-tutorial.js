@@ -51,19 +51,9 @@ function mainTut() {
                 position: 'bottom-middle-aligned',
             },
             {
-                element: '#em_newa',
-                intro: "<p>Click here to start a new analysis. Any changes since you last saved will be lost.</p>",
-                position: 'left',
-            },
-            {
                 element: '#savea',
                 intro: "<p>Your analysis can be saved locally as either a JSON file, that can be re-opened in OVA, or an image.</p><p>Analyses can also be saved to AIFdb.</p>",
                 position: 'bottom-middle-aligned',
-            },
-            {
-                element: '#em_savea',
-                intro: "<p>Your analysis can be saved locally as either a JSON file, that can be re-opened in OVA, or an image.</p><p>Analyses can also be saved to AIFdb.</p>",
-                position: 'left',
             },
             {
                 element: '#loada',
@@ -71,38 +61,68 @@ function mainTut() {
                 position: 'bottom-middle-aligned',
             },
             {
-                element: '#em_loada',
-                intro: "<p>Click here to load a previous analysis saved in JSON format or to AIFdb.</p>",
-                position: 'left',
-            },
-            {
                 element: '#alay',
                 intro: "<p>Automatically layout your diagram.</p><p><strong>Warning:</strong>This will move any nodes that you have already positioned.</p>",
                 position: 'bottom-middle-aligned',
             },
             {
-                element: '#em_alay',
-                intro: "<p>Automatically layout your diagram.</p><p><strong>Warning:</strong>This will move any nodes that you have already positioned.</p>",
+                element: '#xmenutoggle',
+                intro: "<p>Click here to access your analysis settings or to share your analysis for collaborative working.</p>",
                 position: 'left',
             },
             {
                 element: '#stngs',
                 intro: "<p>Click here to change analysis settings.</p>",
-                position: 'bottom-middle-aligned',
-            },
-            {
-                element: '#em_stngs',
-                intro: "<p>Click here to change analysis settings.</p>",
                 position: 'left',
             },
             {
-                element: '#linkicon',
+                element: '#sharea',
                 intro: "<p>Click here to share your analysis.</p><p>Shared analyses are collaborative and can be edited by multiple people.</p>",
                 position: 'left',
             },
             {
-                element: '#xmenutoggle',
-                intro: "<p>Click here to access your analysis settings or to share your analysis for collborative working.</p>",
+                element: '#helpsheet',
+                intro: "<p>Click here to view keyboard shortcuts or for help with nodes, edges or timestamps.</p>",
+                position: 'left',
+            },
+            {
+                element: '#alayX',
+                intro: "<p>Automatically layout your diagram.</p><p><strong>Warning:</strong>This will move any nodes that you have already positioned.</p>",
+                position: 'left',
+            },
+            {
+                element: '#loadaX',
+                intro: "<p>Click here to load a previous analysis saved in JSON format or to AIFdb.</p>",
+                position: 'left',
+            },
+            {
+                element: '#saveaX',
+                intro: "<p>Your analysis can be saved locally as either a JSON file, that can be re-opened in OVA, or an image.</p><p>Analyses can also be saved to AIFdb.</p>",
+                position: 'left',
+            },
+            {
+                element: '#newaX',
+                intro: "<p>Click here to start a new analysis. Any changes since you last saved will be lost.</p>",
+                position: 'left',
+            },
+            {
+                element: '#eaddX',
+                intro: "<p>Edges can be added between nodes by clicking here, clicking on a node and dragging to the target node.</p><p>Click once for support or twice for conflict. Click again to cancel.</p><p>Edges can also be added by holding shift (support) or 'a' (conflict).</p>",
+                position: 'left',
+            },
+            {
+                element: '#naddX',
+                intro: "Nodes with custom text (enthymemes) can be added by clicking here and then clicking on the canvas.",
+                position: 'left',
+            },
+            {
+                element: '#resetX',
+                intro: "<p>Move around the canvas using the arrow keys on your keyboard.</p><p>Click here to reset your view.</p>",
+                position: 'left',
+            },
+            {
+                element: '#undoX',
+                intro: "Click here to undo the last change you made to an analysis.</p>",
                 position: 'left',
             }
         ].filter(function (obj) { return $(obj.element).length && $(obj.element).is(':visible'); }),

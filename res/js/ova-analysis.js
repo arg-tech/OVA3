@@ -65,8 +65,14 @@ $(window).on('resize', function () {
   $("#spacer").height($(window).height() - $("#toolbar").height() - 1);
   $("#xmenu").height($(window).height() - $("#toolbar").height() - 1);
   $("#modal-shade").height($(window).height() - $("#toolbar").height() - 1);
+  updateToolbar();
 });
 
+/**
+ * Handles opening a modal
+ * @param {*} ident - The ID of the modal to open
+ * @returns {Boolean}
+ */
 function openModal(ident) {
   $(".modal-dialog").hide();
   $("#modal-shade").show();
@@ -74,8 +80,69 @@ function openModal(ident) {
   return false;
 }
 
+/**
+ * Handles closing a modal
+ * @param {*} ident - The ID of the modal to close
+ * @returns {Boolean}
+ */
 function closeModal(ident) {
   $('#modal-shade').hide();
   $(ident).hide("slide", { direction: "up" }, 100);
   return false;
+}
+
+/**
+ * Updates which buttons are shown along the toolbar depending on the window's width.
+ * Equivalent buttons are shown in the extra menu when they are hidden from the toolbar.
+ */
+function updateToolbar() {
+  var w = window.innerWidth;
+  // console.log("width: " + w);
+  if (w > 880) { //show all buttons on toolbar
+    $("#alayX").hide(); $("#alay").show();
+    $("#loadaX").hide(); $("#loada").show();
+    $("#saveaX").hide(); $("#savea").show();
+    $("#newaX").hide(); $("#newa").show();
+    $("#eaddX").hide(); $("#eadd").show();
+    $("#naddX").hide(); $("#nadd").show();
+    $("#resetX").hide(); $("#reset").show();
+    $("#undoX").hide(); $("#undo").show();
+    $("#tutorialX").hide(); $("#tutorial").show();
+  }
+  else if (w > 590) { // 590 < w < 880
+    $("#alay").hide(); $("#alayX").show();
+    if (w < 800) {
+      $("#loada").hide(); $("#loadaX").show();
+      $("#savea").hide(); $("#saveaX").show();
+      $("#newa").hide(); $("#newaX").show();
+    }
+    else {
+      $("#loadaX").hide(); $("#loada").show();
+      $("#saveaX").hide(); $("#savea").show();
+      $("#newaX").hide(); $("#newa").show();
+    }
+    $("#resetX").hide(); $("#reset").show();
+    $("#undoX").hide(); $("#undo").show();
+    $("#tutorialX").hide(); $("#tutorial").show();
+    $("#eaddX").hide(); $("#eadd").show();
+    $("#naddX").hide(); $("#nadd").show();
+  }
+  else { // w < 590
+    $("#eadd").hide(); $("#eaddX").show();
+    $("#nadd").hide(); $("#naddX").show();
+    if (w < 450) {
+      $("#reset").hide(); $("#resetX").show();
+      $("#undo").hide(); $("#undoX").show();
+      $("#tutorial").hide(); $("#tutorialX").show();
+    }
+    else {
+      $("#resetX").hide(); $("#reset").show();
+      $("#undoX").hide(); $("#undo").show();
+      $("#tutorialX").hide(); $("#tutorial").show();
+    }
+    $("#loada").hide(); $("#loadaX").show();
+    $("#savea").hide(); $("#saveaX").show();
+    $("#newa").hide(); $("#newaX").show();
+    $("#alay").hide(); $("#alayX").show();
+  }
 }

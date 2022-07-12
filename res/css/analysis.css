@@ -260,6 +260,24 @@ div#xmenu a#devby img {
   width: 100px;
 }
 
+div#xmenu a#naddX.active {
+  background-color: rgba(224, 46, 66, 1);
+  border-color: rgba(224, 46, 66, 1);
+  color: #fff;
+}
+
+div#xmenu a#eaddX.attack {
+  background-color: rgba(224, 46, 66, 1);
+  border-color: rgba(224, 46, 66, 1);
+  color: #fff;
+}
+
+div#xmenu a#eaddX.support {
+  background-color: #27ae60;
+  border-color: #27ae60;
+  color: #fff;
+}
+
 /* ---- Modals ---- */
 
 #modal-shade {
