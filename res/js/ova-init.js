@@ -103,6 +103,7 @@ window.editTimestamp = false;
  * @param {*} evt 
  */
 function Init(evt) {
+    updateToolbar();
     SVGRoot = document.getElementById('inline');
     SVGRootG = document.createElementNS("http://www.w3.org/2000/svg", 'g');
     SVGRoot.appendChild(SVGRootG);
@@ -1506,10 +1507,12 @@ function dialogicalModeOnOff() {
 function eAddModeOnOff() {
     if (window.eAddMode) {
         $("#eadd").attr("onclick", "edgeMode('switch')");
+        $("#eaddX").attr("onclick", "edgeMode('switch')");
         // console.log("sticky add edge mode turned on");
     }
     else {
         $("#eadd").attr("onclick", "clearEdgeModal()");
+        $("#eaddX").attr("onclick", "clearEdgeModal()");
         // console.log("sticky add edge mode turned off");
     }
 }
