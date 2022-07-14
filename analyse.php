@@ -760,7 +760,7 @@ if (isset($_COOKIE['ovauser'])) {
           <div class="btnicn" style="background-image: url('res/img/icon-delnode.png');">&nbsp;</div> Delete Node
         </a></li>
       <?php if ($pro) { ?>
-        <li><a href="#" id="l_add_btn" onClick="closeModal('#node_edit'); FormOpen = false;$('#locution_add').show();return false;">
+        <li><a href="#" id="l_add_btn" onClick="saveNodeEdit();$('#node_edit').hide(); FormOpen = false;$('#locution_add').show();return false;">
             <div class="btnicn" style="background-image: url('res/img/icon_ladd.png');">&nbsp;</div> Add Locution
           </a></li>
         <!-- <li><a href="#" id="edit_timestamp_btn" onClick="closeModal('#node_edit');FormOpen = false; window.editTimestamp=true; $('#modal-timestamps').show();return false;">
