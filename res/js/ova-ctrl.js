@@ -529,76 +529,52 @@ function Drag(evt) {
 
     //If moving multiple nodes
     if (mSel.length > 0) {
-      children = DragTarget.children;
-      for (var j = 0; j < children.length; j++) {
-        var childElement = children[j];
-        oldX = parseInt(childElement.getAttributeNS(null, 'x'));
-        oldY = parseInt(childElement.getAttributeNS(null, 'y'));
-        newX = (oldX + dx);
-        newY = (oldY + dy);
-        childElement.setAttributeNS(null, 'x', newX);
-        childElement.setAttributeNS(null, 'y', newY);
-        tchildren = childElement.getElementsByTagName('tspan')
-        for (var k = 0; k < tchildren.length; k++) {
-          var cE = tchildren[k];
-          coldX = parseInt(cE.getAttributeNS(null, 'x'));
-          cnewX = (coldX + dx);
-          cE.setAttributeNS(null, 'x', cnewX);
-        }
-      }
-      var xdiff = (newX - oldX);
-      var ydiff = (newY - oldY);
-      if (dragEdges.length > 0) {
-        for (var j = 0; j < dragEdges.length; j++) {
-          UpdateEdge(dragEdges[j]);
-        }
-      }
-      //Moving rest of selected nodes along with active one
+      var childElement, tchildren, cE;
+      var oldX = 0, oldY = 0, newX = 0, newY = 0, coldX = 0, cnewX = 0;
       for (var i = 0; i < mSel.length; i++) {
-        if (mSel[i].nodeID != DragTarget.id) {
-          children = document.getElementById(mSel[i].nodeID).children;
-
-          for (var j = 0; j < children.length; j++) {
-            var childElement = children[j];
-            oldX = parseInt(childElement.getAttributeNS(null, 'x'));
-            oldY = parseInt(childElement.getAttributeNS(null, 'y'));
-            newX = (oldX + xdiff);
-            newY = (oldY + ydiff);
-            childElement.setAttributeNS(null, 'x', newX);
-            childElement.setAttributeNS(null, 'y', newY);
-            tchildren = childElement.getElementsByTagName('tspan')
-            for (var k = 0; k < tchildren.length; k++) {
-              var cE = tchildren[k];
-              coldX = parseInt(cE.getAttributeNS(null, 'x'));
-              cnewX = (coldX + xdiff);
-              cE.setAttributeNS(null, 'x', cnewX);
-            }
+        children = document.getElementById(mSel[i].nodeID).children;
+        for (var j = 0; j < children.length; j++) {
+          childElement = children[j];
+          oldX = parseInt(childElement.getAttributeNS(null, 'x'));
+          oldY = parseInt(childElement.getAttributeNS(null, 'y'));
+          newX = Math.round(oldX + dx);
+          newY = Math.round(oldY + dy);
+          childElement.setAttributeNS(null, 'x', newX);
+          childElement.setAttributeNS(null, 'y', newY);
+          tchildren = childElement.getElementsByTagName('tspan')
+          for (var k = 0; k < tchildren.length; k++) {
+            cE = tchildren[k];
+            coldX = parseInt(cE.getAttributeNS(null, 'x'));
+            cnewX = Math.round(coldX + dx);
+            cE.setAttributeNS(null, 'x', cnewX);
           }
-          GetEdges(mSel[i].nodeID);
-          if (dragEdges.length > 0) {
-            for (var j = 0; j < dragEdges.length; j++) {
-              UpdateEdge(dragEdges[j]);
-            }
+        }
+        GetEdges(mSel[i].nodeID);
+        if (dragEdges.length > 0) {
+          for (var j = 0; j < dragEdges.length; j++) {
+            UpdateEdge(dragEdges[j]);
           }
         }
       }
     } else {
       // apply a new transform translation to the dragged focusElement, to display
       //    it in its new location
-      children = DragTarget.children;
+      var children = DragTarget.children;
+      var childElement, tchildren, cE;
+      var oldX = 0, oldY = 0, newX = 0, newY = 0, coldX = 0, cnewX = 0;
       for (var j = 0; j < children.length; j++) {
-        var childElement = children[j];
+        childElement = children[j];
         oldX = childElement.getAttributeNS(null, 'x');
         oldY = childElement.getAttributeNS(null, 'y');
-        newX = parseInt(oldX) + dx;
-        newY = parseInt(oldY) + dy;
+        newX = Math.round(parseInt(oldX) + dx);
+        newY = Math.round(parseInt(oldY) + dy);
         childElement.setAttributeNS(null, 'x', newX);
         childElement.setAttributeNS(null, 'y', newY);
         tchildren = childElement.getElementsByTagName('tspan')
         for (var k = 0; k < tchildren.length; k++) {
-          var cE = tchildren[k];
+          cE = tchildren[k];
           coldX = cE.getAttributeNS(null, 'x');
-          cnewX = parseInt(coldX) + dx;
+          cnewX = Math.round(parseInt(coldX) + dx);
           cE.setAttributeNS(null, 'x', cnewX);
         }
       }
@@ -783,10 +759,11 @@ function UnFocus(evt, unfocusElement) {
 function Drop(evt) {
   if (DragTarget && mSel.length == 0) {
     children = DragTarget.children;
+    var childElement = null, xCoord = 0, yCoord = 0;
     for (var j = 0; j < children.length - 1; j++) {
-      var childElement = children[j];
-      xCoord = childElement.getAttributeNS(null, 'x');
-      yCoord = childElement.getAttributeNS(null, 'y');
+      childElement = children[j];
+      xCoord = Math.round(childElement.getAttributeNS(null, 'x'));
+      yCoord = Math.round(childElement.getAttributeNS(null, 'y'));
       window.groupID++;
       updateNode(DragTarget.id, xCoord, yCoord);
     }
@@ -856,8 +833,8 @@ function Drop(evt) {
         window.groupID++;
         window.nodeCounter++;
         newNodeID = (window.nodeCounter + "_" + window.sessionid);
-        nx = ((tx - fx) / 2) + fx;
-        ny = ((ty - fy) / 2) + fy;
+        nx = Math.round(((tx - fx) / 2) + fx);
+        ny = Math.round(((ty - fy) / 2) + fy);
 
         if (window.atkPress && (nodeFrom == "I" || nodeFrom == "EN") && (nodeTo == "I" || nodeTo == "EN")) {
           AddNode('Default Conflict', 'CA', '71', 0, newNodeID, nx, ny);
@@ -960,7 +937,7 @@ function Drop(evt) {
     var boxY = parseInt(box.getAttributeNS(null, 'y'));
     var svgNode = null;
     for (var i = 0; i < nodes.length; i++) {
-      if (nodes[i].x > boxX && nodes[i].x < boxX + boxWidth && nodes[i].y > boxY && nodes[i].y < boxY + boxHeight) {
+      if (!mSel.includes(nodes[i]) && nodes[i].x > boxX && nodes[i].x < boxX + boxWidth && nodes[i].y > boxY && nodes[i].y < boxY + boxHeight) {
         svgNode = document.getElementById(nodes[i].nodeID);
         if (svgNode != null && typeof svgNode != 'undefined') { //if the node is drawn on the svg
           mSel.push(nodes[i]);
@@ -993,12 +970,13 @@ function Drop(evt) {
   else if (mSel.length > 0) { //if moving multiple nodes using the multi select
     if (DragTarget) { //if moved then update each node
       window.groupID++;
+      var childElement = null, rect = null, xCoord = 0, yCoord = 0;
       for (var i = 0; i < mSel.length; i++) {
-        var childElement = document.getElementById(mSel[i].nodeID);
-        var rect = childElement.getElementsByTagName('rect')[0];
+        childElement = document.getElementById(mSel[i].nodeID);
+        rect = childElement.getElementsByTagName('rect')[0];
         rect.style.setProperty('stroke-width', 1);
-        xCoord = rect.getAttribute('x');
-        yCoord = rect.getAttribute('y');
+        xCoord = Math.round(rect.getAttribute('x'));
+        yCoord = Math.round(rect.getAttribute('y'));
         updateNode(mSel[i].nodeID, xCoord, yCoord);
       }
       DragTarget.setAttributeNS(null, 'pointer-events', 'all');
@@ -1091,18 +1069,6 @@ function findNodeIndex(nodeID, last) {
   }
   return -1;
 }
-
-// function editNode(node) {
-//   FormOpen = true;
-//   console.log(FormOpen);
-//   if(mySel.type == 'I' || mySel.type == 'L' || mySel.type == 'EN'){
-//     $('#node_edit').show();
-//     $('#n_text').val(node.text);
-//     //$('#modal-shade').css('display','visible');
-//     console.log(FormOpen);
-//     document.getElementById("#modal-shade").style.display = "block";
-//   }
-// }
 
 /**
  * Handles updating nodes to save any edits made from the edit node form
