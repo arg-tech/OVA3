@@ -489,7 +489,7 @@ async function loadOva3Json(json, oplus, offset) {
         if (nodelist[n[i].nodeID]) {
             if (n[i].visible) {
                 newY = parseInt(n[i].y) + offset;
-                updateNode(n[i].nodeID, n[i].x, newY, true, 1, false);
+                updateNode(n[i].nodeID, parseInt(n[i].x), newY, true, 1, false);
                 DrawNode(nodelist[n[i].nodeID].nodeID, nodelist[n[i].nodeID].type, nodelist[n[i].nodeID].text, nodelist[n[i].nodeID].x, nodelist[n[i].nodeID].y);
                 if (n[i].timestamp && n[i].timestamp != '') {
                     tstamp = n[i].timestamp.split(" (")[0]; //remove the timezone name from the timestamp
@@ -552,7 +552,7 @@ async function loadOva2Json(json, oplus, offset) {
     var jnodes = json['nodes'];
     var nID = '';
     var count = window.nodeCounter;
-    var newY = 0;
+    var newY = 0, x = 0;
     var start;
     for (var i = 0, l = jnodes.length; i < l; i++) {
         if ((count + jnodes[i].id) > window.nodeCounter) {
@@ -560,20 +560,21 @@ async function loadOva2Json(json, oplus, offset) {
         }
         nID = ((count + jnodes[i].id) + "_" + window.sessionid);
         newY = parseInt(jnodes[i].y) + offset;
+        x = parseInt(jnodes[i].x);
         if (oplus) {
             if (jnodes[i].type == "L") {
                 pID = findParticipantIDText(jnodes[i].text);
-                nodelist[nID] = newNode(nID, jnodes[i].type, jnodes[i].scheme, pID, jnodes[i].text, jnodes[i].x, newY, jnodes[i].visible, 1, jnodes[i].timestamp, false, false);
+                nodelist[nID] = newNode(nID, jnodes[i].type, jnodes[i].scheme, pID, jnodes[i].text, x, newY, jnodes[i].visible, 1, jnodes[i].timestamp, false, false);
                 if (jnodes[i].visible) {
-                    DrawNode(nID, jnodes[i].type, jnodes[i].text, jnodes[i].x, newY);
+                    DrawNode(nID, jnodes[i].type, jnodes[i].text, x, newY);
                     if (text) { hlUpdate(jnodes[i].id, jnodes[i].type, nID, false); }
-                    if (window.showTimestamps && jnodes[i].timestamp && jnodes[i].timestamp != '') { DrawTimestamp(nID, jnodes[i].timestamp, jnodes[i].x, newY); }
+                    if (window.showTimestamps && jnodes[i].timestamp && jnodes[i].timestamp != '') { DrawTimestamp(nID, jnodes[i].timestamp, x, newY); }
                 }
             } else {
-                nodelist[nID] = AddNode(jnodes[i].text, jnodes[i].type, jnodes[i].scheme, 0, nID, jnodes[i].x, newY, jnodes[i].visible, 1, "", false, false);
+                nodelist[nID] = AddNode(jnodes[i].text, jnodes[i].type, jnodes[i].scheme, 0, nID, x, newY, jnodes[i].visible, 1, "", false, false);
             }
         } else if (jnodes[i].type == "I" || jnodes[i].type == "RA" || jnodes[i].type == "CA" || jnodes[i].type == "MA" || jnodes[i].type == "EN") {
-            nodelist[nID] = AddNode(jnodes[i].text, jnodes[i].type, jnodes[i].scheme, 0, nID, jnodes[i].x, newY, jnodes[i].visible, 1, "", false, false);
+            nodelist[nID] = AddNode(jnodes[i].text, jnodes[i].type, jnodes[i].scheme, 0, nID, x, newY, jnodes[i].visible, 1, "", false, false);
             if (jnodes[i].type == "I" && text) { hlUpdate((jnodes[i].id - 2), jnodes[i].type, nID, false); }
         }
 

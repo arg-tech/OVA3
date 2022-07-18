@@ -760,7 +760,7 @@ function Drop(evt) {
   if (DragTarget && mSel.length == 0) {
     children = DragTarget.children;
     var childElement = null, xCoord = 0, yCoord = 0;
-    for (var j = 0; j < children.length - 1; j++) {
+    for (var j = 1; j < children.length; j++) {
       childElement = children[j];
       xCoord = Math.round(childElement.getAttributeNS(null, 'x'));
       yCoord = Math.round(childElement.getAttributeNS(null, 'y'));
@@ -1074,18 +1074,17 @@ function findNodeIndex(nodeID, last) {
  * Handles updating nodes to save any edits made from the edit node form
  */
 function saveNodeEdit() {
-  var xCoord = mySel.x;
-  var yCoord = mySel.y;
   if (mySel.type == 'I' || mySel.type == 'L' || mySel.type == 'EN') {
     var ntext = document.getElementById("n_text").value;
     document.getElementById(CurrentlyEditing).remove();
-    DrawNode(CurrentlyEditing, mySel.type, ntext, xCoord, yCoord, mySel.marked);
+    DrawNode(CurrentlyEditing, mySel.type, ntext, mySel.x, mySel.y, mySel.marked);
     if (mySel.timestamp != "" && window.showTimestamps) {
       DrawTimestamp(mySel.nodeID, mySel.timestamp, mySel.x, mySel.y);
     }
     window.groupID++;
-    updateNode(CurrentlyEditing, xCoord, yCoord, true, 0, true, mySel.type, null, ntext, mySel.timestamp);
-  } else {
+    updateNode(CurrentlyEditing, mySel.x, mySel.y, true, 0, true, mySel.type, null, ntext, mySel.timestamp);
+  }
+  else {
     mySel.type = document.getElementById("s_type").value;
     if (mySel.type == 'RA') {
       var ssel = document.getElementById("s_ischeme");
@@ -1146,7 +1145,7 @@ function saveNodeEdit() {
     }
 
     document.getElementById(CurrentlyEditing).remove();
-    DrawNode(CurrentlyEditing, mySel.type, mySel.text, xCoord, yCoord, mySel.marked); //update the SVG
+    DrawNode(CurrentlyEditing, mySel.type, mySel.text, mySel.x, mySel.y, mySel.marked); //update the SVG
 
     //create the descriptors if needed
     var descriptors = [];
@@ -1177,7 +1176,7 @@ function saveNodeEdit() {
     mySel.cqdesc = cqs; //update the node's cq descriptors
 
     window.groupID++;
-    updateNode(CurrentlyEditing, xCoord, yCoord);
+    updateNode(CurrentlyEditing, mySel.x, mySel.y);
   }
 
   var edgesToUpdate = findEdges(CurrentlyEditing);
