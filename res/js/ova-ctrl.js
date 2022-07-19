@@ -285,6 +285,14 @@ function Grab(evt) {
       DragID = DragTarget.getAttributeNS(null, 'id');
       GetEdges(DragID);
 
+      // move any connected edges to the "top" of the display
+      var e, svgE = null;
+      for (var i = 0; i < dragEdges.length; i++) {
+        e = dragEdges[i];
+        svgE = document.getElementById("n" + e.fromID + "-n" + e.toID);
+        if (svgE) { DragTarget.parentNode.appendChild(svgE); }
+      }
+
       GrabPoint.x = TrueCoords.x;
       GrabPoint.y = TrueCoords.y;
 
@@ -637,48 +645,49 @@ function updateBox(g) {
  */
 function UpdateEdge(e) {
   if (!e.visible || e == null) { return false; } //if the edge is null or invisible, i.e. it isn't drawn on the svg, do nothing
-  edgeID = 'n' + e.fromID + '-n' + e.toID;
-  ee = document.getElementById(edgeID);
-  nodeFrom = document.getElementById(e.fromID);
-  nodeTo = document.getElementById(e.toID);
+  var edgeID = 'n' + e.fromID + '-n' + e.toID;
+  var ee = document.getElementById(edgeID);
+  var nodeFrom = document.getElementById(e.fromID);
+  var nodeTo = document.getElementById(e.toID);
   if (nodeFrom == null || nodeTo == null || ee == null) { return false; } //if either of the nodes aren't drawn on the svg, do nothing
-  nf = nodeFrom.getElementsByTagName('rect')[0];
-  nt = nodeTo.getElementsByTagName('rect')[0];
+  var nf = nodeFrom.getElementsByTagName('rect')[0];
+  var nt = nodeTo.getElementsByTagName('rect')[0];
 
-  fw = parseInt(nf.getAttributeNS(null, 'width'));
-  fh = parseInt(nf.getAttributeNS(null, 'height'));
-  tw = parseInt(nt.getAttributeNS(null, 'width'));
-  th = parseInt(nt.getAttributeNS(null, 'height'));
+  var fw = parseInt(nf.getAttributeNS(null, 'width'));
+  var fh = parseInt(nf.getAttributeNS(null, 'height'));
+  var tw = parseInt(nt.getAttributeNS(null, 'width'));
+  var th = parseInt(nt.getAttributeNS(null, 'height'));
 
-  fx = parseInt(nf.getAttributeNS(null, 'x'));
-  fy = parseInt(nf.getAttributeNS(null, 'y'));
-  tx = parseInt(nt.getAttributeNS(null, 'x'));
-  ty = parseInt(nt.getAttributeNS(null, 'y'));
+  var fx = parseInt(nf.getAttributeNS(null, 'x'));
+  var fy = parseInt(nf.getAttributeNS(null, 'y'));
+  var tx = parseInt(nt.getAttributeNS(null, 'x'));
+  var ty = parseInt(nt.getAttributeNS(null, 'y'));
 
-  curve_offset = 80;
-  efx = fx + (fw / 2);
-  efy = fy + (fh / 2);
+  var curve_offset = 80;
+  var efx = fx + (fw / 2);
+  var efy = fy + (fh / 2);
+  var etx, ety, cp1x, cp1y, cp2x, cp2y;
 
   if (Math.abs(fy - ty) > Math.abs(fx - tx)) { // join top to bottom
     if (fy > ty) { // from below to
       if (fy - ty < curve_offset * 2) {
         curve_offset = (fy - ty) / 2;
       }
-      //efx = fx + (fw/2);
-      //efy = fy;
+      // efx = fx + (fw/2);
+      efy = fy;
       etx = tx + (tw / 2);
       ety = ty + th;
-      cp1y = efy - curve_offset;
+      cp1y = fy + (fh / 2) - curve_offset;
       cp2y = ety + curve_offset;
     } else {
       if (ty - fy < curve_offset * 2) {
         curve_offset = (ty - fy) / 2;
       }
-      //efx = fx + (fw/2);
-      //efy = fy + fh;
+      // efx = fx + (fw/2);
+      efy = fy + fh;
       etx = tx + (tw / 2);
       ety = ty;
-      cp1y = efy + curve_offset;
+      cp1y = fy + (fh / 2) + curve_offset;
       cp2y = ety - curve_offset;
     }
     cp1x = efx;
@@ -688,21 +697,21 @@ function UpdateEdge(e) {
       if (fx - tx < curve_offset * 2) {
         curve_offset = (fx - tx) / 2;
       }
-      //efx = fx;
-      //efy = fy + (fh/2);
+      efx = fx;
+      // efy = fy + (fh/2);
       etx = tx + tw;
       ety = ty + (th / 2);
-      cp1x = efx - curve_offset;
+      cp1x = fx + (fw / 2) - curve_offset;
       cp2x = etx + curve_offset;
     } else {
       if (tx - fx < curve_offset * 2) {
         curve_offset = (tx - fx) / 2;
       }
-      //efx = fx + fw;
-      //efy = fy + (fh/2);
+      efx = fx + fw;
+      // efy = fy + (fh/2);
       etx = tx;
       ety = ty + (th / 2);
-      cp1x = efx + curve_offset;
+      cp1x = fx + (fw / 2) + curve_offset;
       cp2x = etx - curve_offset;
     }
     cp1y = efy;
