@@ -117,7 +117,7 @@ function DrawEdge(fromid, toid) {
     nedge.setAttribute('stroke', 'black');
     nedge.setAttribute('d', 'M80,30 C200,30 30,380 200,380');
     nedge.setAttribute('marker-end', 'url(#head)');
-    SVGRootG.insertBefore(nedge, SVGRootG.childNodes[0]);
+    SVGRootG.appendChild(nedge);
 }
 
 /**
