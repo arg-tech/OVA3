@@ -278,8 +278,6 @@ function Grab(evt) {
     }
     else {
       DragTarget = targetElement;
-      // move this focusElement to the "top" of the display
-      DragTarget.parentNode.appendChild(DragTarget);
       DragTarget.setAttributeNS(null, 'pointer-events', 'none');
 
       DragID = DragTarget.getAttributeNS(null, 'id');
@@ -292,6 +290,8 @@ function Grab(evt) {
         svgE = document.getElementById("n" + e.fromID + "-n" + e.toID);
         if (svgE) { DragTarget.parentNode.appendChild(svgE); }
       }
+      // move this focusElement to the "top" of the display
+      DragTarget.parentNode.appendChild(DragTarget);
 
       GrabPoint.x = TrueCoords.x;
       GrabPoint.y = TrueCoords.y;
