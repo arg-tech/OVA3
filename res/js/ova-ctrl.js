@@ -863,6 +863,7 @@ function Drop(evt) {
           AddNode('Default Conflict', 'CA', '71', 0, newNodeID, nx, ny);
         } else if ((nodeFrom == "I" && nodeTo == "RA") || (nodeFrom == "RA" && nodeTo == "I") || (nodeFrom == "EN" && nodeTo == "RA") || (nodeFrom == "RA" && nodeTo == "EN") || (nodeFrom == "L" && nodeTo == "TA") || (nodeFrom == "TA" && nodeTo == "L")) {
           //if linked argument don't add a node
+          newNodeID = 'n' + nFrom.nodeID + '-n' + nTo.nodeID; //the new edge ID instead
         }
         else {
           AddNode('Default Inference', 'RA', '72', 0, newNodeID, nx, ny);
