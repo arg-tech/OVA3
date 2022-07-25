@@ -540,6 +540,7 @@ function getSelText() {
                 console.log(e);
                 txt = '';
                 alert("Cannot highlight text containing newlines or carriage returns.");
+                clearSelText();
             }
         }
     } else if (iframe.getElementsByTagName('iframe')) {
