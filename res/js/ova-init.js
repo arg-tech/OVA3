@@ -540,6 +540,7 @@ function getSelText() {
                 console.log(e);
                 txt = '';
                 alert("Cannot highlight text containing newlines or carriage returns.");
+                clearSelText();
             }
         }
     } else if (iframe.getElementsByTagName('iframe')) {
@@ -1823,7 +1824,8 @@ function addLongEdge() {
             window.groupID++;
             markNode(n, true);
         } else {
-            markEdge(nFrom.nodeID, nTo.nodeID, true);
+            var ids = CurrentlyEditing.substr(1).split("-n");
+            markEdge(ids[0], ids[1], true);
         }
     }
 
@@ -1848,8 +1850,8 @@ function addLongEdge() {
         fy = parseInt(fy) + (parseInt(fh) / 2);
         tx = parseInt(tx) + (parseInt(tw) / 2);
         ty = parseInt(ty) + (parseInt(th) / 2);
-        var nx = ((tx - fx) / 2) + fx;
-        var ny = ((ty - fy) / 2) + fy;
+        var nx = Math.round(((tx - fx) / 2) + fx);
+        var ny = Math.round(((ty - fy) / 2) + fy);
 
         //adds a TA node
         window.groupID++;

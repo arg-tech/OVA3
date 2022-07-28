@@ -11,6 +11,10 @@ g {
   cursor: move;
 }
 
+g path{
+  cursor: default;
+}
+
 g rect.bw {
   fill: #ffffff !important;
   stroke: #000000 !important;
