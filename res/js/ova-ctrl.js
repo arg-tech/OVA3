@@ -222,6 +222,7 @@ function nodeMode(status) {
  * @returns 
  */
 function Grab(evt) {
+  // console.log("GRAB");
   $("#contextmenu").hide();
 
   if (evt.button != 0 && !longEdge[0]) { //disable right click when in the middle of adding a long distance edge
@@ -239,7 +240,7 @@ function Grab(evt) {
   }
 
   if (targetElement.getAttributeNS(null, 'focusable')) {
-    if (window.shiftPress || window.atkPress) {
+    if (window.shiftPress || window.atkPress) { //if adding an edge
       FromNode = targetElement;
       FromID = FromNode.getAttributeNS(null, 'id');
       edge_to = AddPt(TrueCoords.x, TrueCoords.y);
@@ -761,12 +762,26 @@ function UnFocus(evt, unfocusElement) {
 }
 
 /**
+ * Deletes the temporary edge and temporary node, used for drawing edges, from the SVG
+ * and resets the drag target
+ */
+function delSVGTemp() {
+  var tempEdge = document.getElementById('n' + FromID + '-nedge_to');
+  if (tempEdge) { SVGRootG.removeChild(tempEdge); }
+  var tempNode = document.getElementById("edge_to");
+  if (tempNode) { SVGRootG.removeChild(tempNode); }
+  DragTarget.setAttributeNS(null, 'pointer-events', 'all');
+  DragTarget = null;
+}
+
+/**
  * Handles the mouse up event to enable dropping on the SVG
  * @param {*} evt 
  * @returns 
  */
 function Drop(evt) {
-  if (DragTarget && mSel.length == 0) {
+  // console.log("DROP");
+  if (DragTarget && mSel.length == 0) { //if a drag target has been set and not using multiselect
     children = DragTarget.children;
     var childElement = null, xCoord = 0, yCoord = 0;
     for (var j = 1; j < children.length; j++) {
@@ -776,18 +791,23 @@ function Drop(evt) {
       window.groupID++;
       updateNode(DragTarget.id, xCoord, yCoord);
     }
+
     //If drawing edge to node
+    var targetElement;
     if (DragTarget.getAttributeNS(null, 'id') == 'edge_to') {
       if (evt.target.nodeName == 'rect') {
-        var targetElement = evt.target.parentNode;
+        targetElement = evt.target.parentNode;
       } else if (evt.target.nodeName == 'tspan') {
-        var targetElement = evt.target.parentNode.parentNode;
+        targetElement = evt.target.parentNode.parentNode;
+      } else if (evt.target.nodeName == 'path') { //if edge is drawn to an edge
+        delSVGTemp(); return false;
       } else {
-        var targetElement = evt.target;
+        targetElement = evt.target; console.log(targetElement);
       }
+
       if (evt.target.nodeName != 'svg') {
-        from = document.getElementById(FromID).getElementsByTagName('rect')[0];
-        to = targetElement.getElementsByTagName('rect')[0];
+        var from = document.getElementById(FromID).getElementsByTagName('rect')[0];
+        var to = targetElement.getElementsByTagName('rect')[0];
 
         var index = findNodeIndex(FromID);
         var nodeFrom = nodes[index].type;
@@ -816,12 +836,7 @@ function Drop(evt) {
             openModal('#modal-edge');
 
           } else {
-            tempedge = document.getElementById('n' + FromID + '-nedge_to');
-            tempnode = document.getElementById("edge_to");
-            SVGRootG.removeChild(tempedge);
-            SVGRootG.removeChild(tempnode);
-            DragTarget.setAttributeNS(null, 'pointer-events', 'all');
-            DragTarget = null;
+            delSVGTemp();
           }
           return false;
         }
@@ -876,10 +891,7 @@ function Drop(evt) {
           var edge = newEdge(FromID, targetElement.getAttributeNS(null, 'id'));
           UpdateEdge(edge);
 
-          tempedge = document.getElementById('n' + FromID + '-nedge_to');
-          tempnode = document.getElementById('edge_to');
-          SVGRootG.removeChild(tempedge);
-          SVGRootG.removeChild(tempnode);
+          delSVGTemp();
         }
         else {
           //from -> S
@@ -892,10 +904,7 @@ function Drop(evt) {
           var edge = newEdge(newNodeID, targetElement.getAttributeNS(null, 'id'));
           UpdateEdge(edge);
 
-          tempedge = document.getElementById('n' + FromID + '-nedge_to');
-          tempnode = document.getElementById('edge_to');
-          SVGRootG.removeChild(tempedge);
-          SVGRootG.removeChild(tempnode);
+          delSVGTemp();
         }
 
         if (window.longEdge[1]) { //if adding a long distance edge
@@ -924,16 +933,13 @@ function Drop(evt) {
             openModal('#modal-edge');
           }
         }
-      } else {
-        //If edge is drawn to empty space and not to a node
-        tempEdge = document.getElementById('n' + FromID + '-nedge_to');
-        if (tempEdge) { SVGRootG.removeChild(tempEdge); }
-        tempNode = document.getElementById("edge_to");
-        if (tempNode) { SVGRootG.removeChild(tempNode); }
+      } else { //If edge is drawn to empty space and not to a node
+        delSVGTemp();
       }
+    } else {
+      DragTarget.setAttributeNS(null, 'pointer-events', 'all');
+      DragTarget = null;
     }
-    DragTarget.setAttributeNS(null, 'pointer-events', 'all');
-    DragTarget = null;
 
     if (window.eBtn) { //deselects the add edge icon button after adding an edge
       edgeMode('off');
