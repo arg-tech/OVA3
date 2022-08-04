@@ -5,11 +5,13 @@
 function myKeyDown(e) {
   var keycode = e.keyCode;
   var key = e.key.toLowerCase();
-  if (key == 'shift' || key == 's' || key == 'a') { //add edge
+  if (!window.eBtn && (key == 'shift' || key == 's' || key == 'a' || key == 'm')) { //add edge
+    // console.log("key down \n" + key);
     var textArea = document.getElementById('analysis_text');
     var nodeText = document.getElementById('n_text');
-    if (!e.repeat && textArea !== document.activeElement && nodeText !== document.activeElement) {
+    if (textArea !== document.activeElement && nodeText !== document.activeElement) {
       if (key == 'a') { edgeMode('atk'); } //add attacking edge
+      else if (key == 'm') { edgeMode('ma'); } //add MA edge
       else { edgeMode('on'); } //add supporting edge
     }
   }
@@ -19,7 +21,7 @@ function myKeyDown(e) {
   else if (keycode in NAV_MAP) {
     panZoomMode(keycode);
   }
-  else if (key == 'alt' && !(window.shiftPress || window.atkPress) && mSel.length == 0) { //multi select on
+  else if (key == 'alt' && !(window.shiftPress || window.atkPress || window.maPress) && mSel.length == 0) { //multi select on
     multiSel[0] = true;
   }
 }
@@ -30,7 +32,7 @@ function myKeyDown(e) {
  */
 function myKeyUp(e) {
   var key = e.key.toLowerCase();
-  if (key == 'shift' || key == 's' || key == 'a') { //add edge off
+  if (key == 'shift' || key == 's' || key == 'a' || key == 'm') { //add edge off
     edgeMode('off');
   }
   else if (key == 'control') { //edit node off
@@ -143,54 +145,49 @@ function resetPosition() {
 
 /**
  * Handles turning the edge mode (for adding edges) on and off
- * @param {String} status 
+ * @param {String} status - 'on' for adding RAs, 'atk' for adding CAs, 'ma' for adding MAs, 
+ * 'switch' for switching to the next type or 'off' for turning it off again
  */
 function edgeMode(status) {
   var mw = $("#mainwrap").width();
   $("#right1").width(mw - $("#left1").width() - 41);
 
-  if (status == 'switch' && window.shiftPress) {
-    status = 'atk';
-    window.eBtn = true;
-  } else if (status == 'switch' && window.atkPress) {
-    status = 'off';
-    window.eBtn = false;
-  } else if (status == 'switch') {
-    status = 'on';
-    window.eBtn = true;
+  if (status == 'switch') {
+    if (window.shiftPress) {
+      status = 'atk';
+    } else if (window.atkPress) {
+      status = 'ma';
+    } else if (window.maPress) {
+      status = 'off';
+    } else {
+      status = 'on';
+    }
   }
 
-  if (status == 'on') {
-    window.atkPress = false;
-    window.shiftPress = true;
-    document.getElementById("right1").style.cursor = 'crosshair';
-    $('#eadd').removeClass("active attack support"); $('#eaddX').removeClass("active attack support");
-    $('#eadd').addClass("active support"); $('#eaddX').addClass("active support");
-  } else if (status == 'off') {
-    window.shiftPress = false;
-    window.atkPress = false;
+  //reset the defaults
+  window.eBtn = true;
+  window.shiftPress = false; window.atkPress = false; window.maPress = false;
+  $('#eadd').removeClass("attack support rephrase"); $('#eaddX').removeClass("attack support rephrase");
+  document.getElementById("right1").style.cursor = 'crosshair';
+
+  if (status == 'off') {
     window.eBtn = false;
-    document.getElementById("right1").style.cursor = 'auto';
-    $('#eadd').removeClass("active attack support"); $('#eaddX').removeClass("active attack support");
-    if (window.longEdge[0]) {
-      tempEdge = document.getElementById('n' + FromID + '-nedge_to');
-      if (tempEdge) { SVGRootG.removeChild(tempEdge); }
-      tempNode = document.getElementById("edge_to");
-      if (tempNode) { SVGRootG.removeChild(tempNode); }
-    }
+    if (window.longEdge[0]) { delSVGTemp(); }
     window.longEdge = [false, false];
+    document.getElementById("right1").style.cursor = 'auto';
+  } else if (status == 'on') {
+    window.shiftPress = true;
+    $('#eadd').addClass("support"); $('#eaddX').addClass("support");
   } else if (status == 'atk') {
-    window.shiftPress = false;
     window.atkPress = true;
-    document.getElementById("right1").style.cursor = 'crosshair';
-    $('#eadd').removeClass("active attack support"); $('#eaddX').removeClass("active attack support");
-    $('#eadd').addClass("active attack"); $('#eaddX').addClass("active attack");
+    $('#eadd').addClass("attack"); $('#eaddX').addClass("attack");
+  } else if (status == 'ma') {
+    window.maPress = true;
+    $('#eadd').addClass("rephrase"); $('#eaddX').addClass("rephrase");
   } else if (status == 'long') {
-    window.eBtn = true;
     window.shiftPress = true;
     window.longEdge[0] = true;
-    $('#eadd').removeClass("active attack support"); $('#eaddX').removeClass("active attack support");
-    $('#eadd').addClass("active support"); $('#eaddX').addClass("active support");
+    $('#eadd').addClass("support"); $('#eaddX').addClass("support");
   }
 }
 
@@ -240,7 +237,7 @@ function Grab(evt) {
   }
 
   if (targetElement.getAttributeNS(null, 'focusable')) {
-    if (window.shiftPress || window.atkPress) { //if adding an edge
+    if (window.shiftPress || window.atkPress || window.maPress) { //if adding an edge
       FromNode = targetElement;
       FromID = FromNode.getAttributeNS(null, 'id');
       edge_to = AddPt(TrueCoords.x, TrueCoords.y);
@@ -766,12 +763,18 @@ function UnFocus(evt, unfocusElement) {
  * and resets the drag target
  */
 function delSVGTemp() {
-  var tempEdge = document.getElementById('n' + FromID + '-nedge_to');
-  if (tempEdge) { SVGRootG.removeChild(tempEdge); }
+  if (FromID) { //delete the temp edge if it exists
+    var tempEdge = document.getElementById('n' + FromID + '-nedge_to');
+    if (tempEdge) { SVGRootG.removeChild(tempEdge); }
+  }
+  //delete the temp node if it exists
   var tempNode = document.getElementById("edge_to");
   if (tempNode) { SVGRootG.removeChild(tempNode); }
-  DragTarget.setAttributeNS(null, 'pointer-events', 'all');
-  DragTarget = null;
+  //reset the drag target if needed
+  if (DragTarget) {
+    DragTarget.setAttributeNS(null, 'pointer-events', 'all');
+    DragTarget = null;
+  }
 }
 
 /**
@@ -862,6 +865,8 @@ function Drop(evt) {
 
         if (window.atkPress && (nodeFrom == "I" || nodeFrom == "EN") && (nodeTo == "I" || nodeTo == "EN")) {
           AddNode('Default Conflict', 'CA', '71', 0, newNodeID, nx, ny);
+        } else if (window.maPress && (nodeFrom == "I" || nodeFrom == "EN") && (nodeTo == "I" || nodeTo == "EN")) {
+          AddNode('Default Rephrase', 'MA', '144', 0, newNodeID, nx, ny);
         } else if (nodeFrom == "I" && nodeTo == "I") {
           AddNode('Default Inference', 'RA', '72', 0, newNodeID, nx, ny);
         } else if (nodeFrom == "L" && nodeTo == "I") {

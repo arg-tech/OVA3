@@ -152,6 +152,12 @@ a.pointer {
   color: #fff;
 }
 
+#toolbar a#eadd.rephrase {
+  background-color: #e67e22;
+  border-color: #e67e22;
+  color: #fff;
+}
+
 #toolbar a.icon .tooltiptext {
   visibility: hidden;
   width: 74px;
@@ -279,6 +285,12 @@ div#xmenu a#eaddX.attack {
 div#xmenu a#eaddX.support {
   background-color: #27ae60;
   border-color: #27ae60;
+  color: #fff;
+}
+
+div#xmenu a#eaddX.rephrase {
+  background-color: #e67e22;
+  border-color: #e67e22;
   color: #fff;
 }
 
