@@ -5,12 +5,12 @@
 function myKeyDown(e) {
   var keycode = e.keyCode;
   var key = e.key.toLowerCase();
-  if (!window.eBtn && (key == 'shift' || key == 's' || key == 'a' || key == 'm')) { //add edge
+  if (!window.eBtn && (key == 'shift' || key == 's' || key == 'a' || key == 'c' || key == 'm')) { //add edge
     // console.log("key down \n" + key);
     var textArea = document.getElementById('analysis_text');
     var nodeText = document.getElementById('n_text');
     if (textArea !== document.activeElement && nodeText !== document.activeElement) {
-      if (key == 'a') { edgeMode('atk'); } //add attacking edge
+      if (key == 'a' || key == 'c') { edgeMode('atk'); } //add attacking edge
       else if (key == 'm') { edgeMode('ma'); } //add MA edge
       else { edgeMode('on'); } //add supporting edge
     }
@@ -32,7 +32,7 @@ function myKeyDown(e) {
  */
 function myKeyUp(e) {
   var key = e.key.toLowerCase();
-  if (key == 'shift' || key == 's' || key == 'a' || key == 'm') { //add edge off
+  if (key == 'shift' || key == 's' || key == 'a' || key == 'c' || key == 'm') { //add edge off
     edgeMode('off');
   }
   else if (key == 'control') { //edit node off
