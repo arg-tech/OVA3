@@ -214,6 +214,9 @@ if (isset($_COOKIE['ovauser'])) {
     <a onClick="return false;" class="icon" id="eadd" style="display:none; background-position: -42px 50%;"><span class="tooltiptext">Add&nbsp;Edge</span></a>
     <a onClick="nodeMode('switch'); return false;" class="icon" id="nadd" style="display:none; background-position: -0px 50%;"><span class="tooltiptext">Add&nbsp;Node</span></a>
     <div class="divider"></div>
+    <!-- Todo: Add Icons for Zooming In/Out -->
+    <a onClick="panZoomMode(187);" class="icon" id="zoomIn" style="display:none;background-image:none;"><span style="text-align:center;font-size:30px;position:absolute;top:20%;left:30%;color:rgb(220 220 220);">+</span><span class="tooltiptext">Zoom In</span></a>
+    <a onClick="panZoomMode(189);" class="icon" id="zoomOut" style="display:none;background-image:none;"><span style="text-align:center;font-size:35px;position:absolute;top:10%;left:35%;color:rgb(220 220 220);">-</span><span class="tooltiptext">Zoom Out</span></a>
     <a onClick="resetPosition();" class="icon" id="reset" style="display:none; background-position: -336px 50%;"><span class="tooltiptext">Reset&nbsp;View</span></a>
     <div class="divider"></div>
     <a onClick="undo();" class="icon" id="undo" style="display:none; background-position: -462px 50%;"><span class="tooltiptext">Undo</span></a>
@@ -264,6 +267,19 @@ if (isset($_COOKIE['ovauser'])) {
       <a onClick="nodeMode('switch'); return false;" class="xicon" id="naddX" style="display:none;">
         <div class="icn" style="background-position: -0px 50%;"></div>
         <div class="txt">Add&nbsp;Node</div>
+      </a>
+      <!-- Todo: Add Icons for Zooming In/Out -->
+      <a onClick="panZoomMode(187);" class="xicon" id="zoomInX" style="display:none;">
+        <div class="icn" style="background-image:none;">
+          <span style="text-align:center;font-size:35px;color:rgb(220 220 220);margin:10px;">+</span>
+        </div>
+        <div class="txt">Zoom In</div>
+      </a>
+      <a onClick="panZoomMode(189);" class="xicon" id="zoomOutX" style="display:none;">
+        <div class="icn" style="background-image:none;">
+          <span style="text-align:center;font-size:50px;color:rgb(220 220 220);padding-left:10px;line-height:42px;">-</span>
+        </div>
+        <div class="txt">Zoom Out</div>
       </a>
       <a onClick="resetPosition();" class="xicon" id="resetX" style="display:none;">
         <div class="icn" style="background-position: -336px 50%;"></div>

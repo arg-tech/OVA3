@@ -933,35 +933,35 @@ input:valid+span.validity:after {
   margin: 33px 15px;
 }
 
-.arrow {
+#panBtns .arrow {
   border: solid black;
   border-width: 0 6px 6px 0;
   display: inline-block;
   padding: 5px;
 }
 
-.right {
+#panBtns .right {
   transform: rotate(-45deg);
   -webkit-transform: rotate(-45deg);
   bottom: 33%;
   left: 66%;
 }
 
-.left {
+#panBtns .left {
   transform: rotate(135deg);
   -webkit-transform: rotate(135deg);
   bottom: 33%;
   left: 0%;
 }
 
-.up {
+#panBtns .up {
   transform: rotate(-135deg);
   -webkit-transform: rotate(-135deg);
   bottom: 66%;
   left: 33%;
 }
 
-.down {
+#panBtns .down {
   transform: rotate(45deg);
   -webkit-transform: rotate(45deg);
   bottom: 0%;

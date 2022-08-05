@@ -41,6 +41,16 @@ function mainTut() {
                 position: 'bottom-middle-aligned',
             },
             {
+                element: '#zoomOut',
+                intro: "<p>Click here to zoom out on your analysis.</p>",
+                position: 'bottom-middle-aligned',
+            },
+            {
+                element: '#zoomIn',
+                intro: "<p>Click here to zoom in on your analysis.</p>",
+                position: 'bottom-middle-aligned',
+            },
+            {
                 element: '#nadd',
                 intro: "<p>Nodes with custom text (enthymemes) can be added by clicking here and then clicking on the canvas.</p>",
                 position: 'bottom-middle-aligned',
@@ -121,8 +131,18 @@ function mainTut() {
                 position: 'left',
             },
             {
+                element: '#zoomInX',
+                intro: "<p>Click here to zoom in on your analysis.</p>",
+                position: 'left',
+            },
+            {
+                element: '#zoomOutX',
+                intro: "<p>Click here to zoom out on your analysis.</p>",
+                position: 'left',
+            },
+            {
                 element: '#resetX',
-                intro: "<p>Move around the canvas using the arrow keys on your keyboard.</p><p>Click here to reset your view.</p>",
+                intro: "<p>Click here to reset your view.</p>",
                 position: 'left',
             },
             {
