@@ -814,6 +814,13 @@ if (isset($_COOKIE['ovauser'])) {
       console.log("width: " + w + " height:" + h)
     </script>
     <div id="right1">
+      <div id="panBtns">
+        <span id="panToolTip" class="tooltiptext"></span>
+        <button id="panUp" name="up" type="button" onclick="panZoomMode(38);" class="arrow up"><span>Move Up</span></button>
+        <button id="panLeft" name="left" type="button" onclick="panZoomMode(37);" class="arrow left"><span>Move Left</span></button>
+        <button id="panRight" name="right" type="button" onclick="panZoomMode(39);" class="arrow right"><span>Move Right</span></button>
+        <button id="panDown" name="down" type="button" onclick="panZoomMode(40);" class="arrow down"><span>Move Down</span></button>
+      </div>
       <!-- <script>
     document.getElementById('right1').style.width = w;
     document.getElementById('right1').style.height = w

@@ -73,6 +73,8 @@ const zoom = (event) => {
 }
 
 window.shiftPress = false;
+window.atkPress = false;
+window.maPress = false;
 window.longEdge = [false, false];
 window.nodeCounter = 1;
 window.textCounter = 1;
@@ -144,6 +146,7 @@ function Init(evt) {
             scheme = schemes[index];
             scheme_name = scheme.name.replace(/([a-z])([A-Z])/g, "$1 $2");
             scheme_type = scheme.schemeTypeID;
+            // if (scheme.schemeID == 215) { console.log(scheme.schemeID + "\n" + scheme_name); }
 
             if (scheme_type == 1 || scheme_type == 2 || scheme_type == 3 || scheme_type == 9) {
                 $('#s_ischeme').append('<option value="' + scheme.schemeID + '">' + scheme_name + '</option>');
@@ -264,6 +267,17 @@ function Init(evt) {
             saveNodeEdit(); closeModal('#node_edit'); FormOpen = false; return false; //save the edit to the node
         }
     });
+
+    //set up the pan buttons
+    $('#panBtns button').mouseover(function (e) {
+        var t = $('#' + e.target.id + ' span').text();
+        $('#panToolTip').text(t);
+        $('#panToolTip').show();
+    });
+    $('#panBtns button').mouseleave(function () {
+        $('#panToolTip').hide();
+    });
+
 
     //set defaults
     setFontSize(window.defaultSettings["display"]["font_size"]);

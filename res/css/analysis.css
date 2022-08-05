@@ -1,6 +1,7 @@
 @import url('https://fonts.googleapis.com/css?family=Open+Sans');
 
-html, body {
+html,
+body {
   width: 100%;
   padding: 0px;
   margin: 0px;
@@ -11,7 +12,7 @@ g {
   cursor: move;
 }
 
-g path{
+g path {
   cursor: default;
 }
 
@@ -223,7 +224,7 @@ div#xmenu {
   width: 220px;
   height: 300px;
   background-color: #333;
-  z-index: 999;
+  z-index: 1001;
   display: none;
   border-left: 1px solid #111;
 }
@@ -523,7 +524,9 @@ form.fstyle label.radio_label {
 
 /* input,textarea,select */
 
-form.fstyle input, form.fstyle textarea, form.fstyle select {
+form.fstyle input,
+form.fstyle textarea,
+form.fstyle select {
   padding: 4px;
   margin: 1px 0px 6px 0px;
   border: 1px solid #bbb;
@@ -543,7 +546,8 @@ form.fstyle input.itext:focus {
 
 /* input type=submit,button */
 
-form.fstyle input.isubmit, form.fstyle input.ibutton {
+form.fstyle input.isubmit,
+form.fstyle input.ibutton {
   padding: 4px 12px;
   border-radius: 4px;
   cursor: pointer;
@@ -552,7 +556,8 @@ form.fstyle input.isubmit, form.fstyle input.ibutton {
   font-size: 12px;
 }
 
-form.fstyle input.isubmit:hover, form.fstyle input.ibutton:hover {
+form.fstyle input.isubmit:hover,
+form.fstyle input.ibutton:hover {
   background-color: #eee;
   border-color: #888;
   color: #222;
@@ -717,20 +722,26 @@ div#left1.ts .hlcurrent {
   box-shadow: 0px 0px 0 0px, 0px 0px 0 0px !important;
 }
 
-div#left1.tm .highlighted, div#left1.tl .highlighted {
+div#left1.tm .highlighted,
+div#left1.tl .highlighted {
   box-shadow: 0px -2px 0 1px #2ecc71, 0px 2px 0 1px #2ecc71;
 }
 
-div#left1.tm .hlcurrent, div#left1.tl .hlcurrent {
+div#left1.tm .hlcurrent,
+div#left1.tl .hlcurrent {
   box-shadow: 0px -2px 0 1px #f39c12, 0px 2px 0 1px #f39c12 !important;
 }
 
-div#txtstg a.its, div#txtstg a.itm, div#txtstg a.itl {
+div#txtstg a.its,
+div#txtstg a.itm,
+div#txtstg a.itl {
   background-position: 0px 0px;
   background-color: #fff;
 }
 
-div#txtstg a.its.sel, div#txtstg a.itm.sel, div#txtstg a.itl.sel {
+div#txtstg a.its.sel,
+div#txtstg a.itm.sel,
+div#txtstg a.itl.sel {
   background-position: 0px -36px;
   background-color: #27ae60;
 }
@@ -782,7 +793,8 @@ a.togglesw {
   color: #333;
 }
 
-a.togglesw span.tson, a.togglesw span.tsoff {
+a.togglesw span.tson,
+a.togglesw span.tsoff {
   display: inline-block;
   height: 20px;
   line-height: 20px;
@@ -878,4 +890,80 @@ input:valid+span.validity:after {
   content: '\2714';
   padding-left: 5px;
   color: #2ECC71;
+}
+
+#panBtns {
+  width: 90px;
+  height: 90px;
+  position: fixed;
+  right: 2%;
+  bottom: 2%;
+  z-index: 1000;
+}
+
+#panBtns button {
+  cursor: pointer;
+  width: 30px;
+  height: 30px;
+  position: absolute;
+  background-color: #fff;
+  color: #fff;
+}
+
+#panBtns button span {
+  display: none;
+}
+
+#panBtns button:hover {
+  border-color: #27ae60;
+}
+
+#panBtns .tooltiptext {
+  display: none;
+  width: 60px;
+  height: 15px;
+  background-color: black;
+  font-size: 9px;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  position: absolute;
+  z-index: 1000;
+  margin: 33px 15px;
+}
+
+.arrow {
+  border: solid black;
+  border-width: 0 6px 6px 0;
+  display: inline-block;
+  padding: 5px;
+}
+
+.right {
+  transform: rotate(-45deg);
+  -webkit-transform: rotate(-45deg);
+  bottom: 33%;
+  left: 66%;
+}
+
+.left {
+  transform: rotate(135deg);
+  -webkit-transform: rotate(135deg);
+  bottom: 33%;
+  left: 0%;
+}
+
+.up {
+  transform: rotate(-135deg);
+  -webkit-transform: rotate(-135deg);
+  bottom: 66%;
+  left: 33%;
+}
+
+.down {
+  transform: rotate(45deg);
+  -webkit-transform: rotate(45deg);
+  bottom: 0%;
+  left: 33%;
 }
