@@ -73,6 +73,8 @@ const zoom = (event) => {
 }
 
 window.shiftPress = false;
+window.atkPress = false;
+window.maPress = false;
 window.longEdge = [false, false];
 window.nodeCounter = 1;
 window.textCounter = 1;
@@ -87,7 +89,9 @@ document.onwheel = zoom;
 
 //set default settings
 window.defaultSettings = JSON.parse(window.defaultSettings);
-window.bwmode = window.defaultSettings["display"]["black_white"]; //set display settings
+//set display settings
+window.bwmode = window.defaultSettings["display"]["black_white"];
+window.panMode = typeof window.defaultSettings["display"]["panBtns"] !== 'undefined' ? window.defaultSettings["display"]["panBtns"] : true;
 window.defaultSchemesets = [["YA", 0], ["RA", 0], ["CA", 0], ["MA", 0], ["TA", 0], ["PA", 0]]; //set scheme set settings
 //set analysis settings
 window.cqmode = window.defaultSettings["analysis"]["cq"];
@@ -144,6 +148,7 @@ function Init(evt) {
             scheme = schemes[index];
             scheme_name = scheme.name.replace(/([a-z])([A-Z])/g, "$1 $2");
             scheme_type = scheme.schemeTypeID;
+            // if (scheme.schemeID == 215) { console.log(scheme.schemeID + "\n" + scheme_name); }
 
             if (scheme_type == 1 || scheme_type == 2 || scheme_type == 3 || scheme_type == 9) {
                 $('#s_ischeme').append('<option value="' + scheme.schemeID + '">' + scheme_name + '</option>');
@@ -264,6 +269,17 @@ function Init(evt) {
             saveNodeEdit(); closeModal('#node_edit'); FormOpen = false; return false; //save the edit to the node
         }
     });
+
+    //set up the pan buttons
+    $('#panBtns button').mouseover(function (e) {
+        var t = $('#' + e.target.id + ' span').text();
+        $('#panToolTip').text(t);
+        $('#panToolTip').show();
+    });
+    $('#panBtns button').mouseleave(function () {
+        $('#panToolTip').hide();
+    });
+    panModeOnOff();
 
     //set defaults
     setFontSize(window.defaultSettings["display"]["font_size"]);
@@ -1519,6 +1535,14 @@ function eAddModeOnOff() {
 }
 
 /**
+ * Handles showing/hiding the pan buttons when turned on or off
+ */
+function panModeOnOff() {
+    if (window.panMode) { $("#panBtns").show(); }
+    else { $("#panBtns").hide(); }
+}
+
+/**
  * Autolayout
  */
 function genldot() {
@@ -1579,6 +1603,8 @@ function genldot() {
     //post the temp dot file to get a json of coordinates for autolayout
     $.post("dot/index.php", { data: doto },
         function (reply) {
+            if (reply == "can't open file") { console.log(reply); return; }
+
             ldata = JSON.parse(reply);
             //update the nodes
             window.groupID++;

@@ -26,23 +26,38 @@ function mainTut() {
             //   position: 'left',
             // },
             {
+                element: '#panBtns',
+                intro: "<p>Move around the canvas using these buttons or the arrow keys on your keyboard.</p><p>Click an arrow to move in that direction.</p>",
+                position: 'left',
+            },
+            {
                 element: '#undo',
-                intro: "Click here to undo the last change you made to an analysis.</p>",
+                intro: "<p>Click here to undo the last change you made to an analysis.</p>",
                 position: 'bottom-middle-aligned',
             },
             {
                 element: '#reset',
-                intro: "<p>Move around the canvas using the arrow keys on your keyboard.</p><p>Click here to reset your view.</p>",
+                intro: "<p>Click here to reset your view.</p>",
+                position: 'bottom-middle-aligned',
+            },
+            {
+                element: '#zoomOut',
+                intro: "<p>Click here to zoom out on your analysis.</p>",
+                position: 'bottom-middle-aligned',
+            },
+            {
+                element: '#zoomIn',
+                intro: "<p>Click here to zoom in on your analysis.</p>",
                 position: 'bottom-middle-aligned',
             },
             {
                 element: '#nadd',
-                intro: "Nodes with custom text (enthymemes) can be added by clicking here and then clicking on the canvas.",
+                intro: "<p>Nodes with custom text (enthymemes) can be added by clicking here and then clicking on the canvas.</p>",
                 position: 'bottom-middle-aligned',
             },
             {
                 element: '#eadd',
-                intro: "<p>Edges can be added between nodes by clicking here, clicking on a node and dragging to the target node.</p><p>Click once for support or twice for conflict. Click again to cancel.</p><p>Edges can also be added by holding shift (support) or 'a' (conflict).</p>",
+                intro: "<p>Edges can be added between nodes by clicking here, clicking on a node and dragging to the target node.</p><p>Click once for support, twice for conflict or three times for rephrase. Click again to cancel.</p><p>Edges can also be added by holding shift (support), 'c' (conflict) or 'm' (rephrase).</p>",
                 position: 'bottom-middle-aligned',
             },
             {
@@ -107,22 +122,32 @@ function mainTut() {
             },
             {
                 element: '#eaddX',
-                intro: "<p>Edges can be added between nodes by clicking here, clicking on a node and dragging to the target node.</p><p>Click once for support or twice for conflict. Click again to cancel.</p><p>Edges can also be added by holding shift (support) or 'a' (conflict).</p>",
+                intro: "<p>Edges can be added between nodes by clicking here, clicking on a node and dragging to the target node.</p><p>Click once for support, twice for conflict or three times for rephrase. Click again to cancel.</p><p>Edges can also be added by holding shift (support), 'c' (conflict) or 'm' (rephrase).</p>",
                 position: 'left',
             },
             {
                 element: '#naddX',
-                intro: "Nodes with custom text (enthymemes) can be added by clicking here and then clicking on the canvas.",
+                intro: "<p>Nodes with custom text (enthymemes) can be added by clicking here and then clicking on the canvas.</p>",
+                position: 'left',
+            },
+            {
+                element: '#zoomInX',
+                intro: "<p>Click here to zoom in on your analysis.</p>",
+                position: 'left',
+            },
+            {
+                element: '#zoomOutX',
+                intro: "<p>Click here to zoom out on your analysis.</p>",
                 position: 'left',
             },
             {
                 element: '#resetX',
-                intro: "<p>Move around the canvas using the arrow keys on your keyboard.</p><p>Click here to reset your view.</p>",
+                intro: "<p>Click here to reset your view.</p>",
                 position: 'left',
             },
             {
                 element: '#undoX',
-                intro: "Click here to undo the last change you made to an analysis.</p>",
+                intro: "<p>Click here to undo the last change you made to an analysis.</p>",
                 position: 'left',
             }
         ].filter(function (obj) { return $(obj.element).length && $(obj.element).is(':visible'); }),
@@ -162,6 +187,10 @@ function setTut() {
             {
                 element: '#bwtoggle',
                 intro: "Toggle Black and White Mode",
+            },
+            {
+                element: '#panToggle',
+                intro: "<p>Toggle Show Pan Buttons</p> <p>Turning on show pan buttons will display four arrow buttons on the bottom right that can be used to move around the canvas, while turning it off will hide these pan buttons.</p>",
             },
             {
                 element: '#dialogicaltoggle',
