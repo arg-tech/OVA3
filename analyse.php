@@ -411,6 +411,14 @@ if (isset($_COOKIE['ovauser'])) {
                 <a href="#" id="bwtoggle" class="togglesw off" onClick='$(this).toggleClass("on off"); window.bwmode=!window.bwmode; bwModeOnOff();'><span class="tson">On</span><span class="tsoff">Off</span></a>
               <?php } ?>
             </p>
+            <!-- Pan Buttons Toggle  -->
+            <p style="color: #444; line-height: 22px;">Show Pan Buttons
+              <?php if (isset($defaultSettings["display"]["panBtns"]) && !$defaultSettings["display"]["panBtns"]) { ?>
+                <a href="#" id="panToggle" class="togglesw off" onClick='$(this).toggleClass("on off"); window.panMode=!window.panMode; panModeOnOff();'><span class="tson">On</span><span class="tsoff">Off</span></a>
+              <?php } else { ?>
+                <a href="#" id="panToggle" class="togglesw on" onClick='$(this).toggleClass("on off"); window.panMode=!window.panMode; panModeOnOff();'><span class="tson">On</span><span class="tsoff">Off</span></a>
+              <?php } ?>
+            </p>
           </div>
           <div id="anastg" style="display:none;">
             <!-- Dialogical Mode Toggle  -->

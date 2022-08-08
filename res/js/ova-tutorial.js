@@ -189,6 +189,10 @@ function setTut() {
                 intro: "Toggle Black and White Mode",
             },
             {
+                element: '#panToggle',
+                intro: "<p>Toggle Show Pan Buttons</p> <p>Turning on show pan buttons will display four arrow buttons on the bottom right that can be used to move around the canvas, while turning it off will hide these pan buttons.</p>",
+            },
+            {
                 element: '#dialogicaltoggle',
                 intro: "<p>Toggle Dialogical Mode</p> <p>Turning off dialogical mode will remove the dialogical aspect.</p>",
             },

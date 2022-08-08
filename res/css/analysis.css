@@ -906,8 +906,8 @@ input:valid+span.validity:after {
   width: 30px;
   height: 30px;
   position: absolute;
-  background-color: #fff;
-  color: #fff;
+  background-color: transparent;
+  color: transparent;
 }
 
 #panBtns button span {
