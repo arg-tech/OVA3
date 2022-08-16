@@ -893,8 +893,8 @@ input:valid+span.validity:after {
 }
 
 #panBtns {
-  width: 90px;
-  height: 90px;
+  width: 135px;
+  height: 135px;
   position: fixed;
   right: 2%;
   bottom: 2%;
@@ -903,8 +903,8 @@ input:valid+span.validity:after {
 
 #panBtns button {
   cursor: pointer;
-  width: 30px;
-  height: 30px;
+  width: 45px;
+  height: 45px;
   position: absolute;
   background-color: transparent;
   color: transparent;
@@ -918,24 +918,9 @@ input:valid+span.validity:after {
   border-color: #27ae60;
 }
 
-#panBtns .tooltiptext {
-  display: none;
-  width: 60px;
-  height: 15px;
-  background-color: black;
-  font-size: 9px;
-  color: #fff;
-  text-align: center;
-  border-radius: 6px;
-  padding: 5px 0;
-  position: absolute;
-  z-index: 1000;
-  margin: 33px 15px;
-}
-
 #panBtns .arrow {
   border: solid black;
-  border-width: 0 6px 6px 0;
+  border-width: 0 7px 7px 0;
   display: inline-block;
   padding: 5px;
 }
@@ -966,4 +951,43 @@ input:valid+span.validity:after {
   -webkit-transform: rotate(45deg);
   bottom: 0%;
   left: 33%;
+}
+
+#zoomBtns {
+  width: 120px;
+  height: 90px;
+  position: absolute;
+  left: 6%;
+  top: 16%;
+  z-index: 1001;
+}
+
+#zoomBtns button {
+  cursor: pointer;
+  width: 30px;
+  height: 30px;
+  position: absolute;
+  bottom: 33%;
+  text-align: center;
+  font-size: 20px;
+  background-color: #333;
+  color: #fff;
+  /* outline: 1px ridge #333; */
+  border-radius: 1rem;
+}
+
+#zoomBtns button:hover {
+  border-color: #27ae60;
+  /* background-color: #27ae60; */
+  background-color: #2ecc71;
+}
+
+#zoomBtns #resetView {
+  width: 40px;
+  height: 40px;
+  left: 32%;
+  bottom: 28%;
+  background-image: url('../img/icons-grey.svg');
+  background-repeat: no-repeat;
+  background-position: -338px 50%;
 }
