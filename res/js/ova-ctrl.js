@@ -3,10 +3,8 @@
  * @param {*} e - The key down event to handle
  */
 function myKeyDown(e) {
-  var keycode = e.keyCode;
   var key = e.key.toLowerCase();
   if (!window.eBtn && (key == 'shift' || key == 's' || key == 'a' || key == 'c' || key == 'm')) { //add edge
-    // console.log("key down \n" + key);
     var textArea = document.getElementById('analysis_text');
     var nodeText = document.getElementById('n_text');
     if (textArea !== document.activeElement && nodeText !== document.activeElement) {
@@ -18,8 +16,8 @@ function myKeyDown(e) {
   else if (key == 'control') { //edit node on
     editMode = true;
   }
-  else if (keycode in NAV_MAP) {
-    panZoomMode(keycode);
+  else if (key in NAV_MAP) {
+    panZoomMode(key);
   }
   else if (key == 'alt' && !(window.shiftPress || window.atkPress || window.maPress) && mSel.length == 0) { //multi select on
     multiSel[0] = true;
@@ -44,25 +42,27 @@ function myKeyUp(e) {
   else if (key == 'z' && e.ctrlKey) { //ctrl + z for undo shortcut
     undo();
   }
-  else if (key == "backspace" || key == "delete") { //delete node shortcut
+  else if (key == "backspace" || key == "delete" || key == "r") {
     var textArea = document.getElementById('analysis_text');
     var nodeText = document.getElementById('n_text');
     if (textArea !== document.activeElement && nodeText !== document.activeElement) {
-      window.groupID++;
-      deleteNode(mySel);
+      if (key == "r") { resetPosition(); } //reset view shortcut
+      else { window.groupID++; deleteNode(mySel); } //delete node shortcut
     }
   }
 }
 
 /**
  * Handles panning and zooming
- * @param {Number} keycode 
+ * @param {String} key - Indicates if zooming in/out or panning in a direction ('+'/'-' or 'arrowup'/'arrowdown'/'arrowleft'/'arrowright')
+ * @param {Boolean} recursive - Optional, indicates if the function should call itself (true) or not (false). The default is false.
  * @returns 
  */
-function panZoomMode(keycode) {
+function panZoomMode(key, recursive) {
+  console.log(key);
   var textArea = document.getElementById('analysis_text');
   if (FormOpen == false && textArea !== document.activeElement) {
-    nav = NAV_MAP[keycode];
+    nav = NAV_MAP[key];
     if (nav.act === 'move') {
       // if((nav.dir === -1 && VB[nav.axis] <= 0) ||
       //    (nav.dir ===  1 && VB[nav.axis] >= DMAX[nav.axis] - VB[2 + nav.axis])) {
@@ -90,6 +90,8 @@ function panZoomMode(keycode) {
       }
     }
     updateView();
+
+    if (recursive) { panZoomID = setTimeout(panZoomMode, 300, key, true); }
   }
 }
 
@@ -193,7 +195,7 @@ function edgeMode(status) {
 
 /**
  * Handles turning the node mode (for adding nodes) on and off
- * @param {String} status 
+ * @param {String} status - 'on' for turning it on, 'off' for turning it off or 'switch' to toggle it
  */
 function nodeMode(status) {
   if (status == 'switch' && window.nodeAddBtn) {

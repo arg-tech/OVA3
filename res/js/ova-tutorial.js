@@ -31,23 +31,23 @@ function mainTut() {
                 position: 'left',
             },
             {
-                element: '#undo',
-                intro: "<p>Click here to undo the last change you made to an analysis.</p>",
-                position: 'bottom-middle-aligned',
-            },
-            {
-                element: '#reset',
-                intro: "<p>Click here to reset your view.</p>",
-                position: 'bottom-middle-aligned',
-            },
-            {
                 element: '#zoomOut',
                 intro: "<p>Click here to zoom out on your analysis.</p>",
-                position: 'bottom-middle-aligned',
+                position: 'left',
+            },
+            {
+                element: '#resetView',
+                intro: "<p>Click here to reset your view.</p>",
+                position: 'left',
             },
             {
                 element: '#zoomIn',
                 intro: "<p>Click here to zoom in on your analysis.</p>",
+                position: 'left',
+            },
+            {
+                element: '#undo',
+                intro: "<p>Click here to undo the last change you made to an analysis.</p>",
                 position: 'bottom-middle-aligned',
             },
             {
@@ -131,21 +131,6 @@ function mainTut() {
                 position: 'left',
             },
             {
-                element: '#zoomInX',
-                intro: "<p>Click here to zoom in on your analysis.</p>",
-                position: 'left',
-            },
-            {
-                element: '#zoomOutX',
-                intro: "<p>Click here to zoom out on your analysis.</p>",
-                position: 'left',
-            },
-            {
-                element: '#resetX',
-                intro: "<p>Click here to reset your view.</p>",
-                position: 'left',
-            },
-            {
                 element: '#undoX',
                 intro: "<p>Click here to undo the last change you made to an analysis.</p>",
                 position: 'left',
@@ -190,7 +175,11 @@ function setTut() {
             },
             {
                 element: '#panToggle',
-                intro: "<p>Toggle Show Pan Buttons</p> <p>Turning on show pan buttons will display four arrow buttons on the bottom right that can be used to move around the canvas, while turning it off will hide these pan buttons.</p>",
+                intro: "<p>Toggle Show Pan and Zoom Buttons</p> <p>Turning on show pan and zoom buttons will display four arrow buttons on the bottom right that can be used to move around the canvas and buttons that can be used to zoom in or out. Turning it off will hide these pan and zoom buttons.</p>",
+            },
+            {
+                element: '#inverseToggle',
+                intro: "<p>Toggle Scroll Direction</p> <p>Turning on natural scrolling will change scrolling down to move down the canvas and vice versa. Turning it off will switch back to reverse scrolling where a down motion scrolls up and an up motion scrolls down.</p>",
             },
             {
                 element: '#dialogicaltoggle',
