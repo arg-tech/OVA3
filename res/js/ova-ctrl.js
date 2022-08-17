@@ -43,9 +43,9 @@ function myKeyUp(e) {
     undo();
   }
   else if (key == "backspace" || key == "delete") { //delete node shortcut
-    var textArea = document.getElementById('analysis_text');
-    var nodeText = document.getElementById('n_text');
-    if (textArea !== document.activeElement && nodeText !== document.activeElement) {
+    var analysisText = document.getElementById('analysis_text');
+    var input = document.activeElement == analysisText || $(document.activeElement).is('input') || $(document.activeElement).is('textarea');
+    if (!input && typeof mySel !== 'undefined') {
       window.groupID++;
       deleteNode(mySel);
     }
