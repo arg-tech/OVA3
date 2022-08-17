@@ -312,7 +312,7 @@ function loadBtn() {
                     }
                     $('#c_loading').hide(); $('#f_loadfile').show(); $('#loadBtn').show();
                 });
-            } else { $('#f_loadfile').show(); }
+            } else { $('#f_loadfile').show(); $('#loadBtn').show(); }
         }
     }
 }
