@@ -5,9 +5,9 @@
 function myKeyDown(e) {
   var key = e.key.toLowerCase();
   if (!window.eBtn && (key == 'shift' || key == 's' || key == 'a' || key == 'c' || key == 'm')) { //add edge
-    var textArea = document.getElementById('analysis_text');
-    var nodeText = document.getElementById('n_text');
-    if (textArea !== document.activeElement && nodeText !== document.activeElement) {
+    var analysisText = document.getElementById('analysis_text');
+    var input = document.activeElement == analysisText || $(document.activeElement).is('input') || $(document.activeElement).is('textarea');
+    if (!input) {
       if (key == 'a' || key == 'c') { edgeMode('atk'); } //add attacking edge
       else if (key == 'm') { edgeMode('ma'); } //add MA edge
       else { edgeMode('on'); } //add supporting edge
@@ -42,12 +42,15 @@ function myKeyUp(e) {
   else if (key == 'z' && e.ctrlKey) { //ctrl + z for undo shortcut
     undo();
   }
-  else if (key == "backspace" || key == "delete" || key == "r") {
-    var textArea = document.getElementById('analysis_text');
-    var nodeText = document.getElementById('n_text');
-    if (textArea !== document.activeElement && nodeText !== document.activeElement) {
+  else {
+    var analysisText = document.getElementById('analysis_text');
+    var input = document.activeElement == analysisText || $(document.activeElement).is('input') || $(document.activeElement).is('textarea');
+    if (!input) {
       if (key == "r") { resetPosition(); } //reset view shortcut
-      else { window.groupID++; deleteNode(mySel); } //delete node shortcut
+      else if ((key == "backspace" || key == "delete") && typeof mySel !== 'undefined') { //delete node shortcut
+        window.groupID++;
+        deleteNode(mySel);
+      }
     }
   }
 }
