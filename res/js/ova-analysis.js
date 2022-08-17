@@ -98,20 +98,19 @@ function closeModal(ident) {
 function updateToolbar() {
   var w = window.innerWidth;
   // console.log("width: " + w);
-  if (w > 880) { //show all buttons on toolbar
+  if (w > 790) { //show all buttons on toolbar
     $("#alayX").hide(); $("#alay").show();
     $("#loadaX").hide(); $("#loada").show();
     $("#saveaX").hide(); $("#savea").show();
     $("#newaX").hide(); $("#newa").show();
     $("#eaddX").hide(); $("#eadd").show();
     $("#naddX").hide(); $("#nadd").show();
-    $("#resetX").hide(); $("#reset").show();
     $("#undoX").hide(); $("#undo").show();
     $("#tutorialX").hide(); $("#tutorial").show();
   }
-  else if (w > 590) { // 590 < w < 880
+  else if (w > 520) { // 520 < w < 790
     $("#alay").hide(); $("#alayX").show();
-    if (w < 800) {
+    if (w < 720) {
       $("#loada").hide(); $("#loadaX").show();
       $("#savea").hide(); $("#saveaX").show();
       $("#newa").hide(); $("#newaX").show();
@@ -121,22 +120,19 @@ function updateToolbar() {
       $("#saveaX").hide(); $("#savea").show();
       $("#newaX").hide(); $("#newa").show();
     }
-    $("#resetX").hide(); $("#reset").show();
     $("#undoX").hide(); $("#undo").show();
     $("#tutorialX").hide(); $("#tutorial").show();
     $("#eaddX").hide(); $("#eadd").show();
     $("#naddX").hide(); $("#nadd").show();
   }
-  else { // w < 590
+  else { // w < 520
     $("#eadd").hide(); $("#eaddX").show();
     $("#nadd").hide(); $("#naddX").show();
-    if (w < 450) {
-      $("#reset").hide(); $("#resetX").show();
+    if (w < 400) {
       $("#undo").hide(); $("#undoX").show();
       $("#tutorial").hide(); $("#tutorialX").show();
     }
     else {
-      $("#resetX").hide(); $("#reset").show();
       $("#undoX").hide(); $("#undo").show();
       $("#tutorialX").hide(); $("#tutorial").show();
     }

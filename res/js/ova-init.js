@@ -25,16 +25,13 @@ var lasteditCollab = 0;
 var groupID = 1;
 
 const NAV_MAP = {
-    187: { dir: 1, act: 'zoom', name: 'in' } /* + */,
-    61: { dir: 1, act: 'zoom', name: 'in' } /* + WTF, FF? */,
-    107: { dir: 1, act: 'zoom', name: 'in' } /* numpad + */,
-    189: { dir: -1, act: 'zoom', name: 'out' } /* - */,
-    173: { dir: -1, act: 'zoom', name: 'out' } /* - WTF, FF? */,
-    109: { dir: -1, act: 'zoom', name: 'out' } /* numpad - */,
-    37: { dir: -1, act: 'move', name: 'left', axis: 0 } /* ? */,
-    38: { dir: -1, act: 'move', name: 'up', axis: 1 } /* ? */,
-    39: { dir: 1, act: 'move', name: 'right', axis: 0 } /* ? */,
-    40: { dir: 1, act: 'move', name: 'down', axis: 1 } /* ? */
+    "+": { dir: 1, act: 'zoom', name: 'in' } /* 187 + shift, 107 */,
+    "=": { dir: 1, act: 'zoom', name: 'in' } /* 187, 61 */,
+    "-": { dir: -1, act: 'zoom', name: 'out' } /* 189, 109, 173 */,
+    "arrowleft": { dir: -1, act: 'move', name: 'left', axis: 0 },
+    "arrowup": { dir: -1, act: 'move', name: 'up', axis: 1 },
+    "arrowright": { dir: 1, act: 'move', name: 'right', axis: 0 },
+    "arrowdown": { dir: 1, act: 'move', name: 'down', axis: 1 }
 };
 
 const NF = 16;
@@ -43,36 +40,59 @@ var DMAX = 0;
 var WMIN = 0;
 let rID = null, f = 0, nav = {}, tg = Array(4);
 var scale = 0;
+var inverse = false;
+var panZoomID = null;
 
 /**
- * Zooming on mousewheel scroll
+ * Handles mousewheel scroll and trackpad gestures. 
+ * Zooms in/out with mousewheel and pinch gestures, pans left/right with swipe left/right gestures.
  * @param {*} event 
  */
-const zoom = (event) => {
+const panZoom = (event) => {
     if (FormOpen == false) {
-        tsvg = document.getElementById('inline').getBoundingClientRect();
-        svgleft = tsvg.left;
-        if (event.clientX > svgleft) {
-            event.preventDefault();
-            if (event.deltaY < 0) {
-                tg[2] = VB[2] / Math.pow(1.1, -1);
-                tg[3] = VB[3] / Math.pow(1.1, -1);
-                tg[0] = .00001 * (DMAX[0] - tg[2]);
-                tg[1] = .00001 * (DMAX[1] - tg[3]);
-            } else {
-                tg[2] = VB[2] / Math.pow(1.1, 1);
-                tg[3] = VB[3] / Math.pow(1.1, 1);
-                tg[0] = .00001 * (DMAX[0] - tg[2]);
-                tg[1] = .00001 * (DMAX[1] - tg[3]);
-            }
-
-            nav.act = 'zoom';
+        // console.log(event);
+        // console.log("inverse: " + inverse);
+        event.preventDefault();
+        if (event.deltaY == 0) { // pan left & right
+            nav.axis = 0;
+            var direction = event.deltaX > 0 ? 1 : -1;
+            if (inverse) { direction *= -1; }
+            tg[0] = parseFloat(VB[0] + .1 * direction * VB[2]);
+            nav.act = 'move';
             updateView();
         }
+        else { //zoom in/out
+            tsvg = document.getElementById('inline').getBoundingClientRect();
+            svgleft = tsvg.left;
+            if (event.clientX > svgleft) {
+                var direction = event.deltaY > 0 ? -1 : 1;
+                if (inverse) { direction *= -1; }
+
+                tg[2] = VB[2] / Math.pow(1.1, direction);
+                tg[3] = VB[3] / Math.pow(1.1, direction);
+                tg[0] = .00001 * (DMAX[0] - tg[2]);
+                tg[1] = .00001 * (DMAX[1] - tg[3]);
+
+                nav.act = 'zoom';
+                updateView();
+            }
+        }
+
+        // if (event.deltaX == 0) { //pan up or down
+        //     nav.axis = 1;
+        //     var direction = event.deltaY > 0 ? 1 : -1;
+        //     if (inverse) { direction *= -1; }
+        //     tg[1] = parseFloat(VB[1] + .1 * direction * VB[2]);
+
+        //     nav.act = 'move';
+        //     updateView();
+        // }
     }
 }
 
 window.shiftPress = false;
+window.atkPress = false;
+window.maPress = false;
 window.longEdge = [false, false];
 window.nodeCounter = 1;
 window.textCounter = 1;
@@ -83,11 +103,13 @@ window.saveImage = false;
 document.addEventListener('contextmenu', event => event.preventDefault());
 window.addEventListener('keydown', myKeyDown, true);
 window.addEventListener('keyup', myKeyUp, true);
-document.onwheel = zoom;
+document.onwheel = panZoom;
 
 //set default settings
 window.defaultSettings = JSON.parse(window.defaultSettings);
-window.bwmode = window.defaultSettings["display"]["black_white"]; //set display settings
+//set display settings
+window.bwmode = window.defaultSettings["display"]["black_white"];
+window.panMode = typeof window.defaultSettings["display"]["panBtns"] !== 'undefined' ? window.defaultSettings["display"]["panBtns"] : true;
 window.defaultSchemesets = [["YA", 0], ["RA", 0], ["CA", 0], ["MA", 0], ["TA", 0], ["PA", 0]]; //set scheme set settings
 //set analysis settings
 window.cqmode = window.defaultSettings["analysis"]["cq"];
@@ -144,6 +166,7 @@ function Init(evt) {
             scheme = schemes[index];
             scheme_name = scheme.name.replace(/([a-z])([A-Z])/g, "$1 $2");
             scheme_type = scheme.schemeTypeID;
+            // if (scheme.schemeID == 215) { console.log(scheme.schemeID + "\n" + scheme_name); }
 
             if (scheme_type == 1 || scheme_type == 2 || scheme_type == 3 || scheme_type == 9) {
                 $('#s_ischeme').append('<option value="' + scheme.schemeID + '">' + scheme_name + '</option>');
@@ -264,6 +287,20 @@ function Init(evt) {
             saveNodeEdit(); closeModal('#node_edit'); FormOpen = false; return false; //save the edit to the node
         }
     });
+
+    //set up the pan and zoom buttons
+    $('#panBtns button.arrow').mousedown(function (e) { //start panning on mousedown
+        var key = "arrow" + e.target.name;
+        panZoomMode(key, true);
+    });
+    $('#zoomBtns button').mousedown(function (e) { //start zooming on mousedown
+        var key = e.target.name;
+        if (key !== 'reset') { panZoomMode(key, true); }
+    });
+    $('#panBtns button').mouseup(function () { //stop panning or zooming on mouseup
+        clearTimeout(panZoomID);
+    });
+    panModeOnOff();
 
     //set defaults
     setFontSize(window.defaultSettings["display"]["font_size"]);
@@ -1519,6 +1556,14 @@ function eAddModeOnOff() {
 }
 
 /**
+ * Handles showing/hiding the pan buttons when turned on or off
+ */
+function panModeOnOff() {
+    if (window.panMode) { $("#panBtns").show(); }
+    else { $("#panBtns").hide(); }
+}
+
+/**
  * Autolayout
  */
 function genldot() {
@@ -1579,6 +1624,8 @@ function genldot() {
     //post the temp dot file to get a json of coordinates for autolayout
     $.post("dot/index.php", { data: doto },
         function (reply) {
+            if (reply == "can't open file") { console.log(reply); return; }
+
             ldata = JSON.parse(reply);
             //update the nodes
             window.groupID++;

@@ -66,7 +66,7 @@ if (isset($_COOKIE['ovauser'])) {
   <link rel="stylesheet" href="res/css/introjs.css" />
 
   <script src="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.10.0/jquery-ui.js"></script>
-  <script src="res/js/svg-pan-zoom.js"></script>
+  <!-- <script src="res/js/svg-pan-zoom.js"></script> -->
   <script src="res/js/ova-analysis.js"></script>
   <script src="res/js/ova-fn.js"></script>
   <script src="res/js/ova-model.js"></script>
@@ -214,8 +214,6 @@ if (isset($_COOKIE['ovauser'])) {
     <a onClick="return false;" class="icon" id="eadd" style="display:none; background-position: -42px 50%;"><span class="tooltiptext">Add&nbsp;Edge</span></a>
     <a onClick="nodeMode('switch'); return false;" class="icon" id="nadd" style="display:none; background-position: -0px 50%;"><span class="tooltiptext">Add&nbsp;Node</span></a>
     <div class="divider"></div>
-    <a onClick="resetPosition();" class="icon" id="reset" style="display:none; background-position: -336px 50%;"><span class="tooltiptext">Reset&nbsp;View</span></a>
-    <div class="divider"></div>
     <a onClick="undo();" class="icon" id="undo" style="display:none; background-position: -462px 50%;"><span class="tooltiptext">Undo</span></a>
     <div class="divider"></div>
   </div>
@@ -264,10 +262,6 @@ if (isset($_COOKIE['ovauser'])) {
       <a onClick="nodeMode('switch'); return false;" class="xicon" id="naddX" style="display:none;">
         <div class="icn" style="background-position: -0px 50%;"></div>
         <div class="txt">Add&nbsp;Node</div>
-      </a>
-      <a onClick="resetPosition();" class="xicon" id="resetX" style="display:none;">
-        <div class="icn" style="background-position: -336px 50%;"></div>
-        <div class="txt">Reset&nbsp;View</div>
       </a>
       <a onClick="undo();" class="xicon" id="undoX" style="display:none;">
         <div class="icn" style="background-position: -462px 50%;"></div>
@@ -395,6 +389,22 @@ if (isset($_COOKIE['ovauser'])) {
                 <a href="#" id="bwtoggle" class="togglesw off" onClick='$(this).toggleClass("on off"); window.bwmode=!window.bwmode; bwModeOnOff();'><span class="tson">On</span><span class="tsoff">Off</span></a>
               <?php } ?>
             </p>
+            <!-- Pan Buttons Toggle  -->
+            <p style="color: #444; line-height: 22px;">Show Pan &amp; Zoom Buttons
+              <?php if (isset($defaultSettings["display"]["panBtns"]) && !$defaultSettings["display"]["panBtns"]) { ?>
+                <a href="#" id="panToggle" class="togglesw off" onClick='$(this).toggleClass("on off"); window.panMode=!window.panMode; panModeOnOff();'><span class="tson">On</span><span class="tsoff">Off</span></a>
+              <?php } else { ?>
+                <a href="#" id="panToggle" class="togglesw on" onClick='$(this).toggleClass("on off"); window.panMode=!window.panMode; panModeOnOff();'><span class="tson">On</span><span class="tsoff">Off</span></a>
+              <?php } ?>
+            </p>
+            <!-- Inverse Toggle  -->
+            <!-- <p style="color: #444; line-height: 22px;">Scroll Direction: Natural
+              <?php if ($defaultSettings["display"]["inverse"]) { ?>
+                <a href="#" id="inverseToggle" class="togglesw on" onClick='$(this).toggleClass("on off"); window.inverse=!window.inverse; return false;'><span class="tson">On</span><span class="tsoff">Off</span></a>
+              <?php } else { ?>
+                <a href="#" id="inverseToggle" class="togglesw off" onClick='$(this).toggleClass("on off"); window.inverse=!window.inverse; return false;'><span class="tson">On</span><span class="tsoff">Off</span></a>
+              <?php } ?>
+            </p> -->
           </div>
           <div id="anastg" style="display:none;">
             <!-- Dialogical Mode Toggle  -->
@@ -581,8 +591,9 @@ if (isset($_COOKIE['ovauser'])) {
             <strong>Keyboard Shortcuts:</strong>
             <p style="color: #444; font-size: 12px;">
             <pre>
-<strong>shift+drag</strong> from one node to another: add supporting edge
-<strong>a+drag</strong> from one node to another: add attacking edge
+<strong>shift+drag</strong> from one node to another: add RA (inference) edge
+<strong>c+drag</strong> from one node to another: add CA (conflict) edge
+<strong>m+drag</strong> from one node to another: add MA (rephrase) edge
 <br>
 <strong>ctrl+click</strong> on node: open edit node menu
 <strong>click+delete</strong> on node: delete the selected node
@@ -591,6 +602,7 @@ if (isset($_COOKIE['ovauser'])) {
 <br>
 <strong>ctrl+z</strong> on canvas: undo changes you made to an analysis
 <strong>alt+click</strong> on canvas: draw a box to multi select
+<strong>r</strong> on canvas: reset view
 <strong>arrow keys: </strong> move canvas
 <strong>+/- : </strong> zoom in/out
 </pre>
@@ -603,10 +615,27 @@ if (isset($_COOKIE['ovauser'])) {
             <p style="color: #444; font-size: 12px;">First, highlight the text including the interposed material and click on the canvas, the highlighted text will be added to a node. The interposed material can then be removed by editing the node's text. Then highlight only the interposed material within the previously highlighted text and click on the canvas, the interposed text will be added to a separate node.</p>
             <strong>Editing Nodes</strong>
             <p style="color: #444; font-size: 12px;">To access the edit node menu, either right click on a node and select 'Edit Node' from the menu or ctrl+click on the node you would like to edit.</p>
+            <strong>Deleting Nodes</strong>
+            <p style="color: #444; font-size: 12px;">To delete a node, either right click on a node and select 'Delete Node' from the menu or click+delete on the node you would like to delete.</p>
           </div>
           <div id="edge-help" style="display:none;">
             <strong>Adding Edges Between Nodes</strong>
-            <p style="color: #444; font-size: 12px;">To add an edge, either click on the add edge button in the top menu and then click and drag between the two nodes you would like to connect. Or click and drag from one node to another while pressing shift for an inference relation or the 'A' key for a conflict.</p>
+            <?php if ($pro) { ?>
+              <p style="color: #444; font-size: 12px;">To add an edge, click on the add edge button in the top toolbar which will open the add edge menu.
+                A source node and a target node for the new edge to connect from/to will need to be selected. A source locution and a target locution will also need to be selected when in Rapid IAT mode. <br><br>
+                First select a source node by clicking the 'Select Source' button then clicking on the node to select when the menu closes. The menu will then reopen with the selected source node's text displayed in the textbox. To change the selected source node click the 'Select Source' button again and select a different node.
+                When in Rapid IAT mode a source locution may have been selected automatically. This should be the locution for the selected source node but can be changed by clicking and selecting a different locution from the drop down options.
+                A target node and locution can then be selected in the same way by clicking the 'Select Target' button and the select box under 'Target Locution' respectively. <br><br>
+                The checkbox at the bottom of the menu can be ticked to automatically mark the new edges when they are added.
+                Finally, click the 'Add Edges' button and an edge will then be added connecting the selected source and target nodes. An edge connecting the source and target locutions will also be added if they were selected.
+              </p>
+            <?php } else { ?>
+              <p style="color: #444; font-size: 12px;">To add an edge, click on the add edge button in the top toolbar which will open the add edge menu. <br><br>A source node and a target node for the new edge to connect from/to will need to be selected. The source node can be selected by clicking the 'Select Source' button then clicking on the node to select when the menu closes. The menu will then reopen with the selected source node's text displayed in the textbox. After selecting a source node, click the 'Select Target' button then click on the node to select when the menu closes again. An edge will then be added connecting the selected source and target nodes.</p>
+            <?php } ?>
+            <strong>Adding Edges using Sticky Add Edge</strong>
+            <p style="color: #444; font-size: 12px;">To add an edge, click on the add edge button in the top toolbar and then click and drag between the two nodes you would like to connect. <br><br>Click the add edge button once for an inference relation, the button will turn green. Or twice for a conflict, the button will turn red. Or three times for a rephrase, the button will turn orange. Click the add edge button again to cancel adding an edge. This can be turned on/off by clicking the 'Sticky Add Edge' toggle in the analysis settings.</p>
+            <strong>Adding Edges using Keyboard Shortcuts</strong>
+            <p style="color: #444; font-size: 12px;">To add an edge, click and drag from one node to another while pressing shift for an inference relation or the 'c' key for a conflict or the 'm' key for a rephrase. The add edge button will turn green, red or orange respectively.</p>
           </div>
           <div id="timestamp-help" style="display:none;">
             <strong>Timestamp Format</strong>
@@ -796,11 +825,17 @@ if (isset($_COOKIE['ovauser'])) {
       console.log("width: " + w + " height:" + h)
     </script>
     <div id="right1">
-      <!-- <script>
-    document.getElementById('right1').style.width = w;
-    document.getElementById('right1').style.height = w
-    </script> -->
-      <!-- style="width:90%; height:100%; z-index:999; background-color:#fff;" -->
+      <div id="panBtns">
+        <div id="zoomBtns">
+          <button id="zoomIn" type="button" name="+" style="right:6%;">+<span>Zoom&nbsp;In</span></button>
+          <button id="zoomOut" type="button" name="-" style="left:4%;">-<span>Zoom&nbsp;Out</span></button>
+          <button id="resetView" type="button" name="reset" onClick="resetPosition();"><span>Reset&nbsp;View</span></button>
+        </div>
+        <button id="panUp" name="up" type="button" class="arrow up"><span>Move&nbsp;Up</span></button>
+        <button id="panLeft" name="left" type="button" class="arrow left"><span>Move&nbsp;Left</span></button>
+        <button id="panRight" name="right" type="button" class="arrow right"><span>Move&nbsp;Right</span></button>
+        <button id="panDown" name="down" type="button" class="arrow down"><span>Move&nbsp;Down</span></button>
+      </div>
 
       <svg viewBox='0 0 1500 1500' xmlns="http://www.w3.org/2000/svg" version="1.1" width="1500" height="1500" style="z-index:999; background-color:#fff;" onmousedown='Grab(evt);' onmousemove='Drag(evt);' onmouseup='Drop(evt);' onload='Init(evt);' id='inline'>
         <defs>

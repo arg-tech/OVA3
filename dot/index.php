@@ -1,4 +1,5 @@
 <?php
+require_once('../config.php');
 
 $target_path = "tmp/";
 $froot = $target_path . date("U");
@@ -8,8 +9,7 @@ fwrite($fh, $_POST['data']);
 fclose($fh);
 
 $dotfile = $froot . '.dot';
-// exec("dot -Tdot -o $dotfile $tmpfile");
-exec("/usr/local/bin/dot -Tdot -o $dotfile $tmpfile");
+exec("$dotPath -Tdot -o $dotfile $tmpfile");
 
 $dot = file_get_contents($dotfile);
 $dot = preg_replace('/\\\\\n/', '', $dot);
