@@ -430,6 +430,17 @@ function updateAddNode(node) {
         DrawNode(n.nodeID, n.type, n.text, n.x, n.y, n.marked); //if the node is visible then draw the node on the svg
         if (window.showTimestamps && n.type == 'L') { DrawTimestamp(n.nodeID, n.timestamp, n.x, n.y); }
         updateConnectedEdges(n);
+
+        //update the participants if needed
+        if (n.participantID !== 0 && n.participantID !== '0') {
+            var found = participants.find(p => p.participantID == n.participantID);
+            if (typeof found === "undefined") {
+                // console.log("participant not found ID: " + n.participantID);
+                var pName = getParticipantName(n.text); //get first name and surname
+                // console.log(pName);
+                newParticipant(n.participantID, pName[0], pName[1]); //add participant to array
+            }
+        }
     } else if (n.type == 'L') {
         var r1 = /\b\w+:\s\w+\s\w+:/g;
         var r2 = /\b\w+:\s\w+\s\w+\s:/g;

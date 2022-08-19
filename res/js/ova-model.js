@@ -236,7 +236,7 @@ function newParticipant(id, fname, sname) {
     p.surname = sname;
     $('#p_select').append($("<option/>", {
         value: p.participantID,
-        text: firstname + " " + surname
+        text: fname + " " + sname
     }));
     participants.push(p);
     return p;
