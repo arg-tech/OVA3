@@ -59,7 +59,6 @@ function myKeyUp(e) {
  * @returns 
  */
 function panZoomMode(key, recursive) {
-  console.log(key);
   var textArea = document.getElementById('analysis_text');
   if (FormOpen == false && textArea !== document.activeElement) {
     nav = NAV_MAP[key];
@@ -68,11 +67,7 @@ function panZoomMode(key, recursive) {
       //    (nav.dir ===  1 && VB[nav.axis] >= DMAX[nav.axis] - VB[2 + nav.axis])) {
       //   return
       // }
-      if (nav.axis == 1) {
-        tg[nav.axis] = parseFloat(VB[nav.axis] + .1 * nav.dir * VB[1 + nav.axis]);
-      } else if (nav.axis == 0) {
-        tg[nav.axis] = parseFloat(VB[nav.axis] + .1 * nav.dir * VB[2 + nav.axis]);
-      }
+      tg[nav.axis] = parseFloat(VB[nav.axis] + .1 * nav.dir * VB[2]);
     }
     else if (nav.act == 'zoom') {
       //If at maximum 'zoomed out' view or 'zoomed in' view
@@ -96,7 +91,7 @@ function panZoomMode(key, recursive) {
 }
 
 /**
- * Updates the view
+ * Updates the view box for the SVG
  * @returns 
  */
 function updateView() {
@@ -110,7 +105,7 @@ function updateView() {
     for (let i = 0; i < 4; i++)
       cvb[i] = parseFloat(j * VB[i] + k * tg[i]);
   }
-  if (nav.act === 'move') {
+  else if (nav.act === 'move') {
     cvb[nav.axis] = parseFloat(j * VB[nav.axis] + k * tg[nav.axis]);
   }
   SVGRoot.setAttribute('viewBox', cvb.join(' '));
@@ -124,11 +119,11 @@ function updateView() {
     stopAni();
     return;
   }
-  rID = requestAnimationFrame(updateView)
+  rID = requestAnimationFrame(updateView);
 }
 
 /**
- * 
+ * Stops the requested animation
  */
 function stopAni() {
   cancelAnimationFrame(rID);
@@ -217,11 +212,10 @@ function nodeMode(status) {
 
 /**
  * Handles the mouse down event to enable grabbing on the SVG
- * @param {*} evt 
+ * @param {*} evt - The mouse down event to handle
  * @returns 
  */
 function Grab(evt) {
-  // console.log("GRAB");
   $("#contextmenu").hide();
 
   if (evt.button != 0 && !longEdge[0]) { //disable right click when in the middle of adding a long distance edge
@@ -348,6 +342,11 @@ function Grab(evt) {
         }
         clearSelText();
       }
+      else if (targetElement.id == 'inline') {
+        DragPan = true;
+        GrabPoint = getCoords(evt);
+        $('#inline').css('cursor', 'grabbing');
+      }
     }
   }
 }
@@ -448,8 +447,8 @@ function GetEdges(dragID) {
 }
 
 /**
- * Calculates the true coordinates
- * @param {*} evt 
+ * Calculates the true coordinates after panning and zooming
+ * @param {*} evt - The event to calculate coordinates for
  */
 function GetTrueCoords(evt) {
   // tsvg = document.getElementById('inline').getBoundingClientRect();
@@ -474,6 +473,19 @@ function GetTrueCoords(evt) {
   TrueCoords.x = Math.round(tempCoords.x);
   TrueCoords.y = Math.round(tempCoords.y);
 
+}
+
+/**
+ * Calculates the coordinates for a point on the SVG where a given event occured
+ * @param {*} evt - The event to get coordinates for
+ * @returns {Object} point - The x and y coordinates for the point on the SVG where the event occured
+ */
+function getCoords(evt) {
+  var point = SVGRoot.createSVGPoint();
+  point.x = evt.clientX;
+  point.y = evt.clientY;
+  var invertedSVGMatrix = SVGRoot.getScreenCTM().inverse();
+  return point.matrixTransform(invertedSVGMatrix);
 }
 
 /**
@@ -525,18 +537,23 @@ function AddNode(txt, type, scheme, pid, nid, nx, ny, visible, undone, timestamp
 
 /**
  * Handles the mouse move event to enable dragging on the SVG
- * @param {*} evt 
+ * @param {*} evt - The mouse move event to handle
  */
 function Drag(evt) {
   GetTrueCoords(evt);
-  if (DragTarget && !multiSel[0]) {
+  if (DragPan) { //if panning the whole SVG
+    var currentCoords = getCoords(evt);
+    VB[0] -= currentCoords.x - GrabPoint.x;
+    VB[1] -= currentCoords.y - GrabPoint.y;
+    SVGRoot.setAttribute('viewBox', VB);
+  }
+  else if (DragTarget && !multiSel[0]) { //if moving nodes on the SVG
     var dx = (TrueCoords.x - GrabPoint.x);
     var dy = (TrueCoords.y - GrabPoint.y);
     GrabPoint.x = TrueCoords.x;
     GrabPoint.y = TrueCoords.y;
 
-    //If moving multiple nodes
-    if (mSel.length > 0) {
+    if (mSel.length > 0) { //If moving multiple nodes
       var childElement, tchildren, cE;
       var oldX = 0, oldY = 0, newX = 0, newY = 0, coldX = 0, cnewX = 0;
       for (var i = 0; i < mSel.length; i++) {
@@ -594,34 +611,32 @@ function Drag(evt) {
     }
 
   }
-  else {
-    if (multiSel[1]) { //if the starting coords for multi select have already been selected
-      var x = parseInt(multiSelRect.startX);
-      var y = parseInt(multiSelRect.startY);
-      if (!isNaN(x) && !isNaN(y)) {
-        var g = document.createElementNS("http://www.w3.org/2000/svg", "g");
-        var selbox = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-        g.setAttribute('id', 'multiSelBoxG');
-        selbox.setAttribute('id', 'multiSelBox');
-        if (TrueCoords.x > x) {
-          selbox.setAttribute('x', x);
-          selbox.setAttribute('width', (TrueCoords.x - x));
-        } else {
-          selbox.setAttribute('x', TrueCoords.x);
-          selbox.setAttribute('width', (x - TrueCoords.x));
-        }
-        if (TrueCoords.y > y) {
-          selbox.setAttribute('y', y);
-          selbox.setAttribute('height', (TrueCoords.y - y));
-        } else {
-          selbox.setAttribute('y', TrueCoords.y);
-          selbox.setAttribute('height', (y - TrueCoords.y));
-        }
-        selbox.setAttribute('style', 'fill:none;stroke:#a8a8a8;stroke-width:1;')
-        // selbox.setAttribute('style', 'fill:none;stroke:#3498db;stroke-width:1;');
-        g.append(selbox);
-        updateBox(g);
+  else if (multiSel[1]) { //if the starting coords for multi select have already been selected
+    var x = parseInt(multiSelRect.startX);
+    var y = parseInt(multiSelRect.startY);
+    if (!isNaN(x) && !isNaN(y)) {
+      var g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      var selbox = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+      g.setAttribute('id', 'multiSelBoxG');
+      selbox.setAttribute('id', 'multiSelBox');
+      if (TrueCoords.x > x) {
+        selbox.setAttribute('x', x);
+        selbox.setAttribute('width', (TrueCoords.x - x));
+      } else {
+        selbox.setAttribute('x', TrueCoords.x);
+        selbox.setAttribute('width', (x - TrueCoords.x));
       }
+      if (TrueCoords.y > y) {
+        selbox.setAttribute('y', y);
+        selbox.setAttribute('height', (TrueCoords.y - y));
+      } else {
+        selbox.setAttribute('y', TrueCoords.y);
+        selbox.setAttribute('height', (y - TrueCoords.y));
+      }
+      selbox.setAttribute('style', 'fill:none;stroke:#a8a8a8;stroke-width:1;')
+      // selbox.setAttribute('style', 'fill:none;stroke:#3498db;stroke-width:1;');
+      g.append(selbox);
+      updateBox(g);
     }
   }
 }
@@ -781,11 +796,16 @@ function delSVGTemp() {
 
 /**
  * Handles the mouse up event to enable dropping on the SVG
- * @param {*} evt 
+ * @param {*} evt - The mouse up event to handle
  * @returns 
  */
 function Drop(evt) {
-  // console.log("DROP");
+  if (DragPan) {
+    DragPan = false;
+    // $('#inline').css('cursor', 'grab');
+    $('#inline').css('cursor', 'default');
+    return;
+  }
   if (DragTarget && mSel.length == 0) { //if a drag target has been set and not using multiselect
     children = DragTarget.children;
     var childElement = null, xCoord = 0, yCoord = 0;
@@ -1018,7 +1038,7 @@ function Drop(evt) {
 }
 
 /**
- * Adds a point to the SVG
+ * Adds a point to the SVG for drawing edges to
  * @param {Number} nx - The x coordinate to draw the point at
  * @param {Number} ny - The y coordinate to draw the point at
  * @returns 
@@ -1040,7 +1060,7 @@ function AddPt(nx, ny) {
 
 /**
  * Handles the right click event
- * @param {*} evt 
+ * @param {*} evt - The event to handle
  * @returns 
  */
 function myRClick(evt) {

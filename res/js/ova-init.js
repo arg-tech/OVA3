@@ -4,6 +4,7 @@ var SVGRootG = null;
 var TrueCoords = null;
 var GrabPoint = null;
 var DragTarget = null;
+var DragPan = false;
 
 var dialogicalMode = ("plus" in getUrlVars());
 var rIATMode = false;
@@ -54,11 +55,11 @@ const panZoom = (event) => {
         // console.log("inverse: " + inverse);
         event.preventDefault();
         if (event.deltaY == 0) { // pan left & right
-            nav.axis = 0;
             var direction = event.deltaX > 0 ? 1 : -1;
             if (inverse) { direction *= -1; }
             tg[0] = parseFloat(VB[0] + .1 * direction * VB[2]);
-            nav.act = 'move';
+
+            nav = NAV_MAP["arrowleft"]; //updateView() only uses nav.axis & nav.act so can use either 'arrowleft' or 'arrowright'
             updateView();
         }
         else { //zoom in/out
@@ -73,18 +74,17 @@ const panZoom = (event) => {
                 tg[0] = .00001 * (DMAX[0] - tg[2]);
                 tg[1] = .00001 * (DMAX[1] - tg[3]);
 
-                nav.act = 'zoom';
+                nav = NAV_MAP["+"]; //updateView() only uses nav.act so can use either '+' or '-'
                 updateView();
             }
         }
 
         // if (event.deltaX == 0) { //pan up or down
-        //     nav.axis = 1;
         //     var direction = event.deltaY > 0 ? 1 : -1;
         //     if (inverse) { direction *= -1; }
         //     tg[1] = parseFloat(VB[1] + .1 * direction * VB[2]);
 
-        //     nav.act = 'move';
+        //     nav = NAV_MAP["arrowup"]; //updateView() only uses nav.axis & nav.act so can use either 'arrowup' or 'arrowdown'
         //     updateView();
         // }
     }
@@ -221,6 +221,7 @@ function Init(evt) {
 
     getSocial();
 
+    //set event handlers
     $('#analysis_text').on('paste', function () {
         setTimeout(function (e) {
             var domString = "", temp = "";
@@ -301,6 +302,12 @@ function Init(evt) {
         clearTimeout(panZoomID);
     });
     panModeOnOff();
+
+    $('#inline').mouseout(function () { //stop panning SVG when mouse outside SVG
+        DragPan = false;
+        // $('#inline').css('cursor', 'grab');
+        $('#inline').css('cursor', 'default');
+    });
 
     //set defaults
     setFontSize(window.defaultSettings["display"]["font_size"]);
@@ -574,10 +581,12 @@ function getSelText() {
                 window.groupID++;
                 postEdit("text", "edit", $('#analysis_text').html());
             } catch (e) {
-                console.log(e);
+                clearSelText(); console.log(txt);
+                if (txt != '+-') { //if it wasn't the zoom buttons' text selected
+                    console.log(e);
+                    alert("Cannot highlight text containing newlines or carriage returns.");
+                }
                 txt = '';
-                alert("Cannot highlight text containing newlines or carriage returns.");
-                clearSelText();
             }
         }
     } else if (iframe.getElementsByTagName('iframe')) {
@@ -1556,7 +1565,7 @@ function eAddModeOnOff() {
 }
 
 /**
- * Handles showing/hiding the pan buttons when turned on or off
+ * Handles showing/hiding the pan and zoom buttons when turned on or off
  */
 function panModeOnOff() {
     if (window.panMode) { $("#panBtns").show(); }
