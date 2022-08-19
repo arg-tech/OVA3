@@ -8,6 +8,10 @@ body {
   font-family: 'Open Sans', sans-serif;
 }
 
+/* svg {
+  cursor: grab;
+} */
+
 g {
   cursor: move;
 }
@@ -990,4 +994,11 @@ input:valid+span.validity:after {
   background-image: url('../img/icons-grey.svg');
   background-repeat: no-repeat;
   background-position: -338px 50%;
+}
+
+.noSelect {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }

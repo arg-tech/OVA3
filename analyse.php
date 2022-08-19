@@ -827,8 +827,8 @@ if (isset($_COOKIE['ovauser'])) {
     <div id="right1">
       <div id="panBtns">
         <div id="zoomBtns">
-          <button id="zoomIn" type="button" name="+" style="right:6%;">+<span>Zoom&nbsp;In</span></button>
-          <button id="zoomOut" type="button" name="-" style="left:4%;">-<span>Zoom&nbsp;Out</span></button>
+          <button id="zoomIn" type="button" name="+" style="right:6%;" class="noSelect">+<span>Zoom&nbsp;In</span></button>
+          <button id="zoomOut" type="button" name="-" style="left:4%;" class="noSelect">-<span>Zoom&nbsp;Out</span></button>
           <button id="resetView" type="button" name="reset" onClick="resetPosition();"><span>Reset&nbsp;View</span></button>
         </div>
         <button id="panUp" name="up" type="button" class="arrow up"><span>Move&nbsp;Up</span></button>
