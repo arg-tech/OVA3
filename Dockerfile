@@ -1,22 +1,9 @@
 FROM php:5.6-apache
-FROM node:16.15-alpine3.14
-FROM python:3
-
-RUN mkdir -p /home/ova3-main
-WORKDIR /home/ova3-main
-
-RUN set -xe \
-    && apt-get update -y \
-    && apt-get install -y python3-pip
-RUN pip3 install --upgrade pip
-
-ADD requirements.txt .
-RUN pip install -r requirements.txt
-
-ADD app app
-ADD routes.py .
-
-ENV FLASK_APP app
-
-EXPOSE 3000
-ENTRYPOINT python routes.py
+ADD ova3 /var/www/html/
+RUN mkdir /var/www/html/tmp
+RUN chmod 777 /var/www/html/tmp
+RUN a2enmod rewrite
+RUN a2enmod headers
+COPY php.ini /usr/local/etc/php/
+RUN docker-php-ext-install mysql mysqli pdo pdo_mysql
+RUN apt-get update && apt-get install -y mysql-client
