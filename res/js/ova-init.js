@@ -46,23 +46,15 @@ var panZoomID = null;
 
 /**
  * Handles mousewheel scroll and trackpad gestures. 
- * Zooms in/out with mousewheel and pinch gestures, pans left/right with swipe left/right gestures.
- * @param {*} event 
+ * Scrolls up/down with mousewheel and swipe up/down gestures, 
+ * zooms in/out with pinch gestures, pans left/right with swipe left/right gestures.
+ * @param {*} event - The event to handle
  */
 const panZoom = (event) => {
     if (FormOpen == false) {
-        // console.log(event);
         // console.log("inverse: " + inverse);
         event.preventDefault();
-        if (event.deltaY == 0) { // pan left & right
-            var direction = event.deltaX > 0 ? 1 : -1;
-            if (inverse) { direction *= -1; }
-            tg[0] = parseFloat(VB[0] + .1 * direction * VB[2]);
-
-            nav = NAV_MAP["arrowleft"]; //updateView() only uses nav.axis & nav.act so can use either 'arrowleft' or 'arrowright'
-            updateView();
-        }
-        else { //zoom in/out
+        if (event.ctrlKey) { //zoom in or out
             tsvg = document.getElementById('inline').getBoundingClientRect();
             svgleft = tsvg.left;
             if (event.clientX > svgleft) {
@@ -78,15 +70,24 @@ const panZoom = (event) => {
                 updateView();
             }
         }
+        else {
+            if (event.deltaX == 0) { //pan up or down
+                var direction = event.deltaY > 0 ? 1 : -1;
+                if (inverse) { direction *= -1; }
+                tg[1] = parseFloat(VB[1] + .1 * direction * VB[2]);
 
-        // if (event.deltaX == 0) { //pan up or down
-        //     var direction = event.deltaY > 0 ? 1 : -1;
-        //     if (inverse) { direction *= -1; }
-        //     tg[1] = parseFloat(VB[1] + .1 * direction * VB[2]);
+                nav = NAV_MAP["arrowup"]; //updateView() only uses nav.axis & nav.act so can use either 'arrowup' or 'arrowdown'
+                updateView();
+            }
+            else if (event.deltaY == 0) { // pan left & right
+                var direction = event.deltaX > 0 ? 1 : -1;
+                if (inverse) { direction *= -1; }
+                tg[0] = parseFloat(VB[0] + .1 * direction * VB[2]);
 
-        //     nav = NAV_MAP["arrowup"]; //updateView() only uses nav.axis & nav.act so can use either 'arrowup' or 'arrowdown'
-        //     updateView();
-        // }
+                nav = NAV_MAP["arrowleft"]; //updateView() only uses nav.axis & nav.act so can use either 'arrowleft' or 'arrowright'
+                updateView();
+            }
+        }
     }
 }
 
