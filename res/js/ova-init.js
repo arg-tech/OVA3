@@ -149,15 +149,13 @@ function Init(evt) {
         }
     });
 
-    if ("aifdb" in getUrlVars()) {
-        aifdbid = getUrlVars()["aifdb"];
-        $.get('./db/' + aifdbid, function (data) {
-            if (lastedit == 0) {
-                loadFile(data, false);
-            }
-        }).fail(function () {
-            loadfromdb(aifdbid, false);
-        });
+    var urlVars = getUrlVars();
+    if ("aifdb" in urlVars || "corpus" in urlVars) { //load analysis through URL
+        checkRadio('loadReplace'); //replace instead of loading on top of
+        if (urlVars.aifdb) { loadBtn('nSetID', urlVars.aifdb); }
+        else { loadBtn('corpus', urlVars.corpus); }
+        var newurl = "analyse.php?url=" + urlVars.url + "&plus=" + urlVars.plus + "&akey=" + urlVars.akey;
+        history.pushState(null, null, newurl);
     }
 
     $.getJSON("browserint.php?x=ipxx&url=" + window.DBurl + "/schemes/all/", function (json_data) {
