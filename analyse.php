@@ -398,13 +398,13 @@ if (isset($_COOKIE['ovauser'])) {
               <?php } ?>
             </p>
             <!-- Inverse Toggle  -->
-            <!-- <p style="color: #444; line-height: 22px;">Scroll Direction: Natural
+            <p style="color: #444; line-height: 22px;">Scroll Direction: Natural
               <?php if ($defaultSettings["display"]["inverse"]) { ?>
                 <a href="#" id="inverseToggle" class="togglesw on" onClick='$(this).toggleClass("on off"); window.inverse=!window.inverse; return false;'><span class="tson">On</span><span class="tsoff">Off</span></a>
               <?php } else { ?>
                 <a href="#" id="inverseToggle" class="togglesw off" onClick='$(this).toggleClass("on off"); window.inverse=!window.inverse; return false;'><span class="tson">On</span><span class="tsoff">Off</span></a>
               <?php } ?>
-            </p> -->
+            </p>
           </div>
           <div id="anastg" style="display:none;">
             <!-- Dialogical Mode Toggle  -->

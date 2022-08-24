@@ -179,7 +179,7 @@ function setTut() {
             },
             {
                 element: '#inverseToggle',
-                intro: "<p>Toggle Scroll Direction</p> <p>Turning on natural scrolling will change scrolling down to move down the canvas and vice versa. Turning it off will switch back to reverse scrolling where a down motion scrolls up and an up motion scrolls down.</p>",
+                intro: "<p>Toggle Scroll Direction</p> <p>This will change the direction needed to scroll up and down. When natural scrolling is on, a downwards motion will scroll down the canvas and vice versa. Turning it off will switch back to reverse scrolling where a downwards motion scrolls up and vice versa.</p>",
             },
             {
                 element: '#dialogicaltoggle',
