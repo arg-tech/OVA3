@@ -245,10 +245,14 @@ function loadFileBtn(evt) {
 }
 
 /**
- * Handles the load button click event
+ * Handles loading analysis through the load button click event or the URL
+ * @param {String} type - Optional, used for loading through the URL. Either 'corpus' to load in a corpus or 'nSetID' to load in a node set.
+ * @param {String} id - Optional, used for loading through the URL. The short name of the corpus or ID of the node set to be loaded in.
+ * @returns {Boolean} false if the corpus or node set has already been loaded in
  */
-function loadBtn() {
-    var radioValue = $("input[name='loadFrom']:checked").val();
+function loadBtn(type, id) {
+    // console.log("loading type: " + type + "\nid: " + id);
+    var radioValue = typeof type === 'undefined' ? $("input[name='loadFrom']:checked").val() : type;
     if (radioValue == "corpus" || radioValue == "nSetID") {
         $('#f_loadfile').hide(); $('#loadBtn').hide();
         var current = "";
@@ -260,8 +264,8 @@ function loadBtn() {
 
 
         if (radioValue == "corpus") { //if loading in a selected corpus
-            var cShortName = $("#corpus_sel").val();
-            var cName = $("#corpus_sel option:selected").text();
+            var cShortName = typeof id === 'undefined' ? $("#corpus_sel").val() : id;
+            var cName = typeof id === 'undefined' ? $("#corpus_sel option:selected").text() : id;
 
             //if this corpus has already been loaded into the analysis
             if (list.innerHTML.includes('Loaded corpus: <strong>' + cName)) {
@@ -289,7 +293,7 @@ function loadBtn() {
             });
         }
         else if (radioValue == "nSetID") { //if loading in an analysis by its node set ID
-            var nSetID = parseInt($("#nsetID").val());
+            var nSetID = typeof id === 'undefined' ? parseInt($("#nsetID").val()) : parseInt(id);
             if (Number.isInteger(nSetID) && nSetID > 0) { //if a valid node set ID
                 //if this node set has already been loaded into the analysis
                 if (list.innerHTML.includes('Loaded analysis: Node Set ID <strong>' + nSetID)) {
@@ -1057,12 +1061,6 @@ function loadfromdb(nodeSetID, multi) {
                         }
                     }
                 });
-
-                if ("aifdb" in getUrlVars()) {
-                    var currenturl = window.location;
-                    var newurl = currenturl.replace(/aifdb=[0-9]+/i, "");
-                    history.pushState(null, null, newurl);
-                }
 
                 var added = postAddEdits(nodeStart, edgeStart);
                 resolve(added); //the analysis has finished loading

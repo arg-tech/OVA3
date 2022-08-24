@@ -22,8 +22,12 @@ if (isset($_GET['akey'])) {
   $q = $DBH->prepare($sql);
   $q->execute(array(':akey' => $akey));
   $result = $q->fetch(PDO::FETCH_ASSOC);
-  $analysisID = $result['analysisID'];
-} else {
+  if ($result) { //if an analysis ID was found
+    $analysisID = $result['analysisID'];
+  }
+}
+
+if ($analysisID == 1) { //if the analysis ID needs set
   require_once('helpers/mysql_connect.php');
 
   $akey = md5(time());
