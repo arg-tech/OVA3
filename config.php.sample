@@ -16,6 +16,6 @@
         "timestamp" => array("addTimestamps" => false, "showTimestamps" => false, "startdatestmp" => "2020/10/15 22:50:00 GMT+0100"), 
         "schemeset"=> array("YA" => "", "RA" => "", "CA" => "", "TA" => "", "MA" => "", "PA" => ""), 
         "analysis"=> array("rIAT" => true, "eAdd" => false, "cq" => false), 
-        "display"=> array("black_white" => false, "font_size" => "tm", "panBtns" => true) //note: font_size should be set to "ts" for small, "tm" for medium or "tl" for large
+        "display"=> array("black_white" => false, "font_size" => "tm", "panBtns" => true, "inverse" => false) //note: font_size should be set to "ts" for small, "tm" for medium or "tl" for large
     );
 ?>

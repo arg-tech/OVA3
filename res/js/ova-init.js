@@ -41,7 +41,6 @@ var DMAX = 0;
 var WMIN = 0;
 let rID = null, f = 0, nav = {}, tg = Array(4);
 var scale = 0;
-var inverse = false;
 var panZoomID = null;
 
 /**
@@ -111,6 +110,7 @@ window.defaultSettings = JSON.parse(window.defaultSettings);
 //set display settings
 window.bwmode = window.defaultSettings["display"]["black_white"];
 window.panMode = typeof window.defaultSettings["display"]["panBtns"] !== 'undefined' ? window.defaultSettings["display"]["panBtns"] : true;
+window.inverse = typeof window.defaultSettings["display"]["inverse"] !== 'undefined' ? window.defaultSettings["display"]["inverse"] : false;
 window.defaultSchemesets = [["YA", 0], ["RA", 0], ["CA", 0], ["MA", 0], ["TA", 0], ["PA", 0]]; //set scheme set settings
 //set analysis settings
 window.cqmode = window.defaultSettings["analysis"]["cq"];
@@ -312,6 +312,7 @@ function Init(evt) {
     setFontSize(window.defaultSettings["display"]["font_size"]);
     setRIATMode();
     eAddModeOnOff();
+    setScrollDir();
 }
 
 
@@ -1698,6 +1699,22 @@ function setRIATMode() {
         window.rIATMode = true;
     } else {
         $("#riattoggle").toggleClass("on off");
+    }
+}
+
+/**
+ * Sets the default scroll direction to natural or reverse depending on if Mac OS detected
+ */
+function setScrollDir() {
+    // console.log(window.navigator.userAgent); console.log("inverse: " + inverse);
+    if (!inverse && navigator.userAgent.indexOf('Mac') > -1) {
+        inverse = true;
+        $("#inverseToggle").toggleClass("on off");
+        console.log("Mac detected, scroll direction set to natural");
+    }
+    else if (inverse) { //set scroll direction to reverse
+        inverse = false;
+        $("#inverseToggle").toggleClass("on off");
     }
 }
 
