@@ -1,0 +1,24 @@
+services:
+  ova3:
+    container_name: arg-tech-ova3
+    build: .
+    ports:
+      - "81:80" #change the *left* number (81) if you need to bind to a different host port
+    environment:
+      MYSQL_USER: 'root'
+      MYSQL_PASSWORD: '@rgtech'
+      MYSQL_HOST: 'arg-tech-ova3_mysql'
+      MYSQL_DATABASE: 'ova'   
+    
+  mysql:
+    container_name: arg-tech-ova3_mysql
+    build: ./mysql
+    volumes:
+      - ova3-mysql-volume:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: '@rgtech'
+
+volumes:
+  ova3-mysql-volume:
+    external: false
+    driver: local  
