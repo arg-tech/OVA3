@@ -52,7 +52,7 @@ for ($i = 0; $i < $l; $i++) {
             $versionNo = $preVersionNo + 1;
         }
 
-        $content = str_replace(['"{', '}"', '\"'], ['{', '}', '"'], json_encode($cnt[$i][1])); //in case it contains special characters
+        $content = str_replace(['"{', '}"', '\"', '\\\\', '\/'], ['{', '}', '"', '\\', '/'], json_encode($cnt[$i][1])); //in case it contains special characters
         try {
             $query->execute();
         } catch (Exception $e) {
