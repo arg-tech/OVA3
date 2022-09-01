@@ -1,8 +1,8 @@
 <?php
-    $OVA_DB_USER = '';
-    $OVA_DB_PASSWORD = '';
-    $OVA_DB_HOST = '';
-    $OVA_DB_NAME = '';
+    $OVA_DB_USER = getenv("MYSQL_USER");
+    $OVA_DB_PASSWORD = getenv("MYSQL_PASSWORD");
+    $OVA_DB_HOST = getenv("MYSQL_HOST");
+    $OVA_DB_NAME = getenv("MYSQL_DATABASE");
 
     $DBurl = 'http://www.aifdb.org';
     $SSurl = 'http://www.arg-tech.org/~john/schemesets/list';

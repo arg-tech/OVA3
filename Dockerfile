@@ -1,5 +1,5 @@
 FROM php:5.6-apache
-ADD ova3 /var/www/html/
+ADD OVA3 /var/www/html/
 RUN mkdir /var/www/html/tmp
 RUN chmod 777 /var/www/html/tmp
 RUN a2enmod rewrite
