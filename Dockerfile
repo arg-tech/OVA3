@@ -7,3 +7,5 @@ RUN a2enmod headers
 COPY php.ini /usr/local/etc/php/
 RUN docker-php-ext-install mysql mysqli pdo pdo_mysql
 RUN apt-get update && apt-get install -y mysql-client
+RUN apt-get update && apt-get install -y wget
+
