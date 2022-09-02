@@ -117,8 +117,8 @@ window.cqmode = window.defaultSettings["analysis"]["cq"];
 window.eAddMode = window.defaultSettings["analysis"]["eAdd"];
 //set timestamp settings
 window.startdatestmp = window.defaultSettings["timestamp"]["startdatestmp"];
-window.addTimestamps = window.defaultSettings["timestamp"]["addTimestamps"];
-window.showTimestamps = window.defaultSettings["timestamp"]["showTimestamps"];
+window.addTimestamps = dialogicalMode ? window.defaultSettings["timestamp"]["addTimestamps"] : false;
+window.showTimestamps = dialogicalMode ? window.defaultSettings["timestamp"]["showTimestamps"] : false;
 window.editTimestamp = false;
 
 /**
@@ -258,13 +258,13 @@ function Init(evt) {
     $("#analysis_text").on("dblclick", "span", function (event) {
         event.stopPropagation();
         index = findNodeIndex(event.currentTarget.id.substring(4), false);
-
-        //center the view on the node
-        var newx = nodes[index].x - 550;
-        var newy = nodes[index].y - 400;
-        VB = [newx, newy, 1500, 1500];
-        SVGRoot.setAttribute('viewBox', [newx, newy, 1500, 1500]);
-        clearSelText();
+        if (index > -1) { //if the node was found center the view on it
+            var newx = nodes[index].x - 550;
+            var newy = nodes[index].y - 400;
+            VB = [newx, newy, 1500, 1500];
+            SVGRoot.setAttribute('viewBox', [newx, newy, 1500, 1500]);
+            clearSelText();
+        }
     });
 
     //set up the load analysis modal select with a list of the corpora
@@ -732,27 +732,35 @@ function hlText(node) {
 
 /**
  * Finds and updates the span ID of highlighted analysis text for a given node
- * @param {String} nodeID - The ID to search for
+ * @param {*} nodeID - The ID to search for
  * @param {String} type - The type of node
  * @param {String} newID - The new ID to set the span ID to
  * @param {Boolean} post - Optional, indicates if the updated text should be added to the database (true) or not (false). The default is true.
  * @param {Number} undone - Optional, indicates if this edit can be undone (0) or not (1). The default is zero.
  */
 function hlUpdate(nodeID, type, newID, post, undone) {
-    var span = document.getElementById("node" + nodeID);
-    if (span == null && !dialogicalMode && type == 'I') {
-        var id = nodeID.split("_", 2);
-        var lNodeID = (parseInt(id[0]) + 1) + "_" + id[1];
-        span = document.getElementById("node" + lNodeID);
+    var span = document.getElementById("node" + nodeID); //try to find the span from the node ID
+
+    if (span == null && !dialogicalMode && type == 'I') { //if a dialogical analysis into non-dialogical mode
+        var lNodeID;
+        if (Number.isInteger(nodeID)) { //if from OVA2
+            lNodeID = nodeID - 2;
+        }
+        else { //if from OVA3
+            var id = nodeID.split("_", 2);
+            lNodeID = (parseInt(id[0]) + 1) + "_" + id[1];
+        }
+        span = document.getElementById("node" + lNodeID); //try to find the span based on a locution ID
     }
-    if (span != null) {
+
+    if (span != null) { //if a span was found, update it
         span.id = "node" + newID;
         var post = typeof post !== 'undefined' ? post : true;
         if (post) {
             var undone = typeof undone !== 'undefined' ? undone : 0;
             postEdit("text", "edit", $('#analysis_text').html(), undone);
         }
-    }
+    } else { console.log("Couldn't find text span for node: " + newID); }
 }
 
 /**
