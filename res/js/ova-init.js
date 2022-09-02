@@ -41,28 +41,19 @@ var DMAX = 0;
 var WMIN = 0;
 let rID = null, f = 0, nav = {}, tg = Array(4);
 var scale = 0;
-var inverse = false;
 var panZoomID = null;
 
 /**
  * Handles mousewheel scroll and trackpad gestures. 
- * Zooms in/out with mousewheel and pinch gestures, pans left/right with swipe left/right gestures.
- * @param {*} event 
+ * Scrolls up/down with mousewheel and swipe up/down gestures, 
+ * zooms in/out with pinch gestures, pans left/right with swipe left/right gestures.
+ * @param {*} event - The event to handle
  */
 const panZoom = (event) => {
     if (FormOpen == false) {
-        // console.log(event);
         // console.log("inverse: " + inverse);
         event.preventDefault();
-        if (event.deltaY == 0) { // pan left & right
-            var direction = event.deltaX > 0 ? 1 : -1;
-            if (inverse) { direction *= -1; }
-            tg[0] = parseFloat(VB[0] + .1 * direction * VB[2]);
-
-            nav = NAV_MAP["arrowleft"]; //updateView() only uses nav.axis & nav.act so can use either 'arrowleft' or 'arrowright'
-            updateView();
-        }
-        else { //zoom in/out
+        if (event.ctrlKey) { //zoom in or out
             tsvg = document.getElementById('inline').getBoundingClientRect();
             svgleft = tsvg.left;
             if (event.clientX > svgleft) {
@@ -78,15 +69,24 @@ const panZoom = (event) => {
                 updateView();
             }
         }
+        else {
+            if (event.deltaX == 0) { //pan up or down
+                var direction = event.deltaY > 0 ? 1 : -1;
+                if (inverse) { direction *= -1; }
+                tg[1] = parseFloat(VB[1] + .1 * direction * VB[2]);
 
-        // if (event.deltaX == 0) { //pan up or down
-        //     var direction = event.deltaY > 0 ? 1 : -1;
-        //     if (inverse) { direction *= -1; }
-        //     tg[1] = parseFloat(VB[1] + .1 * direction * VB[2]);
+                nav = NAV_MAP["arrowup"]; //updateView() only uses nav.axis & nav.act so can use either 'arrowup' or 'arrowdown'
+                updateView();
+            }
+            else if (event.deltaY == 0) { // pan left & right
+                var direction = event.deltaX > 0 ? 1 : -1;
+                if (inverse) { direction *= -1; }
+                tg[0] = parseFloat(VB[0] + .1 * direction * VB[2]);
 
-        //     nav = NAV_MAP["arrowup"]; //updateView() only uses nav.axis & nav.act so can use either 'arrowup' or 'arrowdown'
-        //     updateView();
-        // }
+                nav = NAV_MAP["arrowleft"]; //updateView() only uses nav.axis & nav.act so can use either 'arrowleft' or 'arrowright'
+                updateView();
+            }
+        }
     }
 }
 
@@ -110,6 +110,7 @@ window.defaultSettings = JSON.parse(window.defaultSettings);
 //set display settings
 window.bwmode = window.defaultSettings["display"]["black_white"];
 window.panMode = typeof window.defaultSettings["display"]["panBtns"] !== 'undefined' ? window.defaultSettings["display"]["panBtns"] : true;
+window.inverse = typeof window.defaultSettings["display"]["inverse"] !== 'undefined' ? window.defaultSettings["display"]["inverse"] : false;
 window.defaultSchemesets = [["YA", 0], ["RA", 0], ["CA", 0], ["MA", 0], ["TA", 0], ["PA", 0]]; //set scheme set settings
 //set analysis settings
 window.cqmode = window.defaultSettings["analysis"]["cq"];
@@ -311,6 +312,7 @@ function Init(evt) {
     setFontSize(window.defaultSettings["display"]["font_size"]);
     setRIATMode();
     eAddModeOnOff();
+    setScrollDir();
 }
 
 
@@ -1705,6 +1707,22 @@ function setRIATMode() {
         window.rIATMode = true;
     } else {
         $("#riattoggle").toggleClass("on off");
+    }
+}
+
+/**
+ * Sets the default scroll direction to natural or reverse depending on if Mac OS detected
+ */
+function setScrollDir() {
+    // console.log(window.navigator.userAgent); console.log("inverse: " + inverse);
+    if (!inverse && navigator.userAgent.indexOf('Mac') > -1) {
+        inverse = true;
+        $("#inverseToggle").toggleClass("on off");
+        console.log("Mac detected, scroll direction set to natural");
+    }
+    else if (inverse) { //set scroll direction to reverse
+        inverse = false;
+        $("#inverseToggle").toggleClass("on off");
     }
 }
 
