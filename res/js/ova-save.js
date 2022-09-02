@@ -579,7 +579,7 @@ async function loadOva2Json(json, oplus, offset) {
             }
         } else if (jnodes[i].type == "I" || jnodes[i].type == "RA" || jnodes[i].type == "CA" || jnodes[i].type == "MA" || jnodes[i].type == "EN") {
             nodelist[nID] = AddNode(jnodes[i].text, jnodes[i].type, jnodes[i].scheme, 0, nID, x, newY, jnodes[i].visible, 1, "", false, false);
-            if (jnodes[i].type == "I" && text) { hlUpdate((jnodes[i].id - 2), jnodes[i].type, nID, false); }
+            if (jnodes[i].type == "I" && text) { hlUpdate(jnodes[i].id, jnodes[i].type, nID, false); }
         }
 
         if (i === 0) { start = findNodeIndex(nID, true); }
@@ -589,7 +589,6 @@ async function loadOva2Json(json, oplus, offset) {
 
     //load edges
     var edgeStart = edges.length;
-    console.log(edgeStart);
     var e = json['edges'];
     var edgeList = {};
     var from, to, id, indexF, indexT, visible;
