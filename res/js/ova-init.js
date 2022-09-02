@@ -117,8 +117,8 @@ window.cqmode = window.defaultSettings["analysis"]["cq"];
 window.eAddMode = window.defaultSettings["analysis"]["eAdd"];
 //set timestamp settings
 window.startdatestmp = window.defaultSettings["timestamp"]["startdatestmp"];
-window.addTimestamps = window.defaultSettings["timestamp"]["addTimestamps"];
-window.showTimestamps = window.defaultSettings["timestamp"]["showTimestamps"];
+window.addTimestamps = dialogicalMode ? window.defaultSettings["timestamp"]["addTimestamps"] : false;
+window.showTimestamps = dialogicalMode ? window.defaultSettings["timestamp"]["showTimestamps"] : false;
 window.editTimestamp = false;
 
 /**

@@ -461,7 +461,7 @@ if (isset($_COOKIE['ovauser'])) {
             </p>
             <!-- Add Timestamps Toggle -->
             <p style="color: #444; line-height: 22px;">Add Timestamps
-              <?php if ($defaultSettings["timestamp"]["addTimestamps"]) { ?>
+              <?php if ($pro && $defaultSettings["timestamp"]["addTimestamps"]) { ?>
                 <a href="#" id="timestamptoggle" class="togglesw on" onClick='$(this).toggleClass("on off"); window.addTimestamps=!window.addTimestamps; addTimestampsOnOff();'><span class="tson">On</span><span class="tsoff">Off</span></a>
               <?php } else { ?>
                 <a href="#" id="timestamptoggle" class="togglesw off" onClick='$(this).toggleClass("on off"); window.addTimestamps=!window.addTimestamps; addTimestampsOnOff();'><span class="tson">On</span><span class="tsoff">Off</span></a>
@@ -469,7 +469,7 @@ if (isset($_COOKIE['ovauser'])) {
             </p>
             <!-- Show Timestamps Toggle  -->
             <p style="color: #444; line-height: 22px;">Show Timestamps
-              <?php if ($defaultSettings["timestamp"]["showTimestamps"]) { ?>
+              <?php if ($pro && $defaultSettings["timestamp"]["showTimestamps"]) { ?>
                 <a href="#" id="showTimestamptoggle" class="togglesw on" onClick='$(this).toggleClass("on off"); window.showTimestamps=!window.showTimestamps; showTimestampsOnOff();'><span class="tson">On</span><span class="tsoff">Off</span></a>
               <?php } else { ?>
                 <a href="#" id="showTimestamptoggle" class="togglesw off" onClick='$(this).toggleClass("on off"); window.showTimestamps=!window.showTimestamps; showTimestampsOnOff();'><span class="tson">On</span><span class="tsoff">Off</span></a>
