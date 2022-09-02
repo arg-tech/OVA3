@@ -240,6 +240,10 @@ if (isset($_COOKIE['ovauser'])) {
       <div class="icn" style="background-image: url('res/img/icons-pale.svg');background-position: -1592px 50%;"></div>
       <div class="txt">Helpsheet</div>
     </a>
+    <a onClick="toggleWildcardingMode();" class="xicon" id="wildcarding-mode-toggle">
+      <div class="icn" style=""></div>
+      <div class="txt">Toggle Wildcarding Mode</div>
+    </a>
     <div>
       <a onClick="genldot();" class="xicon" id="alayX" style="display:none;">
         <div class="icn" style="background-position: -420px 50%;"></div>
@@ -827,6 +831,16 @@ if (isset($_COOKIE['ovauser'])) {
       console.log("width: " + w + " height:" + h)
     </script>
     <div id="right1">
+      <div id="wildcarding-toolbar">
+        <div id="wildcarding-text-section">
+          <span>Text:</span>
+          <!-- <select name="" id=""></select> -->
+        </div>
+        <div id="wildcarding-type-section">
+          <span>Type:</span>
+          <select name="wildcarded-type-1" id="wildcarded-type-1"></select>
+        </div>
+      </div>
       <div id="panBtns">
         <div id="zoomBtns">
           <button id="zoomIn" type="button" name="+" style="right:6%;" class="noSelect">+<span>Zoom&nbsp;In</span></button>

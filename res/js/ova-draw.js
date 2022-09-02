@@ -551,3 +551,95 @@ function markEdge(fromID, toID, mark) {
     }
     return false;
 }
+
+/**
+ * Draws wildcarded text on the SVG, below each visible node
+ * @param {String} nodeID - The ID of the node to draw wildcarded text for
+ * @param {String} wildcardedText - The wildcarded text to draw
+ * @param {String} wildcardedType - The wildcarded type to draw
+ * @param {Number} xpos - The x coordinate of the node
+ * @param {Number} ypos - The y coordinate of the node
+ */
+ function DrawWildcardedProperties(nodeID, wildcardedText, wildcardedType, xpos, ypos) {
+    var g = document.getElementById(nodeID);
+    if (g) {
+        var ntext = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        ntext.setAttribute('class', 'wildcarded-properties');
+        ntext.setAttribute('x', xpos);
+        ntext.setAttribute('y', ypos);
+        ntext.setAttribute('style', 'font-family: sans-serif; font-weight: normal; font-style: normal;font-size: 8px;');
+        var tspan = document.createElementNS("http://www.w3.org/2000/svg", "tspan");
+        tspan.setAttribute('text-anchor', 'middle');
+        tspan.setAttribute('x', xpos);
+        tspan.setAttribute('dy', 40);
+
+        var wildcardedProperties = `Text: ${wildcardedText} Type: ${wildcardedType}`;
+
+        var myText = document.createTextNode(wildcardedProperties);
+        tspan.appendChild(myText);
+        ntext.appendChild(tspan);
+        g.appendChild(ntext);
+    }
+}
+
+/**
+ * Handles turning 'Add Timestamp' mode on and off
+ */
+// function addTimestampsOnOff() {
+//     if (window.addTimestamps) {
+//         if (!window.dialogicalMode) {
+//             window.addTimestamps = false;
+//             $("#timestamptoggle").toggleClass("on off");
+//             alert("Timestamps can only be added in dialogical mode.");
+//         }
+//     }
+// }
+
+/**
+ * Handles turning wildcarding mode on and off
+ */
+function showWildcardedPropertiesOnOff() {
+    if (window.wildcardingMode) {
+        nodes.forEach((node) => {
+            if (node.visible) {
+                // If node hasn't been wildcarded
+                if(node.wildcardedText === '' && node.wildcardedType === '') {
+                    node.wildcardedText = node.text;
+                    node.wildcardedType = node.type;
+                }
+
+                DrawWildcardedProperties(node.nodeID, node.wildcardedText, node.wildcardedType, node.x, node.y);
+            }
+        })
+    } else {
+        removeWildcardedProperties();
+    }
+}
+
+/**
+ * Removes all wildcarded properties drawn on the SVG
+ */
+function removeWildcardedProperties() {
+        $('.wildcarded-properties').each(function() {
+            $(this).remove();
+        });
+}
+
+/**
+ * Edits timestamps drawn on the SVG
+ * @param {String} nodeID - The ID of the node to edit the timestamp for
+ * @param {String} timestamp - The new timestamp value
+ * @returns {Boolean} - Indicates if the timestamp was found and edited (true) or not (false)
+ */
+// function editTimestampSVG(nodeID, timestamp) {
+//     var g = document.getElementById(nodeID);
+//     if (g) {
+//         var tstamp = g.getElementsByClassName('timestamp')[0];
+//         if (tstamp) {
+//             var tspan = tstamp.getElementsByTagName('tspan');
+//             $(tspan).text(timestamp);
+//             return true;
+//         }
+//     }
+//     return false;
+// }

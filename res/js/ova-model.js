@@ -19,6 +19,8 @@ function Node() {
     this.visible = true;
     this.timestamp = '';
     this.marked = false;
+    this.wildcardedText = '';
+    this.wildcardedType = '';
 }
 
 /**

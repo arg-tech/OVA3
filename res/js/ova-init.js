@@ -17,6 +17,7 @@ var FormOpen = false;
 var dragEdges = [];
 var count = 0; //
 var users = [];
+var wildcardingMode = false;
 
 var mSel = [];
 var mselo = [];

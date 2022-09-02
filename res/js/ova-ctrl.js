@@ -321,6 +321,17 @@ function Grab(evt) {
       mySel = nodes[index];
       CurrentlyEditing = DragID;
     }
+
+    if (wildcardingMode) { // If in wildcarding mode
+      console.log('grabbed node');
+      n = targetElement;
+      nID = n.getAttributeNS(null, 'id');
+      // CurrentlyEditing = nID;
+      var index = findNodeIndex(nID);
+      mySel = nodes[index];
+      // cmenu(mySel, evt);
+      selectNodeInWildcardingToolbar(mySel);
+    }
   }
   else {
     if (window.longEdge[0]) {
@@ -1381,4 +1392,26 @@ function deleteEdges(edge) {
       }
     }
   }
+}
+
+function toggleWildcardingMode() {
+  $("#wildcarding-toolbar").slideToggle();
+  wildcardingMode = !wildcardingMode;
+  showWildcardedPropertiesOnOff();
+
+  console.log(schemesets);
+  console.log(schemes);
+
+  var allTypes = ['RA', 'CA', 'YA'];
+  $.each(allTypes, function(key, value) {   
+    $('#wildcarded-type-1')
+        .append($("<option></option>")
+                   .attr("value", value)
+                   .text(value)); 
+                  });
+}
+
+function selectNodeInWildcardingToolbar(node) {
+  console.log(node);
+  $("#wildcarded-type-1").val(node.wildcardedType);
 }
