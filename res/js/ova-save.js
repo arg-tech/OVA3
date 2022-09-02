@@ -498,7 +498,7 @@ async function loadOva3Json(json, oplus, offset) {
                 if (n[i].timestamp && n[i].timestamp != '') {
                     tstamp = n[i].timestamp.split(" (")[0]; //remove the timezone name from the timestamp
                     updateTimestamp(n[i].nodeID, tstamp, 1, false);
-                    if (window.showTimestamps) { DrawTimestamp(n[i].nodeID, tstamp, nodelist[n[i].nodeID].x, nodelist[n[i].nodeID].y); }
+                    if (window.showTimestamps && nodelist[n[i].nodeID].type == 'L') { DrawTimestamp(n[i].nodeID, tstamp, nodelist[n[i].nodeID].x, nodelist[n[i].nodeID].y); }
                 }
             }
         }
