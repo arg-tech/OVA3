@@ -383,6 +383,68 @@ function setSelSchemeset(type) {
 }
 
 /**
+ * Fills the list of scheme sets in the wildcarding popup
+ */
+function showWildcardingSchemeSets() {
+    // Empty the select box
+    $('#wildcarding_schemes_set option').remove();
+    $('#wildcarding_schemes_set').append('<option value="any-scheme-set">--</option>');
+    
+    schemesets.forEach(function(schemeset) {
+        $('#wildcarding_schemes_set').append('<option value="' + schemeset.id + '">' + schemeset.name + '</option>');
+    });
+}
+
+/**
+ * Handles showing the correct scheme sets in wildcarding popup, filtered by selected type and scheme set
+ */
+ function filterWildcardingSchemes() {
+
+    // Clear the current list of schemes
+    $('#wildcarding_scheme_select option').remove();
+
+    var type = $('#wildcarding_schemes_type').find(":selected").val();
+    var schemeSet = $('#wildcarding_schemes_set').find(":selected").val();
+
+    console.log(type);
+    console.log(schemeSet);
+
+    // Create a map of types to corresponding schemes
+    var typeToSchemeMappings = {
+        'RA': ['1','2','3','9'],
+        'CA': ['4','5'],
+        'YA': ['7','12'],
+        'MA': ['11'],
+        'PA': ['6'],
+        'TA': ['8']
+    };
+
+    // Load all schemes by default
+    var filteredSchemes = schemes;
+
+    // Filter schemes by type
+    if(type != 'any-type') {
+        // Create array containing only schemes which correspond to selected type
+        filteredSchemes = schemes.filter(function (scheme) {
+            return typeToSchemeMappings[type].includes(scheme.schemeTypeID);
+        });
+    }
+    
+    // Filter schemes by scheme set
+    if(schemeSet != 'any-scheme-set') {
+        console.log('scheme set is set');
+    }
+
+    // Append each scheme in filtered array to the select box
+    filteredSchemes.forEach(function(scheme) {
+        scheme_name = scheme.name.replace(/([a-z])([A-Z])/g, "$1 $2");
+        scheme_type = scheme.schemeTypeID;
+
+        $('#wildcarding_scheme_select').append('<option value="' + scheme.schemeID + '">' + scheme_name + '</option>');
+    });
+}
+
+/**
  * Handles turning black and white mode on and off
  */
 function bwModeOnOff() {

@@ -1402,7 +1402,7 @@ function toggleWildcardingMode() {
   console.log(schemesets);
   console.log(schemes);
 
-  var allTypes = ['RA', 'CA', 'YA'];
+  var allTypes = ['RA', 'CA', 'YA', 'TA', 'MA', 'PA'];
   $.each(allTypes, function(key, value) {   
     $('#wildcarded-type-1')
         .append($("<option></option>")

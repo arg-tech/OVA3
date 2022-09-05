@@ -810,6 +810,47 @@ if (isset($_COOKIE['ovauser'])) {
   </div>
   <!-- Edit Node Form Ends here -->
 
+  <!-- Add wildcarding property form starts here -->
+  <div class="modal-dialog" id="modal-add-wildcarding-property">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Add wildcarding property</h4>
+        </div>
+        <div class="modal-body">
+          <form id="add_wildcarding_form" class="fstyle" style="width: 78%;">
+          <div id="wildcarding_options">
+
+            <label for="wildcarding_schemes_type" id="wildcarding_schemes_type_label">Filter schemes by type</label>
+            <select id="wildcarding_schemes_type" onChange="filterWildcardingSchemes();">
+              <option value="any-type">--</option>
+              <option value="RA">RA</option>
+              <option value="CA">CA</option>
+              <option value="YA">YA</option>
+              <option value="TA">TA</option>
+              <option value="MA">MA</option>
+              <option value="PA">PA</option>
+            </select>
+
+            <label for="wildcarding_schemes_set" id="wildcarding_schemes_set_label">Filter schemes by set</label>
+            <select id="wildcarding_schemes_set" onChange="filterWildcardingSchemes();">
+              <option value="any-scheme-set">--</option>
+            </select>
+            
+            <label for="wildcarding_scheme_select" id="wildcarding_scheme_select_label">Select the scheme</label>
+            <select id="wildcarding_scheme_select" onChange="setdescriptors(this.value, mySel);">
+              <option value="0">-</option>
+          </select>
+          </form>
+        </div>
+        </div>
+        <div class="modal-btns">
+          <a class="cancel" href="#" onClick="closeModal('#modal-add-wildcarding-property'); FormOpen = false; return false;">&#10008; Close</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Add wildcarding property form ends here -->
+
   <!--  <a href="http://www.arg.tech" target="_blank" id="devby"><img src="res/img/arg-tech.svg" /></a> -->
   <div id="mainwrap">
     <div id="spacer"></div>
@@ -834,7 +875,7 @@ if (isset($_COOKIE['ovauser'])) {
       <div id="wildcarding-toolbar">
         <div id="wildcarding-text-section">
           <span>Text:</span>
-          <!-- <select name="" id=""></select> -->
+          <button onClick="openModal('#modal-add-wildcarding-property'); showWildcardingSchemeSets(); filterWildcardingSchemes();">ADD MORE</button>
         </div>
         <div id="wildcarding-type-section">
           <span>Type:</span>
