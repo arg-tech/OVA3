@@ -130,28 +130,22 @@ function cmenu(node, evt) {
     tsvg = document.getElementById('inline').getBoundingClientRect();
     svgleft = tsvg.left;
     svgtop = tsvg.top;
-    // var newScale = VB[2] / 1000;
-    // var translationX = VB[0];
-    // var translationY = VB[1];
 
-    // //Calculating new coordinates after panning and zooming
-    // var coordx = ((node.x - svgleft) * newScale) + translationX;
-    // var coordy = ((node.y  - svgtop)* newScale) + translationY;
-
-    window.contextnode = node;
+    window.contextNode = node;
     $('#contextmenu').empty();
-    // $('#contextmenu').css({top: (node.y+85), left: (node.x+210)});
     $('#contextmenu').css({ top: (evt.clientY + 5), left: evt.clientX - 65 });
-    $('#contextmenu').append("<a onClick='editpopup(window.contextnode);$(\"#contextmenu\").hide();'>Edit Node</a>");
-    if (node.type == 'I' && dialogicalMode) {
+    $('#contextmenu').append("<a onClick='editpopup(contextNode);$(\"#contextmenu\").hide();'>Edit Node</a>");
+    if (node.marked) { $('#contextmenu').append("<a onClick='window.groupID++;markNode(contextNode, false);$(\"#contextmenu\").hide();'>Unmark Node</a>"); }
+    else { $('#contextmenu').append("<a onClick='window.groupID++;markNode(contextNode, true);$(\"#contextmenu\").hide();'>Mark Node</a>"); }
+    if (dialogicalMode && node.type == 'I' || node.type == 'L') {
         $('#contextmenu').append("<a onClick='$(\"#locution_add\").show();$(\"#contextmenu\").hide();'>Add Locution</a>");
     }
-    $('#contextmenu').append("<a onClick='window.groupID ++;deleteNode(window.contextnode);$(\"#contextmenu\").hide();'>Delete Node</a>");
+    $('#contextmenu').append("<a onClick='window.groupID ++;deleteNode(contextNode);$(\"#contextmenu\").hide();'>Delete Node</a>");
     //if(window.msel.length > 0){
     //    $('#contextmenu').append( "<a onClick='dcEdges();$(\"#contextmenu\").hide();'>Delete Edges</a>" );
     //}
     if (node.type == 'L' && window.addTimestamps) {
-        $('#contextmenu').append("<a style='font-size:0.85em;' onClick='window.editTimestamp=true;$(\"#delTimestampBtn\").show();$(\"#modal-timestamps\").show();$(\"#contextmenu\").hide();'>Edit Timestamp</a>");
+        $('#contextmenu').append("<a style='font-size:0.86em;' onClick='window.editTimestamp=true;$(\"#delTimestampBtn\").show();$(\"#modal-timestamps\").show();$(\"#contextmenu\").hide();'>Edit Timestamp</a>");
     }
 
     $('#contextmenu').show();
@@ -162,7 +156,7 @@ function cmenu(node, evt) {
  * @param {Node} node - The node to edit
  */
 function editpopup(node) {
-    $('#n_text').hide(); $('#n_text_label').hide();
+    $('#n_text').hide(); $('#n_text_label').hide(); $('#l_add_btn').hide();
     $('#s_type').hide(); $('#s_type_label').hide();
     $('#s_ischeme').hide(); $('#s_ischeme_label').hide();
     $('#s_cscheme').hide(); $('#s_cscheme_label').hide();
@@ -183,7 +177,7 @@ function editpopup(node) {
     }
 
     if (node.type == 'I' || node.type == 'L' || node.type == 'EN') {
-        $('#n_text').show(); $('#n_text_label').show();
+        $('#n_text').show(); $('#n_text_label').show(); $('#l_add_btn').show();
         if (node.type == 'L' && window.addTimestamps) {
             if (node.timestamp != "") {
                 document.getElementById("timestamp_label").innerHTML = node.timestamp;
