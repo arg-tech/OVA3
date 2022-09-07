@@ -495,7 +495,7 @@ async function loadOva3Json(json, oplus, offset) {
                 newY = parseInt(n[i].y) + offset;
                 updateNode(n[i].nodeID, parseInt(n[i].x), newY, true, 1, false);
                 DrawNode(nodelist[n[i].nodeID].nodeID, nodelist[n[i].nodeID].type, nodelist[n[i].nodeID].text, nodelist[n[i].nodeID].x, nodelist[n[i].nodeID].y);
-                if (n[i].timestamp && n[i].timestamp != '') {
+                if (oplus && n[i].timestamp && n[i].timestamp != '') { //if in dialogical mode
                     tstamp = n[i].timestamp.split(" (")[0]; //remove the timezone name from the timestamp
                     updateTimestamp(n[i].nodeID, tstamp, 1, false);
                     if (window.showTimestamps && nodelist[n[i].nodeID].type == 'L') { DrawTimestamp(n[i].nodeID, tstamp, nodelist[n[i].nodeID].x, nodelist[n[i].nodeID].y); }
