@@ -233,13 +233,11 @@ if (isset($_COOKIE['ovauser'])) {
       <div class="txt">Settings</div>
     </a>
     <a onClick="genlink(); openModal('#modal-share');" class="xicon" id="sharea">
-      <div class="icn" style="background-image: url('res/img/linkicon.png'); background-position: 50% 50%;"></div>
+      <div class="icn" style="background-image: url('res/img/icons-pale.svg');background-position: -170px 50%;"></div>
       <div class="txt">Share Analysis</div>
     </a>
     <a onClick="openModal('#modal-help');" class="xicon" id="helpsheet">
-      <div class="icn" style="background-position: -378px 50%;"></div>
-      <!-- <div style="float:left; width:42px; height:48px; margin: 0px 5px;">?</div> -->
-      <!-- TODO: update icon -->
+      <div class="icn" style="background-image: url('res/img/icons-pale.svg');background-position: -1592px 50%;"></div>
       <div class="txt">Helpsheet</div>
     </a>
     <div>
@@ -603,10 +601,12 @@ if (isset($_COOKIE['ovauser'])) {
 <strong>click+delete</strong> on node: delete the selected node
 <strong>enter</strong> editing node's text: save your edit to the node
 <strong>shift+enter</strong> editing node's text: add a new line to the node's text
+<strong>dblclick</strong> on highlighted text: move canvas to the node for the text
 <br>
 <strong>ctrl+z</strong> on canvas: undo changes you made to an analysis
 <strong>alt+click</strong> on canvas: draw a box to multi select
 <strong>r</strong> on canvas: reset view
+<strong>click+drag</strong> on canvas: move canvas
 <strong>arrow keys: </strong> move canvas
 <strong>+/- : </strong> zoom in/out
 </pre>
@@ -726,7 +726,7 @@ if (isset($_COOKIE['ovauser'])) {
         <div id="node_options">
           <p id="timestamp_info">Timestamp:
             <label id="timestamp_label"></label>
-            <a href="#" id="edit_timestamp_btn" class="btn" onClick="FormOpen = false;window.editTimestamp=true;openModal('#modal-timestamps');return false;" style="padding:0.6em;">Edit Timestamp</a>
+            <!-- <a href="#" id="edit_timestamp_btn" class="btn" onClick="FormOpen = false;window.editTimestamp=true;openModal('#modal-timestamps');return false;" style="padding:0.6em;">Edit Timestamp</a> -->
           </p>
 
           <label for="n_text" id="n_text_label">Text</label>
@@ -782,12 +782,10 @@ if (isset($_COOKIE['ovauser'])) {
     </div>
     <ul class="btnlist">
       <li><a href="#" id="mark_node_btn" onClick="closeModal('#node_edit');FormOpen=false;window.groupID++;markNode(mySel, true);return false;">
-          <div class="btnicn">&nbsp;</div> Mark Node
-          <!-- TODO: add icon -->
+          <div class="btnicn" style="background-position: -1018px 50%;">&nbsp;</div> Mark Node
         </a></li>
       <li><a href="#" id="unmark_node_btn" style="display:none;" onClick="closeModal('#node_edit');FormOpen=false;window.groupID++;markNode(mySel, false);return false;">
-          <div class="btnicn">&nbsp;</div> Unmark Node
-          <!-- TODO: add icon -->
+          <div class="btnicn" style="background-position: -979px 50%;">&nbsp;</div> Unmark Node
         </a></li>
       <li><a href="#" id="del_node_btn" onClick="closeModal('#node_edit'); FormOpen = false; window.groupID ++; deleteNode(mySel); return false;" class="bgred">
           <div class="btnicn" style="background-image: url('res/img/icon-delnode.png');">&nbsp;</div> Delete Node
@@ -796,9 +794,9 @@ if (isset($_COOKIE['ovauser'])) {
         <li><a href="#" id="l_add_btn" onClick="saveNodeEdit();$('#node_edit').hide(); FormOpen = false;$('#locution_add').show();return false;">
             <div class="btnicn" style="background-image: url('res/img/icon_ladd.png');">&nbsp;</div> Add Locution
           </a></li>
-        <!-- <li><a href="#" id="edit_timestamp_btn" onClick="closeModal('#node_edit');FormOpen = false; window.editTimestamp=true; $('#modal-timestamps').show();return false;">
-            <div class="btnicn" style="background-image: url('res/img/icon_ladd.png');">&nbsp;</div> Edit Timestamp
-          </a></li> -->
+        <li><a href="#" id="edit_timestamp_btn" onClick="closeModal('#node_edit');FormOpen = false; window.editTimestamp=true; $('#modal-timestamps').show();return false;">
+            <div class="btnicn" style="background-position: -517px 50%;">&nbsp;</div> Edit Timestamp
+          </a></li>
       <?php } ?>
     </ul>
     <div class="modal-btns">

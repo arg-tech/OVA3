@@ -480,11 +480,13 @@ ul.btnlist li a div.btnicn {
   width: 18px;
   background-position: 0px 0px;
   background-repeat: no-repeat;
+  background-image: url('../img/icons-grey.svg');
 }
 
 ul.btnlist li a:hover div.btnicn {
   background-position: 0px -18px;
   background-repeat: no-repeat;
+  background-image: url('../img/icons-pale.svg');
 }
 
 ul.btnlist li a:hover {
