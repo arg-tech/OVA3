@@ -372,79 +372,6 @@ function showschemes(type) {
 }
 
 /**
- * Handles displaying the default scheme set for each type
- * @param {String} type - The type to show the default scheme set for
- */
-function setSelSchemeset(type) {
-    var index = window.defaultSchemesets.findIndex(s => s.includes(type));
-    if (index > -1) {
-        document.getElementById('s_sset').value = window.defaultSchemesets[index][1];
-    }
-}
-
-/**
- * Fills the list of scheme sets in the wildcarding popup
- */
-function showWildcardingSchemeSets() {
-    // Empty the select box
-    $('#wildcarding_schemes_set option').remove();
-    $('#wildcarding_schemes_set').append('<option value="any-scheme-set">--</option>');
-    
-    schemesets.forEach(function(schemeset) {
-        $('#wildcarding_schemes_set').append('<option value="' + schemeset.id + '">' + schemeset.name + '</option>');
-    });
-}
-
-/**
- * Handles showing the correct scheme sets in wildcarding popup, filtered by selected type and scheme set
- */
- function filterWildcardingSchemes() {
-
-    // Clear the current list of schemes
-    $('#wildcarding_scheme_select option').remove();
-
-    var type = $('#wildcarding_schemes_type').find(":selected").val();
-    var schemeSet = $('#wildcarding_schemes_set').find(":selected").val();
-
-    console.log(type);
-    console.log(schemeSet);
-
-    // Create a map of types to corresponding schemes
-    var typeToSchemeMappings = {
-        'RA': ['1','2','3','9'],
-        'CA': ['4','5'],
-        'YA': ['7','12'],
-        'MA': ['11'],
-        'PA': ['6'],
-        'TA': ['8']
-    };
-
-    // Load all schemes by default
-    var filteredSchemes = schemes;
-
-    // Filter schemes by type
-    if(type != 'any-type') {
-        // Create array containing only schemes which correspond to selected type
-        filteredSchemes = schemes.filter(function (scheme) {
-            return typeToSchemeMappings[type].includes(scheme.schemeTypeID);
-        });
-    }
-    
-    // Filter schemes by scheme set
-    if(schemeSet != 'any-scheme-set') {
-        console.log('scheme set is set');
-    }
-
-    // Append each scheme in filtered array to the select box
-    filteredSchemes.forEach(function(scheme) {
-        scheme_name = scheme.name.replace(/([a-z])([A-Z])/g, "$1 $2");
-        scheme_type = scheme.schemeTypeID;
-
-        $('#wildcarding_scheme_select').append('<option value="' + scheme.schemeID + '">' + scheme_name + '</option>');
-    });
-}
-
-/**
  * Handles turning black and white mode on and off
  */
 function bwModeOnOff() {
@@ -623,39 +550,37 @@ function markEdge(fromID, toID, mark) {
  * @param {Number} ypos - The y coordinate of the node
  */
  function DrawWildcardedProperties(nodeID, wildcardedText, wildcardedType, xpos, ypos) {
+    // First remove any existing drawn properties
+    removeWildcardedProperties(nodeID);
+
     var g = document.getElementById(nodeID);
     if (g) {
+        // Create the wrapper for both wildcarded properties
         var ntext = document.createElementNS("http://www.w3.org/2000/svg", "text");
         ntext.setAttribute('class', 'wildcarded-properties');
         ntext.setAttribute('x', xpos);
         ntext.setAttribute('y', ypos);
-        ntext.setAttribute('style', 'font-family: sans-serif; font-weight: normal; font-style: normal;font-size: 8px;');
-        var tspan = document.createElementNS("http://www.w3.org/2000/svg", "tspan");
-        tspan.setAttribute('text-anchor', 'middle');
-        tspan.setAttribute('x', xpos);
-        tspan.setAttribute('dy', 40);
+        ntext.setAttribute('style', 'font-family: sans-serif; font-weight: normal; font-style: normal;font-size: 9px;');
 
-        var wildcardedProperties = `Text: ${wildcardedText} Type: ${wildcardedType}`;
+        // Create the tspan for wildcarded text
+        var tspanText = document.createElementNS("http://www.w3.org/2000/svg", "tspan");
+        tspanText.setAttribute('text-anchor', 'middle');
+        tspanText.setAttribute('x', xpos);
+        tspanText.setAttribute('dy', 38);
+        tspanText.appendChild(document.createTextNode(`Text: ${wildcardedText}`));
 
-        var myText = document.createTextNode(wildcardedProperties);
-        tspan.appendChild(myText);
-        ntext.appendChild(tspan);
+        // Create the tspan for wildcarded text, with smaller y offset
+        var tspanType = document.createElementNS("http://www.w3.org/2000/svg", "tspan");
+        tspanType.setAttribute('text-anchor', 'middle');
+        tspanType.setAttribute('x', xpos);
+        tspanType.setAttribute('dy', 12);
+        tspanType.appendChild(document.createTextNode(`Type: ${wildcardedType}`));
+
+        ntext.appendChild(tspanText);
+        ntext.appendChild(tspanType);
         g.appendChild(ntext);
     }
 }
-
-/**
- * Handles turning 'Add Timestamp' mode on and off
- */
-// function addTimestampsOnOff() {
-//     if (window.addTimestamps) {
-//         if (!window.dialogicalMode) {
-//             window.addTimestamps = false;
-//             $("#timestamptoggle").toggleClass("on off");
-//             alert("Timestamps can only be added in dialogical mode.");
-//         }
-//     }
-// }
 
 /**
  * Handles turning wildcarding mode on and off
@@ -680,11 +605,23 @@ function showWildcardedPropertiesOnOff() {
 
 /**
  * Removes all wildcarded properties drawn on the SVG
+ * @param {Object} nodeID - Optional, the node ID to remove the drawn wildcarded text for. Leave empty to remove all wildcarded text drawn on the SVG.
  */
-function removeWildcardedProperties() {
+function removeWildcardedProperties(nodeID = null) {
+    console.log(nodeID);
+    // Remove a single property
+    if(nodeID != null) {
+        var g = document.getElementById(nodeID);
+        var wildcardedProperty = g.getElementsByClassName('wildcarded-properties')[0];
+        if(wildcardedProperty != null)
+            wildcardedProperty.remove();
+    }
+    // Remove all properties
+    else {
         $('.wildcarded-properties').each(function() {
             $(this).remove();
         });
+    }
 }
 
 /**
@@ -705,3 +642,192 @@ function removeWildcardedProperties() {
 //     }
 //     return false;
 // }
+
+/**
+ * Handles displaying the default scheme set for each type
+ * @param {String} type - The type to show the default scheme set for
+ */
+ function setSelSchemeset(type) {
+    var index = window.defaultSchemesets.findIndex(s => s.includes(type));
+    if (index > -1) {
+        document.getElementById('s_sset').value = window.defaultSchemesets[index][1];
+    }
+}
+
+function initialiseWildcardingToolbar() {
+    
+    showWildcardingSchemeSets(); 
+    filterWildcardingSchemes();
+}
+
+/**
+ * Fills the list of scheme sets in the wildcarding popup
+ */
+function showWildcardingSchemeSets() {
+    // Empty the select box
+    $('#wildcarding_schemes_set option').remove();
+    $('#wildcarding_schemes_set').append('<option value="any-scheme-set">--</option>');
+    
+    schemesets.forEach(function(schemeset) {
+        $('#wildcarding_schemes_set').append('<option value="' + schemeset.id + '">' + schemeset.name + '</option>');
+    });
+}
+
+/**
+ * Handles showing the correct scheme sets in wildcarding popup, filtered by selected type and scheme set
+ */
+ function filterWildcardingSchemes() {
+
+    // Clear the current list of schemes
+    $('#wildcarding_scheme_select option').remove();
+
+    var type = $('#wildcarding_schemes_type').find(":selected").val();
+    var schemeSet = $('#wildcarding_schemes_set').find(":selected").val();
+
+    console.log(type);
+    console.log(schemeSet);
+
+    // Create a map of types to corresponding schemes
+    var typeToSchemeMappings = {
+        'RA': ['1','2','3','9'],
+        'CA': ['4','5'],
+        'YA': ['7','12'],
+        'MA': ['11'],
+        'PA': ['6'],
+        'TA': ['8']
+    };
+
+    // Load all schemes by default
+    var filteredSchemes = schemes;
+
+    // Filter schemes by type
+    if(type != 'any-type') {
+        // Create array containing only schemes which correspond to selected type
+        filteredSchemes = schemes.filter(function (scheme) {
+            return typeToSchemeMappings[type].includes(scheme.schemeTypeID);
+        });
+    }
+    
+    // Filter schemes by scheme set
+    if(schemeSet != 'any-scheme-set') {
+        console.log('scheme set is set');
+    }
+
+    // Append each scheme in filtered array to the select box
+    filteredSchemes.forEach(function(scheme) {
+        scheme_name = scheme.name.replace(/([a-z])([A-Z])/g, "$1 $2");
+        scheme_type = scheme.schemeTypeID;
+
+        $('#wildcarding_scheme_select').append('<option value="' + scheme.schemeID + '">' + scheme_name + '</option>');
+    });
+}
+
+/**
+ * Handles showing only the selected section in the wildcarding popup
+ * @param {String} sectionToShow Value from the checkbox 
+ */
+function toggleWildcardingFormSection(sectionToShow) {
+    // Hide all sections
+    $('.wildcarding_form_section').hide(400);
+
+    // Show the section below the selected checkbox
+    if(sectionToShow == 'schema')
+        $('#wildcarding_section_schemes').show(400);
+    else if(sectionToShow == 'exact_text')
+        $('#wildcarding_section_exact_text').show(400);
+    else if(sectionToShow == 'contains_text')
+        $('#wildcarding_section_contains_text').show(400);
+}
+
+function addWildcardedTextItem() {
+    var newItem = '';
+
+    if ($('input#schema').is(':checked')) {
+        newItem = $('#wildcarding_scheme_select').find(":selected").text();
+    }
+    else if ($('input#exact_text').is(':checked')) {
+        newItem = $('#exact_text_input').val();
+    }
+    else if ($('input#contains_text').is(':checked')) {
+        newItemText = $('#contains_text_input').val();
+        newItem = `*${newItemText}*`;
+    }
+
+    if(mySel.wildcardedText == '')
+        mySel.wildcardedText = newItem;
+    else
+        mySel.wildcardedText += ` | ${newItem}`;
+
+    console.log(mySel.wildcardedText);
+    displayNodeWildcardedText();
+}
+
+function addWildcardedTypeItem() {
+    var newItem = $('#wildcarding_type').find(":selected").text(); 
+
+    // Don't add types that are already listed 
+    if(mySel.wildcardedType.indexOf(newItem) >= 0)
+        return;
+
+    if(mySel.wildcardedType == '')
+        mySel.wildcardedType = newItem;
+    else
+        mySel.wildcardedType += ` | ${newItem}`;
+
+    console.log(mySel.wildcardedType);
+    
+    displayNodeWildcardedText();
+    displayNodeWildcardedType();
+}
+
+function displayNodeWildcardedText(node) {
+    $('#selected_node_wildcarding_text').html('');
+
+    // If node isn't specified, apply changes to last selected node
+    if(node == null)
+        node = mySel;
+    var textItems = node.wildcardedText.split(' | ');
+
+    textItems.forEach(function(item, index, array) {
+        var span = $('<span />').html(item);
+        $('#selected_node_wildcarding_text').append(span);
+
+        var deleteButton = $('<button />').html('&#10006;').addClass('wildcarding-delete-button');
+        $('.wildcarding-delete-button').click('deleteWildcardedItem()');
+        $('#selected_node_wildcarding_text').append(deleteButton);
+        
+        if(index != array.length - 1) {
+            var delimiter = $('<span />').html(' | ');
+            $('#selected_node_wildcarding_text').append(delimiter);
+        }
+    });
+
+    // Draw the properties on canvas
+    DrawWildcardedProperties(node.nodeID, node.wildcardedText, node.wildcardedType, node.x, node.y);
+}
+
+function displayNodeWildcardedType(node) {
+    $('#selected_node_wildcarding_type').html('');
+
+    // If node isn't specified, apply changes to last selected node
+    if(node == null)
+        node = mySel;
+
+    var typeItems = node.wildcardedType.split(' | ');
+
+    typeItems.forEach(function(item, index, array) {
+        var span = $('<span />').html(item);
+        $('#selected_node_wildcarding_type').append(span);
+        
+        if(index != array.length - 1) {
+            var delimiter = $('<span />').html('|');
+            $('#selected_node_wildcarding_type').append(delimiter);
+        }
+    });
+
+    DrawWildcardedProperties(node.nodeID, node.wildcardedText, node.wildcardedType, node.x, node.y);
+}
+
+function deleteWildcardedItem() {
+    console.log('test');
+}

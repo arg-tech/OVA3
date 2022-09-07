@@ -810,46 +810,91 @@ if (isset($_COOKIE['ovauser'])) {
   </div>
   <!-- Edit Node Form Ends here -->
 
-  <!-- Add wildcarding property form starts here -->
-  <div class="modal-dialog" id="modal-add-wildcarding-property">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h4 class="modal-title">Add wildcarding property</h4>
-        </div>
-        <div class="modal-body">
-          <form id="add_wildcarding_form" class="fstyle" style="width: 78%;">
-          <div id="wildcarding_options">
+<!-- Add wildcarding text form starts here -->
+<div class="modal-dialog" id="modal-add-wildcarding-text">
+   <div class="modal-content">
+      <div class="modal-header">
+         <h4 class="modal-title">Add wildcarding property</h4>
+      </div>
+      <div class="modal-body">
+         <form id="add_wildcarding_text_form" class="fstyle" style="width: 78%;">
+            <div id="wildcarding_options">
+              <!-- Section: Select schema from dropdown -->
+              <input type="radio" id="schema" name="wildcarding_text_type" value="schema" checked onChange="toggleWildcardingFormSection(this.value);">
+              <label for="schema">Select a schema</label><br>
+               <div id="wildcarding_section_schemes" class="wildcarding_form_section">
+                  <label for="wildcarding_schemes_type" id="wildcarding_schemes_type_label">Filter schemes by type</label>
+                  <select id="wildcarding_schemes_type" onChange="filterWildcardingSchemes();">
+                     <option value="any-type">--</option>
+                     <option value="RA">RA</option>
+                     <option value="CA">CA</option>
+                     <option value="YA">YA</option>
+                     <option value="TA">TA</option>
+                     <option value="MA">MA</option>
+                     <option value="PA">PA</option>
+                  </select>
+                  <label for="wildcarding_schemes_set" id="wildcarding_schemes_set_label">Filter schemes by set</label>
+                  <select id="wildcarding_schemes_set" onChange="filterWildcardingSchemes();">
+                     <option value="any-scheme-set">--</option>
+                  </select>
+                  <label for="wildcarding_scheme_select" id="wildcarding_scheme_select_label">Select the scheme</label>
+                  <select id="wildcarding_scheme_select" onChange="">
+                     <option value="0">-</option>
+                  </select>
+               </div>
+              
+               <!-- Section: Specify exact text -->
+               <input type="radio" id="exact_text" name="wildcarding_text_type" value="exact_text" onChange="toggleWildcardingFormSection(this.value);">
+               <label for="exact_text">Exact text</label><br>
+               <div id="wildcarding_section_exact_text" class="wildcarding_form_section">
+                  <label for="exact_text_input">Text:</label>
+                  <input type="text" name="exact_text_input" id="exact_text_input" class="input" value="" /></label>
+               </div>
 
-            <label for="wildcarding_schemes_type" id="wildcarding_schemes_type_label">Filter schemes by type</label>
-            <select id="wildcarding_schemes_type" onChange="filterWildcardingSchemes();">
-              <option value="any-type">--</option>
-              <option value="RA">RA</option>
-              <option value="CA">CA</option>
-              <option value="YA">YA</option>
-              <option value="TA">TA</option>
-              <option value="MA">MA</option>
-              <option value="PA">PA</option>
-            </select>
-
-            <label for="wildcarding_schemes_set" id="wildcarding_schemes_set_label">Filter schemes by set</label>
-            <select id="wildcarding_schemes_set" onChange="filterWildcardingSchemes();">
-              <option value="any-scheme-set">--</option>
-            </select>
-            
-            <label for="wildcarding_scheme_select" id="wildcarding_scheme_select_label">Select the scheme</label>
-            <select id="wildcarding_scheme_select" onChange="setdescriptors(this.value, mySel);">
-              <option value="0">-</option>
-          </select>
+               <!-- Section: Specify exact text -->
+               <input type="radio" id="contains_text" name="wildcarding_text_type" value="contains_text" onChange="toggleWildcardingFormSection(this.value);">
+               <label for="contains_text">Contains text</label><br>
+               <div id="wildcarding_section_contains_text" class="wildcarding_form_section">
+                <label for="contains_text_input">Text:</label>
+                <input type="text" name="contains_text_input" id="contains_text_input" class="input" value="" /></label>
+              </div>
+            </div>
           </form>
-        </div>
-        </div>
-        <div class="modal-btns">
-          <a class="cancel" href="#" onClick="closeModal('#modal-add-wildcarding-property'); FormOpen = false; return false;">&#10008; Close</a>
+          <div class="modal-btns">
+            <a class="save" href="#" id="confirmWildcardingButton" onClick="addWildcardedTextItem(); closeModal('#modal-add-wildcarding-text');">&#x2714; Add</a>
+            <a class="cancel" href="#" onClick="closeModal('#modal-add-wildcarding-text'); FormOpen = false; return false;">&#10008; Cancel</a>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-  <!-- Add wildcarding property form ends here -->
+  <!-- Add wildcarding text form ends here -->
+
+  <!-- Add wildcarding type form starts here -->
+<div class="modal-dialog" id="modal-add-wildcarding-type">
+   <div class="modal-content">
+      <div class="modal-header">
+         <h4 class="modal-title">Add wildcarding type</h4>
+      </div>
+      <div class="modal-body">
+        <form id="add_wildcarding_type_form" class="fstyle" style="width: 78%;">
+         <label for="wildcarding_type" id="wildcarding_type_label">Select the type</label>
+         <select id="wildcarding_type">
+          <option value="RA">RA</option>
+          <option value="CA">CA</option>
+          <option value="YA">YA</option>
+          <option value="TA">TA</option>
+          <option value="MA">MA</option>
+          <option value="PA">PA</option>
+        </select>
+      </form>
+          <div class="modal-btns">
+            <a class="save" href="#" id="confirmWildcardingTypeButton" onClick="addWildcardedTypeItem(); closeModal('#modal-add-wildcarding-type');">&#x2714; Add</a>
+            <a class="cancel" href="#" onClick="closeModal('#modal-add-wildcarding-type'); FormOpen = false; return false;">&#10008; Cancel</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  <!-- Add wildcarding text form ends here -->
 
   <!--  <a href="http://www.arg.tech" target="_blank" id="devby"><img src="res/img/arg-tech.svg" /></a> -->
   <div id="mainwrap">
@@ -873,13 +918,21 @@ if (isset($_COOKIE['ovauser'])) {
     </script>
     <div id="right1">
       <div id="wildcarding-toolbar">
+        <span>The wildcarded text and type are displayed below each node.</span><br />
+        <span>Select a node to wildcard it.</span>
         <div id="wildcarding-text-section">
           <span>Text:</span>
-          <button onClick="openModal('#modal-add-wildcarding-property'); showWildcardingSchemeSets(); filterWildcardingSchemes();">ADD MORE</button>
+          <div id="selected_node_wildcarding_text">/</div>
+          <button onClick="openModal('#modal-add-wildcarding-text'); initialiseWildcardingToolbar();" class="wildcarding-add-button" disabled>
+            <img src="res/img/plus-icon-gray.svg" class="wildcarding-add-icon">
+        </button>
         </div>
         <div id="wildcarding-type-section">
           <span>Type:</span>
-          <select name="wildcarded-type-1" id="wildcarded-type-1"></select>
+          <div id="selected_node_wildcarding_type">/</div>
+          <button onClick="openModal('#modal-add-wildcarding-type');" class="wildcarding-add-button" disabled>
+            <img src="res/img/plus-icon-gray.svg" class="wildcarding-add-icon">
+          </button>
         </div>
       </div>
       <div id="panBtns">

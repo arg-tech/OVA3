@@ -1007,19 +1007,82 @@ input:valid+span.validity:after {
 
 /* ==== Wildcarding toolbar ==== */
 #wildcarding-toolbar {
+  padding: 10px 0 10px 15px;
+  margin-left:9px;
+  font-size: 13px;
   display: none;
   position: relative;
   width: 100%;
   background-color: #333;
   border-bottom: 1px solid #000;
-  height: 70px;
   color: #fff;
 }
 
 #wildcarding-text-section {
-  padding: 10px 0 0 15px;
+  position: relative;
+  margin-top: 5px;
 }
 
 #wildcarding-type-section {
-  padding: 5px 0 0 15px;
+  margin-top: 8px;
 }
+
+#add_wildcarding_text_form label {
+  display: inline;
+}
+
+.wildcarding-add-button {
+  background: none;
+  border: none;
+  padding: 0;
+  margin-left: 5px;
+}
+
+.wildcarding-add-button:enabled:hover {
+  cursor: pointer;
+}
+
+.wildcarding-add-icon {
+  vertical-align: middle;
+  width: 15px;
+}
+
+.wildcarding-delete-button {
+  background: none;
+  border: none;
+  padding: 0;
+  margin-left: 5px;
+  color: red;
+}
+
+.wildcarding-delete-button:enabled:hover {
+  cursor: pointer;
+}
+
+#add_wildcarding_text_form input[type=text] {
+  font-size: 22px; 
+  padding: 3px; 
+  width:90%; 
+  color: #666;
+}
+
+.wildcarding_form_section {
+  margin-left: 18px;
+  margin-bottom: 15px;
+  display: none;
+}
+
+#wildcarding_section_schemes {
+  display: block;
+}
+
+#selected_node_wildcarding_text, #selected_node_wildcarding_type {
+  display: inline;
+  background-color: gray;
+  padding: 2px 5px 2px 5px;
+}
+
+/* #selected_node_wildcarding_text span {
+  background-color: gray;
+  margin-right: 5px;
+} */

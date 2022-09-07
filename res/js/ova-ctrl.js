@@ -322,7 +322,8 @@ function Grab(evt) {
       CurrentlyEditing = DragID;
     }
 
-    if (wildcardingMode) { // If in wildcarding mode
+    // If in wildcarding mode
+    if (wildcardingMode) { 
       console.log('grabbed node');
       n = targetElement;
       nID = n.getAttributeNS(null, 'id');
@@ -1412,6 +1413,10 @@ function toggleWildcardingMode() {
 }
 
 function selectNodeInWildcardingToolbar(node) {
-  console.log(node);
-  $("#wildcarded-type-1").val(node.wildcardedType);
+  displayNodeWildcardedText(node);
+  displayNodeWildcardedType(node);
+
+  // Enable the plus icon to add new properties
+  $(".wildcarding-add-icon").attr("src","res/img/plus-icon.svg");
+  $('.wildcarding-add-button').prop('disabled', false);
 }
