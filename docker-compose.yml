@@ -4,6 +4,8 @@ services:
     build: .
     ports:
       - "81:80" #change the *left* number (81) if you need to bind to a different host port
+    depends_on:
+      - mysql    
     environment:
       MYSQL_USER: 'root'
       MYSQL_PASSWORD: '@rgtech'

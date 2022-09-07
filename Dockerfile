@@ -2,7 +2,7 @@ FROM php:5.6-apache
 RUN docker-php-ext-install mysql mysqli pdo pdo_mysql
 RUN apt-get update && apt-get install -y mysql-client
 RUN apt-get update && apt-get install -y wget
-ADD ova3 /var/www/html/
+ADD OVA3 /var/www/html/
 RUN mkdir /var/www/html/tmp
 RUN chmod 777 /var/www/html/tmp
 RUN a2enmod rewrite
