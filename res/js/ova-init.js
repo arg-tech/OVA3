@@ -50,9 +50,8 @@ var panZoomID = null;
  * @param {*} event - The event to handle
  */
 const panZoom = (event) => {
-    if (FormOpen == false) {
-        // console.log("inverse: " + inverse);
-        event.preventDefault();
+    var onSVG = event.target.id == "inline" || $(event.target).is('rect') || $(event.target).is('tspan');
+    if (FormOpen == false && onSVG) {
         if (event.ctrlKey) { //zoom in or out
             tsvg = document.getElementById('inline').getBoundingClientRect();
             svgleft = tsvg.left;
