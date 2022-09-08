@@ -851,7 +851,7 @@ if (isset($_COOKIE['ovauser'])) {
                   <input type="text" name="exact_text_input" id="exact_text_input" class="input" value="" /></label>
                </div>
 
-               <!-- Section: Specify exact text -->
+               <!-- Section: Specify text that can be a substring -->
                <input type="radio" id="contains_text" name="wildcarding_text_type" value="contains_text" onChange="toggleWildcardingFormSection(this.value);">
                <label for="contains_text">Contains text</label><br>
                <div id="wildcarding_section_contains_text" class="wildcarding_form_section">
@@ -894,7 +894,27 @@ if (isset($_COOKIE['ovauser'])) {
         </div>
       </div>
     </div>
-  <!-- Add wildcarding text form ends here -->
+  <!-- Add wildcarding type form ends here -->
+
+<!-- Edit raw wildcarding string form starts here -->
+<div class="modal-dialog" id="modal-edit-wildcarding-string">
+   <div class="modal-content">
+      <div class="modal-header">
+         <h4 class="modal-title">Edit wildcarding string</h4>
+      </div>
+      <div class="modal-body">
+        <form id="edit_wildcarding_string_form" class="fstyle" style="width: 78%;">
+          <label for="wildcarding_string" id="wildcarding_string_label">Text:</label>
+          <input type="text" name="wildcarding_string" id="wildcarding_string" class="input" value="" /></label>
+      </form>
+          <div class="modal-btns">
+            <a class="save" href="#" id="confirmWildcardingStringButton" onClick="closeModal('#modal-edit-wildcarding-string'); editRawWildcardingString();">&#x2714; Confirm</a>
+            <a class="cancel" href="#" onClick="closeModal('#modal-edit-wildcarding-string'); FormOpen = false; return false;">&#10008; Cancel</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  <!-- Edit raw wildcarding string form ends here -->
 
   <!--  <a href="http://www.arg.tech" target="_blank" id="devby"><img src="res/img/arg-tech.svg" /></a> -->
   <div id="mainwrap">
@@ -924,14 +944,20 @@ if (isset($_COOKIE['ovauser'])) {
           <span>Text:</span>
           <div id="selected_node_wildcarding_text">/</div>
           <button onClick="openModal('#modal-add-wildcarding-text'); initialiseWildcardingToolbar();" class="wildcarding-add-button" disabled>
-            <img src="res/img/plus-icon-gray.svg" class="wildcarding-add-icon">
-        </button>
+            <img src="res/img/plus-icon.svg" class="wildcarding-add-icon">
+          </button>
+          <button onClick="openModal('#modal-edit-wildcarding-string'); initialiseWildcardingStringToolbar('text');" class="wildcarding-add-button" disabled>
+            <img src="res/img/edit-icon.svg" class="wildcarding-add-icon">
+          </button>
         </div>
         <div id="wildcarding-type-section">
           <span>Type:</span>
           <div id="selected_node_wildcarding_type">/</div>
           <button onClick="openModal('#modal-add-wildcarding-type');" class="wildcarding-add-button" disabled>
-            <img src="res/img/plus-icon-gray.svg" class="wildcarding-add-icon">
+            <img src="res/img/plus-icon.svg" class="wildcarding-add-icon">
+          </button>
+          <button onClick="openModal('#modal-edit-wildcarding-string'); initialiseWildcardingStringToolbar('type');" class="wildcarding-add-button" disabled>
+            <img src="res/img/edit-icon.svg" class="wildcarding-add-icon">
           </button>
         </div>
       </div>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg" xmlns:bx="https://boxy-svg.com">
+  <rect x="520.092" y="18.257" width="499.07" height="498.637" style="stroke: rgb(0, 0, 0);"/>
+  <ellipse style="fill: rgba(216, 216, 216, 0); stroke: rgb(255, 255, 255); stroke-width: 25px;" cx="250" cy="250" rx="237.515" ry="237.515"/>
+  <line style="fill: rgb(216, 216, 216); stroke: rgb(255, 255, 255); stroke-width: 60px;" x1="258.819" y1="110.067" x2="258.819" y2="371.292" transform="matrix(0.777146, 0.62932, -0.62932, 0.777146, 209.14324, -109.24366)"/>
+  <path d="M 202.694 382.118 L 231.277 439.284 L 174.111 439.284 L 202.694 382.118 Z" style="stroke: rgb(255, 255, 255); fill: rgb(255, 255, 255);" transform="matrix(-0.78801, -0.615662, 0.615662, -0.78801, 56.669327, 821.61438)" bx:shape="triangle 174.111 382.118 57.166 57.166 0.5 0 1@7212cb60"/>
+  <line style="fill: rgb(216, 216, 216); stroke: rgb(255, 255, 255); stroke-width: 60px;" x1="357.488" y1="106.734" x2="357.488" y2="131.716" transform="matrix(0.777146, 0.62932, -0.62932, 0.777146, 154.698253, -198.404643)"/>
+</svg>

@@ -1060,10 +1060,7 @@ input:valid+span.validity:after {
 }
 
 #add_wildcarding_text_form input[type=text] {
-  font-size: 22px; 
-  padding: 3px; 
   width:90%; 
-  color: #666;
 }
 
 .wildcarding_form_section {
@@ -1078,8 +1075,13 @@ input:valid+span.validity:after {
 
 #selected_node_wildcarding_text, #selected_node_wildcarding_type {
   display: inline;
-  background-color: gray;
+  background-color: #ffffff;
+  color: black;
   padding: 2px 5px 2px 5px;
+}
+
+#wildcarding_string {
+  width:90%; 
 }
 
 /* #selected_node_wildcarding_text span {

@@ -1417,6 +1417,6 @@ function selectNodeInWildcardingToolbar(node) {
   displayNodeWildcardedType(node);
 
   // Enable the plus icon to add new properties
-  $(".wildcarding-add-icon").attr("src","res/img/plus-icon.svg");
+  // $(".wildcarding-add-icon").attr("src","res/img/plus-icon.svg");
   $('.wildcarding-add-button').prop('disabled', false);
 }

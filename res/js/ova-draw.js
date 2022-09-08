@@ -608,7 +608,6 @@ function showWildcardedPropertiesOnOff() {
  * @param {Object} nodeID - Optional, the node ID to remove the drawn wildcarded text for. Leave empty to remove all wildcarded text drawn on the SVG.
  */
 function removeWildcardedProperties(nodeID = null) {
-    console.log(nodeID);
     // Remove a single property
     if(nodeID != null) {
         var g = document.getElementById(nodeID);
@@ -684,9 +683,6 @@ function showWildcardingSchemeSets() {
     var type = $('#wildcarding_schemes_type').find(":selected").val();
     var schemeSet = $('#wildcarding_schemes_set').find(":selected").val();
 
-    console.log(type);
-    console.log(schemeSet);
-
     // Create a map of types to corresponding schemes
     var typeToSchemeMappings = {
         'RA': ['1','2','3','9'],
@@ -753,12 +749,18 @@ function addWildcardedTextItem() {
         newItem = `*${newItemText}*`;
     }
 
-    if(mySel.wildcardedText == '')
-        mySel.wildcardedText = newItem;
-    else
-        mySel.wildcardedText += ` | ${newItem}`;
+    var textItems = mySel.wildcardedText.split(' | ');
 
-    console.log(mySel.wildcardedText);
+    // Don't add text that is already listed 
+    if(textItems.includes(newItem))
+        return;
+    // The asterisk is a symbol for an empty array
+    if(textItems.includes('*'))
+        textItems = [];
+
+    textItems.push(newItem);
+    mySel.wildcardedText = textItems.join(' | ');
+
     displayNodeWildcardedText();
 }
 
@@ -769,13 +771,18 @@ function addWildcardedTypeItem() {
     if(mySel.wildcardedType.indexOf(newItem) >= 0)
         return;
 
-    if(mySel.wildcardedType == '')
-        mySel.wildcardedType = newItem;
-    else
-        mySel.wildcardedType += ` | ${newItem}`;
-
-    console.log(mySel.wildcardedType);
+    var typeItems = mySel.wildcardedType.split(' | ');
     
+    // Don't add type that is already listed 
+    if(typeItems.includes(newItem))
+        return;
+    // The asterisk is a symbol for an empty array
+    if(typeItems.includes('*'))
+        typeItems = [];
+
+    typeItems.push(newItem);
+    mySel.wildcardedType = typeItems.join(' | ');
+
     displayNodeWildcardedText();
     displayNodeWildcardedType();
 }
@@ -786,15 +793,18 @@ function displayNodeWildcardedText(node) {
     // If node isn't specified, apply changes to last selected node
     if(node == null)
         node = mySel;
-    var textItems = node.wildcardedText.split(' | ');
+    // Split up text by delimiter and remove empty strings
+    var textItems = node.wildcardedText.split(' | ').filter(item => item);
 
     textItems.forEach(function(item, index, array) {
         var span = $('<span />').html(item);
         $('#selected_node_wildcarding_text').append(span);
 
-        var deleteButton = $('<button />').html('&#10006;').addClass('wildcarding-delete-button');
-        $('.wildcarding-delete-button').click('deleteWildcardedItem()');
-        $('#selected_node_wildcarding_text').append(deleteButton);
+        if(item !== '*') {
+            var deleteButton = $('<button />').html('&#10006;').addClass('wildcarding-delete-button');
+            deleteButton.on('click', null, {node: node, text: item}, deleteWildcardedTextItem);
+            $('#selected_node_wildcarding_text').append(deleteButton);
+        }
         
         if(index != array.length - 1) {
             var delimiter = $('<span />').html(' | ');
@@ -813,14 +823,21 @@ function displayNodeWildcardedType(node) {
     if(node == null)
         node = mySel;
 
-    var typeItems = node.wildcardedType.split(' | ');
+    // Split up text by delimiter and remove empty strings
+    var typeItems = node.wildcardedType.split(' | ').filter(item => item);
 
     typeItems.forEach(function(item, index, array) {
         var span = $('<span />').html(item);
         $('#selected_node_wildcarding_type').append(span);
+
+        if(item !== '*') {
+            var deleteButton = $('<button />').html('&#10006;').addClass('wildcarding-delete-button');
+            deleteButton.on('click', null, {node: node, type: item}, deleteWildcardedTypeItem);
+            $('#selected_node_wildcarding_type').append(deleteButton);
+        }
         
         if(index != array.length - 1) {
-            var delimiter = $('<span />').html('|');
+            var delimiter = $('<span />').html(' | ');
             $('#selected_node_wildcarding_type').append(delimiter);
         }
     });
@@ -828,6 +845,55 @@ function displayNodeWildcardedType(node) {
     DrawWildcardedProperties(node.nodeID, node.wildcardedText, node.wildcardedType, node.x, node.y);
 }
 
-function deleteWildcardedItem() {
-    console.log('test');
+function deleteWildcardedTextItem(event) {
+    var selectedNode = event.data.node;
+    var textToDelete = event.data.text;
+    var textItems = selectedNode.wildcardedText.split(' | ');
+    textItems = textItems.filter(item => item !== textToDelete);
+    
+    if(textItems.length === 0)
+        textItems.push('*');
+    
+        selectedNode.wildcardedText = textItems.join(' | ');
+
+    displayNodeWildcardedText(selectedNode);
+}
+
+function deleteWildcardedTypeItem(event) {
+    var selectedNode = event.data.node;
+    var typeToDelete = event.data.type;
+    var typeItems = selectedNode.wildcardedType.split(' | ');
+    typeItems = typeItems.filter(item => item !== typeToDelete);
+
+    if(typeItems.length === 0)
+        typeItems.push('*');
+
+    selectedNode.wildcardedType = typeItems.join(' | ');
+
+    displayNodeWildcardedType(selectedNode);
+}
+
+function initialiseWildcardingStringToolbar(wildcardedProperty) {
+    if(wildcardedProperty === 'text') {
+        $('#wildcarding_string').val(mySel.wildcardedText);
+        $('#wildcarding_string_label').html('Text:');
+    }
+    else if(wildcardedProperty === 'type') {
+        $('#wildcarding_string').val(mySel.wildcardedType);
+        $('#wildcarding_string_label').html('Type:');
+    }
+}
+
+function editRawWildcardingString() {
+    var newString = $('#wildcarding_string').val();
+    var modalLabel = $('#wildcarding_string_label').html();
+
+    if(modalLabel === 'Text:') {
+        mySel.wildcardedText = newString;
+        displayNodeWildcardedText(mySel);
+    }
+    else if(modalLabel === 'Type:') {
+        mySel.wildcardedType = newString;
+        displayNodeWildcardedType(mySel);
+    }
 }
