@@ -570,6 +570,9 @@ function AddNode(txt, type, scheme, pid, nid, nx, ny, visible, undone, timestamp
         users.push(username);
       }
     }
+    
+    if(wildcardingMode)
+      DrawWildcardedProperties(nid);
   }
 }
 
@@ -1259,6 +1262,9 @@ function saveNodeEdit() {
     updateNode(CurrentlyEditing, mySel.x, mySel.y);
   }
 
+  if(wildcardingMode) 
+    DrawWildcardedProperties(CurrentlyEditing);
+
   var edgesToUpdate = findEdges(CurrentlyEditing);
   for (var i = 0; i < edgesToUpdate.length; i++) {
     UpdateEdge(edgesToUpdate[i]);
@@ -1399,9 +1405,7 @@ function toggleWildcardingMode() {
   $("#wildcarding-toolbar").slideToggle();
   wildcardingMode = !wildcardingMode;
   showWildcardedPropertiesOnOff();
-
-  console.log(schemesets);
-  console.log(schemes);
+  UnFocus(null, CurrentFocus);
 
   var allTypes = ['RA', 'CA', 'YA', 'TA', 'MA', 'PA'];
   $.each(allTypes, function(key, value) {   

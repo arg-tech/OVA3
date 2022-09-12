@@ -549,32 +549,35 @@ function markEdge(fromID, toID, mark) {
  * @param {Number} xpos - The x coordinate of the node
  * @param {Number} ypos - The y coordinate of the node
  */
- function DrawWildcardedProperties(nodeID, wildcardedText, wildcardedType, xpos, ypos) {
+ function DrawWildcardedProperties(nodeID) {
     // First remove any existing drawn properties
     removeWildcardedProperties(nodeID);
+
+    var nodeIndex = findNodeIndex(nodeID);
+    var node = nodes[nodeIndex];
 
     var g = document.getElementById(nodeID);
     if (g) {
         // Create the wrapper for both wildcarded properties
         var ntext = document.createElementNS("http://www.w3.org/2000/svg", "text");
         ntext.setAttribute('class', 'wildcarded-properties');
-        ntext.setAttribute('x', xpos);
-        ntext.setAttribute('y', ypos);
+        ntext.setAttribute('x', node.x);
+        ntext.setAttribute('y', node.y);
         ntext.setAttribute('style', 'font-family: sans-serif; font-weight: normal; font-style: normal;font-size: 9px;');
 
         // Create the tspan for wildcarded text
         var tspanText = document.createElementNS("http://www.w3.org/2000/svg", "tspan");
         tspanText.setAttribute('text-anchor', 'middle');
-        tspanText.setAttribute('x', xpos);
+        tspanText.setAttribute('x', node.x);
         tspanText.setAttribute('dy', 38);
-        tspanText.appendChild(document.createTextNode(`Text: ${wildcardedText}`));
+        tspanText.appendChild(document.createTextNode(`Text: ${node.wildcardedText}`));
 
         // Create the tspan for wildcarded text, with smaller y offset
         var tspanType = document.createElementNS("http://www.w3.org/2000/svg", "tspan");
         tspanType.setAttribute('text-anchor', 'middle');
-        tspanType.setAttribute('x', xpos);
+        tspanType.setAttribute('x', node.x);
         tspanType.setAttribute('dy', 12);
-        tspanType.appendChild(document.createTextNode(`Type: ${wildcardedType}`));
+        tspanType.appendChild(document.createTextNode(`Type: ${node.wildcardedType}`));
 
         ntext.appendChild(tspanText);
         ntext.appendChild(tspanType);

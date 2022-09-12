@@ -51,6 +51,8 @@ function newNode(nodeID, type, scheme, participantID, text, x, y, visible, undon
     n.visible = typeof visible !== 'undefined' ? visible : true;
     n.timestamp = typeof timestamp !== 'undefined' ? timestamp : '';
     n.marked = typeof marked !== 'undefined' ? marked : false;
+    n.wildcardedText = text;
+    n.wildcardedType = type;
     nodes.push(n);
 
     var undone = typeof undone !== 'undefined' ? undone : 0;
@@ -86,6 +88,9 @@ function updateNode(nodeID, x, y, visible, undone, post, type, scheme, text, tim
         if (typeof text !== 'undefined') { n.text = text; }
         if (typeof timestamp !== 'undefined') { n.timestamp = timestamp; }
         if (typeof marked !== 'undefined') { n.marked = marked; }
+
+        if(wildcardingMode && n.wildcardedText == '')
+            n.wildcardedText = n.text;
 
         var undone = typeof undone !== 'undefined' ? undone : 0;
         var post = typeof post !== 'undefined' ? post : true;
