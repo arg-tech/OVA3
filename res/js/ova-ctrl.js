@@ -134,13 +134,21 @@ function stopAni() {
 }
 
 /**
- * Resets the SVG's view box to the default position
+ * Resets the SVG's view box to be centered on the first SVG node or the default position of 0,0 if no nodes are drawn on the SVG
  */
 function resetPosition() {
   var mw = $("#mainwrap").width();
   $("#right1").width(mw - $("#left1").width() - 41);
-  VB = [0, 0, 1500, 1500];
-  SVGRoot.setAttribute('viewBox', [0, 0, 1500, 1500]);
+
+  var allRects = document.getElementsByTagName('rect');
+  var lowXY = { "x": 0, "y": 0 };
+  if (allRects.length > 1) { //find the SVG node with the lowest y coordinate
+    allRects = Array.from(allRects).sort((a, b) => parseInt(a.getAttribute('y')) - parseInt(b.getAttribute('y')));
+    lowXY = { "x": allRects[0].getAttribute('x') - 100, "y": allRects[0].getAttribute('y') - 50 };
+  }
+  //update the view box
+  VB = [lowXY.x, lowXY.y, 1500, 1500];
+  SVGRoot.setAttribute('viewBox', [lowXY.x, lowXY.y, 1500, 1500]);
 }
 
 /**
