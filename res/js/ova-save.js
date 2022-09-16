@@ -445,6 +445,7 @@ async function loadOva3Json(json, oplus, offset) {
     var jnodes = json['AIF']['nodes'];
     var nodelist = {};
     var pID = 0;
+    var toMark = [];
     for (var i = 0, l = jnodes.length; i < l; i++) {
         if (oplus) {
             if (jnodes[i].type == "L") {
@@ -455,7 +456,9 @@ async function loadOva3Json(json, oplus, offset) {
             }
         } else if (jnodes[i].type == "I" || jnodes[i].type == "RA" || jnodes[i].type == "CA" || jnodes[i].type == "MA" || jnodes[i].type == "EN") {
             nodelist[jnodes[i].nodeID] = newNode(jnodes[i].nodeID, jnodes[i].type, null, 0, jnodes[i].text, 0, 0, false, 1, "", false, false);
-            if (jnodes[i].type == "I" && text) { hlUpdate(jnodes[i].nodeID, jnodes[i].type, jnodes[i].nodeID, false); }
+            if (jnodes[i].type == "I" && text) {
+                if (!hlUpdate(jnodes[i].nodeID, jnodes[i].type, jnodes[i].nodeID, false)) { toMark.push(jnodes[i].nodeID); } //store the node IDs that it failed to update for
+            }
         }
     }
 
@@ -488,13 +491,14 @@ async function loadOva3Json(json, oplus, offset) {
 
     //set the layout of the nodes and draw them on the svg
     var n = json['OVA']['nodes'];
-    var newY = 0, tstamp;
+    var newY = 0, tstamp, mark;
     for (var i = 0, l = n.length; i < l; i++) {
         if (nodelist[n[i].nodeID]) {
             if (n[i].visible) {
                 newY = parseInt(n[i].y) + offset;
-                updateNode(n[i].nodeID, parseInt(n[i].x), newY, true, 1, false);
-                DrawNode(nodelist[n[i].nodeID].nodeID, nodelist[n[i].nodeID].type, nodelist[n[i].nodeID].text, nodelist[n[i].nodeID].x, nodelist[n[i].nodeID].y);
+                mark = toMark.includes(n[i].nodeID);
+                updateNode(n[i].nodeID, parseInt(n[i].x), newY, true, 1, false, nodelist[n[i].nodeID].type, nodelist[n[i].nodeID].scheme, nodelist[n[i].nodeID].text, "", mark);
+                DrawNode(nodelist[n[i].nodeID].nodeID, nodelist[n[i].nodeID].type, nodelist[n[i].nodeID].text, nodelist[n[i].nodeID].x, nodelist[n[i].nodeID].y, mark);
                 if (oplus && n[i].timestamp && n[i].timestamp != '') { //if in dialogical mode
                     tstamp = n[i].timestamp.split(" (")[0]; //remove the timezone name from the timestamp
                     updateTimestamp(n[i].nodeID, tstamp, 1, false);
@@ -524,6 +528,8 @@ async function loadOva3Json(json, oplus, offset) {
             }
         }
     }
+
+    if (toMark.length > 0) { hlReset(); }
 
     var nodeStart = findNodeIndex(jnodes[0].nodeID, true);
     return await postAddEdits(nodeStart, edgeStart);
@@ -558,6 +564,7 @@ async function loadOva2Json(json, oplus, offset) {
     var count = window.nodeCounter;
     var newY = 0, x = 0;
     var start;
+    var spanAlert = false; var mark = false;
     for (var i = 0, l = jnodes.length; i < l; i++) {
         if ((count + jnodes[i].id) > window.nodeCounter) {
             window.nodeCounter = (count + jnodes[i].id); //update the node counter
@@ -567,19 +574,25 @@ async function loadOva2Json(json, oplus, offset) {
         x = parseInt(jnodes[i].x);
         if (oplus) {
             if (jnodes[i].type == "L") {
-                pID = findParticipantIDText(jnodes[i].text);
-                nodelist[nID] = newNode(nID, jnodes[i].type, jnodes[i].scheme, pID, jnodes[i].text, x, newY, jnodes[i].visible, 1, jnodes[i].timestamp, false, false);
+                mark = false;
                 if (jnodes[i].visible) {
-                    DrawNode(nID, jnodes[i].type, jnodes[i].text, x, newY);
-                    if (text) { hlUpdate(jnodes[i].id, jnodes[i].type, nID, false); }
+                    if (text) {
+                        if (!hlUpdate(jnodes[i].id, jnodes[i].type, nID, false)) { mark = true; spanAlert = true; }
+                    }
+                    DrawNode(nID, jnodes[i].type, jnodes[i].text, x, newY, mark);
                     if (window.showTimestamps && jnodes[i].timestamp && jnodes[i].timestamp != '') { DrawTimestamp(nID, jnodes[i].timestamp, x, newY); }
                 }
+                pID = findParticipantIDText(jnodes[i].text);
+                nodelist[nID] = newNode(nID, jnodes[i].type, jnodes[i].scheme, pID, jnodes[i].text, x, newY, jnodes[i].visible, 1, jnodes[i].timestamp, mark, false);
             } else {
                 nodelist[nID] = AddNode(jnodes[i].text, jnodes[i].type, jnodes[i].scheme, 0, nID, x, newY, jnodes[i].visible, 1, "", false, false);
             }
         } else if (jnodes[i].type == "I" || jnodes[i].type == "RA" || jnodes[i].type == "CA" || jnodes[i].type == "MA" || jnodes[i].type == "EN") {
-            nodelist[nID] = AddNode(jnodes[i].text, jnodes[i].type, jnodes[i].scheme, 0, nID, x, newY, jnodes[i].visible, 1, "", false, false);
-            if (jnodes[i].type == "I" && text) { hlUpdate(jnodes[i].id, jnodes[i].type, nID, false); }
+            mark = false;
+            if (jnodes[i].type == "I" && text) {
+                if (!hlUpdate(jnodes[i].id, jnodes[i].type, nID, false)) { mark = true; spanAlert = true; }
+            }
+            nodelist[nID] = AddNode(jnodes[i].text, jnodes[i].type, jnodes[i].scheme, 0, nID, x, newY, jnodes[i].visible, 1, "", mark, false);
         }
 
         if (i === 0) { start = findNodeIndex(nID, true); }
@@ -608,7 +621,35 @@ async function loadOva2Json(json, oplus, offset) {
         }
     }
 
+    if (spanAlert) { hlReset(); }
+
     return await postAddEdits(start, edgeStart);
+}
+
+/**
+ * Add a click event to all spans within the analysis text div to enable the user to change the spans' IDs to relink them to their nodes
+ * and display an alert to the user explaining how to do so
+ */
+function hlReset() {
+    alert("Failed to link the analysis text to the marked nodes.\n\
+        \nFor each marked node, please hold ALT and click on the highlighted text for that node before clicking on the node to relink it. The highlighted text will turn orange once it has been selected. To unselect the text, hold ALT and click on it again. The node will be unmarked again after relinking it to the text. If a marked node should not be linked to the text, right click it and select unmark.");
+
+    $("#analysis_text").on("click", "span", function (evt) {
+        evt.stopPropagation();
+        if (evt.altKey) {
+            if (window.updateSpan === "") { //select the clicked span
+                window.updateSpan = evt.currentTarget.id.substring(4);
+                console.log("selected span#node" + window.updateSpan);
+                $('#' + evt.currentTarget.id).addClass("hlcurrent");
+                $('svg#inline g.hl').css('cursor', 'crosshair');
+            } else if (window.updateSpan === evt.currentTarget.id.substring(4)) { //unselect the clicked span
+                console.log("unselected span#node" + window.updateSpan);
+                $('#' + evt.currentTarget.id).removeClass("hlcurrent");
+                window.updateSpan = "";
+                $('svg#inline g.hl').css('cursor', 'move');
+            }
+        }
+    });
 }
 
 /**
@@ -714,7 +755,7 @@ async function postAddEdits(nodeStart, edgeStart) {
             nodesContent.push([nodesToAdd[i].nodeID, JSON.stringify(nodesToAdd[i])]);
         }
         lastedit = await $.post("helpers/load.php", { analysisID: window.analysisID, sessionid: window.sessionid, type: "node", action: "add", cnt: JSON.stringify(nodesContent), groupID: window.groupID, undone: 1, counter: window.nodeCounter }).then(data => JSON.parse(data).last);
-        // console.log("last edit id: " + lastedit);
+        // console.log("after nodes, last edit id: " + lastedit);
 
         //add the edges to the database
         var edgesContent = [];
@@ -725,7 +766,7 @@ async function postAddEdits(nodeStart, edgeStart) {
             edgesContent.push([contentID, JSON.stringify(edgesToAdd[i])]);
         }
         lastedit = await $.post("helpers/load.php", { analysisID: window.analysisID, sessionid: window.sessionid, type: "edge", action: "add", cnt: JSON.stringify(edgesContent), groupID: window.groupID, undone: 1, counter: window.edgeCounter }).then(data => JSON.parse(data).last);
-        // console.log("last edit id: " + lastedit);
+        // console.log("after edges, last edit id: " + lastedit);
     } catch (e) { alert("Unable to add to the OVA3 database"); return false; }
 
     return true;
