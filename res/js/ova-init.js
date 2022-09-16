@@ -99,6 +99,7 @@ window.edgeCounter = 1;
 window.unsaved = false;
 window.saveImage = false;
 window.undoing = false;
+window.updateSpan = "";
 
 document.addEventListener('contextmenu', event => event.preventDefault());
 window.addEventListener('keydown', myKeyDown, true);
@@ -411,6 +412,7 @@ function updateMarkEdge(edge) {
  * @returns {Boolean} - Indicates if the node was added (true) or not (false)
  */
 function updateAddNode(node) {
+    if (node == null) { console.log("node is null (updateAddNode)"); return false; }
     var index = findNodeIndex(node.nodeID, true);
     if (index === -1) { //if the node hasn't already been added
         //create a new node and add to array of all nodes
@@ -473,6 +475,7 @@ function updateAddNode(node) {
  * @returns {Boolean} - Indicates if the node was deleted (true) or not (false)
  */
 function updateDelNode(node) {
+    if (node == null) { console.log("node is null (updateDelNode)"); return false; }
     var index = findNodeIndex(node.nodeID, true);
     if (index > -1) { //if the node exists
         nodes.splice(index, 1); //remove the node
@@ -491,6 +494,7 @@ function updateDelNode(node) {
  * @returns {Boolean} - Indicates if the node was edited (true) or not (false)
  */
 function updateEditNode(node) {
+    if (node == null) { console.log("node is null (updateEditNode)"); return false; }
     var index = findNodeIndex(node.nodeID);
     if (index > -1) { //if the node exists
         n = nodes[index];
@@ -761,6 +765,7 @@ function hlText(node) {
  * @param {String} newID - The new ID to set the span ID to
  * @param {Boolean} post - Optional, indicates if the updated text should be added to the database (true) or not (false). The default is true.
  * @param {Number} undone - Optional, indicates if this edit can be undone (0) or not (1). The default is zero.
+ * @returns {Boolean} - Indicates if the span was successfully updated (true) or not (false)
  */
 function hlUpdate(nodeID, type, newID, post, undone) {
     var span = document.getElementById("node" + nodeID); //try to find the span from the node ID
@@ -784,7 +789,8 @@ function hlUpdate(nodeID, type, newID, post, undone) {
             var undone = typeof undone !== 'undefined' ? undone : 0;
             postEdit("text", "edit", $('#analysis_text').html(), undone);
         }
-    } else { console.log("Couldn't find text span for node: " + newID); }
+        return true;
+    } else { console.log("Couldn't find text span for node: " + newID); return false; }
 }
 
 /**
@@ -865,7 +871,7 @@ async function undo() {
                 }
             }
         } catch (e) {
-            console.log(e);
+            console.log("Failed to undo last edit"); console.log(e);
         }
         window.undoing = false; //finished undoing the last edit
         return undone;

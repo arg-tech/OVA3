@@ -221,7 +221,7 @@ function nodeMode(status) {
 function Grab(evt) {
   $("#contextmenu").hide();
 
-  if (evt.button != 0 && !longEdge[0]) { //disable right click when in the middle of adding a long distance edge
+  if (evt.button != 0 && !longEdge[0] && window.updateSpan === "") { //disable right click when in the middle of adding a long distance edge or updating a span
     myRClick(evt);
     return;
   }
@@ -236,7 +236,22 @@ function Grab(evt) {
   }
 
   if (targetElement.getAttributeNS(null, 'focusable')) {
-    if (window.shiftPress || window.atkPress || window.maPress) { //if adding an edge
+    if (window.updateSpan !== "") { //if updating a selected span's ID
+      var nID = targetElement.getAttributeNS(null, 'id');
+      var index = findNodeIndex(nID, false);
+      console.log("grabbed node: " + nID + "\nnodes index: " + index);
+
+      if (index > -1 && nodes[index].marked) { //if the node exists and its been marked
+        hlUpdate(window.updateSpan, nodes[index].type, nID, true, 1);
+        console.log("changed span ID from #node" + window.updateSpan + " to #node" + nID);
+        window.groupID++;
+        markNode(nodes[index], false);
+        $('#node' + nID).removeClass("hlcurrent");
+        window.updateSpan = "";
+        $('svg#inline g.hl').css('cursor', 'move'); $('#' + nID).css('cursor', 'move');
+      }
+    }
+    else if (window.shiftPress || window.atkPress || window.maPress) { //if adding an edge
       FromNode = targetElement;
       FromID = FromNode.getAttributeNS(null, 'id');
       edge_to = AddPt(TrueCoords.x, TrueCoords.y);
@@ -514,7 +529,7 @@ function AddNode(txt, type, scheme, pid, nid, nx, ny, visible, undone, timestamp
   var post = typeof post !== 'undefined' ? post : true;
   newNode(nid, type, scheme, pid, txt, nx, ny, isVisible, undone, timestamp, mark, post); //create the node
   if (isVisible) {
-    DrawNode(nid, type, txt, nx, ny); //if the node is visible then draw the node on the svg
+    DrawNode(nid, type, txt, nx, ny, mark); //if the node is visible then draw the node on the svg
 
     if (type == 'L' && txt != "") { //create analyst nodes if they are needed
       //create YA analyst node
@@ -805,7 +820,6 @@ function delSVGTemp() {
 function Drop(evt) {
   if (DragPan) {
     DragPan = false;
-    // $('#inline').css('cursor', 'grab');
     $('#inline').css('cursor', 'default');
     return;
   }
