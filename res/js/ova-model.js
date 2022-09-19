@@ -74,8 +74,10 @@ function newNode(nodeID, type, scheme, participantID, text, x, y, visible, undon
  * @param {String} text - Optional, the text the node contains
  * @param {String} timestamp - Optional, the node's timestamp value
  * @param {Boolean} marked - Optional, indicates if the node should be marked (true) or not (false). The default is false.
+ * @param {String} wildcardedText Optional, The wildcarded text of the node
+ * @param {String} wildcardedType Optional, The wildcarded type of the node
  */
-function updateNode(nodeID, x, y, visible, undone, post, type, scheme, text, timestamp, marked) {
+function updateNode(nodeID, x, y, visible, undone, post, type, scheme, text, timestamp, marked, wildcardedText, wildcardedType) {
     var index = findNodeIndex(nodeID);
     if (index > -1) { //if the node exists
         n = nodes[index];
@@ -89,24 +91,6 @@ function updateNode(nodeID, x, y, visible, undone, post, type, scheme, text, tim
         if (typeof timestamp !== 'undefined') { n.timestamp = timestamp; }
         if (typeof marked !== 'undefined') { n.marked = marked; }
 
-        var undone = typeof undone !== 'undefined' ? undone : 0;
-        var post = typeof post !== 'undefined' ? post : true;
-        if (post) { postEdit("node", "edit", n, undone, n.nodeID); }
-    }
-}
-
-/**
- * Handles updating wildcarded node properties when loading a file
- * @param {String} nodeID The ID of the node to update
- * @param {String} wildcardedText The wildcarded text of the node
- * @param {String} wildcardedType The wildcarded type of the node
- */
-function updateNodeWildcardedProperties(nodeID, wildcardedText, wildcardedType) {
-    var index = findNodeIndex(nodeID);
-    if (index > -1) {
-        n = nodes[index];
-
-        // Fall back to node text/type 
         n.wildcardedText = (typeof wildcardedText !== 'undefined') ? wildcardedText : n.text;
         n.wildcardedType = (typeof wildcardedType !== 'undefined') ? wildcardedType : n.type;
 
@@ -115,6 +99,10 @@ function updateNodeWildcardedProperties(nodeID, wildcardedText, wildcardedType) 
             n.wildcardedText = '';
         if(typeof n.wildcardedType == 'undefined')
             n.wildcardedType = '';
+
+        var undone = typeof undone !== 'undefined' ? undone : 0;
+        var post = typeof post !== 'undefined' ? post : true;
+        if (post) { postEdit("node", "edit", n, undone, n.nodeID); }
     }
 }
 
