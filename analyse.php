@@ -938,8 +938,7 @@ if (isset($_COOKIE['ovauser'])) {
     </script>
     <div id="right1">
       <div id="wildcarding-toolbar">
-        <span>The wildcarded text and type are displayed below each node.</span><br />
-        <span>Select a node to wildcard it.</span>
+        <span>The wildcarded text/type are displayed below each node. Select a node to wildcard it.</span>
         <div id="wildcarding-text-section" class="wildcarding-row">
             <span class="wildcarding-column" id="wildcarding-label">Text:</span>
             <div class="wildcarding-column">
@@ -968,7 +967,10 @@ if (isset($_COOKIE['ovauser'])) {
             </button>
           </div>
         </div>
-        <button onClick="applyDefaultWildcarding();" class="default-wildcarding-button">Default wildcarding (L nodes)</button>
+        <div class="wildcarding-buttons">
+          <button onClick="applyDefaultWildcarding();">Default wildcarding (L, I nodes)</button>
+          <button onClick="save2file(); return false;">Download to file</button>
+        </div>
       </div>
       <div id="panBtns">
         <div id="zoomBtns">

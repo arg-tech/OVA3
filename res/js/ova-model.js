@@ -89,12 +89,32 @@ function updateNode(nodeID, x, y, visible, undone, post, type, scheme, text, tim
         if (typeof timestamp !== 'undefined') { n.timestamp = timestamp; }
         if (typeof marked !== 'undefined') { n.marked = marked; }
 
-        if(wildcardingMode && n.wildcardedText == '')
-            n.wildcardedText = n.text;
-
         var undone = typeof undone !== 'undefined' ? undone : 0;
         var post = typeof post !== 'undefined' ? post : true;
         if (post) { postEdit("node", "edit", n, undone, n.nodeID); }
+    }
+}
+
+/**
+ * Handles updating wildcarded node properties when loading a file
+ * @param {String} nodeID The ID of the node to update
+ * @param {String} wildcardedText The wildcarded text of the node
+ * @param {String} wildcardedType The wildcarded type of the node
+ */
+function updateNodeWildcardedProperties(nodeID, wildcardedText, wildcardedType) {
+    var index = findNodeIndex(nodeID);
+    if (index > -1) {
+        n = nodes[index];
+
+        // Fall back to node text/type 
+        n.wildcardedText = (typeof wildcardedText !== 'undefined') ? wildcardedText : n.text;
+        n.wildcardedType = (typeof wildcardedType !== 'undefined') ? wildcardedType : n.type;
+
+        // Fall back if both wildcarded text/type and node text/type undefined
+        if(typeof n.wildcardedText == 'undefined')
+            n.wildcardedText = '';
+        if(typeof n.wildcardedType == 'undefined')
+            n.wildcardedType = '';
     }
 }
 

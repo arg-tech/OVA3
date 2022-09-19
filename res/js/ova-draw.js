@@ -580,7 +580,7 @@ function markEdge(fromID, toID, mark) {
 
         // Create the tspan for wildcarded text content
         var tspanTextBody = document.createElementNS("http://www.w3.org/2000/svg", "tspan");
-        tspanTextBody.appendChild(document.createTextNode(truncateString(node.wildcardedText, 25)));
+        tspanTextBody.appendChild(document.createTextNode(truncateString(node.wildcardedText, 30)));
 
         // Append text label and content to the tspan
         tspanText.append(tspanTextTitle);
@@ -599,7 +599,7 @@ function markEdge(fromID, toID, mark) {
 
         // Create the tspan for wildcarded TYPE content
         var tspanTypeBody = document.createElementNS("http://www.w3.org/2000/svg", "tspan");
-        tspanTypeBody.appendChild(document.createTextNode(truncateString(node.wildcardedType, 25)));
+        tspanTypeBody.appendChild(document.createTextNode(truncateString(node.wildcardedType, 30)));
 
         // Append TYPE label and content to the tspan
         tspanType.append(tspanTypeTitle);

@@ -324,7 +324,6 @@ function Grab(evt) {
 
     // If in wildcarding mode
     if (wildcardingMode) { 
-      console.log('grabbed node');
       n = targetElement;
       nID = n.getAttributeNS(null, 'id');
       // CurrentlyEditing = nID;
@@ -1553,6 +1552,7 @@ function applyDefaultWildcarding() {
     DrawWildcardedProperties(node.nodeID, node.wildcardedText, node.wildcardedType, node.x, node.y);
   });
 
-  // Unselect any selected nodes
-  selectNodeInWildcardingToolbar(null);
+  // Refresh data in wildcarding toolbar for selected node
+  if (typeof mySel !== 'undefined' && mySel != null)
+    selectNodeInWildcardingToolbar(mySel);
 }

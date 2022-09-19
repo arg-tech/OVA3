@@ -1104,3 +1104,7 @@ input:valid+span.validity:after {
 #wildcarding-label {
   margin-right: 5px;
 }
+
+.wildcarding-buttons {
+  margin-top: 5px;
+}
