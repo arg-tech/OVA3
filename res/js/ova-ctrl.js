@@ -1401,26 +1401,158 @@ function deleteEdges(edge) {
   }
 }
 
+/**
+ * Handles toggling wildcarding mode
+ */
 function toggleWildcardingMode() {
   $("#wildcarding-toolbar").slideToggle();
   wildcardingMode = !wildcardingMode;
+
+  // Toggle the wildcarded text/type on the canvas
   showWildcardedPropertiesOnOff();
   UnFocus(null, CurrentFocus);
-
-  var allTypes = ['RA', 'CA', 'YA', 'TA', 'MA', 'PA'];
-  $.each(allTypes, function(key, value) {   
-    $('#wildcarded-type-1')
-        .append($("<option></option>")
-                   .attr("value", value)
-                   .text(value)); 
-                  });
 }
 
+/**
+ * Handles displaying node's properties when a node is selected
+ * @param {object} node 
+ */
 function selectNodeInWildcardingToolbar(node) {
   displayNodeWildcardedText(node);
   displayNodeWildcardedType(node);
 
-  // Enable the plus icon to add new properties
-  // $(".wildcarding-add-icon").attr("src","res/img/plus-icon.svg");
+  // Enable the plus button to add new properties
   $('.wildcarding-add-button').prop('disabled', false);
+}
+
+/**
+ * Handles adding a new wildcarded text item 
+ */
+ function addWildcardedTextItem() {
+  var newItem = '';
+
+  // Check which section of the pop-up was used to add text
+  if ($('input#schema').is(':checked')) {
+      newItem = $('#wildcarding_scheme_select').find(":selected").text();
+  }
+  else if ($('input#exact_text').is(':checked')) {
+      newItem = $('#exact_text_input').val();
+  }
+  else if ($('input#contains_text').is(':checked')) {
+      newItemText = $('#contains_text_input').val();
+      newItem = `*${newItemText}*`;
+  }
+
+  // Get existing text items
+  var textItems = mySel.wildcardedText.split(' | ');
+
+  // Don't add text that is already listed 
+  if(textItems.includes(newItem))
+      return;
+  // The asterisk is a symbol for an empty array
+  if(textItems.includes('*'))
+      textItems = [];
+
+  textItems.push(newItem);
+  mySel.wildcardedText = textItems.join(' | ');
+
+  displayNodeWildcardedText();
+}
+
+/**
+* Handles adding a new wildcarded type item 
+*/
+function addWildcardedTypeItem() {
+  // Get the new type specified in the pop-up dropdown
+  var newItem = $('#wildcarding_type').find(":selected").text(); 
+
+  // Don't add types that are already listed 
+  if(mySel.wildcardedType.indexOf(newItem) >= 0)
+      return;
+
+  // Get the existing wildcarded types
+  var typeItems = mySel.wildcardedType.split(' | ');
+  
+  // Don't add type that is already listed 
+  if(typeItems.includes(newItem))
+      return;
+  // The asterisk is a symbol for an empty array
+  if(typeItems.includes('*'))
+      typeItems = [];
+
+  typeItems.push(newItem);
+  mySel.wildcardedType = typeItems.join(' | ');
+
+  displayNodeWildcardedText();
+  displayNodeWildcardedType();
+}
+
+/**
+ * Handles deleting a wildcarded text item
+ * @param {*} event The trigger event with parameters specifying node and text
+ */
+ function deleteWildcardedTextItem(event) {
+  var selectedNode = event.data.node;
+  var textToDelete = event.data.text;
+  var textItems = selectedNode.wildcardedText.split(' | ');
+  textItems = textItems.filter(item => item !== textToDelete);
+  
+  // Asterisk is used to represent absence of wildcarded text
+  if(textItems.length === 0)
+      textItems.push('*');
+  
+      selectedNode.wildcardedText = textItems.join(' | ');
+
+  displayNodeWildcardedText(selectedNode);
+}
+
+/**
+* Handles deleting a wildcarded type item
+* @param {*} event The trigger event with parameters specifying node and type
+*/
+function deleteWildcardedTypeItem(event) {
+  var selectedNode = event.data.node;
+  var typeToDelete = event.data.type;
+  var typeItems = selectedNode.wildcardedType.split(' | ');
+  typeItems = typeItems.filter(item => item !== typeToDelete);
+
+  // Asterisk is used to represent absence of wildcarded type
+  if(typeItems.length === 0)
+      typeItems.push('*');
+
+  selectedNode.wildcardedType = typeItems.join(' | ');
+
+  displayNodeWildcardedType(selectedNode);
+}
+
+/**
+ * Handles submitting the edit in a wildcarding pop-up for a raw string
+ */
+ function editRawWildcardingString() {
+  var newString = $('#wildcarding_string').val();
+  var modalLabel = $('#wildcarding_string_label').html();
+
+  if(modalLabel === 'Text:') {
+      mySel.wildcardedText = newString;
+      displayNodeWildcardedText(mySel);
+  }
+  else if(modalLabel === 'Type:') {
+      mySel.wildcardedType = newString;
+      displayNodeWildcardedType(mySel);
+  }
+}
+
+/**
+ * Applies default wildcarding to L nodes by stripping their text
+ */
+function applyDefaultWildcarding() {
+  nodes.forEach((node) => {
+    if(node.type == 'L' || node.type == 'I')
+      node.wildcardedText = '*';
+
+    DrawWildcardedProperties(node.nodeID, node.wildcardedText, node.wildcardedType, node.x, node.y);
+  });
+
+  // Unselect any selected nodes
+  selectNodeInWildcardingToolbar(null);
 }

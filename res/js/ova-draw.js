@@ -553,9 +553,11 @@ function markEdge(fromID, toID, mark) {
     // First remove any existing drawn properties
     removeWildcardedProperties(nodeID);
 
+    // Get the node object by ID
     var nodeIndex = findNodeIndex(nodeID);
     var node = nodes[nodeIndex];
 
+    // Get the rendered node object
     var g = document.getElementById(nodeID);
     if (g) {
         // Create the wrapper for both wildcarded properties
@@ -567,23 +569,61 @@ function markEdge(fromID, toID, mark) {
 
         // Create the tspan for wildcarded text
         var tspanText = document.createElementNS("http://www.w3.org/2000/svg", "tspan");
-        tspanText.setAttribute('text-anchor', 'middle');
         tspanText.setAttribute('x', node.x);
         tspanText.setAttribute('dy', 38);
-        tspanText.appendChild(document.createTextNode(`Text: ${node.wildcardedText}`));
+        tspanText.setAttribute('text-anchor', 'middle');
+        
+        // Create the tspan for wildcarded text label (bold)
+        var tspanTextTitle = document.createElementNS("http://www.w3.org/2000/svg", "tspan");
+        tspanTextTitle.setAttribute("font-weight", 700);
+        tspanTextTitle.appendChild(document.createTextNode('Text: '));
 
-        // Create the tspan for wildcarded text, with smaller y offset
+        // Create the tspan for wildcarded text content
+        var tspanTextBody = document.createElementNS("http://www.w3.org/2000/svg", "tspan");
+        tspanTextBody.appendChild(document.createTextNode(truncateString(node.wildcardedText, 25)));
+
+        // Append text label and content to the tspan
+        tspanText.append(tspanTextTitle);
+        tspanText.append(tspanTextBody);
+
+        // Create the tspan for wildcarded TYPE, with smaller y offset
         var tspanType = document.createElementNS("http://www.w3.org/2000/svg", "tspan");
-        tspanType.setAttribute('text-anchor', 'middle');
         tspanType.setAttribute('x', node.x);
         tspanType.setAttribute('dy', 12);
-        tspanType.appendChild(document.createTextNode(`Type: ${node.wildcardedType}`));
+        tspanType.setAttribute('text-anchor', 'middle');
 
+        // Create the tspan for wildcarded TYPE label (bold)
+        var tspanTypeTitle = document.createElementNS("http://www.w3.org/2000/svg", "tspan");
+        tspanTypeTitle.setAttribute("font-weight", 700);
+        tspanTypeTitle.appendChild(document.createTextNode('Type: '));
+
+        // Create the tspan for wildcarded TYPE content
+        var tspanTypeBody = document.createElementNS("http://www.w3.org/2000/svg", "tspan");
+        tspanTypeBody.appendChild(document.createTextNode(truncateString(node.wildcardedType, 25)));
+
+        // Append TYPE label and content to the tspan
+        tspanType.append(tspanTypeTitle);
+        tspanType.append(tspanTypeBody);
+
+        // Append text and type wrappers to the node
         ntext.appendChild(tspanText);
         ntext.appendChild(tspanType);
         g.appendChild(ntext);
     }
 }
+
+/**
+ * Truncates long text
+ * @param {*} str 
+ * @param {*} n 
+ * @returns truncated text
+ */
+function truncateString(string, characterLimit){
+    if (string.length > characterLimit)
+        return string.slice(0, characterLimit-1) + ' (...)'
+    else
+        return string;
+};
 
 /**
  * Handles turning wildcarding mode on and off
@@ -614,9 +654,11 @@ function removeWildcardedProperties(nodeID = null) {
     // Remove a single property
     if(nodeID != null) {
         var g = document.getElementById(nodeID);
-        var wildcardedProperty = g.getElementsByClassName('wildcarded-properties')[0];
-        if(wildcardedProperty != null)
-            wildcardedProperty.remove();
+        if(g) {
+            var wildcardedProperty = g.getElementsByClassName('wildcarded-properties')[0];
+            if(wildcardedProperty != null)
+                wildcardedProperty.remove();
+        }
     }
     // Remove all properties
     else {
@@ -625,25 +667,6 @@ function removeWildcardedProperties(nodeID = null) {
         });
     }
 }
-
-/**
- * Edits timestamps drawn on the SVG
- * @param {String} nodeID - The ID of the node to edit the timestamp for
- * @param {String} timestamp - The new timestamp value
- * @returns {Boolean} - Indicates if the timestamp was found and edited (true) or not (false)
- */
-// function editTimestampSVG(nodeID, timestamp) {
-//     var g = document.getElementById(nodeID);
-//     if (g) {
-//         var tstamp = g.getElementsByClassName('timestamp')[0];
-//         if (tstamp) {
-//             var tspan = tstamp.getElementsByTagName('tspan');
-//             $(tspan).text(timestamp);
-//             return true;
-//         }
-//     }
-//     return false;
-// }
 
 /**
  * Handles displaying the default scheme set for each type
@@ -656,8 +679,10 @@ function removeWildcardedProperties(nodeID = null) {
     }
 }
 
+/**
+ * Handles filling in data on the wildcarding toolbar
+ */
 function initialiseWildcardingToolbar() {
-    
     showWildcardingSchemeSets(); 
     filterWildcardingSchemes();
 }
@@ -679,7 +704,6 @@ function showWildcardingSchemeSets() {
  * Handles showing the correct scheme sets in wildcarding popup, filtered by selected type and scheme set
  */
  function filterWildcardingSchemes() {
-
     // Clear the current list of schemes
     $('#wildcarding_scheme_select option').remove();
 
@@ -722,7 +746,7 @@ function showWildcardingSchemeSets() {
 }
 
 /**
- * Handles showing only the selected section in the wildcarding popup
+ * Handles showing only the selected section in the wildcarding text popup
  * @param {String} sectionToShow Value from the checkbox 
  */
 function toggleWildcardingFormSection(sectionToShow) {
@@ -738,58 +762,10 @@ function toggleWildcardingFormSection(sectionToShow) {
         $('#wildcarding_section_contains_text').show(400);
 }
 
-function addWildcardedTextItem() {
-    var newItem = '';
-
-    if ($('input#schema').is(':checked')) {
-        newItem = $('#wildcarding_scheme_select').find(":selected").text();
-    }
-    else if ($('input#exact_text').is(':checked')) {
-        newItem = $('#exact_text_input').val();
-    }
-    else if ($('input#contains_text').is(':checked')) {
-        newItemText = $('#contains_text_input').val();
-        newItem = `*${newItemText}*`;
-    }
-
-    var textItems = mySel.wildcardedText.split(' | ');
-
-    // Don't add text that is already listed 
-    if(textItems.includes(newItem))
-        return;
-    // The asterisk is a symbol for an empty array
-    if(textItems.includes('*'))
-        textItems = [];
-
-    textItems.push(newItem);
-    mySel.wildcardedText = textItems.join(' | ');
-
-    displayNodeWildcardedText();
-}
-
-function addWildcardedTypeItem() {
-    var newItem = $('#wildcarding_type').find(":selected").text(); 
-
-    // Don't add types that are already listed 
-    if(mySel.wildcardedType.indexOf(newItem) >= 0)
-        return;
-
-    var typeItems = mySel.wildcardedType.split(' | ');
-    
-    // Don't add type that is already listed 
-    if(typeItems.includes(newItem))
-        return;
-    // The asterisk is a symbol for an empty array
-    if(typeItems.includes('*'))
-        typeItems = [];
-
-    typeItems.push(newItem);
-    mySel.wildcardedType = typeItems.join(' | ');
-
-    displayNodeWildcardedText();
-    displayNodeWildcardedType();
-}
-
+/**
+ * Handles displaying the wildcarded text for a node
+ * @param {object} node the node to display text for 
+ */
 function displayNodeWildcardedText(node) {
     $('#selected_node_wildcarding_text').html('');
 
@@ -819,6 +795,10 @@ function displayNodeWildcardedText(node) {
     DrawWildcardedProperties(node.nodeID, node.wildcardedText, node.wildcardedType, node.x, node.y);
 }
 
+/**
+ * Handles displaying the wildcarded type for a node
+ * @param {object} node the node to display type for 
+ */
 function displayNodeWildcardedType(node) {
     $('#selected_node_wildcarding_type').html('');
 
@@ -848,35 +828,12 @@ function displayNodeWildcardedType(node) {
     DrawWildcardedProperties(node.nodeID, node.wildcardedText, node.wildcardedType, node.x, node.y);
 }
 
-function deleteWildcardedTextItem(event) {
-    var selectedNode = event.data.node;
-    var textToDelete = event.data.text;
-    var textItems = selectedNode.wildcardedText.split(' | ');
-    textItems = textItems.filter(item => item !== textToDelete);
-    
-    if(textItems.length === 0)
-        textItems.push('*');
-    
-        selectedNode.wildcardedText = textItems.join(' | ');
-
-    displayNodeWildcardedText(selectedNode);
-}
-
-function deleteWildcardedTypeItem(event) {
-    var selectedNode = event.data.node;
-    var typeToDelete = event.data.type;
-    var typeItems = selectedNode.wildcardedType.split(' | ');
-    typeItems = typeItems.filter(item => item !== typeToDelete);
-
-    if(typeItems.length === 0)
-        typeItems.push('*');
-
-    selectedNode.wildcardedType = typeItems.join(' | ');
-
-    displayNodeWildcardedType(selectedNode);
-}
-
+/**
+ * Initialises the wildcarding pop-up for editing a raw string
+ * @param {String} wildcardedProperty 
+ */
 function initialiseWildcardingStringToolbar(wildcardedProperty) {
+    // Display an input for changing the wildcarded text or type of node
     if(wildcardedProperty === 'text') {
         $('#wildcarding_string').val(mySel.wildcardedText);
         $('#wildcarding_string_label').html('Text:');
@@ -884,19 +841,5 @@ function initialiseWildcardingStringToolbar(wildcardedProperty) {
     else if(wildcardedProperty === 'type') {
         $('#wildcarding_string').val(mySel.wildcardedType);
         $('#wildcarding_string_label').html('Type:');
-    }
-}
-
-function editRawWildcardingString() {
-    var newString = $('#wildcarding_string').val();
-    var modalLabel = $('#wildcarding_string_label').html();
-
-    if(modalLabel === 'Text:') {
-        mySel.wildcardedText = newString;
-        displayNodeWildcardedText(mySel);
-    }
-    else if(modalLabel === 'Type:') {
-        mySel.wildcardedType = newString;
-        displayNodeWildcardedType(mySel);
     }
 }

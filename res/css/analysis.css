@@ -1012,7 +1012,6 @@ input:valid+span.validity:after {
   font-size: 13px;
   display: none;
   position: relative;
-  width: 100%;
   background-color: #333;
   border-bottom: 1px solid #000;
   color: #fff;
@@ -1020,11 +1019,15 @@ input:valid+span.validity:after {
 
 #wildcarding-text-section {
   position: relative;
-  margin-top: 5px;
+  margin-top: 10px;
 }
 
-#wildcarding-type-section {
-  margin-top: 8px;
+.wildcarding-row {
+  display: flex;
+}
+
+#wildcarding-label {
+  width: 35px;
 }
 
 #add_wildcarding_text_form label {
@@ -1051,7 +1054,6 @@ input:valid+span.validity:after {
   background: none;
   border: none;
   padding: 0;
-  margin-left: 5px;
   color: red;
 }
 
@@ -1077,14 +1079,28 @@ input:valid+span.validity:after {
   display: inline;
   background-color: #ffffff;
   color: black;
-  padding: 2px 5px 2px 5px;
+  padding: 2px 5px 2px 0;
+}
+
+#selected_node_wildcarding_text > *, #selected_node_wildcarding_type > * {
+  margin-bottom: 7px;
+  display: inline-block;
+  padding-left: 5px;
+}
+
+
+#wildcarding-type {
+  margin-right: 5px;
 }
 
 #wildcarding_string {
   width:90%; 
 }
 
-/* #selected_node_wildcarding_text span {
-  background-color: gray;
+.default-wildcarding-button {
+  margin-top: 5px;
+}
+
+#wildcarding-label {
   margin-right: 5px;
-} */
+}

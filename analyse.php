@@ -810,11 +810,11 @@ if (isset($_COOKIE['ovauser'])) {
   </div>
   <!-- Edit Node Form Ends here -->
 
-<!-- Add wildcarding text form starts here -->
-<div class="modal-dialog" id="modal-add-wildcarding-text">
-   <div class="modal-content">
+  <!-- Add wildcarding text form starts here -->
+  <div class="modal-dialog" id="modal-add-wildcarding-text">
+    <div class="modal-content">
       <div class="modal-header">
-         <h4 class="modal-title">Add wildcarding property</h4>
+        <h4 class="modal-title">Add wildcarding property</h4>
       </div>
       <div class="modal-body">
          <form id="add_wildcarding_text_form" class="fstyle" style="width: 78%;">
@@ -866,38 +866,38 @@ if (isset($_COOKIE['ovauser'])) {
           </div>
         </div>
       </div>
-    </div>
+  </div>
   <!-- Add wildcarding text form ends here -->
 
   <!-- Add wildcarding type form starts here -->
-<div class="modal-dialog" id="modal-add-wildcarding-type">
-   <div class="modal-content">
+  <div class="modal-dialog" id="modal-add-wildcarding-type">
+    <div class="modal-content">
       <div class="modal-header">
          <h4 class="modal-title">Add wildcarding type</h4>
       </div>
       <div class="modal-body">
         <form id="add_wildcarding_type_form" class="fstyle" style="width: 78%;">
-         <label for="wildcarding_type" id="wildcarding_type_label">Select the type</label>
-         <select id="wildcarding_type">
-          <option value="RA">RA</option>
-          <option value="CA">CA</option>
-          <option value="YA">YA</option>
-          <option value="TA">TA</option>
-          <option value="MA">MA</option>
-          <option value="PA">PA</option>
-        </select>
-      </form>
-          <div class="modal-btns">
-            <a class="save" href="#" id="confirmWildcardingTypeButton" onClick="addWildcardedTypeItem(); closeModal('#modal-add-wildcarding-type');">&#x2714; Add</a>
-            <a class="cancel" href="#" onClick="closeModal('#modal-add-wildcarding-type'); FormOpen = false; return false;">&#10008; Cancel</a>
-          </div>
-        </div>
+          <label for="wildcarding_type" id="wildcarding_type_label">Select the type</label>
+          <select id="wildcarding_type">
+            <option value="RA">RA</option>
+            <option value="CA">CA</option>
+            <option value="YA">YA</option>
+            <option value="TA">TA</option>
+            <option value="MA">MA</option>
+            <option value="PA">PA</option>
+          </select>
+        </form>
+      <div class="modal-btns">
+        <a class="save" href="#" id="confirmWildcardingTypeButton" onClick="addWildcardedTypeItem(); closeModal('#modal-add-wildcarding-type');">&#x2714; Add</a>
+        <a class="cancel" href="#" onClick="closeModal('#modal-add-wildcarding-type'); FormOpen = false; return false;">&#10008; Cancel</a>
       </div>
     </div>
+    </div>
+  </div>
   <!-- Add wildcarding type form ends here -->
 
-<!-- Edit raw wildcarding string form starts here -->
-<div class="modal-dialog" id="modal-edit-wildcarding-string">
+  <!-- Edit raw wildcarding string form starts here -->
+  <div class="modal-dialog" id="modal-edit-wildcarding-string">
    <div class="modal-content">
       <div class="modal-header">
          <h4 class="modal-title">Edit wildcarding string</h4>
@@ -911,9 +911,9 @@ if (isset($_COOKIE['ovauser'])) {
             <a class="save" href="#" id="confirmWildcardingStringButton" onClick="closeModal('#modal-edit-wildcarding-string'); editRawWildcardingString();">&#x2714; Confirm</a>
             <a class="cancel" href="#" onClick="closeModal('#modal-edit-wildcarding-string'); FormOpen = false; return false;">&#10008; Cancel</a>
           </div>
-        </div>
       </div>
     </div>
+  </div>
   <!-- Edit raw wildcarding string form ends here -->
 
   <!--  <a href="http://www.arg.tech" target="_blank" id="devby"><img src="res/img/arg-tech.svg" /></a> -->
@@ -940,26 +940,35 @@ if (isset($_COOKIE['ovauser'])) {
       <div id="wildcarding-toolbar">
         <span>The wildcarded text and type are displayed below each node.</span><br />
         <span>Select a node to wildcard it.</span>
-        <div id="wildcarding-text-section">
-          <span>Text:</span>
-          <div id="selected_node_wildcarding_text">/</div>
-          <button onClick="openModal('#modal-add-wildcarding-text'); initialiseWildcardingToolbar();" class="wildcarding-add-button" disabled>
-            <img src="res/img/plus-icon.svg" class="wildcarding-add-icon">
-          </button>
-          <button onClick="openModal('#modal-edit-wildcarding-string'); initialiseWildcardingStringToolbar('text');" class="wildcarding-add-button" disabled>
-            <img src="res/img/edit-icon.svg" class="wildcarding-add-icon">
-          </button>
+        <div id="wildcarding-text-section" class="wildcarding-row">
+            <span class="wildcarding-column" id="wildcarding-label">Text:</span>
+            <div class="wildcarding-column">
+            <div id="selected_node_wildcarding_text">
+              <span>/</span>
+            </div>
+            <button onClick="openModal('#modal-add-wildcarding-text'); initialiseWildcardingToolbar();" class="wildcarding-add-button" disabled>
+              <img src="res/img/plus-icon.svg" class="wildcarding-add-icon">
+            </button>
+            <button onClick="openModal('#modal-edit-wildcarding-string'); initialiseWildcardingStringToolbar('text');" class="wildcarding-add-button" disabled>
+              <img src="res/img/edit-icon.svg" class="wildcarding-add-icon">
+            </button>
+          </div>
         </div>
-        <div id="wildcarding-type-section">
-          <span>Type:</span>
-          <div id="selected_node_wildcarding_type">/</div>
-          <button onClick="openModal('#modal-add-wildcarding-type');" class="wildcarding-add-button" disabled>
-            <img src="res/img/plus-icon.svg" class="wildcarding-add-icon">
-          </button>
-          <button onClick="openModal('#modal-edit-wildcarding-string'); initialiseWildcardingStringToolbar('type');" class="wildcarding-add-button" disabled>
-            <img src="res/img/edit-icon.svg" class="wildcarding-add-icon">
-          </button>
+        <div id="wildcarding-type-section" class="wildcarding-row">
+          <div class="wildcarding-column" id="wildcarding-label">Type:</div>
+          <div class="wildcarding-column">
+            <div id="selected_node_wildcarding_type">
+              <span>/</span>
+            </div>
+            <button onClick="openModal('#modal-add-wildcarding-type');" class="wildcarding-add-button" disabled>
+              <img src="res/img/plus-icon.svg" class="wildcarding-add-icon">
+            </button>
+            <button onClick="openModal('#modal-edit-wildcarding-string'); initialiseWildcardingStringToolbar('type');" class="wildcarding-add-button" disabled>
+              <img src="res/img/edit-icon.svg" class="wildcarding-add-icon">
+            </button>
+          </div>
         </div>
+        <button onClick="applyDefaultWildcarding();" class="default-wildcarding-button">Default wildcarding (L nodes)</button>
       </div>
       <div id="panBtns">
         <div id="zoomBtns">
