@@ -563,7 +563,7 @@ async function loadOva2Json(json, oplus, offset) {
     var nID = '';
     var count = window.nodeCounter;
     var newY = 0, x = 0;
-    var start;
+    var start = -1;
     var spanAlert = false; var mark = false;
     for (var i = 0, l = jnodes.length; i < l; i++) {
         if ((count + jnodes[i].id) > window.nodeCounter) {
@@ -595,7 +595,7 @@ async function loadOva2Json(json, oplus, offset) {
             nodelist[nID] = AddNode(jnodes[i].text, jnodes[i].type, jnodes[i].scheme, 0, nID, x, newY, jnodes[i].visible, 1, "", mark, false);
         }
 
-        if (i === 0) { start = findNodeIndex(nID, true); }
+        if (start == -1) { start = findNodeIndex(nID, true); }
     }
     window.nodeCounter++; //update the node counter
     if (text) { postEdit("text", "edit", $('#analysis_text').html(), 1); }
