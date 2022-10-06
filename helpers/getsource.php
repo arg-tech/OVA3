@@ -9,7 +9,7 @@ if ($source == 'local') {
     } else {
         $pdfurl = $source;
         $parts = pathinfo($pdfurl);
-        $pdfurl = $parts['dirname'] . '/' . rawurlencode($parts['basename']);
+        $pdfurl = $parts['dirname'] . '/' . $parts['basename'];
         $fname = hash('md5', $pdfurl);
         file_put_contents('pdfs/' . $fname . '.pdf', fopen($pdfurl, 'r'));
         $analysis = 'pdfjs/web/viewer.html?file=../../pdfs/' . $fname . '.pdf';
