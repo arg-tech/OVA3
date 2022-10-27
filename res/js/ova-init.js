@@ -259,13 +259,19 @@ function Init(evt) {
     $("#analysis_text").on("dblclick", "span", function (event) {
         event.stopPropagation();
         index = findNodeIndex(event.currentTarget.id.substring(4), false);
-        if (index > -1) { //if the node was found center the view on it
+        if (index > -1) { //if the connected node was found 
+            //focus on the node
+            mySel = nodes[index];
+            CurrentlyEditing = mySel.nodeID;
+            Focus(event, document.getElementById(CurrentlyEditing));
+            markNode(nodes[index], true);
+            //center the view on the node
             var newx = nodes[index].x - 550;
             var newy = nodes[index].y - 400;
             VB = [newx, newy, 1500, 1500];
             SVGRoot.setAttribute('viewBox', [newx, newy, 1500, 1500]);
             clearSelText();
-        }
+        } else { console.log("no node found linked to span with ID: " + event.currentTarget.id); }
     });
 
     //set up the load analysis modal select with a list of the corpora
