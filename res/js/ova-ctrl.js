@@ -304,11 +304,16 @@ function Grab(evt) {
       GetEdges(DragID);
 
       // move any connected edges to the "top" of the display
-      var e, svgE = null;
+      var e, svgE = null, svgNF = null;
       for (var i = 0; i < dragEdges.length; i++) {
         e = dragEdges[i];
         svgE = document.getElementById("n" + e.fromID + "-n" + e.toID);
-        if (svgE) { DragTarget.parentNode.appendChild(svgE); }
+        if (svgE) {
+          DragTarget.parentNode.appendChild(svgE);
+          svgNF = document.getElementById(e.fromID);
+          if (svgNF) { DragTarget.parentNode.appendChild(svgNF); } //keep the from node in front of its edge
+          else { console.log("No SVG node found for fromID: " + e.fromID); }
+        }
       }
       // move this focusElement to the "top" of the display
       DragTarget.parentNode.appendChild(DragTarget);

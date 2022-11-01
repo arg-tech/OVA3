@@ -117,7 +117,13 @@ function DrawEdge(fromid, toid) {
     nedge.setAttribute('stroke', 'black');
     nedge.setAttribute('d', 'M80,30 C200,30 30,380 200,380');
     nedge.setAttribute('marker-end', 'url(#head)');
-    SVGRootG.appendChild(nedge);
+
+    var gFrom = document.getElementById(fromid); //find the SVG node to draw the edge from
+    if (!gFrom) {
+        console.log("gFrom is NULL for from ID: " + fromid);
+        SVGRootG.appendChild(nedge);
+    }
+    else { SVGRootG.insertBefore(nedge, gFrom); } //draw the edge behind the node
 }
 
 /**
