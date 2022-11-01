@@ -304,11 +304,16 @@ function Grab(evt) {
       GetEdges(DragID);
 
       // move any connected edges to the "top" of the display
-      var e, svgE = null;
+      var e, svgE = null, svgNF = null;
       for (var i = 0; i < dragEdges.length; i++) {
         e = dragEdges[i];
         svgE = document.getElementById("n" + e.fromID + "-n" + e.toID);
-        if (svgE) { DragTarget.parentNode.appendChild(svgE); }
+        if (svgE) {
+          DragTarget.parentNode.appendChild(svgE);
+          svgNF = document.getElementById(e.fromID);
+          if (svgNF) { DragTarget.parentNode.appendChild(svgNF); } //keep the from node in front of its edge
+          else { console.log("No SVG node found for fromID: " + e.fromID); }
+        }
       }
       // move this focusElement to the "top" of the display
       DragTarget.parentNode.appendChild(DragTarget);
@@ -765,9 +770,9 @@ function UpdateEdge(e) {
 }
 
 /**
- * 
- * @param {*} evt 
- * @param {*} focusElement 
+ * Focuses on a given element
+ * @param {*} evt - The event to handle
+ * @param {*} focusElement - The element to focus on
  */
 function Focus(evt, focusElement) {
   UnFocus(null, CurrentFocus);
@@ -781,13 +786,14 @@ function Focus(evt, focusElement) {
   if (CurrentFocus) {
     rect = focusElement.getElementsByTagName('rect')[0];
     rect.style.setProperty('stroke-width', 2);
+    $('#node' + focusElement.id).addClass("hlcurrent"); //highlight any associated analysis text
   }
 }
 
 /**
- * 
- * @param {*} evt 
- * @param {*} unfocusElement 
+ * Removes focus from a given element
+ * @param {*} evt - The event to handle
+ * @param {*} unfocusElement - The element to remove focus from
  */
 function UnFocus(evt, unfocusElement) {
   var focusElement = unfocusElement;
@@ -798,6 +804,7 @@ function UnFocus(evt, unfocusElement) {
   if (unfocusElement) {
     rect = unfocusElement.getElementsByTagName('rect')[0];
     rect.style.setProperty('stroke-width', 1);
+    $('#node' + focusElement.id).removeClass("hlcurrent"); //remove highlight from any associated analysis text
   }
 }
 

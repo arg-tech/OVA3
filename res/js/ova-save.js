@@ -564,7 +564,7 @@ async function loadOva2Json(json, oplus, offset) {
     var count = window.nodeCounter;
     var newY = 0, x = 0;
     var start = -1;
-    var spanAlert = false; var mark = false;
+    var spanAlert = false; var mark = false; var checkL = [];
     for (var i = 0, l = jnodes.length; i < l; i++) {
         if ((count + jnodes[i].id) > window.nodeCounter) {
             window.nodeCounter = (count + jnodes[i].id); //update the node counter
@@ -577,13 +577,14 @@ async function loadOva2Json(json, oplus, offset) {
                 mark = false;
                 if (jnodes[i].visible) {
                     if (text) {
-                        if (!hlUpdate(jnodes[i].id, jnodes[i].type, nID, false)) { mark = true; spanAlert = true; }
+                        if (!hlUpdate(jnodes[i].id, jnodes[i].type, nID, false)) { mark = true; }
                     }
                     DrawNode(nID, jnodes[i].type, jnodes[i].text, x, newY, mark);
                     if (window.showTimestamps && jnodes[i].timestamp && jnodes[i].timestamp != '') { DrawTimestamp(nID, jnodes[i].timestamp, x, newY); }
                 }
                 pID = findParticipantIDText(jnodes[i].text);
                 nodelist[nID] = newNode(nID, jnodes[i].type, jnodes[i].scheme, pID, jnodes[i].text, x, newY, jnodes[i].visible, 1, jnodes[i].timestamp, mark, false);
+                if (mark) { checkL.push(nodelist[nID]); } //add to array to check for reported speech locutions after edges added
             } else {
                 nodelist[nID] = AddNode(jnodes[i].text, jnodes[i].type, jnodes[i].scheme, 0, nID, x, newY, jnodes[i].visible, 1, "", false, false);
             }
@@ -619,6 +620,18 @@ async function loadOva2Json(json, oplus, offset) {
                 UpdateEdge(edgeList[id]);
             }
         }
+    }
+
+    //check for reported speech locutions
+    var nIn, nOut, foundIn, foundOut;
+    for (var i = 0; i < checkL.length; i++) {
+        nIn = getNodesIn(checkL[i]);
+        nOut = getNodesOut(checkL[i]);
+        foundIn = nIn.find(n => n.scheme == '74');
+        foundOut = nOut.find(n => n.scheme == '74');
+
+        if (typeof foundIn !== "undefined" && typeof foundOut !== "undefined") { markNode(checkL[i], false); } //unmark the node if its a reported speech locution
+        else { spanAlert = true; } //if not reported speech then should be linked to analysis text
     }
 
     if (spanAlert) { hlReset(); }
