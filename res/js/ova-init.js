@@ -641,7 +641,8 @@ function getSelText() {
                 clearSelText(); console.log(txt);
                 if (txt != '+-') { //if it wasn't the zoom buttons' text selected
                     console.log(e);
-                    alert("Cannot highlight text containing newlines or carriage returns.");
+                    alert("Cannot highlight text containing newlines or carriage returns.\n\
+                    \nIf trying to highlight interposed material, the larger section of text needs to be highlighted first. Then any sections of text within can be highlighted afterwards.");
                 }
                 txt = '';
             }
