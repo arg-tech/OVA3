@@ -614,13 +614,15 @@ if (isset($_COOKIE['ovauser'])) {
           </div>
           <div id="node-help" style="display:none;">
             <strong>Adding Nodes to the Canvas</strong>
-            <p style="color: #444; font-size: 12px;">To add a node, enter the text you would like to use into the left hand side panel. Then, highlight the text and click on the canvas, the highlighted text will be added to a node.</p>
+            <p style="color: #444; font-size: 12px;">To add a node, enter the text you would like to use into the left hand side panel. Then highlight the text and click on the canvas, the highlighted text will be added to a node.</p>
             <strong>Adding Nodes for Interposed Material</strong>
             <p style="color: #444; font-size: 12px;">First, highlight the text including the interposed material and click on the canvas, the highlighted text will be added to a node. The interposed material can then be removed by editing the node's text. Then highlight only the interposed material within the previously highlighted text and click on the canvas, the interposed text will be added to a separate node.</p>
             <strong>Editing Nodes</strong>
             <p style="color: #444; font-size: 12px;">To access the edit node menu, either right click on a node and select 'Edit Node' from the menu or ctrl+click on the node you would like to edit.</p>
             <strong>Deleting Nodes</strong>
             <p style="color: #444; font-size: 12px;">To delete a node, either right click on a node and select 'Delete Node' from the menu or click+delete on the node you would like to delete.</p>
+            <strong>Reselecting a Node's Text</strong>
+            <p style="color: #444; font-size: 12px;">To reselect a node's text, either right click on a node or open the edit node menu then click the 'Reselect Text' button. This will unhighlight the currently selected text. Then select a new section of the text and click anywhere on the canvas. The text will be highlighted and linked to the node.</p>
           </div>
           <div id="edge-help" style="display:none;">
             <strong>Adding Edges Between Nodes</strong>
@@ -789,6 +791,9 @@ if (isset($_COOKIE['ovauser'])) {
         </a></li>
       <li><a href="#" id="del_node_btn" onClick="closeModal('#node_edit'); FormOpen = false; window.groupID ++; deleteNode(mySel); return false;" class="bgred">
           <div class="btnicn" style="background-image: url('res/img/icon-delnode.png');">&nbsp;</div> Delete Node
+        </a></li>
+      <li><a href="#" id="reselect_btn" style="display:none;" onClick="closeModal('#node_edit');FormOpen=false;window.groupID++;window.reselectSpan=true;remhl(mySel.nodeID, 1);return false;">
+          <div class="btnicn" style="background-position: -1353px 50%;">&nbsp;</div> Reselect Text
         </a></li>
       <?php if ($pro) { ?>
         <li><a href="#" id="l_add_btn" onClick="saveNodeEdit();$('#node_edit').hide(); FormOpen = false;$('#locution_add').show();return false;">

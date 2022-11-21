@@ -312,10 +312,6 @@ function nodeTut() {
                 intro: "Displays the timestamp for this node."
             },
             {
-                element: '#edit_timestamp_btn',
-                intro: "Click here to edit the timestamp for this node."
-            },
-            {
                 element: '#n_text',
                 intro: "Edit the text for this node."
             },
@@ -332,8 +328,16 @@ function nodeTut() {
                 intro: "Click here to delete this node."
             },
             {
+                element: '#reselect_btn',
+                intro: "Click here to reselect the text for this node by selecting a section of the analysis text then clicking anywhere on the canvas."
+            },
+            {
                 element: '#l_add_btn',
                 intro: "Click here to add a locution for this node."
+            },
+            {
+                element: '#edit_timestamp_btn',
+                intro: "Click here to edit the timestamp for this node."
             }
         ].filter(function (obj) { return $(obj.element).length && $(obj.element).is(':visible'); }),
         showStepNumbers: false

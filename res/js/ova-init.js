@@ -99,7 +99,7 @@ window.edgeCounter = 1;
 window.unsaved = false;
 window.saveImage = false;
 window.undoing = false;
-window.updateSpan = "";
+window.reselectSpan = false;
 
 document.addEventListener('contextmenu', event => event.preventDefault());
 window.addEventListener('keydown', myKeyDown, true);
@@ -252,6 +252,11 @@ function Init(evt) {
         }, 1);
     });
 
+    $('#analysis_text').focus(function () {
+        UnFocus(null, CurrentFocus); //move focus from the current node to the analysis text
+        $('#contextmenu').hide();
+    });
+
     $('#analysis_text').focusout(function () {
         postEdit("text", "edit", $('#analysis_text').html());
     });
@@ -271,7 +276,11 @@ function Init(evt) {
             VB = [newx, newy, 1500, 1500];
             SVGRoot.setAttribute('viewBox', [newx, newy, 1500, 1500]);
             clearSelText();
-        } else { console.log("no node found linked to span with ID: " + event.currentTarget.id); }
+        } else {
+            console.log("no node found linked to span with ID: " + event.currentTarget.id);
+            remhl(event.currentTarget.id.substring(4), 1);
+            alert("Removing highlight from this section of text as there is no node associated with it.");
+        }
     });
 
     //set up the load analysis modal select with a list of the corpora
@@ -613,18 +622,21 @@ function getSelText() {
             // console.log(txt)
 
             var span = document.createElement("span");
-            var newNodeID = ((window.nodeCounter + 1) + "_" + window.sessionid);
-            span.id = "node" + newNodeID;
-            if (rIATMode == false) {
-                span.className = "highlighted";
-            } else {
-                span.className = "hlcurrent";
-            }
-
             try {
-                range.surroundContents(span);
-                window.groupID++;
-                postEdit("text", "edit", $('#analysis_text').html());
+                if (window.reselectSpan) {
+                    span.id = "node" + mySel.nodeID;
+                    span.className = "highlighted hlcurrent";
+                    range.surroundContents(span);
+                    postEdit("text", "edit", $('#analysis_text').html(), 1); //reselection of text can't be undone
+                } else {
+                    var newNodeID = ((window.nodeCounter + 1) + "_" + window.sessionid);
+                    span.id = "node" + newNodeID;
+                    if (rIATMode == false) { span.className = "highlighted"; }
+                    else { span.className = "hlcurrent"; }
+                    range.surroundContents(span);
+                    window.groupID++;
+                    postEdit("text", "edit", $('#analysis_text').html());
+                }
             } catch (e) {
                 clearSelText(); console.log(txt);
                 if (txt != '+-') { //if it wasn't the zoom buttons' text selected
@@ -943,7 +955,8 @@ function undoDelete(toUndo, lastEditID) {
                 for (var i = 0; i < toHighlight.length; i++) {
                     console.log("need to re-highlight text for: " + toHighlight[i].nodeID);
                     if (!hlText(toHighlight[i])) { //mostly if in non-dialogical mode and the I node's text had been reconstructed
-                        alert("Cannot re-highlight the analysis text for this node.\nPlease delete the node and manually re-add it instead by highlighting the text and clicking on the canvas.");
+                        markNode(toHighlight[i], true);
+                        alert("Cannot re-highlight the analysis text for the marked node.\nPlease reselect its text through the right click or edit node menu.");
                     }
                 }
             }

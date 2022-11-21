@@ -229,7 +229,15 @@ function nodeMode(status) {
 function Grab(evt) {
   $("#contextmenu").hide();
 
-  if (evt.button != 0 && !longEdge[0] && window.updateSpan === "") { //disable right click when in the middle of adding a long distance edge or updating a span
+  if (window.reselectSpan) {
+    getSelText();
+    window.reselectSpan = false;
+    clearSelText();
+    if (mySel.marked) { markNode(mySel, false); }
+    return;
+  }
+
+  if (evt.button != 0 && !longEdge[0]) { //disable right click when in the middle of adding a long distance edge
     myRClick(evt);
     return;
   }
@@ -244,22 +252,7 @@ function Grab(evt) {
   }
 
   if (targetElement.getAttributeNS(null, 'focusable')) {
-    if (window.updateSpan !== "") { //if updating a selected span's ID
-      var nID = targetElement.getAttributeNS(null, 'id');
-      var index = findNodeIndex(nID, false);
-      console.log("grabbed node: " + nID + "\nnodes index: " + index);
-
-      if (index > -1 && nodes[index].marked) { //if the node exists and its been marked
-        hlUpdate(window.updateSpan, nodes[index].type, nID, true, 1);
-        console.log("changed span ID from #node" + window.updateSpan + " to #node" + nID);
-        window.groupID++;
-        markNode(nodes[index], false);
-        $('#node' + nID).removeClass("hlcurrent");
-        window.updateSpan = "";
-        $('svg#inline g.hl').css('cursor', 'move'); $('#' + nID).css('cursor', 'move');
-      }
-    }
-    else if (window.shiftPress || window.atkPress || window.maPress) { //if adding an edge
+    if (window.shiftPress || window.atkPress || window.maPress) { //if adding an edge
       FromNode = targetElement;
       FromID = FromNode.getAttributeNS(null, 'id');
       edge_to = AddPt(TrueCoords.x, TrueCoords.y);
@@ -1106,10 +1099,10 @@ function myRClick(evt) {
   }
 
   if (targetElement.getAttributeNS(null, 'focusable')) {
+    Focus(evt, targetElement);
     n = targetElement;
     nID = n.getAttributeNS(null, 'id');
     CurrentlyEditing = nID;
-    //nHeight = n.getAttributeNS(null, 'height');
     var index = findNodeIndex(nID);
     mySel = nodes[index];
     cmenu(mySel, evt);
