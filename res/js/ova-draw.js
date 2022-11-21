@@ -281,7 +281,6 @@ function editpopup(node) {
             $('#s_tscheme').val(node.scheme);
         }
     }
-    filterschemes(document.getElementById('s_sset').value)
 
     $('#n_text').val(node.text);
     FormOpen = true;
@@ -391,6 +390,7 @@ function setSelSchemeset(type) {
     var index = window.defaultSchemesets.findIndex(s => s.includes(type));
     if (index > -1) {
         document.getElementById('s_sset').value = window.defaultSchemesets[index][1];
+        filterschemes(document.getElementById('s_sset').value);
     }
 }
 
