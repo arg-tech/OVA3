@@ -529,7 +529,7 @@ async function loadOva3Json(json, oplus, offset) {
         }
     }
 
-    if (toMark.length > 0) { hlReset(); }
+    if (toMark.length > 0) { hlReset(nodelist); }
 
     var nodeStart = findNodeIndex(jnodes[0].nodeID, true);
     return await postAddEdits(nodeStart, edgeStart);
@@ -634,35 +634,24 @@ async function loadOva2Json(json, oplus, offset) {
         else { spanAlert = true; } //if not reported speech then should be linked to analysis text
     }
 
-    if (spanAlert) { hlReset(); }
+    if (spanAlert) { hlReset(nodelist); }
 
     return await postAddEdits(start, edgeStart);
 }
 
 /**
- * Add a click event to all spans within the analysis text div to enable the user to change the spans' IDs to relink them to their nodes
- * and display an alert to the user explaining how to do so
+ * Remove any highlighted analysis text spans that aren't associated with a node in the analysis
+ * and alert the user to any nodes that need their text to be reselected
  */
-function hlReset() {
+function hlReset(nodelist) {
+    var spans = document.getElementsByClassName("highlighted");
+    var sID;
+    for (var i = spans.length - 1; i > 0; i--) {
+        sID = spans[i].id.substring(4);
+        if (!(sID in nodelist)) { console.log("removed span: " + sID); remhl(sID, 1); }
+    }
     alert("Failed to link the analysis text to the marked nodes.\n\
-        \nFor each marked node, please hold ALT and click on the highlighted text for that node before clicking on the node to relink it. The highlighted text will turn orange once it has been selected. To unselect the text, hold ALT and click on it again. The node will be unmarked again after relinking it to the text. If a marked node should not be linked to the text, right click it and select unmark.");
-
-    $("#analysis_text").on("click", "span", function (evt) {
-        evt.stopPropagation();
-        if (evt.altKey) {
-            if (window.updateSpan === "") { //select the clicked span
-                window.updateSpan = evt.currentTarget.id.substring(4);
-                console.log("selected span#node" + window.updateSpan);
-                $('#' + evt.currentTarget.id).addClass("hlcurrent");
-                $('svg#inline g.hl').css('cursor', 'crosshair');
-            } else if (window.updateSpan === evt.currentTarget.id.substring(4)) { //unselect the clicked span
-                console.log("unselected span#node" + window.updateSpan);
-                $('#' + evt.currentTarget.id).removeClass("hlcurrent");
-                window.updateSpan = "";
-                $('svg#inline g.hl').css('cursor', 'move');
-            }
-        }
-    });
+        \nFor each marked node, please reselect their text through the right click or edit node menu. If a marked node should not be linked to the text, right click it and select unmark.");
 }
 
 /**
