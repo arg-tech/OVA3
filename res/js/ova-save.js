@@ -672,9 +672,10 @@ function calOffset(type, space) {
             var rect = g.getElementsByTagName('rect')[0];
             var w = rect.getAttribute('width') * 1;
             var h = rect.getAttribute('height') * 1;
-            offset += type == 'x' ? w : h; //plus the width or height
-        }
+            offset += type == 'x' ? Math.round(w) : Math.round(h); //plus the rounded width or height
+        } else { console.log("node not drawn on SVG: " + nodes[0].nodeID); }
     }
+    console.log("calOffset final offset: " + offset);
     return offset;
 }
 
@@ -1059,7 +1060,7 @@ function loadfromdb(nodeSetID, multi) {
                 var pName = [];
                 $.each(data.locutions, function (idx, l) {
                     newID = ((count + parseInt(l.nodeID)) + "_" + window.sessionid);
-                    if (newID in nodelist && !nodelist[newID].visible) { //if the locution has been loaded and hasn't already been updated
+                    if (typeof nodelist[newID] !== 'undefined' && !nodelist[newID].visible) { //if the locution has been loaded and hasn't already been updated
                         index = findNodeIndex(newID);
                         pName = getParticipantName(nodes[index].text);
                         participant = addParticipant(pName[0], pName[1]);
@@ -1208,6 +1209,7 @@ function save2db() {
                 $('#m_content').html("<p style='font-weight:700'>Uploaded to database:</p>" + dbLink + "<br /><p style='font-weight:700'>Add to corpus:</p>");
 
                 var s = $("<select id=\"s_corpus\" name=\"s_corpus\" />");
+                $("<option />", { value: "null", html: "--No corpus selected--" }).appendTo(s);
                 $.each(data.corpora, function (idx, c) {
                     if (c.locked == 0) {
                         title = c.title.replace(/&amp;#/g, "&#");
@@ -1275,14 +1277,16 @@ function save2db() {
  */
 function add2corpus(addnsID) {
     var cID = $("#s_corpus").val();
-    var cName = $("#s_corpus option:selected").text();
-    $.get("helpers/corporapost.php?nsID=" + addnsID + "&cID=" + cID, function (data) {
-        $('#m_content').hide();
-        $('#m_confirm').html("<p style='font-weight:700'>Added to " + cName + " corpus.</p>" + "<p style='font-weight:700'>Node Set ID: " + addnsID + "</p>");
-        $('#m_confirm').show();
-    }).fail(function () {
-        alert("Unable to add to corpus");
-    });
+    if (cID !== "null") {
+        var cName = $("#s_corpus option:selected").text();
+        $.get("helpers/corporapost.php?nsID=" + addnsID + "&cID=" + cID, function (data) {
+            $('#m_content').hide();
+            $('#m_confirm').html("<p style='font-weight:700'>Added to " + cName + " corpus.</p>" + "<p style='font-weight:700'>Node Set ID: " + addnsID + "</p>");
+            $('#m_confirm').show();
+        }).fail(function () {
+            alert("Unable to add to corpus");
+        });
+    }
 }
 
 /**
