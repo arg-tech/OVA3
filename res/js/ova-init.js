@@ -113,6 +113,7 @@ window.bwmode = window.defaultSettings["display"]["black_white"];
 window.panMode = typeof window.defaultSettings["display"]["panBtns"] !== 'undefined' ? window.defaultSettings["display"]["panBtns"] : true;
 window.inverse = typeof window.defaultSettings["display"]["inverse"] !== 'undefined' ? window.defaultSettings["display"]["inverse"] : false;
 window.defaultSchemesets = [["YA", 0], ["RA", 0], ["CA", 0], ["MA", 0], ["TA", 0], ["PA", 0]]; //set scheme set settings
+window.snapMode = typeof window.defaultSettings["display"]["snap"] !== 'undefined' ? window.defaultSettings["display"]["snap"] : false;
 //set analysis settings
 window.cqmode = window.defaultSettings["analysis"]["cq"];
 window.eAddMode = window.defaultSettings["analysis"]["eAdd"];

@@ -407,6 +407,14 @@ if (isset($_COOKIE['ovauser'])) {
                 <a href="#" id="inverseToggle" class="togglesw off" onClick='$(this).toggleClass("on off"); window.inverse=!window.inverse; return false;'><span class="tson">On</span><span class="tsoff">Off</span></a>
               <?php } ?>
             </p>
+            <!-- Snap to Grid Toggle  -->
+            <p style="color: #444; line-height: 22px;">Snap to Grid
+              <?php if ($defaultSettings["display"]["snap"]) { ?>
+                <a href="#" id="snapToggle" class="togglesw on" onClick='$(this).toggleClass("on off"); window.snapMode=!window.snapMode;'><span class="tson">On</span><span class="tsoff">Off</span></a>
+              <?php } else { ?>
+                <a href="#" id="snapToggle" class="togglesw off" onClick='$(this).toggleClass("on off"); window.snapMode=!window.snapMode;'><span class="tson">On</span><span class="tsoff">Off</span></a>
+              <?php } ?>
+            </p>
           </div>
           <div id="anastg" style="display:none;">
             <!-- Dialogical Mode Toggle  -->

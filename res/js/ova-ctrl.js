@@ -475,13 +475,6 @@ function GetEdges(dragID) {
  * @param {*} evt - The event to calculate coordinates for
  */
 function GetTrueCoords(evt) {
-  // tsvg = document.getElementById('inline').getBoundingClientRect();
-  // svgleft = tsvg.left;
-  // svgtop = tsvg.top;
-  // var newScale = SVGRoot.currentScale;
-  // var translation = SVGRoot.currentTranslate;
-  // TrueCoords.x = (evt.clientX - translation.x) / newScale - svgleft;
-  // TrueCoords.y = (evt.clientY - translation.y) / newScale - svgtop;
   tsvg = document.getElementById('inline').getBoundingClientRect();
   svgleft = tsvg.left;
   svgtop = tsvg.top;
@@ -513,6 +506,16 @@ function getCoords(evt) {
 }
 
 /**
+ * Rounds a coordinate value to the nearest hundred
+ * @param {Number} coord - The original coordinate value 
+ * @returns {Number} The new rounded coordinate value
+ */
+function snapToGrid(coord) {
+  coord = Math.round(coord / 100) * 100;
+  return coord;
+}
+
+/**
  * Handles adding a node
  * @param {String} txt - The text the node contains
  * @param {String} type - The type of node
@@ -528,6 +531,10 @@ function getCoords(evt) {
  * @param {Boolean} post - Optional, indicates if the node should be added to the database (true) or not (false). The default is true.
  */
 function AddNode(txt, type, scheme, pid, nid, nx, ny, visible, undone, timestamp, mark, post) {
+  if (window.snapMode) {
+    nx = snapToGrid(nx);
+    ny = snapToGrid(ny);
+  }
   var isVisible = typeof visible !== 'undefined' ? visible : true;
   var undone = typeof undone !== 'undefined' ? undone : 0;
   var timestamp = typeof timestamp !== 'undefined' ? timestamp : '';
@@ -832,15 +839,25 @@ function Drop(evt) {
     return;
   }
   if (DragTarget && mSel.length == 0) { //if a drag target has been set and not using multiselect
-    children = DragTarget.children;
-    var childElement = null, xCoord = 0, yCoord = 0;
-    for (var j = 1; j < children.length; j++) {
-      childElement = children[j];
-      xCoord = Math.round(childElement.getAttributeNS(null, 'x'));
-      yCoord = Math.round(childElement.getAttributeNS(null, 'y'));
-      window.groupID++;
-      updateNode(DragTarget.id, xCoord, yCoord);
+    var txt = DragTarget.children[1];
+    var xCoord = Math.round(txt.getAttributeNS(null, 'x'));
+    var yCoord = Math.round(txt.getAttributeNS(null, 'y'));
+    if (window.snapMode) {
+      xCoord = snapToGrid(xCoord);
+      yCoord = snapToGrid(yCoord);
+      var index = findNodeIndex(DragTarget.id);
+      DragTarget.remove();
+      DrawNode(nodes[index].nodeID, nodes[index].type, nodes[index].text, xCoord, yCoord, nodes[index].marked);
+      if (nodes[index].timestamp != "" && window.showTimestamps) {
+        DrawTimestamp(nodes[index].nodeID, nodes[index].timestamp, xCoord, yCoord);
+      }
+      var edgesToUpdate = findEdges(nodes[index].nodeID);
+      for (var i = 0; i < edgesToUpdate.length; i++) {
+        UpdateEdge(edgesToUpdate[i]);
+      }
     }
+    window.groupID++;
+    updateNode(DragTarget.id, xCoord, yCoord);
 
     //If drawing edge to node
     var targetElement;
@@ -1038,13 +1055,26 @@ function Drop(evt) {
   else if (mSel.length > 0) { //if moving multiple nodes using the multi select
     if (DragTarget) { //if moved then update each node
       window.groupID++;
-      var childElement = null, rect = null, xCoord = 0, yCoord = 0;
+      var childElement = null, text = null, xCoord = 0, yCoord = 0;
       for (var i = 0; i < mSel.length; i++) {
         childElement = document.getElementById(mSel[i].nodeID);
-        rect = childElement.getElementsByTagName('rect')[0];
-        rect.style.setProperty('stroke-width', 1);
-        xCoord = Math.round(rect.getAttribute('x'));
-        yCoord = Math.round(rect.getAttribute('y'));
+        childElement.getElementsByTagName('rect')[0].style.setProperty('stroke-width', 1);
+        text = childElement.getElementsByTagName('text')[0];
+        xCoord = Math.round(text.getAttribute('x'));
+        yCoord = Math.round(text.getAttribute('y'));
+        if (window.snapMode) {
+          xCoord = snapToGrid(xCoord);
+          yCoord = snapToGrid(yCoord);
+          childElement.remove();
+          DrawNode(mSel[i].nodeID, mSel[i].type, mSel[i].text, xCoord, yCoord, mSel[i].marked);
+          if (mSel[i].timestamp != "" && window.showTimestamps) {
+            DrawTimestamp(mSel[i].nodeID, mSel[i].timestamp, xCoord, yCoord);
+          }
+          var edgesToUpdate = findEdges(mSel[i].nodeID);
+          for (var j = 0; j < edgesToUpdate.length; j++) {
+            UpdateEdge(edgesToUpdate[j]);
+          }
+        }
         updateNode(mSel[i].nodeID, xCoord, yCoord);
       }
       DragTarget.setAttributeNS(null, 'pointer-events', 'all');
