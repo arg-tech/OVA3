@@ -70,7 +70,6 @@ if (isset($_COOKIE['ovauser'])) {
   <link rel="stylesheet" href="res/css/introjs.css" />
 
   <script src="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.10.0/jquery-ui.js"></script>
-  <!-- <script src="res/js/svg-pan-zoom.js"></script> -->
   <script src="res/js/ova-analysis.js"></script>
   <script src="res/js/ova-fn.js"></script>
   <script src="res/js/ova-model.js"></script>
@@ -209,7 +208,7 @@ if (isset($_COOKIE['ovauser'])) {
     <div class="divider"></div>
     <a onClick="mainTut();" class="icon" id="tutorial" style="display:none; background-position: -378px 50%;"><span class="tooltiptext">Tutorial</span></a>
     <div class="divider"></div>
-    <a onClick="genldot();" class="icon" id="alay" style="display:none; background-position: -420px 50%;"><span class="tooltiptext">AutoLayout</span></a>
+    <a onClick="genldot();" class="icon" id="alay" style="display:none; background-position: -420px 50%;"><span class="tooltiptext">Auto&nbsp;Layout</span></a>
     <div class="divider"></div>
     <a onClick="showReplace(); openModal('#modal-load');" class="icon" id="loada" style="display:none; background-position: -210px 50%;"><span class="tooltiptext">Load&nbsp;Analysis</span></a>
     <a onClick="openModal('#modal-save');" class="icon" id="savea" style="display:none; background-position: -84px 50%;"><span class="tooltiptext">Save&nbsp;Analysis</span></a>
@@ -829,7 +828,6 @@ if (isset($_COOKIE['ovauser'])) {
     <script>
       var w = window.innerWidth;
       var h = window.innerHeight;
-      console.log("width: " + w + " height:" + h)
     </script>
     <div id="right1">
       <div id="panBtns">
@@ -856,6 +854,7 @@ if (isset($_COOKIE['ovauser'])) {
             <path d='M0,0 V10 L12,5 Z' fill="red" />
           </marker>
         </defs>
+        <text x="40" y="40" id="startMessage" style='font-family: sans-serif; font-size: 13px;'>Select text to the left and click here to add a node</text>
       </svg>
     </div>
   </div>

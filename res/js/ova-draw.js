@@ -8,8 +8,9 @@
  * @param {Boolean} mark - Optional, indicates if the node should be marked (true) or not (false). The default is false.
  */
 function DrawNode(nid, type, txt, nx, ny, mark) {
+    $('#startMessage').hide();
     var phraseArray = [];
-    if (txt.length > 36) {
+    if (txt && txt.length > 36) {
         var wa = txt.split(' ');
         line = "";
         for (var i = 0; i < wa.length; i++) {
