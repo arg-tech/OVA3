@@ -143,11 +143,20 @@ function genlink() {
 function save2file() {
     var jstr = genjson();
 
-    $.generateFile({
-        filename: 'analysis.json',
-        content: jstr,
-        script: 'download.php'
-    });
+    if (!navigator.onLine) {
+        console.log('offline save to JSON');
+        var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(jstr);
+        var anchor = document.getElementById('saveFileOffline');
+        anchor.setAttribute("href", dataStr);
+        anchor.setAttribute("download", "analysis.json");
+        anchor.click();
+    } else {
+        $.generateFile({
+            filename: 'analysis.json',
+            content: jstr,
+            script: 'download.php'
+        });
+    }
 
     window.unsaved = false;
 
@@ -381,7 +390,7 @@ async function loadFile(jstr, multi) {
         var json = jstr;
     }
 
-    var offset = 0;
+    var offset = 60;
     if (multi) {
         offset = calOffset('y', 150);
     } else {
@@ -491,13 +500,16 @@ async function loadOva3Json(json, oplus, offset) {
 
     //set the layout of the nodes and draw them on the svg
     var n = json['OVA']['nodes'];
-    var newY = 0, tstamp, mark;
+    var newX = 0, newY = 0, tstamp, mark;
+    var lowX = parseInt(n.reduce(minX).x);
+    var lowY = parseInt(n.reduce(minY).y);
     for (var i = 0, l = n.length; i < l; i++) {
         if (nodelist[n[i].nodeID]) {
             if (n[i].visible) {
-                newY = parseInt(n[i].y) + offset;
+                newX = parseInt(n[i].x) - lowX + 150;
+                newY = parseInt(n[i].y) + offset - lowY;
                 mark = toMark.includes(n[i].nodeID);
-                updateNode(n[i].nodeID, parseInt(n[i].x), newY, true, 1, false, nodelist[n[i].nodeID].type, nodelist[n[i].nodeID].scheme, nodelist[n[i].nodeID].text, "", mark);
+                updateNode(n[i].nodeID, newX, newY, true, 1, false, nodelist[n[i].nodeID].type, nodelist[n[i].nodeID].scheme, nodelist[n[i].nodeID].text, "", mark);
                 DrawNode(nodelist[n[i].nodeID].nodeID, nodelist[n[i].nodeID].type, nodelist[n[i].nodeID].text, nodelist[n[i].nodeID].x, nodelist[n[i].nodeID].y, mark);
                 if (oplus && n[i].timestamp && n[i].timestamp != '') { //if in dialogical mode
                     tstamp = n[i].timestamp.split(" (")[0]; //remove the timezone name from the timestamp
@@ -563,6 +575,8 @@ async function loadOva2Json(json, oplus, offset) {
     var nID = '';
     var count = window.nodeCounter;
     var newY = 0, x = 0;
+    var lowX = parseInt(jnodes.reduce(minX).x);
+    var lowY = parseInt(jnodes.reduce(minY).y);
     var start = -1;
     var spanAlert = false; var mark = false; var checkL = [];
     for (var i = 0, l = jnodes.length; i < l; i++) {
@@ -570,8 +584,8 @@ async function loadOva2Json(json, oplus, offset) {
             window.nodeCounter = (count + jnodes[i].id); //update the node counter
         }
         nID = ((count + jnodes[i].id) + "_" + window.sessionid);
-        newY = parseInt(jnodes[i].y) + offset;
-        x = parseInt(jnodes[i].x);
+        newY = parseInt(jnodes[i].y) + offset - lowY;
+        x = parseInt(jnodes[i].x) - lowX + 150;
         if (oplus) {
             if (jnodes[i].type == "L") {
                 mark = false;
@@ -659,24 +673,71 @@ function hlReset(nodelist) {
  * or under (y offset) the current analysis map drawn on the svg
  * @param {String} type - Represents offsetting from the x or y coordinates, must be either 'x' or 'y'
  * @param {Number} space - The amount of space to add around the map
- * @returns {Number} - The calculated offset or zero if an offset can't be calculated
+ * @returns {Number} - The calculated offset or 60 if an offset can't be calculated
  */
 function calOffset(type, space) {
-    var offset = 0;
+    var offset = 60;
     if (nodes.length >= 1 && (type == 'x' || type == 'y')) { //if the current analysis contains any nodes and the type is x or y
-        nodes.sort((a, b) => type == 'x' ? parseInt(b.x) - parseInt(a.x) : parseInt(b.y) - parseInt(a.y)); //sort the nodes from largest to smallest x or y coordinates
-        offset = type == 'x' ? parseInt(nodes[0].x) : parseInt(nodes[0].y); //the largest x or y coordinate
+        var max = type == 'x' ? nodes.reduce(maxX) : nodes.reduce(maxY); //find the node with the highest x or y coordinate
+        offset += type == 'x' ? parseInt(max.x) : parseInt(max.y);
         offset += space; //to add space around the map
-        var g = document.getElementById(nodes[0].nodeID);
+        var g = document.getElementById(max.nodeID);
         if (g) { //if drawn on the svg then add the width or height
             var rect = g.getElementsByTagName('rect')[0];
             var w = rect.getAttribute('width') * 1;
             var h = rect.getAttribute('height') * 1;
             offset += type == 'x' ? Math.round(w) : Math.round(h); //plus the rounded width or height
-        } else { console.log("node not drawn on SVG: " + nodes[0].nodeID); }
+        } else { console.log("node not drawn on SVG: " + max.nodeID); }
     }
-    console.log("calOffset final offset: " + offset);
     return offset;
+}
+
+/**
+ * Compares two nodes to find the visible node with the highest x coordinate
+ * @param {Node} prev - The previous node
+ * @param {Node} curr - The current node
+ * @returns {Node} The node with the highest x coordinate
+ */
+function maxX(prev, curr) {
+    if (!curr.visible) { return prev; }
+    if (!prev.visible) { return curr; }
+    return parseInt(prev.x) > parseInt(curr.x) ? prev : curr;
+}
+
+/**
+ * Compares two nodes to find the visible node with the highest y coordinate
+ * @param {Node} prev - The previous node
+ * @param {Node} curr - The current node
+ * @returns {Node} The node with the highest y coordinate
+ */
+function maxY(prev, curr) {
+    if (!curr.visible) { return prev; }
+    if (!prev.visible) { return curr; }
+    return parseInt(prev.y) > parseInt(curr.y) ? prev : curr;
+}
+
+/**
+ * Compares two nodes to find the visible node with the lowest x coordinate
+ * @param {Node} prev - The previous node
+ * @param {Node} curr - The current node
+ * @returns {Node} The node with the lowest x coordinate
+ */
+function minX(prev, curr) {
+    if (!curr.visible) { return prev; }
+    if (!prev.visible) { return curr; }
+    return parseInt(prev.x) < parseInt(curr.x) ? prev : curr;
+}
+
+/**
+ * Compares two nodes to find the visible node with the lowest y coordinate
+ * @param {Node} prev - The previous node
+ * @param {Node} curr - The current node
+ * @returns {Node} The node with the lowest y coordinate
+ */
+function minY(prev, curr) {
+    if (!curr.visible) { return prev; }
+    if (!prev.visible) { return curr; }
+    return parseInt(prev.y) < parseInt(curr.y) ? prev : curr;
 }
 
 /**
@@ -971,12 +1032,15 @@ function loadfromdb(nodeSetID, multi) {
                 //     addParticipant(p.firstname, p.surname);
                 // });
 
-                var offset = 0;
+                var offset = 60;
                 if (multi) {
                     offset = calOffset('y', 150);
                 } else {
                     clearAnalysis(); //remove the previous analysis before loading the new analysis
                 }
+                var lowX = Math.min.apply(null, Object.values(ldata).map((v) => v.x));
+                var lowY = Math.min.apply(null, Object.values(ldata).map((v) => v.y));
+                console.log('lowest x: ' + lowX); console.log('lowest y: ' + lowY);
 
                 //load text
                 $.get("helpers/gettext.php?id=" + nodeSetID, function (tdata) {
@@ -1000,8 +1064,8 @@ function loadfromdb(nodeSetID, multi) {
 
                     if (node.nodeID in ldata) {
                         xpos = parseInt(ldata[node.nodeID]["x"]);
-                        xpos = xpos * 0.8;
-                        ypos = parseInt(ldata[node.nodeID]["y"]) + offset;
+                        xpos = xpos - lowX + 150;
+                        ypos = parseInt(ldata[node.nodeID]["y"]) + offset - lowY;
                     } else {
                         xpos = 150;
                         ypos = 50 + offset;
@@ -1382,16 +1446,27 @@ function saveAsImage() {
         a.onclick = function () { return false; };
         a.classList.remove("save");
 
-        var index = nodes.length - 1;
         //find the smallest and largest y coordinates 
-        var h = calOffset("y", 60);
-        var y = parseInt(nodes[index].y);
+        var h = calOffset("y", 0);
+
+        var min = nodes.reduce(minY);
+        var g = document.getElementById(min.nodeID);
+        var rect = g.getElementsByTagName('rect')[0];
+        var y = min.y - (rect.getAttribute('height') * 1);
+
         h = y < 0 ? h - y : h;
+        // console.log('y: ' + y); console.log('h: ' + h);
 
         //find the smallest and largest x coordinates 
-        var w = calOffset("x", 60);
-        var x = parseInt(nodes[index].x);
+        var w = calOffset("x", 0);
+
+        min = nodes.reduce(minX);
+        g = document.getElementById(min.nodeID);
+        rect = g.getElementsByTagName('rect')[0];
+        var x = min.x - (rect.getAttribute('width') * 1);
+
         w = x < 0 ? w - x : w;
+        // console.log('x: ' + x); console.log('w: ' + w);
 
         svg2canvas2image(x, y, w, h, false); //create the image
     }
