@@ -143,11 +143,20 @@ function genlink() {
 function save2file() {
     var jstr = genjson();
 
-    $.generateFile({
-        filename: 'analysis.json',
-        content: jstr,
-        script: 'download.php'
-    });
+    if (!navigator.onLine) {
+        console.log('offline save to JSON');
+        var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(jstr);
+        var anchor = document.getElementById('saveFileOffline');
+        anchor.setAttribute("href", dataStr);
+        anchor.setAttribute("download", "analysis.json");
+        anchor.click();
+    } else {
+        $.generateFile({
+            filename: 'analysis.json',
+            content: jstr,
+            script: 'download.php'
+        });
+    }
 
     window.unsaved = false;
 

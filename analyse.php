@@ -103,6 +103,7 @@ if (isset($_COOKIE['ovauser'])) {
               <div class="btnicn" style="background-image: url('res/img/icon-savefile.svg');">&nbsp;</div> Save to local
               file
             </a></li>
+          <a id="saveFileOffline" style="display:none"></a>
           <li><a href="#" onClick="saveAsImage();$('#saveOptions').hide();$('#imageOptions').show();$('#fullDownloadBtn').show();return false;" id="saveImageBtn">
               <div class="btnicn" style="background-image: url('res/img/icon-saveimg.svg');">&nbsp;</div> Save as image
             </a></li>
