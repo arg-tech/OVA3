@@ -260,7 +260,6 @@ function loadFileBtn(evt) {
  * @returns {Boolean} false if the corpus or node set has already been loaded in
  */
 function loadBtn(type, id) {
-    // console.log("loading type: " + type + "\nid: " + id);
     var radioValue = typeof type === 'undefined' ? $("input[name='loadFrom']:checked").val() : type;
     if (radioValue == "corpus" || radioValue == "nSetID") {
         $('#f_loadfile').hide(); $('#loadBtn').hide();
@@ -819,7 +818,6 @@ async function postAddEdits(nodeStart, edgeStart) {
             nodesContent.push([nodesToAdd[i].nodeID, JSON.stringify(nodesToAdd[i])]);
         }
         lastedit = await $.post("helpers/load.php", { analysisID: window.analysisID, sessionid: window.sessionid, type: "node", action: "add", cnt: JSON.stringify(nodesContent), groupID: window.groupID, undone: 1, counter: window.nodeCounter }).then(data => JSON.parse(data).last);
-        // console.log("after nodes, last edit id: " + lastedit);
 
         //add the edges to the database
         var edgesContent = [];
@@ -830,7 +828,6 @@ async function postAddEdits(nodeStart, edgeStart) {
             edgesContent.push([contentID, JSON.stringify(edgesToAdd[i])]);
         }
         lastedit = await $.post("helpers/load.php", { analysisID: window.analysisID, sessionid: window.sessionid, type: "edge", action: "add", cnt: JSON.stringify(edgesContent), groupID: window.groupID, undone: 1, counter: window.edgeCounter }).then(data => JSON.parse(data).last);
-        // console.log("after edges, last edit id: " + lastedit);
     } catch (e) { alert("Unable to add to the OVA3 database"); return false; }
 
     return true;
@@ -1025,7 +1022,6 @@ function loadfromdb(nodeSetID, multi) {
         $.getJSON("helpers/layout.php?id=" + nodeSetID + uplus, function (ldata) {
             console.log(ldata);
             $.getJSON("helpers/getdbnodeset.php?id=" + nodeSetID, function (data) {
-                // console.log(data);
 
                 // //load participants
                 // $.each(data.participants, function (idx, p) {
@@ -1040,13 +1036,10 @@ function loadfromdb(nodeSetID, multi) {
                 }
                 var lowX = Math.min.apply(null, Object.values(ldata).map((v) => v.x));
                 var lowY = Math.min.apply(null, Object.values(ldata).map((v) => v.y));
-                console.log('lowest x: ' + lowX); console.log('lowest y: ' + lowY);
+                // console.log('lowest x: ' + lowX); console.log('lowest y: ' + lowY);
 
                 //load text
-                $.get("helpers/gettext.php?id=" + nodeSetID, function (tdata) {
-                    // console.log(tdata);
-                    loadText(tdata);
-                });
+                $.get("helpers/gettext.php?id=" + nodeSetID, function (tdata) { loadText(tdata); });
 
                 //load nodes
                 var nodeStart = nodes.length;
@@ -1432,14 +1425,12 @@ function svg2canvas2image(x, y, w, h, part) {
 function saveAsImage() {
     var radioValue = $("input[name='saveImage']:checked").val();
     if (radioValue == "select") { //if selecting part of the analysis to save as an image
-        // console.log("save selected image");
         closeModal('#modal-save');
         $('#selectBtn').text("Reselect"); //update the select button
         multiSel[0] = true;
         window.saveImage = true;
 
     } else if (radioValue == "full") {
-        // console.log("save full image");
         //reset the select and part download buttons to their defaults
         $('#selectBtn').text("Select");
         var a = document.getElementById("partDownloadBtn");

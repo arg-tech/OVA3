@@ -20,11 +20,6 @@ function mainTut() {
                 intro: "<p>Select text to the left and click here to add a node.</p><p>Ctrl+Click a node to edit.</p><p>Shift+Click and drag between nodes to add edges</p>",
                 position: 'left',
             },
-            // {
-            //   element: '#minimap',
-            //   intro: "<p>An overview of the analysis can be seen here.</p><p>Drag the box to move around the canvas.</p>",
-            //   position: 'left',
-            // },
             {
                 element: '#panBtns',
                 intro: "<p>Move around the canvas using these buttons or the arrow keys on your keyboard.</p><p>Click an arrow to move in that direction.</p>",
@@ -180,6 +175,10 @@ function setTut() {
             {
                 element: '#inverseToggle',
                 intro: "<p>Toggle Scroll Direction</p> <p>This will change the direction needed to scroll up and down. When natural scrolling is on, a downwards motion will scroll down the canvas and vice versa. Turning it off will switch back to reverse scrolling where a downwards motion scrolls up and vice versa.</p>",
+            },
+            {
+                element: '#snapToggle',
+                intro: "Toggle Snap to Grid Mode",
             },
             {
                 element: '#dialogicaltoggle',

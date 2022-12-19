@@ -150,14 +150,10 @@ function cmenu(node, evt) {
     }
     if (!dialogicalMode && node.type == 'I') { $('#contextmenu').append("<a onClick='window.groupID++;window.reselectSpan=true;remhl(mySel.nodeID, 1);$(\"#contextmenu\").hide();'>Reselect Text</a>"); }
     $('#contextmenu').append("<a onClick='window.groupID ++;deleteNode(contextNode);$(\"#contextmenu\").hide();'>Delete Node</a>");
-    //if(window.msel.length > 0){
-    //    $('#contextmenu').append( "<a onClick='dcEdges();$(\"#contextmenu\").hide();'>Delete Edges</a>" );
-    //}
 
     if (node.type == 'L' && window.addTimestamps) {
         $('#contextmenu').append("<a style='font-size:0.86em;' onClick='window.editTimestamp=true;$(\"#delTimestampBtn\").show();$(\"#modal-timestamps\").show();$(\"#contextmenu\").hide();'>Edit Timestamp</a>");
     }
-
     $('#contextmenu').show();
 }
 
@@ -456,7 +452,6 @@ function addTimestampsOnOff() {
  */
 function showTimestampsOnOff() {
     if (window.showTimestamps) {
-        // console.log("drawing timestamps");
         var count = 0;
         for (var i = 0; i < nodes.length; i++) {
             if (nodes[i].timestamp != '' && nodes[i].type == 'L' && nodes[i].visible) {
@@ -468,7 +463,6 @@ function showTimestampsOnOff() {
             alert("No timestamps were found.");
         }
     } else {
-        // console.log("hiding timestamps");
         removeTimestamps();
     }
 }
