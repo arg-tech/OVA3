@@ -11,8 +11,12 @@ if ($source == 'local') {
         $parts = pathinfo($pdfurl);
         $pdfurl = $parts['dirname'] . '/' . $parts['basename'];
         $fname = hash('md5', $pdfurl);
-        file_put_contents('pdfs/' . $fname . '.pdf', fopen($pdfurl, 'r'));
-        $analysis = 'pdfjs/web/viewer.html?file=../../pdfs/' . $fname . '.pdf';
+        if (!fopen($pdfurl, 'r')) {
+            $analysis = 'pdfjs/web/viewer.html?file=../../pdfs/cannotOpenPDF.pdf';
+        } else {
+            file_put_contents('pdfs/' . $fname . '.pdf', fopen($pdfurl, 'r'));
+            $analysis = 'pdfjs/web/viewer.html?file=../../pdfs/' . $fname . '.pdf';
+        }
     }
     $source = 'pdf';
 } elseif (substr($source, 0, 4) != 'http') {
