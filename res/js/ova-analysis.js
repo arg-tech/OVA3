@@ -19,42 +19,6 @@ $(function () {
       $("#right1").width(mw - ui.position.left);
     }
   });
-
-  // var beforePan
-  //
-  // beforePan = function(oldPan, newPan){
-  //   var stopHorizontal = false
-  //     , stopVertical = false
-  //     , gutterWidth = 100
-  //     , gutterHeight = 100
-  //       // Computed variables
-  //     , sizes = this.getSizes()
-  //     , leftLimit = -((sizes.viewBox.x + sizes.viewBox.width) * sizes.realZoom) + gutterWidth
-  //     , rightLimit = sizes.width - gutterWidth - (sizes.viewBox.x * sizes.realZoom)
-  //     , topLimit = -((sizes.viewBox.y + sizes.viewBox.height) * sizes.realZoom) + gutterHeight
-  //     , bottomLimit = sizes.height - gutterHeight - (sizes.viewBox.y * sizes.realZoom)
-  //
-  //   customPan = {}
-  //   customPan.x = Math.max(leftLimit, Math.min(rightLimit, newPan.x))
-  //   customPan.y = Math.max(topLimit, Math.min(bottomLimit, newPan.y))
-  //
-  //   return customPan
-  // }
-  //
-  //
-  // // Expose to window namespace for testing purposes
-  // window.panZoom = svgPanZoom('#inline', {
-  //   zoomEnabled: true
-  // , controlIconsEnabled: true
-  // , minZoom: 0.1
-  // , maxZoom: 2
-  // , fit: 1
-  // , center: 1
-  // , beforePan: beforePan
-  // });
-  // window.panZoom.resize(); // update SVG cached size and controls positions
-  // window.panZoom.fit();
-  // window.panZoom.center();
 });
 
 $(window).on('resize', function () {
@@ -97,7 +61,6 @@ function closeModal(ident) {
  */
 function updateToolbar() {
   var w = window.innerWidth;
-  // console.log("width: " + w);
   if (w > 790) { //show all buttons on toolbar
     $("#alayX").hide(); $("#alay").show();
     $("#loadaX").hide(); $("#loada").show();

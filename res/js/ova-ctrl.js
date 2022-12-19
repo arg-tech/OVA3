@@ -66,10 +66,6 @@ function panZoomMode(key, recursive) {
   if (FormOpen == false && textArea !== document.activeElement) {
     nav = NAV_MAP[key];
     if (nav.act === 'move') {
-      // if((nav.dir === -1 && VB[nav.axis] <= 0) ||
-      //    (nav.dir ===  1 && VB[nav.axis] >= DMAX[nav.axis] - VB[2 + nav.axis])) {
-      //   return
-      // }
       tg[nav.axis] = parseFloat(VB[nav.axis] + .1 * nav.dir * VB[2]);
     }
     else if (nav.act == 'zoom') {
@@ -456,8 +452,8 @@ function getTimestamp() {
 }
 
 /**
- * 
- * @param {String} dragID 
+ * Finds all edges that are connected to or from the given node and adds them to the dragEdges array.
+ * @param {String} dragID - The nodeID of the node to find all edges connected to/from
  */
 function GetEdges(dragID) {
   for (var j = 0; j < edges.length; j++) {
@@ -673,8 +669,8 @@ function Drag(evt) {
 }
 
 /**
- * 
- * @param {*} g 
+ * Updates the multiSelBox on the SVG by first removing any previous multiSelBox then appending the given element.
+ * @param {*} g - The new multiSelBox element to add
  */
 function updateBox(g) {
   if (document.getElementById('multiSelBox')) {
@@ -840,24 +836,28 @@ function Drop(evt) {
   }
   if (DragTarget && mSel.length == 0) { //if a drag target has been set and not using multiselect
     var txt = DragTarget.children[1];
-    var xCoord = Math.round(txt.getAttributeNS(null, 'x'));
-    var yCoord = Math.round(txt.getAttributeNS(null, 'y'));
-    if (window.snapMode) {
-      xCoord = snapToGrid(xCoord);
-      yCoord = snapToGrid(yCoord);
+    if (typeof txt !== 'undefined') { //if a node was set as the drag target
+      var xCoord = Math.round(txt.getAttributeNS(null, 'x'));
+      var yCoord = Math.round(txt.getAttributeNS(null, 'y'));
       var index = findNodeIndex(DragTarget.id);
-      DragTarget.remove();
-      DrawNode(nodes[index].nodeID, nodes[index].type, nodes[index].text, xCoord, yCoord, nodes[index].marked);
-      if (nodes[index].timestamp != "" && window.showTimestamps) {
-        DrawTimestamp(nodes[index].nodeID, nodes[index].timestamp, xCoord, yCoord);
-      }
-      var edgesToUpdate = findEdges(nodes[index].nodeID);
-      for (var i = 0; i < edgesToUpdate.length; i++) {
-        UpdateEdge(edgesToUpdate[i]);
+      if (nodes[index].x !== xCoord || nodes[index].y !== yCoord) { //if the node was moved
+        if (window.snapMode) {
+          xCoord = snapToGrid(xCoord);
+          yCoord = snapToGrid(yCoord);
+          DragTarget.remove();
+          DrawNode(nodes[index].nodeID, nodes[index].type, nodes[index].text, xCoord, yCoord, nodes[index].marked);
+          if (nodes[index].timestamp != "" && window.showTimestamps) {
+            DrawTimestamp(nodes[index].nodeID, nodes[index].timestamp, xCoord, yCoord);
+          }
+          var edgesToUpdate = findEdges(nodes[index].nodeID);
+          for (var i = 0; i < edgesToUpdate.length; i++) {
+            UpdateEdge(edgesToUpdate[i]);
+          }
+        }
+        window.groupID++;
+        updateNode(DragTarget.id, xCoord, yCoord);
       }
     }
-    window.groupID++;
-    updateNode(DragTarget.id, xCoord, yCoord);
 
     //If drawing edge to node
     var targetElement;

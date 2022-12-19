@@ -167,7 +167,6 @@ function Init(evt) {
             scheme = schemes[index];
             scheme_name = scheme.name.replace(/([a-z])([A-Z])/g, "$1 $2");
             scheme_type = scheme.schemeTypeID;
-            // if (scheme.schemeID == 215) { console.log(scheme.schemeID + "\n" + scheme_name); }
 
             if (scheme_type == 1 || scheme_type == 2 || scheme_type == 3 || scheme_type == 9) {
                 $('#s_ischeme').append('<option value="' + scheme.schemeID + '">' + scheme_name + '</option>');
@@ -545,9 +544,10 @@ function updateEditNode(node) {
  * @returns {Boolean} - Indicates if the edge was added (true) or not (false)
  */
 function updateAddEdge(edge) {
-    if (edge == null || edge.fromID == '' || edge.toID == '') {
-        console.log("cannot add edge (updateAddEdge)"); console.log(edge);
-    } else {
+    if (edge == null || edge.fromID == '' || edge.toID == '') { console.log("malformed edge:"); console.log(edge); }
+    else if (findNodeIndex(edge.fromID, true) == -1) { return false; } //if the node from doesn't exist
+    else if (findNodeIndex(edge.toID, true) == -1) { return false; } //if the node to doesn't exist
+    else {
         var found = edges.find(e => e.fromID == edge.fromID && e.toID == edge.toID);
         if (typeof found === "undefined") { //if the edge hasn't already been added
             var e = new Edge;
@@ -607,8 +607,6 @@ function getSelText() {
     var txt = "";
     count = count + 1; //
     if (analysisTxt != null && analysisTxt.getAttribute("style") !== "display:none;") {
-        // if (iframe.getElementsByTagName('div')) {
-        // console.log("in if");
         if (window.getSelection) {
             userSelection = window.getSelection();
         } else if (document.selection) {
@@ -617,10 +615,8 @@ function getSelText() {
         if (userSelection.text) { // IE
             txt = userSelection.text;
         } else if (userSelection != "") {
-            // console.log("in else if")
             range = getRangeObject(userSelection);
             txt = userSelection.toString();
-            // console.log(txt)
 
             var span = document.createElement("span");
             try {
@@ -649,17 +645,13 @@ function getSelText() {
             }
         }
     } else if (iframe.getElementsByTagName('iframe')) {
-        // console.log("identified iframe");
         txt = document.getElementById('extside').contentWindow.getSelection().toString();
         window.groupID++;
-        // console.log(txt);
     } else {
-        // console.log("in else");
-        var innerDoc = iframe.contentDocument || iframe.contentWindow.document;
+        // var innerDoc = iframe.contentDocument || iframe.contentWindow.document;
         // console.log(innerDoc);
         txt = iframe.contentWindow.getSelection().toString();
         window.groupID++;
-        // console.log(txt);
     }
     return txt;
 }
@@ -692,11 +684,6 @@ function clearSelText() {
  * @param {Number} undone - Optional, indicates if this edit can be undone (0) or not (1). The default is zero.
  */
 function hlcurrent(nodeID, undone) {
-    // console.log('hlcurrent called');
-    // console.log(mySel);
-    // console.log('CurrentlyEditing: ' + CurrentlyEditing);
-    // console.log("nodeID: " + nodeID);
-
     var span = document.getElementById("node" + nodeID);
     if (dialogicalMode && span == null && mySel.type == 'I') {
         span = document.getElementById("node" + CurrentlyEditing);
@@ -724,11 +711,9 @@ function remhl(nodeID, undone) {
         var text = span.textContent || span.innerText;
         var node = document.createTextNode(text);
         var cSpans = span.children;
-        // console.log(cSpans);
         span.parentNode.replaceChild(node, span);
         for (var i = 0; i < cSpans.length; i++) {
             var id = cSpans[i].id.substring(4);
-            // console.log("found child span: " + id);
             var index = findNodeIndex(id);
             if (index > -1) { //if the node still exists
                 hlText(nodes[index]); //re-highlight the analysis text for the node
@@ -749,7 +734,6 @@ function remhl(nodeID, undone) {
  * @returns {Boolean} - Indicates if the analysis text was successfully highlighted (true) or not (false)
  */
 function hlText(node) {
-    // console.log("hlText called");
     var toHl = node.text;
     if (node.type == 'L') { //if a locution, remove the participant's name from the node's text
         var text = node.text.split(": ");
@@ -760,7 +744,6 @@ function hlText(node) {
     for (var c of cNodes) {
         if (c.nodeType === 3) { //if the child node is of type text
             var start = c.nodeValue.indexOf(toHl);
-            // console.log(c); console.log(start);
             if (start > -1) { //if found in that text node
                 const range = document.createRange();
                 range.setStart(c, start);
@@ -834,15 +817,6 @@ function postEdit(type, action, content, undone, contentID) {
             contentID = window.edgeCounter + "_" + window.sessionid;
         }
     }
-    // console.log("==============");
-    // console.log("analysisID: " + window.analysisID);
-    // console.log("sessionid: " + window.sessionid);
-    // console.log("type: " + type);
-    // console.log("action: " + action);
-    // console.log("cnt: " + JSON.stringify(content));
-    // console.log("groupID: " + window.groupID);
-    // console.log("undone: " + undone);
-    // console.log("contentID: " + contentID);
 
     try {
         if (type == 'text') {
@@ -869,7 +843,6 @@ function postEdit(type, action, content, undone, contentID) {
  * @returns {Promise<Boolean>} - Indicates if the edits were successfully undone (true) or not (false)
  */
 async function undo() {
-    // console.log("undo called"); console.log("currently undoing: " + window.undoing);
     if (!window.undoing) { //if not currently undoing the last edit
         window.undoing = true;
         var undone = false;
@@ -879,8 +852,7 @@ async function undo() {
             if (allEdits.edits[0] != undefined) { //if there are edits to undo
                 var type = allEdits.edits[0].type;
                 var action = allEdits.edits[0].action;
-                // console.log("==============");
-                // console.log(allEdits.edits);
+                window.groupID++;
 
                 if (action == 'add') {
                     undone = await undoAdd(allEdits.edits);
@@ -906,11 +878,9 @@ async function undo() {
  * @returns {Promise<Boolean>} - Indicates if the edits were successfully undone (true) or not (false)
  */
 function undoDelete(toUndo, lastEditID) {
-    // console.log("undoDelete called");
     return new Promise(resolve => {
         var isLastEdit = false;
         var confirmUndo = true;
-        // console.log("undo editID: " + toUndo[0].editID); console.log("last edit ID: " + lastEditID);
         if (toUndo[0].editID == lastEditID) { //if undoing the last change to an analysis
             isLastEdit = true;
         } else {
@@ -922,18 +892,18 @@ function undoDelete(toUndo, lastEditID) {
             var toHighlight = [];
             var url = getUrlVars()["url"];
             var updated = false;
+            var toAdd = null;
+            var eToAdd = [];
 
             for (i = 0; i < toUndo.length; i++) {
                 if (toUndo[i].type == 'text') {
                     if (isLastEdit && toUndo[i].content) {
-                        // console.log("____________"); console.log("overwriting text on LHS");
                         updateEditText(toUndo[i].content); //overwrite the text on LHS to readd any highlighting that was removed
                         postEdit("text", "edit", $('#analysis_text').html(), 1);
                     }
                 } else {
                     toAdd = JSON.parse(toUndo[i].content);
                     if (toUndo[i].type == 'node') { //if toAdd is a node
-                        // console.log("____________"); console.log("adding node: " + toAdd.nodeID);
                         updated = updateAddNode(toAdd); //readd node
                         if (updated) { postEdit("node", "add", toAdd, 1, toAdd.nodeID); }
 
@@ -945,17 +915,17 @@ function undoDelete(toUndo, lastEditID) {
                                 toHighlight.push(toAdd);
                             }
                         }
-                    } else if (toUndo[i].type == 'edge') { //if toAdd is an edge
-                        // console.log("____________"); console.log("adding edge: " + toAdd.fromID + "->" + toAdd.toID);
-                        updated = updateAddEdge(toAdd); //readd edge
-                        if (updated) { postEdit("edge", "add", toAdd, 1); }
-                    }
+                    } else if (toUndo[i].type == 'edge') { eToAdd.push(toAdd); } //only try to re-add edges after all nodes have been re-added
                 }
             }
 
+            for (i = 0; i < eToAdd.length; i++) { //try to re-add any edges
+                updated = updateAddEdge(eToAdd[i]); //readd edge
+                if (updated) { postEdit("edge", "add", eToAdd[i], 1); }
+            }
+
             if (highlight) { //re-highlights the analysis text on LHS if needed
-                for (var i = 0; i < toHighlight.length; i++) {
-                    console.log("need to re-highlight text for: " + toHighlight[i].nodeID);
+                for (i = 0; i < toHighlight.length; i++) {
                     if (!hlText(toHighlight[i])) { //mostly if in non-dialogical mode and the I node's text had been reconstructed
                         markNode(toHighlight[i], true);
                         alert("Cannot re-highlight the analysis text for the marked node.\nPlease reselect its text through the right click or edit node menu.");
@@ -973,13 +943,11 @@ function undoDelete(toUndo, lastEditID) {
  * @returns {Promise<Boolean>} - Indicates if the edits were successfully undone (true) or not (false)
  */
 function undoAdd(toUndo) {
-    // console.log("undoAdd called");
     return new Promise(resolve => {
         var updated = false;
         for (i = 0; i < toUndo.length; i++) {
             toDel = JSON.parse(toUndo[i].content);
             if (toUndo[i].type == 'node') { //if toDel is a node
-                // console.log("____________"); console.log("deleting node: " + toDel.nodeID);
                 //remove highlight from text on LHS when removing locutions in dialogical mode or when removing I nodes when not in rapid IAT mode
                 if ((dialogicalMode && toDel.type == 'L' && toDel.visible) || (!rIATMode && toDel.type == 'I')) {
                     remhl(toDel.nodeID, 1);
@@ -987,7 +955,6 @@ function undoAdd(toUndo) {
                 updated = updateDelNode(toDel); //delete node
                 if (updated) { postEdit("node", "delete", toDel, 1, toDel.nodeID); }
             } else if (toUndo[i].type == 'edge') { //if toDel is an edge
-                // console.log("____________"); console.log("deleting edge: " + toDel.fromID + "->" + toDel.toID);
                 updated = updateDelEdge(toDel); //delete edge
                 if (updated) { postEdit("edge", "delete", toDel, 1); }
 
@@ -1003,13 +970,11 @@ function undoAdd(toUndo) {
  * @returns {Promise<Boolean>} - Indicates if the edits were successfully undone (true) or not (false)
  */
 function undoEdit(toUndo) {
-    // console.log("undoEdit called");
     return new Promise(resolve => {
         var updated = false;
         for (i = 0; i < toUndo.length; i++) {
             if (toUndo[i].type == 'node') {
                 toEdit = JSON.parse(toUndo[i].content);
-                // console.log("editing node: " + toEdit.nodeID);
                 updated = updateEditNode(toEdit); //edit node
                 if (updated) { postEdit("node", "edit", toEdit, 1, toEdit.nodeID); }
             }
@@ -1073,7 +1038,6 @@ function addParticipant(firstname, surname) {
  * @param {Node} node - The node to add a locution to
  */
 function addLocution(node) {
-    //console.log("adding locution");
     if ($('#p_firstname').val() != '') {
         firstname = $('#p_firstname').val();
         surname = $('#p_surname').val();
@@ -1117,7 +1081,6 @@ function addLocution(node) {
 
     window.nodeCounter++;
     var newYANodeID = (window.nodeCounter + "_" + window.sessionid);
-    // AddNode('Asserting', 'YA', '74', 0, newYANodeID, (n.x + 225), yCoord);
     AddNode('Asserting', 'YA', '74', 0, newYANodeID, (parseInt(n.x) + 225), parseInt(yCoord));
 
 
@@ -1319,7 +1282,7 @@ function getAllText() {
     if (iframe.nodeName.toLowerCase() == 'div') {
         txt = $('#analysis_text').html();
     } else {
-        var innerDoc = iframe.contentDocument || iframe.contentWindow.document;
+        // var innerDoc = iframe.contentDocument || iframe.contentWindow.document;
         txt = "";
     }
     return txt;
@@ -1357,10 +1320,6 @@ function addCQ(fesel) {
 function setdescriptors(schemeID, node) {
     $('#tab-bar-edits').hide();
     $.getJSON("browserint.php?x=ipxx&url=" + window.DBurl + "/formedges/scheme/" + schemeID, function (json_data) {
-        // console.log("----------");
-        // console.log("scheme: " + schemeID);
-        // console.log(json_data);
-
         //clears and sets the defaults
         $('#descriptor_selects').empty();
         $('#descriptor_selects').append('<b>Descriptors</b>');
@@ -1624,12 +1583,10 @@ function eAddModeOnOff() {
     if (window.eAddMode) {
         $("#eadd").attr("onclick", "edgeMode('switch')");
         $("#eaddX").attr("onclick", "edgeMode('switch')");
-        // console.log("sticky add edge mode turned on");
     }
     else {
         $("#eadd").attr("onclick", "clearEdgeModal()");
         $("#eaddX").attr("onclick", "clearEdgeModal()");
-        // console.log("sticky add edge mode turned off");
     }
 }
 
@@ -1645,7 +1602,6 @@ function panModeOnOff() {
  * Autolayout
  */
 function genldot() {
-    console.log("autolayout");
     //create a temp dot file for this analysis
     var doto = "digraph odg {";
     var ranks = "";
@@ -1764,7 +1720,6 @@ function setRIATMode() {
  * Sets the default scroll direction to natural or reverse depending on if Mac OS detected
  */
 function setScrollDir() {
-    // console.log(window.navigator.userAgent); console.log("inverse: " + inverse);
     if (!inverse && navigator.userAgent.indexOf('Mac') > -1) {
         inverse = true;
         $("#inverseToggle").toggleClass("on off");
