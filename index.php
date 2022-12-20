@@ -31,7 +31,7 @@ if (isset($_COOKIE['ovauser'])) {
         <div class="row align-items-center justify-content-center">
           <div class="col-md-7">
             <div class="mb-4">
-              <img src="res/img/logo.svg" style="width:180px; margin-bottom: 22px;" />
+              <img src="res/img/beta-logo.svg" style="width:180px; margin-bottom: 22px;" />
               <h3>URL of the page to analyse</h3>
               <p style="color: #777; font-size: 12px; margin-top: -10px; margin-bottom: -18px;">(leave blank to analyse your own text)</p>
             </div>
