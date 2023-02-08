@@ -30,7 +30,7 @@ if (isset($_GET['akey'])) {
 if ($analysisID == 1) { //if the analysis ID needs set
   require_once('helpers/mysql_connect.php');
 
-  $akey = md5(time());
+  $akey = md5(time() . '.' . rand(0, 99999));
 
   $sql = "INSERT INTO analyses (akey) VALUES (:akey)";
   $q = $DBH->prepare($sql);
