@@ -927,7 +927,7 @@ function Drop(evt) {
         nx = Math.round(((tx - fx) / 2) + fx);
         ny = Math.round(((ty - fy) / 2) + fy);
 
-        if (window.atkPress && (nodeFrom == "I" || nodeFrom == "EN") && (nodeTo == "I" || nodeTo == "EN")) {
+        if (window.atkPress && (nodeFrom == "I" || nodeFrom == "EN") && (nodeTo == "I" || nodeTo == "EN" || nodeTo == "L" || nodeTo == "RA")) { //incl. reported speech & undercutting
           AddNode('Default Conflict', 'CA', '71', 0, newNodeID, nx, ny);
         } else if (window.maPress && (nodeFrom == "I" || nodeFrom == "EN") && (nodeTo == "I" || nodeTo == "EN")) {
           AddNode('Default Rephrase', 'MA', '144', 0, newNodeID, nx, ny);
@@ -943,8 +943,6 @@ function Drop(evt) {
           AddNode('Arguing', 'YA', '80', 0, newNodeID, nx, ny);
         } else if (nodeFrom == "TA" && nodeTo == "CA") {
           AddNode('Disagreeing', 'YA', '78', 0, newNodeID, nx, ny);
-        } else if (window.atkPress && ((nodeFrom == "I" && nodeTo == "RA") || (nodeFrom == "EN" && nodeTo == "RA"))) { //undercutting
-          AddNode('Default Conflict', 'CA', '71', 0, newNodeID, nx, ny);
         } else if ((nodeFrom == "I" && nodeTo == "RA") || (nodeFrom == "RA" && nodeTo == "I") || (nodeFrom == "EN" && nodeTo == "RA") || (nodeFrom == "RA" && nodeTo == "EN") || (nodeFrom == "L" && nodeTo == "TA") || (nodeFrom == "TA" && nodeTo == "L")) {
           //if linked argument don't add a node
           newNodeID = 'n' + nFrom.nodeID + '-n' + nTo.nodeID; //the new edge ID instead
