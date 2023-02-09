@@ -16,7 +16,7 @@ $(function () {
       var shift = ui.position.left;
       mw = $("#mainwrap").width();
       $("#left1").width(ui.position.left - 40);
-      $("#right1").width(mw - ui.position.left);
+      $("#right1").width(mw - ui.position.left - 7); //minus the spacer width
     }
   });
 });
@@ -41,6 +41,7 @@ function openModal(ident) {
   $(".modal-dialog").hide();
   $("#modal-shade").show();
   $(ident).show("slide", { direction: "up" }, 100);
+  FormOpen = true;
   return false;
 }
 
@@ -52,6 +53,8 @@ function openModal(ident) {
 function closeModal(ident) {
   $('#modal-shade').hide();
   $(ident).hide("slide", { direction: "up" }, 100);
+  $("#right1").width($("#mainwrap").width() - $("#left1").width() - 41);
+  FormOpen = false;
   return false;
 }
 

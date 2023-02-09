@@ -352,9 +352,7 @@ function Grab(evt) {
           var nIndex = findNodeIndex(newNodeID, true);
           mySel = nodes[nIndex];
           CurrentlyEditing = mySel.nodeID;
-          $('#locution_add').show();
-          $('#modal-shade').show();
-          FormOpen = true;
+          openModal('#locution_add');
         } else {
           AddNode(t, 'I', null, 0, newNodeID, TrueCoords.x, TrueCoords.y - 10, true, 0, timestamp);
           var nIndex = findNodeIndex(newNodeID, true);
