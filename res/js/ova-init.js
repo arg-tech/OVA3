@@ -136,8 +136,7 @@ function Init(evt) {
     GrabPoint = SVGRoot.createSVGPoint();
     window.sessionid = $.now().toString() + Math.random().toString().substring(3, 8);
 
-    var mw = $("#mainwrap").width();
-    $("#right1").width(mw - $("#left1").width() - 41);
+    $("#right1").width($("#mainwrap").width() - $("#left1").width() - 41);
     VB = SVGRoot.getAttribute('viewBox').split(' ').map(c => +c);
     VB_width = VB[2];
     DMAX = [10604, 135472];
@@ -300,7 +299,7 @@ function Init(evt) {
     $('#n_text').on("keydown", function (e) {
         if (e.key == "Enter" && !e.shiftKey) {
             e.preventDefault(); //prevent new lines being added
-            saveNodeEdit(); closeModal('#node_edit'); FormOpen = false; return false; //save the edit to the node
+            saveNodeEdit(); closeModal('#node_edit'); //save the edit to the node
         }
     });
 
@@ -1135,7 +1134,7 @@ function addlclick(skipcheck) {
         // }else{
         //     $('#p_surname').css('border-color', '#bbb');
         // }
-        $('#locution_add').hide();
+        closeModal('#locution_add');
     }
     addLocution(mySel);
     $('#new_participant').hide();
@@ -1143,12 +1142,9 @@ function addlclick(skipcheck) {
     $('#p_select').val('-');
     $('#p_name').val('');
     $('#prt_name').show();
-    $('#locution_add').hide();
     $('#socialusers').hide();
-    $('#modal-shade').hide();
+    closeModal('#locution_add');
 
-    var mw = $("#mainwrap").width();
-    $("#right1").width(mw - $("#left1").width() - 41);
     return false;
 }
 
@@ -1199,7 +1195,7 @@ function addlcancel() {
     $('#p_name').val('');
     $('#prt_name').show();
     $('#socialusers').hide();
-    $('#locution_add').hide();
+    closeModal('#locution_add');
 
 
     var index = findNodeIndex(CurrentlyEditing, true);
@@ -1822,12 +1818,12 @@ function setTimestampStart(startdatestmp) {
                     if (!edited) { DrawTimestamp(mySel.nodeID, str, mySel.x, mySel.y); }
                 }
                 $('#delTimestampBtn').hide();
-                closeModal('#modal-timestamps'); FormOpen = false;
+                closeModal('#modal-timestamps'); 
                 editpopup(mySel);
             } else { //if updating the start date time stamp
                 window.startdatestmp = start;
                 document.getElementById("startTimestampLabel").innerHTML = window.startdatestmp;
-                closeModal('#modal-timestamps'); FormOpen = false;
+                closeModal('#modal-timestamps'); 
                 openModal('#modal-settings');
             }
         }
@@ -1846,7 +1842,7 @@ function deleteTimestamp() {
     }
     window.editTimestamp = false;
     $('#delTimestampBtn').hide();
-    closeModal('#modal-timestamps'); FormOpen = false;
+    closeModal('#modal-timestamps'); 
     editpopup(mySel);
 }
 

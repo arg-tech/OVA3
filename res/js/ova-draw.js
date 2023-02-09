@@ -146,7 +146,7 @@ function cmenu(node, evt) {
 
     if (dialogicalMode && node.type == 'I' || node.type == 'L') {
         if (node.type == 'L') { $('#contextmenu').append("<a onClick='window.groupID++;window.reselectSpan=true;remhl(mySel.nodeID, 1);$(\"#contextmenu\").hide();'>Reselect Text</a>"); }
-        $('#contextmenu').append("<a onClick='$(\"#locution_add\").show();$(\"#contextmenu\").hide();'>Add Locution</a>");
+        $('#contextmenu').append("<a onClick='openModal(\"#locution_add\");$(\"#contextmenu\").hide();'>Add Locution</a>");
     }
     if (!dialogicalMode && node.type == 'I') { $('#contextmenu').append("<a onClick='window.groupID++;window.reselectSpan=true;remhl(mySel.nodeID, 1);$(\"#contextmenu\").hide();'>Reselect Text</a>"); }
     $('#contextmenu').append("<a onClick='window.groupID ++;deleteNode(contextNode);$(\"#contextmenu\").hide();'>Delete Node</a>");

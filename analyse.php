@@ -30,7 +30,7 @@ if (isset($_GET['akey'])) {
 if ($analysisID == 1) { //if the analysis ID needs set
   require_once('helpers/mysql_connect.php');
 
-  $akey = md5(time());
+  $akey = md5(time() . '.' . rand(0, 99999));
 
   $sql = "INSERT INTO analyses (akey) VALUES (:akey)";
   $q = $DBH->prepare($sql);
@@ -145,7 +145,7 @@ if (isset($_COOKIE['ovauser'])) {
         <div id="m_confirm"></div>
       </div>
       <div class="modal-btns">
-        <a class="cancel" href="#" onClick="$('#m_confirm').hide(); closeModal('#modal-save2db'); return false;">&#10008; Close</a>
+        <a class="cancel" href="#" onClick="$('#m_confirm').hide(); closeModal('#modal-save2db');">&#10008; Close</a>
       </div>
     </div>
   </div>
@@ -284,7 +284,7 @@ if (isset($_COOKIE['ovauser'])) {
       <div class="modal-body">
       </div>
       <div class="modal-btns">
-        <a class="cancel" href="#" onClick="closeModal('#modal-account'); return false;">&#10008; Close</a>
+        <a class="cancel" href="#" onClick="closeModal('#modal-account');">&#10008; Close</a>
       </div>
     </div>
   </div> -->
@@ -352,7 +352,7 @@ if (isset($_COOKIE['ovauser'])) {
       </div>
       <div class="modal-btns">
         <a class="save" href="#" onClick="closeModal('#modal-username'); dialogicalModeOnOff(); return false;">&#x2714; Continue</a>
-        <a class="cancel" href="#" onClick="closeModal('#modal-username'); return false;">&#10008; Cancel</a>
+        <a class="cancel" href="#" onClick="closeModal('#modal-username');">&#10008; Cancel</a>
       </div>
     </div>
   </div>
@@ -516,7 +516,7 @@ if (isset($_COOKIE['ovauser'])) {
         </form>
       </div>
       <div class="modal-btns">
-        <a class="cancel" href="#" onClick="closeModal('#modal-settings'); return false;">&#10008; Close</a>
+        <a class="cancel" href="#" onClick="closeModal('#modal-settings');">&#10008; Close</a>
       </div>
     </div>
   </div>
@@ -536,7 +536,7 @@ if (isset($_COOKIE['ovauser'])) {
         </form>
       </div>
       <div class="modal-btns">
-        <a class="cancel" href="#" onClick="closeModal('#modal-share'); FormOpen = false; return false;">&#10008; Close</a>
+        <a class="cancel" href="#" onClick="closeModal('#modal-share');">&#10008; Close</a>
       </div>
     </div>
   </div>
@@ -576,7 +576,7 @@ if (isset($_COOKIE['ovauser'])) {
       </ul>
       <div class="modal-btns">
         <a class="save" href="#" onClick="setTimestampStart(); return false;">&#x2714; Save</a>
-        <a class="cancel" href="#" onClick="$('#delTimestampBtn').hide();closeModal('#modal-timestamps'); FormOpen = false; return false;">&#10008; Cancel</a>
+        <a class="cancel" href="#" onClick="$('#delTimestampBtn').hide();closeModal('#modal-timestamps');">&#10008; Cancel</a>
       </div>
     </div>
   </div>
@@ -667,7 +667,7 @@ if (isset($_COOKIE['ovauser'])) {
       </form>
     </div>
     <div class="modal-btns">
-      <a class="cancel" href="#" onClick="closeModal('#modal-help'); return false;">&#10008; Close</a>
+      <a class="cancel" href="#" onClick="closeModal('#modal-help');">&#10008; Close</a>
     </div>
   </div>
   </div>
@@ -711,8 +711,8 @@ if (isset($_COOKIE['ovauser'])) {
       </div>
       <div id="socialusers" style="display:none;"></div>
       <div class="modal-btns">
-        <a class="save" href="#" onClick="addlclick(false); $('#modal-shade').hide(); FormOpen = false;  return false;">&#x2714; Add</a>
-        <a class="cancel" href="#" onClick="addlcancel(); $('#modal-shade').hide();FormOpen = false; return false;">&#10008; Cancel</a>
+        <a class="save" href="#" onClick="addlclick(false);">&#x2714; Add</a>
+        <a class="cancel" href="#" onClick="addlcancel();">&#10008; Cancel</a>
       </div>
     </div>
   </div>
@@ -736,7 +736,6 @@ if (isset($_COOKIE['ovauser'])) {
         <div id="node_options">
           <p id="timestamp_info">Timestamp:
             <label id="timestamp_label"></label>
-            <!-- <a href="#" id="edit_timestamp_btn" class="btn" onClick="FormOpen = false;window.editTimestamp=true;openModal('#modal-timestamps');return false;" style="padding:0.6em;">Edit Timestamp</a> -->
           </p>
 
           <label for="n_text" id="n_text_label">Text</label>
@@ -791,30 +790,30 @@ if (isset($_COOKIE['ovauser'])) {
       </form>
     </div>
     <ul class="btnlist">
-      <li><a href="#" id="mark_node_btn" onClick="closeModal('#node_edit');FormOpen=false;window.groupID++;markNode(mySel, true);return false;">
+      <li><a href="#" id="mark_node_btn" onClick="closeModal('#node_edit');window.groupID++;markNode(mySel, true);return false;">
           <div class="btnicn" style="background-position: -1018px 50%;">&nbsp;</div> Mark Node
         </a></li>
-      <li><a href="#" id="unmark_node_btn" style="display:none;" onClick="closeModal('#node_edit');FormOpen=false;window.groupID++;markNode(mySel, false);return false;">
+      <li><a href="#" id="unmark_node_btn" style="display:none;" onClick="closeModal('#node_edit');window.groupID++;markNode(mySel, false);return false;">
           <div class="btnicn" style="background-position: -979px 50%;">&nbsp;</div> Unmark Node
         </a></li>
-      <li><a href="#" id="del_node_btn" onClick="closeModal('#node_edit'); FormOpen = false; window.groupID ++; deleteNode(mySel); return false;" class="bgred">
+      <li><a href="#" id="del_node_btn" onClick="closeModal('#node_edit');  window.groupID ++; deleteNode(mySel); return false;" class="bgred">
           <div class="btnicn" style="background-image: url('res/img/icon-delnode.png');">&nbsp;</div> Delete Node
         </a></li>
-      <li><a href="#" id="reselect_btn" style="display:none;" onClick="closeModal('#node_edit');FormOpen=false;window.groupID++;window.reselectSpan=true;remhl(mySel.nodeID, 1);return false;">
+      <li><a href="#" id="reselect_btn" style="display:none;" onClick="closeModal('#node_edit');window.groupID++;window.reselectSpan=true;remhl(mySel.nodeID, 1);return false;">
           <div class="btnicn" style="background-position: -1353px 50%;">&nbsp;</div> Reselect Text
         </a></li>
       <?php if ($pro) { ?>
-        <li><a href="#" id="l_add_btn" onClick="saveNodeEdit();$('#node_edit').hide(); FormOpen = false;$('#locution_add').show();return false;">
+        <li><a href="#" id="l_add_btn" onClick="saveNodeEdit();$('#node_edit').hide(); $('#locution_add').show();return false;">
             <div class="btnicn" style="background-image: url('res/img/icon_ladd.png');">&nbsp;</div> Add Locution
           </a></li>
-        <li><a href="#" id="edit_timestamp_btn" onClick="closeModal('#node_edit');FormOpen = false; window.editTimestamp=true; $('#modal-timestamps').show();return false;">
+        <li><a href="#" id="edit_timestamp_btn" onClick="closeModal('#node_edit'); window.editTimestamp=true; $('#modal-timestamps').show();return false;">
             <div class="btnicn" style="background-position: -517px 50%;">&nbsp;</div> Edit Timestamp
           </a></li>
       <?php } ?>
     </ul>
     <div class="modal-btns">
-      <a class="save" href="#" onClick="saveNodeEdit();closeModal('#node_edit'); FormOpen = false; return false;">&#x2714; Save</a>
-      <a class="cancel" href="#" onClick="closeModal('#node_edit'); FormOpen = false; return false;">&#10008; Cancel</a>
+      <a class="save" href="#" onClick="saveNodeEdit();closeModal('#node_edit');">&#x2714; Save</a>
+      <a class="cancel" href="#" onClick="closeModal('#node_edit');">&#10008; Cancel</a>
     </div>
   </div>
   <!-- Edit Node Form Ends here -->
