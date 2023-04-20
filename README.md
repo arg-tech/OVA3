@@ -3,7 +3,7 @@ OVA3 is the latest release of the Online Visualisation of Argument analysis tool
 
 OVA has tens of thousands of users and is a native Argument Web application, interfacing to annotation of millions of words across thousands of arguments through the underlying AIF representation used in a variety of AI applications including argument mining algorithms, automatic grading software and visual analytics that provide insight and summary.
 
-OVA3 is released as free software and can be found online at [ova.arg.tech](http://ova.arg.tech/) with an accompanying user manual.
+OVA3 is released as free software and can be found online at [ova.arg.tech](http://ova.arg.tech/) with an accompanying [user manual](https://arg.tech/~chris/OVA3UserGuide.pdf).
 
 The codebase is released under CC-BY-SA.
 
