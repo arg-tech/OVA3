@@ -248,6 +248,7 @@ function Init(evt) {
 
             $('#analysis_text').html(repl_text);
             postEdit("text", "edit", $('#analysis_text').html());
+            getTimestampStart();
         }, 1);
     });
 
@@ -258,6 +259,7 @@ function Init(evt) {
 
     $('#analysis_text').focusout(function () {
         postEdit("text", "edit", $('#analysis_text').html());
+        getTimestampStart();
     });
 
     $("#analysis_text").on("dblclick", "span", function (event) {
@@ -1818,12 +1820,12 @@ function setTimestampStart(startdatestmp) {
                     if (!edited) { DrawTimestamp(mySel.nodeID, str, mySel.x, mySel.y); }
                 }
                 $('#delTimestampBtn').hide();
-                closeModal('#modal-timestamps'); 
+                closeModal('#modal-timestamps');
                 editpopup(mySel);
             } else { //if updating the start date time stamp
                 window.startdatestmp = start;
                 document.getElementById("startTimestampLabel").innerHTML = window.startdatestmp;
-                closeModal('#modal-timestamps'); 
+                closeModal('#modal-timestamps');
                 openModal('#modal-settings');
             }
         }
@@ -1842,7 +1844,7 @@ function deleteTimestamp() {
     }
     window.editTimestamp = false;
     $('#delTimestampBtn').hide();
-    closeModal('#modal-timestamps'); 
+    closeModal('#modal-timestamps');
     editpopup(mySel);
 }
 

@@ -226,7 +226,7 @@ function setTut() {
             },
             {
                 element: '#startTimestampLabel',
-                intro: "<p>Start Date and Time</p> <p>When adding timestamps, this date and time should be changed to when the text being analsyed began. All timestamps are calculated based off of it.</p>"
+                intro: "<p>Start Date and Time</p> <p>When adding timestamps, this date and time should be changed to when the text being analysed began. All timestamps are calculated based off of it.</p>"
             },
             {
                 element: '#startTimestampBtn',

@@ -450,6 +450,49 @@ function getTimestamp() {
 }
 
 /**
+ * Gets the start date and time for the timestamps from the analysis text.
+ * Note: only takes the first start date and time found.
+ * @returns {Boolean} - Indicates if a start date and time was found (true) or not (false)
+ */
+function getTimestampStart() {
+  if (!window.dialogicalMode) { return false; } //only use timestamps in dialogical mode
+
+  var iframe = document.getElementById('analysis_text');
+  if (iframe !== null && iframe.getAttribute("style") === "display:none;") { //if url loaded into LHS
+    return false;
+  } else if (iframe.nodeName.toLowerCase() == 'div') {
+    var toCheck = iframe.innerHTML;
+    var datetimestamps = [];
+
+    //start date time format: 'yyyy/mm/dd hh:mm:ss GMT+hhmm' or 'yyyy/mm/dd hh:mm:ss GMT-hhmm'
+    var r = /\[(\d{4}\/\d{2}\/\d{2}\s\d{2}:\d{2}:\d{2}\sGMT(\+|-)\d{4})\]/;
+
+    var re = new RegExp(r, "g");
+    while ((match = re.exec(toCheck)) != null) {
+      datetimestamps.push([match.index + match[0].length, match[1]]);
+    }
+
+    if (datetimestamps.length > 0) {
+      if (!window.addTimestamps) { //turn on adding timestamps if needed
+        window.addTimestamps = true;
+        $("#timestamptoggle").toggleClass("on off");
+      }
+      if (!window.showTimestamps) { //turn on showing timestamps if needed
+        window.showTimestamps = true;
+        $("#showTimestamptoggle").toggleClass("on off");
+        showTimestampsOnOff();
+      }
+      if (window.startdatestmp != datetimestamps[0][1]) {
+        setTimestampStart(datetimestamps[0][1]);
+        alert("Updated the start date time to '" + datetimestamps[0][1] + "' Turned on adding and showing timestamps.");
+      }
+      return true;
+    }
+  }
+  return false;
+}
+
+/**
  * Finds all edges that are connected to or from the given node and adds them to the dragEdges array.
  * @param {String} dragID - The nodeID of the node to find all edges connected to/from
  */

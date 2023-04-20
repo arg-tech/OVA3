@@ -167,23 +167,26 @@ if (isset($_COOKIE['ovauser'])) {
             <!-- <input type="radio" id="loadBeside" name="load" value="beside">
             <label for="loadBeside" class="radio_label">Beside</label> -->
           </div>
-          <div id="load-file" onclick="checkRadio('loadFromFile'); $('#nsetID_valid').hide();" style="margin-top:8%;">
-            <input type="radio" id="loadFromFile" name="loadFrom" value="file" checked>
-            <label for="n_file" id="n_file_label" class="radio_label">Select a file to load:</label>
-            <input type="file" id="n_file" name="files[]" multiple style="width:96%;" />
-          </div>
-          <div id="load-corpus" onclick="checkRadio('loadFromCorpus'); $('#nsetID_valid').hide();" style="margin-top:4%;">
-            <input type="radio" id="loadFromCorpus" name="loadFrom" value="corpus">
-            <label for="corpus_sel" id="corpus_sel_label" class="radio_label">Select a corpus to load:</label>
-            <select id="corpus_sel" style="width:98%;">
-              <option value="0" selected>--No corpus selected--</option>
-            </select>
-          </div>
-          <div id="load-nodeset" onclick="checkRadio('loadFromNSet'); $('#nsetID_valid').show();" style="margin:4% 0;">
-            <input type="radio" id="loadFromNSet" name="loadFrom" value="nSetID">
-            <label for="nsetID" id="nsetID_label" class="radio_label">Enter the node set ID of an analysis to load:</label>
-            <input type="number" id="nsetID" style="width:96%;text-align:center;" placeholder="Enter a node set ID, e.g. 12345" min="1" max="999999999" />
-            <span id="nsetID_valid" class="validity" style="display:none;"></span>
+          <div style="margin-top:8%;">
+            <p>Please select how to load the analysis:</p>
+            <div id="load-file" onclick="checkRadio('loadFromFile'); $('#nsetID_valid').hide();">
+              <input type="radio" id="loadFromFile" name="loadFrom" value="file" checked>
+              <label for="n_file" id="n_file_label" class="radio_label">Select a file to load:</label>
+              <input type="file" id="n_file" name="files[]" multiple style="width:96%;" />
+            </div>
+            <div id="load-corpus" onclick="checkRadio('loadFromCorpus'); $('#nsetID_valid').hide();" style="margin-top:4%;">
+              <input type="radio" id="loadFromCorpus" name="loadFrom" value="corpus">
+              <label for="corpus_sel" id="corpus_sel_label" class="radio_label">Select a corpus to load:</label>
+              <select id="corpus_sel" style="width:98%;">
+                <option value="0" selected>--No corpus selected--</option>
+              </select>
+            </div>
+            <div id="load-nodeset" onclick="checkRadio('loadFromNSet'); $('#nsetID_valid').show();" style="margin:4% 0;">
+              <input type="radio" id="loadFromNSet" name="loadFrom" value="nSetID">
+              <label for="nsetID" id="nsetID_label" class="radio_label">Enter the node set ID of an analysis to load:</label>
+              <input type="number" id="nsetID" style="width:96%;text-align:center;" placeholder="Enter a node set ID, e.g. 12345" min="1" max="999999999" />
+              <span id="nsetID_valid" class="validity" style="display:none;"></span>
+            </div>
           </div>
         </form>
         <div id="c_loading" style="display:none;">
@@ -655,7 +658,7 @@ if (isset($_COOKIE['ovauser'])) {
             <strong>Timestamp Format</strong>
             <p style="color: #444; font-size: 12px;">The format of '[hh:mm:ss]' can be used to offset the start date and time by a number of hours, minutes or seconds when adding timestamps. It should be included within the text being analysed wherever the offset should start, e.g. including '[00:30:15]' at the start of the text being analysed would offset the first timestamp by 30 minutes and 15 seconds from the start time. This can only be used when analysing your own text, when analysing a URL the start date and time will be used for all timestamps instead.</p>
             <strong>Start Date and Time</strong>
-            <p style="color: #444; font-size: 12px;">The start date and time is when the text being analsyed began. All timestamps are calculated based off of it. It should be updated before adding any timestamps to an analysis by clicking the 'Change Start Date and Time' button in the timestamp settings.</p>
+            <p style="color: #444; font-size: 12px;">The start date and time is when the text being analysed began. All timestamps are calculated based off of it. It should be updated before adding any timestamps to an analysis by clicking the 'Change Start Date and Time' button in the timestamp settings or by including it in the format of '[yyyy/mm/dd hh:mm:ss GMT+hhmm]' at the start of the text being analysed.</p>
             <strong>Adding Timestamps</strong>
             <p style="color: #444; font-size: 12px;">Timestamps can be added to locution nodes when using dialogical mode. They can be added automatically by turning on the 'Add Timestamps' toggle in the timestamp settings or manually added by editing a locution node.</p>
             <strong>Editing Timestamps</strong>
