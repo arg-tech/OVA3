@@ -69,8 +69,8 @@ function genjson() {
                 var date = timestamp.toISOString().split("T", 2);
                 var time = date[1].split(".", 1);
                 jlocution['start'] = date[0] + " " + time;
-                jlocution['end'] = null;
-            }
+            } else { jlocution['start'] = null; }
+            jlocution['end'] = null;
             jlocutions.push(jlocution);
         }
     }
