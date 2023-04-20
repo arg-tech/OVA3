@@ -37,7 +37,7 @@ function myKeyUp(e) {
     editMode = false;
   }
   else if (key == 'alt') { //multi select off
-    multiSel = [false, false];
+    multiSel = [false, false, false];
   }
   else if (key == 'z' && e.ctrlKey) { //ctrl + z for undo shortcut
     undo();
@@ -344,7 +344,7 @@ function Grab(evt) {
         var newNodeID = (window.nodeCounter + "_" + window.sessionid);
         var timestamp = '';
         if (window.addTimestamps) {
-          timestamp = getTimestamp();
+          timestamp = getTimestamp(newNodeID);
           timestamp = !timestamp ? '' : timestamp;
         }
         if (window.rIATMode) {
@@ -370,10 +370,11 @@ function Grab(evt) {
 }
 
 /**
- * Calculates a timestamp
+ * Calculates a timestamp for a node
+ * @param {String} nodeID - The ID of the node to calculate the timestamp for
  * @returns - The calculated timestamp or false if no timestamp could be calculated
  */
-function getTimestamp() {
+function getTimestamp(nodeID) {
   var iframe = document.getElementById('analysis_text');
   if (iframe !== null && iframe.getAttribute("style") === "display:none;") { //if url loaded into LHS
     tstamp = Math.round(new Date(window.startdatestmp).getTime());
@@ -392,7 +393,7 @@ function getTimestamp() {
     }
 
     // GET SPAN POSITION FROM TEXT
-    var r2 = "<[^>]*node" + window.nodeCounter + "[^0-9][^>]*>[^<]*</span>";
+    var r2 = "<[^>]*node" + nodeID + "[^0-9][^>]*>[^<]*</span>";
     var re = new RegExp(r2, "g");
     while ((match = re.exec(htmlContent)) != null) {
       var beforei = 0;
@@ -490,6 +491,30 @@ function getTimestampStart() {
     }
   }
   return false;
+}
+
+/**
+ * Calculates and updates the timestamps for all locution nodes selected through the multiselect
+ */
+function updateTimestamps() {
+  window.groupID++;
+  var timestamp = '', rect;
+  for (var i = 0; i < mSel.length; i++) {
+    if (mSel[i].type == "L") {
+      timestamp = getTimestamp(mSel[i].nodeID);
+      timestamp = !timestamp ? '' : timestamp;
+      updateTimestamp(mSel[i].nodeID, timestamp);
+      if (window.showTimestamps) {
+        removeTimestamps(mSel[i].nodeID);
+        DrawTimestamp(mSel[i].nodeID, mSel[i].timestamp, mSel[i].x, mSel[i].y);
+      }
+    }
+    //deselect the nodes
+    rect = document.getElementById(mSel[i].nodeID).getElementsByTagName('rect')[0];
+    rect.style.setProperty('stroke-width', 1);
+  }
+  mSel = [];
+  multiSel = [false, false, false];
 }
 
 /**
@@ -1080,7 +1105,7 @@ function Drop(evt) {
       h = boxY < 0 ? h - boxY : h;
 
       //deselect the nodes
-      multiSel = [false, false];
+      multiSel = [false, false, false];
       for (var i = 0; i < mSel.length; i++) {
         var rect = document.getElementById(mSel[i].nodeID).getElementsByTagName('rect')[0];
         rect.style.setProperty('stroke-width', 1);
@@ -1091,7 +1116,7 @@ function Drop(evt) {
       svg2canvas2image(boxX, boxY, w, h, true); //create the image
     }
   }
-  else if (mSel.length > 0) { //if moving multiple nodes using the multi select
+  else if (mSel.length > 0 && !multiSel[2]) { //if moving multiple nodes using the multi select
     if (DragTarget) { //if moved then update each node
       window.groupID++;
       var childElement = null, text = null, xCoord = 0, yCoord = 0;
@@ -1126,7 +1151,7 @@ function Drop(evt) {
     }
 
     mSel = [];
-    multiSel = [false, false];
+    multiSel = [false, false, false];
   }
   dragEdges = [];
 }
@@ -1158,6 +1183,8 @@ function AddPt(nx, ny) {
  * @returns 
  */
 function myRClick(evt) {
+  if (mSel.length > 0 && window.addTimestamps) { multiSel[2] = true; } //if multiple nodes were selected
+
   GetTrueCoords(evt);
   if (evt.target.nodeName == 'rect') {
     var targetElement = evt.target.parentNode;

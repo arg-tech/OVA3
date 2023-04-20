@@ -140,19 +140,25 @@ function cmenu(node, evt) {
     window.contextNode = node;
     $('#contextmenu').empty();
     $('#contextmenu').css({ top: (evt.clientY + 5), left: evt.clientX - 65 });
-    $('#contextmenu').append("<a onClick='editpopup(contextNode);$(\"#contextmenu\").hide();'>Edit Node</a>");
-    if (node.marked) { $('#contextmenu').append("<a onClick='window.groupID++;markNode(contextNode, false);$(\"#contextmenu\").hide();'>Unmark Node</a>"); }
-    else { $('#contextmenu').append("<a onClick='window.groupID++;markNode(contextNode, true);$(\"#contextmenu\").hide();'>Mark Node</a>"); }
-
-    if (dialogicalMode && node.type == 'I' || node.type == 'L') {
-        if (node.type == 'L') { $('#contextmenu').append("<a onClick='window.groupID++;window.reselectSpan=true;remhl(mySel.nodeID, 1);$(\"#contextmenu\").hide();'>Reselect Text</a>"); }
-        $('#contextmenu').append("<a onClick='openModal(\"#locution_add\");$(\"#contextmenu\").hide();'>Add Locution</a>");
+    if (multiSel[2]) { //add options for multiple nodes
+        if (window.addTimestamps && node.type == 'L') {$('#contextmenu').append("<a onClick='updateTimestamps();$(\"#contextmenu\").hide();'>Update Timestamps</a>");}
+        $('#contextmenu').append("<a onClick='multiSel[2]=false;$(\"#contextmenu\").hide();'>Move Nodes</a>");
     }
-    if (!dialogicalMode && node.type == 'I') { $('#contextmenu').append("<a onClick='window.groupID++;window.reselectSpan=true;remhl(mySel.nodeID, 1);$(\"#contextmenu\").hide();'>Reselect Text</a>"); }
-    $('#contextmenu').append("<a onClick='window.groupID ++;deleteNode(contextNode);$(\"#contextmenu\").hide();'>Delete Node</a>");
+    else { //add options for a single node
+        $('#contextmenu').append("<a onClick='editpopup(contextNode);$(\"#contextmenu\").hide();'>Edit Node</a>");
+        if (node.marked) { $('#contextmenu').append("<a onClick='window.groupID++;markNode(contextNode, false);$(\"#contextmenu\").hide();'>Unmark Node</a>"); }
+        else { $('#contextmenu').append("<a onClick='window.groupID++;markNode(contextNode, true);$(\"#contextmenu\").hide();'>Mark Node</a>"); }
 
-    if (node.type == 'L' && window.addTimestamps) {
-        $('#contextmenu').append("<a style='font-size:0.86em;' onClick='window.editTimestamp=true;$(\"#delTimestampBtn\").show();$(\"#modal-timestamps\").show();$(\"#contextmenu\").hide();'>Edit Timestamp</a>");
+        if (dialogicalMode && node.type == 'I' || node.type == 'L') {
+            if (node.type == 'L') { $('#contextmenu').append("<a onClick='window.groupID++;window.reselectSpan=true;remhl(mySel.nodeID, 1);$(\"#contextmenu\").hide();'>Reselect Text</a>"); }
+            $('#contextmenu').append("<a onClick='openModal(\"#locution_add\");$(\"#contextmenu\").hide();'>Add Locution</a>");
+        }
+        if (!dialogicalMode && node.type == 'I') { $('#contextmenu').append("<a onClick='window.groupID++;window.reselectSpan=true;remhl(mySel.nodeID, 1);$(\"#contextmenu\").hide();'>Reselect Text</a>"); }
+        $('#contextmenu').append("<a onClick='window.groupID ++;deleteNode(contextNode);$(\"#contextmenu\").hide();'>Delete Node</a>");
+
+        if (node.type == 'L' && window.addTimestamps) {
+            $('#contextmenu').append("<a style='font-size:0.86em;' onClick='window.editTimestamp=true;$(\"#delTimestampBtn\").show();$(\"#modal-timestamps\").show();$(\"#contextmenu\").hide();'>Edit Timestamp</a>");
+        }
     }
     $('#contextmenu').show();
 }
@@ -480,8 +486,10 @@ function removeTimestamps(nodeID) {
         }
     } else { //removes the timestamp drawn on the svg for the given nodeID
         var g = document.getElementById(nodeID);
-        var tstamp = g.getElementsByClassName('timestamp')[0];
-        tstamp.remove();
+        if (g) {
+            var tstamp = g.getElementsByClassName('timestamp')[0];
+            if (tstamp) { tstamp.remove(); }
+        }
     }
 }
 
