@@ -385,11 +385,11 @@ function getTimestamp(nodeID) {
     htmlContent = iframe.innerHTML
 
     // GET TIMESTAMPS FROM TEXT
-    var r1 = "[0-9]:[0-9][0-9]:[0-9][0-9]";
+    var r1 = /\[[0-9][0-9]:[0-9][0-9]:[0-9][0-9]\]/;
     var timestamps = [];
     var re = new RegExp(r1, "g");
     while ((match = re.exec(htmlContent)) != null) {
-      timestamps.push([match.index + match[0].length, match[0]]);
+      timestamps.push([match.index + match[0].length, match[0].substring(1, match[0].length - 1)]);
     }
 
     // GET SPAN POSITION FROM TEXT
@@ -397,7 +397,7 @@ function getTimestamp(nodeID) {
     var re = new RegExp(r2, "g");
     while ((match = re.exec(htmlContent)) != null) {
       var beforei = 0;
-      beforet = '0:00:00';
+      beforet = '00:00:00';
       afteri = htmlContent.length;
       aftert = '';
       for (index = 0; index < timestamps.length; ++index) {
@@ -425,7 +425,7 @@ function getTimestamp(nodeID) {
     if (aftert == '') {
       startut = Math.round(new Date(window.startdatestmp).getTime());
       baseut = Math.round(new Date("2000/01/01 00:00:00").getTime());
-      beforeut = Math.round(new Date("2000/01/01 0" + beforet).getTime());
+      beforeut = Math.round(new Date("2000/01/01 " + beforet).getTime());
       timeinprog = beforeut + (turnbefore.length / charpermillisec);
       timeoffset = timeinprog - baseut;
       tstamp = startut + timeoffset;
@@ -436,8 +436,8 @@ function getTimestamp(nodeID) {
     } else {
       startut = Math.round(new Date(startdatestmp).getTime());
       baseut = Math.round(new Date("2000/01/01 00:00:00").getTime());
-      beforeut = Math.round(new Date("2000/01/01 0" + beforet).getTime());
-      afterut = Math.round(new Date("2000/01/01 0" + aftert).getTime());
+      beforeut = Math.round(new Date("2000/01/01 " + beforet).getTime());
+      afterut = Math.round(new Date("2000/01/01 " + aftert).getTime());
       timeinprog = beforeut + ((afterut - beforeut) * pcthru);
       timeoffset = timeinprog - baseut;
       tstamp = startut + timeoffset;
@@ -502,6 +502,7 @@ function updateTimestamps() {
   for (var i = 0; i < mSel.length; i++) {
     if (mSel[i].type == "L") {
       timestamp = getTimestamp(mSel[i].nodeID);
+      if (!timestamp) { console.log('could not calculate a timestamp for node: ' + mSel[i].nodeID); }
       timestamp = !timestamp ? '' : timestamp;
       updateTimestamp(mSel[i].nodeID, timestamp);
       if (window.showTimestamps) {
