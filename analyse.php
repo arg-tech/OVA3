@@ -555,11 +555,11 @@ if (isset($_COOKIE['ovauser'])) {
         <form id="timestamps_form" class="fstyle">
           <?php $timestamp = explode(" ", $defaultSettings["timestamp"]["startdatestmp"]); ?>
           <label for="dateInput"> Start Date: (dd/mm/yyyy) </label>
-          <input type="date" id="dateInput" style="font-size: 16px; padding: 3px; width:70%; text-align:center;" required pattern="\d{4}/\d{2}/\d{2}" />
+          <input type="date" id="dateInput" value="<?php echo date('Y-m-d') ?>" style="font-size: 16px; padding: 3px; width:70%; text-align:center;" required pattern="\d{4}/\d{2}/\d{2}" />
           <span class="validity"></span>
 
           <label for="timeInput"> Start Time: (hh:mm:ss) </label>
-          <input type="time" id="timeInput" value="<?php echo $timestamp[1] ?>" style="font-size: 16px; padding: 3px; width:70%; text-align:center;" step="1" min="00:00:01" max="23:59:59" required />
+          <input type="time" id="timeInput" value="00:00:00" style="font-size: 16px; padding: 3px; width:70%; text-align:center;" step="1" min="00:00:01" max="23:59:59" required />
           <span class="validity"></span>
 
           <label for="timezoneInput"> Timezone: (+/- hh:mm) <br> GMT
