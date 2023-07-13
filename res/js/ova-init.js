@@ -1793,7 +1793,7 @@ function editsTab(tab) {
  * @returns 
  */
 function setTimestampStart(startdatestmp) {
-    if (typeof startdatestmp !== 'undefined') { //set the start date time stamp to the given value
+    if (typeof startdatestmp !== 'undefined' && startdatestmp != "") { //set the start date time stamp to the given value
         window.startdatestmp = startdatestmp;
         document.getElementById("startTimestampLabel").innerHTML = window.startdatestmp;
     } else { //validate the user input and update the date time stamp
