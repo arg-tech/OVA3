@@ -64,12 +64,12 @@ if (isset($_COOKIE['ovauser'])) {
   <meta charset="utf-8">
   <title>OVA from ARG-tech</title>
   <meta name="description" content="">
-  <script src="http://code.jquery.com/jquery-2.1.3.min.js"></script>
-  <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.10.0/css/smoothness/jquery-ui-1.10.0.custom.min.css" />
+  <script src="//code.jquery.com/jquery-2.1.3.min.js"></script>
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.10.0/css/smoothness/jquery-ui-1.10.0.custom.min.css" />
   <link rel="stylesheet" href="res/css/analysis.css" />
   <link rel="stylesheet" href="res/css/introjs.css" />
 
-  <script src="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.10.0/jquery-ui.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.10.0/jquery-ui.js"></script>
   <script src="res/js/ova-analysis.js"></script>
   <script src="res/js/ova-fn.js"></script>
   <script src="res/js/ova-model.js"></script>
