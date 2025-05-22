@@ -423,16 +423,6 @@ async function loadFile(jstr, multi) {
  */
 async function loadOva3Json(json, oplus, offset) {
     console.log("loading OVA3 json");
-    //load participants
-    var p = json['AIF']['participants'];
-    if (p != undefined) {
-        for (var i = 0, l = p.length; i < l; i++) {
-            firstname = p[i].firstname;
-            surname = p[i].surname;
-            addParticipant(firstname, surname);
-        }
-    }
-
     //load the analysis text or URL
     var text = false;
     if (json['text'].hasOwnProperty("txt")) {
@@ -449,6 +439,22 @@ async function loadOva3Json(json, oplus, offset) {
         loadUrl(json['text']['url']);
     }
 
+    if (oplus) {
+        //load participants
+        var p = json['AIF']['participants'];
+        var locutions = json['AIF']['locutions'];
+        var ids = {};
+        var pIDold = 0;
+        for (var i = 0, l = locutions.length; i < l; i++) {
+            if (pIDold != locutions[i].personID) {
+                pIDold = locutions[i].personID;
+                participant = p.find(p => p.participantID == locutions[i].personID);
+                pIDnew = addParticipant(participant.firstname, participant.surname).participantID;
+            }
+            ids[locutions[i].nodeID] = pIDnew;
+        }
+    }
+
     //create the nodes
     var jnodes = json['AIF']['nodes'];
     var nodelist = {};
@@ -457,7 +463,7 @@ async function loadOva3Json(json, oplus, offset) {
     for (var i = 0, l = jnodes.length; i < l; i++) {
         if (oplus) {
             if (jnodes[i].type == "L") {
-                pID = findParticipantIDText(jnodes[i].text);
+                pID = typeof ids[jnodes[i].nodeID] == 'undefined' ? 0 : ids[jnodes[i].nodeID];
                 nodelist[jnodes[i].nodeID] = newNode(jnodes[i].nodeID, jnodes[i].type, null, pID, jnodes[i].text, 0, 0, false, 1, "", false, false);
             } else {
                 nodelist[jnodes[i].nodeID] = newNode(jnodes[i].nodeID, jnodes[i].type, null, 0, jnodes[i].text, 0, 0, false, 1, "", false, false);
@@ -557,14 +563,7 @@ async function loadOva2Json(json, oplus, offset) {
     console.log("loading OVA2 json");
     //load participants
     var p = json['participants'];
-    var pID = 0;
-    if (p != undefined) {
-        for (var i = 0, l = p.length; i < l; i++) {
-            firstname = p[i].firstname;
-            surname = p[i].surname;
-            addParticipant(firstname, surname)
-        }
-    }
+    var newPID = 0;
 
     var text = loadText(json['analysis']['txt']); //load text on LHS
 
@@ -595,8 +594,11 @@ async function loadOva2Json(json, oplus, offset) {
                     DrawNode(nID, jnodes[i].type, jnodes[i].text, x, newY, mark);
                     if (window.showTimestamps && jnodes[i].timestamp && jnodes[i].timestamp != '') { DrawTimestamp(nID, jnodes[i].timestamp, x, newY); }
                 }
-                pID = findParticipantIDText(jnodes[i].text);
-                nodelist[nID] = newNode(nID, jnodes[i].type, jnodes[i].scheme, pID, jnodes[i].text, x, newY, jnodes[i].visible, 1, jnodes[i].timestamp, mark, false);
+                if (jnodes[i].participantID != 0) {
+                    var participant = p.find(p => p.id == jnodes[i].participantID);
+                    newPID = addParticipant(participant.firstname, participant.surname).participantID;
+                }
+                nodelist[nID] = newNode(nID, jnodes[i].type, jnodes[i].scheme, newPID, jnodes[i].text, x, newY, jnodes[i].visible, 1, jnodes[i].timestamp, mark, false);
                 if (mark) { checkL.push(nodelist[nID]); } //add to array to check for reported speech locutions after edges added
             } else {
                 nodelist[nID] = AddNode(jnodes[i].text, jnodes[i].type, jnodes[i].scheme, 0, nID, x, newY, jnodes[i].visible, 1, "", false, false);
@@ -842,15 +844,6 @@ async function postAddEdits(nodeStart, edgeStart) {
  */
 async function loaddbjson(json, oplus, offset) {
     console.log("loading DB json");
-    //load participants
-    var p = json['participants'];
-    if (p != undefined) {
-        for (var i = 0, l = p.length; i < l; i++) {
-            firstname = p[i].firstname;
-            surname = p[i].surname;
-            addParticipant(firstname, surname)
-        }
-    }
 
     //load nodes
     var nodelist = {};
